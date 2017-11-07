@@ -1,27 +1,34 @@
-################################################################################
-Concuerror started with options:
+Concuerror v0.17 (b40296f) started at 14 Sep 2017 16:01:06
+ Options:
   [{after_timeout,infinity},
+   {assertions_only,false},
    {assume_racing,false},
-   {delay_bound,infinity},
-   {depth_bound,5000},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
    {entry_point,{messages_2,test,[]}},
+   {exclude_module,[]},
    {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/messages_2.erl"]},
    {ignore_error,[]},
-   {ignore_first_crash,true},
-   {instant_delivery,false},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
    {non_racing_system,[]},
-   {optimal,true},
    {print_depth,20},
    {quiet,true},
    {scheduling,round_robin},
+   {scheduling_bound_type,none},
    {show_races,false},
    {strict_scheduling,false},
    {symbolic_names,true},
    {timeout,infinity},
-   {treat_as_normal,[]}]
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
 ################################################################################
-Erroneous interleaving 1:
-* At step 14 process P.1 exited abnormally
+Interleaving #3
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
     Reason:
       {{badmatch,a},
        [{messages_2,'-test/0-fun-0-',0,
@@ -32,37 +39,43 @@ Erroneous interleaving 1:
                    [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/messages_2.erl"},
                     {line,23}]}]
 --------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<messages_2.0.54529166>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<messages_2.1.54529166>,[]])
-    in erlang.erl line 2329
-   3: P: a = P.1 ! a
-    in messages_2.erl line 30
-   4: P: special = P.1 ! special
-    in messages_2.erl line 31
-   5: P: exits normally
-   6: P.2: c = P.1 ! c
-    in messages_2.erl line 28
-   7: P.2: exits normally
-   8: P.1: receive timeout expired after 0 ms
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<messages_2.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<messages_2.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   3: P.1: receive timeout expired after 0 ms
     in messages_2.erl line 13
-   9: Message (c) from P.2 reaches P.1
-  10: Message (a) from P reaches P.1
-  11: Message (special) from P reaches P.1
-  12: P.1: receives message (special)
+   4: P.2: c = P.1 ! c
+    in messages_2.erl line 28
+   5: P: a = P.1 ! a
+    in messages_2.erl line 30
+   6: P.2: exits normally
+   7: P: special = P.1 ! special
+    in messages_2.erl line 31
+   8: P: exits normally
+   9: P.1: receives message (special)
     in messages_2.erl line 16
-  13: P.1: receives message (c)
+  10: P.1: receives message (c)
     in messages_2.erl line 23
-  14: P.1: exits abnormally ({{badmatch,a},[{messages_2,'-test/0-fun-0-',0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,23}]}]})
+  11: P.1: exits abnormally ({{badmatch,a},[{messages_2,'-test/0-fun-0-',0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,23}]}]})
 ################################################################################
-Concuerror Info:
+Exploration completed!
+################################################################################
+Tips:
 --------------------------------------------------------------------------------
-Instrumented: messages_2
-Instrumented: io_lib
-Instrumented: gen_server
-Hijacked application_controller
-Instrumented: erlang
+Increase '--print_depth' if output/graph contains "...".
+
 ################################################################################
-Done! (Exit status: completed)
-  Summary: 1 errors, 6/6 interleavings explored
+Info:
+--------------------------------------------------------------------------------
+Instrumented & loaded module messages_2
+Automatically instrumented module io_lib
+Automatically instrumented module gen_server
+Automatically instrumented module erlang
+You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+Continuing after error (-k)
+
+################################################################################
+Done at 14 Sep 2017 16:01:07 (Exit status: error)
+  Summary: 1 errors, 3/3 interleavings explored

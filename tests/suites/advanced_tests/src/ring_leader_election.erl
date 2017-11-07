@@ -26,7 +26,7 @@ ring_leader_election(N) ->
                 end
         end,
     done = lists:foldl(Fold, {Rest, First}, Pids),
-    [receive N -> ok end || _ <- lists:seq(1, N)].
+    [receive {P, N} -> ok end || P <- Pids].
 
 member(Id, Parent) ->
     receive
@@ -37,7 +37,7 @@ member(Id, Parent) ->
 
 member_loop(Id, Leader, Link, Parent) ->
     receive
-        Id -> Parent ! Leader;
+        Id -> Parent ! {self(), Leader};
         NewId ->
             Link ! NewId,
             NewLeader = max(NewId, Leader),

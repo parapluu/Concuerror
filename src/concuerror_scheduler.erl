@@ -160,8 +160,6 @@ run(Options) ->
       ubpor -> {bpor, true};
       Else -> {Else, false}
     end,
-  UseReceivePatterns = ?opt(use_receive_patterns, Options),
-  concuerror_receive_dependencies:initialise(UseReceivePatterns),
   InitialState =
     #scheduler_state{
        assertions_only = ?opt(assertions_only, Options),
@@ -188,7 +186,7 @@ run(Options) ->
        treat_as_normal = ?opt(treat_as_normal, Options),
        timeout = Timeout,
        unsound_bpor = UnsoundBPOR,
-       use_receive_patterns = UseReceivePatterns
+       use_receive_patterns = ?opt(use_receive_patterns, Options)
       },
   concuerror_logger:plan(Logger),
   ?time(Logger, "Exploration start"),
@@ -511,7 +509,7 @@ update_state(#event{actor = Actor} = Event, State) ->
     } = State,
   #trace_state{
      actors      = Actors,
-     done        = Done,
+     done        = RawDone,
      index       = Index,
      graph_ref   = Ref,
      previous_actor = PreviousActor,
@@ -521,6 +519,7 @@ update_state(#event{actor = Actor} = Event, State) ->
     } = Last,
   ?trace(Logger, "~s~n", [?pretty_s(Index, Event)]),
   concuerror_logger:graph_new_node(Logger, Ref, Index, Event, 0),
+  Done = reset_receive_done(RawDone, State),
   NextSleeping =
     case DisableSleepSets of
       true -> [];
@@ -564,7 +563,6 @@ update_state(#event{actor = Actor} = Event, State) ->
   InitNewState =
     State#scheduler_state{trace = [NextTrace, NewLastTrace|Prev]},
   NewState = maybe_log(Event, InitNewState, Index),
-  maybe_store_delivery_patterns(Event),
   {ok, NewState}.
 
 maybe_log(#event{actor = P} = Event, State0, Index) ->
@@ -642,7 +640,7 @@ update_sleeping(NewEvent, Sleeping, State) ->
   #scheduler_state{logger = _Logger} = State,
   Pred =
     fun(OldEvent) ->
-        V = concuerror_dependencies:dependent_safe(OldEvent, NewEvent),
+        V = concuerror_dependencies:dependent_safe(NewEvent, OldEvent),
         ?trace(_Logger, "     Awaking (~p): ~s~n", [V,?pretty_s(OldEvent)]),
         V =:= false
     end,
@@ -726,11 +724,23 @@ plan_more_interleavings(#scheduler_state{dpor = none} = State) ->
   #scheduler_state{logger = _Logger} = State,
   ?debug(_Logger, "Skipping race detection~n", []),
   State;
-plan_more_interleavings(#scheduler_state{dpor = DPOR} = State) ->
-  #scheduler_state{logger = Logger, trace = RevTrace} = State,
+plan_more_interleavings(State) ->
+  #scheduler_state{
+     dpor = DPOR,
+     logger = Logger,
+     trace = RevTrace,
+     use_receive_patterns = UseReceivePatterns
+    } = State,
   ?time(Logger, "Assigning happens-before..."),
-  {RevEarly, UntimedLate} = split_trace(RevTrace),
-  Late = assign_happens_before(UntimedLate, RevEarly, State),
+  {RevEarly, Late} =
+    case UseReceivePatterns of
+      false ->
+        {RE, UntimedLate} = split_trace(RevTrace),
+        {RE, assign_happens_before(UntimedLate, RE, State)};
+      true ->
+        {ObsTrace, _Dict} = fix_receive_info(RevTrace),
+        {[], assign_happens_before(ObsTrace, [], State)}
+    end,
   ?time(Logger, "Planning more interleavings..."),
   NewRevTrace =
     case DPOR =:= optimal of
@@ -916,16 +926,21 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
       false -> none;
       true ->
         Dependent =
-          concuerror_dependencies:dependent_safe(EarlyEvent, Event),
+          case concuerror_dependencies:dependent_safe(EarlyEvent, Event) of
+            true -> {true, no_observer};
+            Other -> Other
+          end,
         case Dependent of
           false -> none;
           irreversible -> update_clock;
-          true ->
+          {true, ObserverInfo} ->
             ?debug(State#scheduler_state.logger,
                    "   races with ~s~n",
                    [?pretty_s(EarlyIndex, EarlyEvent)]),
             case
-              update_trace(Event, Clock, TraceState, Later, NewOldTrace, State)
+              update_trace(
+                EarlyEvent, Event, Clock, TraceState,
+                Later, NewOldTrace, Rest, ObserverInfo, State)
             of
               skip -> update_clock;
               {UpdatedNewOldTrace, ConservativeCandidates} ->
@@ -948,13 +963,17 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
     end,
   more_interleavings_for_event(NewRest, Event, Later, NewClock, State, Index, NewTrace).
 
-update_trace(Event, Clock, TraceState, Later, NewOldTrace, State) ->
+update_trace(
+  EarlyEvent, Event, Clock, TraceState,
+  Later, NewOldTrace, Rest, ObserverInfo, State
+ ) ->
   #scheduler_state{
      dpor = DPOR,
      exploring = Exploring,
      logger = Logger,
      scheduling_bound_type = SchedulingBoundType,
-     unsound_bpor = UnsoundBPOR
+     unsound_bpor = UnsoundBPOR,
+     use_receive_patterns = UseReceivePatterns
     } = State,
   #trace_state{
      done = [#event{actor = EarlyActor} = EarlyEvent|Done] = AllDone,
@@ -989,7 +1008,29 @@ update_trace(Event, Clock, TraceState, Later, NewOldTrace, State) ->
         {Plan, _} = NW =
           case DPOR =:= optimal of
             true ->
-              {insert_wakeup_optimal(Sleeping, Wakeup, NotDep, Bound, Exploring), false};
+              case UseReceivePatterns of
+                false ->
+                  {insert_wakeup_optimal(Sleeping, Wakeup, NotDep, Bound, Exploring), false};
+                true ->
+                  V =
+                    case ObserverInfo =:= no_observer of
+                      true -> NotDep;
+                      false ->
+                        NotObsRaw =
+                          not_obs_raw(NewOldTrace, Later, ObserverInfo, Event),
+                        NotObs = NotObsRaw -- NotDep,
+                        NotDep ++ [EarlyEvent#event{label = undefined}] ++ NotObs
+                    end,
+                  RevV = lists:reverse(V),
+                  {FixedV, ReceiveInfoDict} = fix_receive_info(RevV),
+                  {FixedRest, _} = fix_receive_info(Rest, ReceiveInfoDict),
+                  show_plan(v, Logger, 0, FixedV),
+                  case has_weak_initial_before(lists:reverse(FixedRest), FixedV, Logger) of
+                    true -> {skip, false};
+                    false ->
+                      {insert_wakeup_optimal(Done, Wakeup, FixedV, Bound, Exploring), false}
+                  end
+              end;
             false ->
               Initials = get_initials(NotDep),
               AddCons =
@@ -1084,6 +1125,44 @@ is_process_info_related(Event) ->
   case Event#event.event_info of
     #builtin_event{mfargs = {erlang, process_info, _}} -> true;
     _ -> false
+  end.
+
+not_obs_raw(NewOldTrace, Later, ObserverInfo, Event) ->
+  lists:reverse(not_obs_raw(NewOldTrace, Later, ObserverInfo, Event, [])).
+
+not_obs_raw([], [], _ObserverInfo, _Event, _NotObs) ->
+  [];
+not_obs_raw([], Later, ObserverInfo, Event, NotObs) ->
+  not_obs_raw(Later, [], ObserverInfo, Event, NotObs);
+not_obs_raw([TraceState|Rest], Later, ObserverInfo, Event, NotObs) ->
+  #trace_state{done = [#event{special = Special} = E|_]} = TraceState,
+  case [Id || {message_received, Id} <- Special, Id =:= ObserverInfo] =:= [] of
+    true ->
+      not_obs_raw(Rest, Later, ObserverInfo, Event, [E|NotObs]);
+    false ->
+      #event{special = NewSpecial} = Event,
+      ObsNewSpecial =
+        case lists:keyfind(message_delivered, 1, NewSpecial) of
+          {message_delivered, #message_event{message = #message{id = NewId}}} ->
+            lists:keyreplace(ObserverInfo, 2, Special, {message_received, NewId});
+          _ -> exit(impossible)
+        end,
+      [E#event{label = undefined, special = ObsNewSpecial}|NotObs]
+  end.
+
+has_weak_initial_before([], _, _Logger) ->
+  ?debug(_Logger, "No weak initial before~n",[]),
+  false;
+has_weak_initial_before([TraceState|Rest], V, Logger) ->
+  #trace_state{done = [EarlyEvent|Done]} = TraceState,
+  case has_initial(Done, [EarlyEvent|V]) of
+    true ->
+      ?debug(Logger, "Check: ~s~n",[string:join([?pretty_s(0,D)||D<-Done],"~n")]),
+      show_plan(initial, Logger, 1, [EarlyEvent|V]),
+      true;
+    false ->
+      ?debug(Logger, "Up~n",[]),
+      has_weak_initial_before(Rest, [EarlyEvent|V], Logger)
   end.
 
 show_plan(_Type, _Logger, _Index, _NotDep) ->
@@ -1329,16 +1408,12 @@ find_prefix(Trace, SchedulingBoundType) ->
   case SchedulingBoundType =/= 'bpor' orelse get(bound_exceeded) of
     false ->
       case [B || #backtrack_entry{conservative = false} = B <- Tree] of
-        [] ->
-          maybe_reset_delivery_patterns(hd(TraceState#trace_state.done)),
-          find_prefix(Rest, SchedulingBoundType);
+        [] -> find_prefix(Rest, SchedulingBoundType);
         WUT -> [TraceState#trace_state{wakeup_tree = WUT}|Rest]
       end;
     true ->
       case Tree =:= [] of
-        true ->
-          maybe_reset_delivery_patterns(hd(TraceState#trace_state.done)),
-          find_prefix(Rest, SchedulingBoundType);
+        true -> find_prefix(Rest, SchedulingBoundType);
         false -> Trace
       end
   end.
@@ -1360,24 +1435,64 @@ replay(State) ->
 
 %% =============================================================================
 
-maybe_store_delivery_patterns(Event) ->
-  case Event of
-    #event{event_info = #receive_event{message = Msg} = Info}
-      when Msg =/= 'after' ->
-      #message{id = Id} = Msg,
-      #receive_event{patterns = Patterns} = Info,
-      concuerror_receive_dependencies:store(Id, Patterns);
-    _Else -> ok
+reset_receive_done([Event|Rest], #scheduler_state{use_receive_patterns = true}) ->
+  NewSpecial =
+    [patch_message_delivery(S, dict:new()) || S <- Event#event.special],
+  [Event#event{special = NewSpecial}|Rest];
+reset_receive_done(Done, _) ->
+  Done.
+
+fix_receive_info(RevTraceOrEvents) ->
+  fix_receive_info(RevTraceOrEvents, dict:new()).
+
+fix_receive_info(RevTraceOrEvents, ReceiveInfoDict) ->
+  fix_receive_info(RevTraceOrEvents, ReceiveInfoDict, []).
+
+fix_receive_info([], ReceiveInfoDict, TraceOrEvents) ->
+  {TraceOrEvents, ReceiveInfoDict};
+fix_receive_info([#trace_state{} = TraceState|RevTrace], ReceiveInfoDict, Trace) ->
+  [Event|Rest] = TraceState#trace_state.done,
+  {[NewEvent], NewDict} = fix_receive_info([Event], ReceiveInfoDict, []),
+  NewTraceState = TraceState#trace_state{done = [NewEvent|Rest]},
+  fix_receive_info(RevTrace, NewDict, [NewTraceState|Trace]);
+fix_receive_info([#event{} = Event|RevEvents], ReceiveInfoDict, Events) ->
+  #event{event_info = EventInfo, special = Special} = Event,
+  NewReceiveInfoDict = store_receive_info(EventInfo, Special, ReceiveInfoDict),
+  NewSpecial = [patch_message_delivery(S, NewReceiveInfoDict) || S <- Special],
+  NewEventInfo =
+    case EventInfo of
+      #message_event{} ->
+        {_, NI} =
+          patch_message_delivery({message_delivered, EventInfo}, NewReceiveInfoDict),
+        NI;
+      _ -> EventInfo
+    end,
+  NewEvent = Event#event{event_info = NewEventInfo, special = NewSpecial},
+  fix_receive_info(RevEvents, NewReceiveInfoDict, [NewEvent|Events]).
+
+store_receive_info(EventInfo, Special, ReceiveInfoDict) ->
+  case [ID || {message_received, ID} <- Special] of
+    [] -> ReceiveInfoDict;
+    IDs ->
+      ReceiveInfo =
+        case EventInfo of
+          #receive_event{receive_info = RI} -> RI;
+          _ -> {system, fun(_) -> true end}
+        end,
+      Fold = fun(ID,Dict) -> dict:store(ID, ReceiveInfo, Dict) end,
+      lists:foldl(Fold, ReceiveInfoDict, IDs)
   end.
 
-maybe_reset_delivery_patterns(Event) ->
-  case Event of
-    #event{event_info = #receive_event{message = Msg}}
-      when Msg =/= 'after' ->
-      #message{id = Id} = Msg,
-      concuerror_receive_dependencies:reset(Id);
-    _Else -> ok
-  end.
+patch_message_delivery({message_delivered, MessageEvent}, ReceiveInfoDict) ->
+  #message_event{message = #message{id = Id}} = MessageEvent,
+  ReceiveInfo =
+    case dict:find(Id, ReceiveInfoDict) of
+      {ok, RI} -> RI;
+      error -> not_received
+    end,
+  {message_delivered, MessageEvent#message_event{receive_info = ReceiveInfo}};
+patch_message_delivery(Other, _ReceiveInfoDict) ->
+  Other.
 
 %% =============================================================================
 %% ENGINE (manipulation of the Erlang processes under the scheduler)

@@ -1,35 +1,40 @@
-################################################################################
-Concuerror started with options:
+Concuerror v0.17 (fa28363) started at 19 Sep 2017 11:43:25
+ Options:
   [{after_timeout,infinity},
+   {assertions_only,false},
    {assume_racing,false},
-   {delay_bound,infinity},
-   {depth_bound,5000},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
    {entry_point,{ring_leader_election,ring_leader_election,[]}},
+   {exclude_module,[]},
    {files,["/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/ring_leader_election.erl"]},
    {ignore_error,[]},
-   {ignore_first_crash,true},
    {instant_delivery,false},
+   {interleaving_bound,infinity},
+   {keep_going,true},
    {non_racing_system,[]},
-   {optimal,true},
    {print_depth,20},
    {quiet,true},
    {scheduling,round_robin},
+   {scheduling_bound_type,none},
    {show_races,false},
    {strict_scheduling,false},
    {symbolic_names,true},
    {timeout,infinity},
-   {treat_as_normal,[]}]
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
 ################################################################################
+Exploration completed!
   No errors found!
 ################################################################################
-Concuerror Info:
+Info:
 --------------------------------------------------------------------------------
-Instrumented: ring_leader_election
-Instrumented: io_lib
-Instrumented: gen_server
-Hijacked application_controller
-Instrumented: lists
-Instrumented: erlang
+Instrumented & loaded module ring_leader_election
+Automatically instrumented module io_lib
+Automatically instrumented module lists
+Automatically instrumented module erlang
+
 ################################################################################
-Done! (Exit status: completed)
-  Summary: 0 errors, 78/78 interleavings explored
+Done at 19 Sep 2017 11:43:26 (Exit status: ok)
+  Summary: 0 errors, 1/1 interleavings explored

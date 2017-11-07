@@ -21,13 +21,14 @@
 
 %%------------------------------------------------------------------------------
 
--spec dependent_safe(event(), event()) -> boolean() | irreversible.
+-spec dependent_safe(event(), event()) ->
+                        boolean() | 'irreversible' | {'true', message_id()}.
 
 dependent_safe(E1, E2) ->
   dependent(E1, E2, {true, ignore}).
 
 -spec dependent(event(), event(), assume_racing_opt()) ->
-                   boolean() | irreversible.
+                   boolean() | 'irreversible' | {'true', message_id()}.
 
 dependent(#event{actor = A}, #event{actor = A}, _) ->
   irreversible;
@@ -37,8 +38,8 @@ dependent(#event{event_info = Info1, special = Special1},
   M1 = [M || {message_delivered, M} <- Special1],
   M2 = [M || {message_delivered, M} <- Special2],
   try
-    lists:any(fun({A,B}) -> dependent(A,B) end,
-              [{I1,I2}|| I1 <- [Info1|M1], I2 <- [Info2|M2]])
+    first_non_false(
+      [dependent(I1,I2)|| I1 <- [Info1|M1], I2 <- [Info2|M2]])
   catch
     throw:irreversible -> irreversible;
     error:function_clause ->
@@ -57,6 +58,10 @@ dependent(#event{event_info = Info1, special = Special1},
           exit({undefined_dependency, Info1, Info2, erlang:get_stacktrace()})
       end
   end.
+
+first_non_false([]) -> false;
+first_non_false([false|Rest]) -> first_non_false(Rest);
+first_non_false([Other|_]) -> Other.
 
 %% The first event happens before the second.
 
@@ -152,6 +157,7 @@ dependent(#message_event{
              ignored = false,
              killing = Killing1,
              message = #message{id = Id, data = EarlyData},
+             receive_info = EarlyInfo,
              recipient = Recipient,
              trapping = Trapping,
              type = EarlyType},
@@ -159,25 +165,34 @@ dependent(#message_event{
              ignored = false,
              killing = Killing2,
              message = #message{data = Data},
+             receive_info = LateInfo,
              recipient = Recipient,
              type = Type
             }) ->
   KindFun =
-    fun(exit_signal,    _,                kill) -> kill_exit;
-       (exit_signal, true,                   _) -> message;
-       (    message,    _,                   _) -> message;
-       (exit_signal,    _, {'EXIT', _, normal}) -> normal_exit;
-       (exit_signal,    _,                   _) -> abnormal_exit
+    fun(exit_signal,    _, kill) -> exit_signal;
+       (exit_signal, true,    _) -> message;
+       (    message,    _,    _) -> message;
+       (exit_signal,    _,    _) -> exit_signal
     end,
   case {KindFun(EarlyType, Trapping, EarlyData),
         KindFun(Type, Trapping, Data)} of
-    {message, message} -> 
-      concuerror_receive_dependencies:dependent_delivery(Id, Data);
-    {message, normal_exit} -> false;
-    {message, _} -> true;
-    {normal_exit, kill_exit} -> true;
-    {normal_exit, _} -> Trapping;
-    {_, normal_exit} -> Trapping;
+    {message, message} ->
+      case EarlyInfo of
+        undefined -> true;
+        not_received -> false;
+        {Counter1, Patterns} ->
+          ObsDep =
+            Patterns(Data) andalso
+            case LateInfo of
+              {Counter2, _} -> Counter2 >= Counter1;
+              not_received -> true;
+              undefined -> false
+            end,
+          if ObsDep -> {true, Id};
+             true -> false
+          end
+      end;
     {_, _} -> Killing1 orelse Killing2 %% This is an ugly hack, see blame.
   end;
 
@@ -189,12 +204,19 @@ dependent(#message_event{
             },
           #receive_event{
              message = Recv,
-             patterns = Patterns,
+             receive_info = {_, Patterns},
              recipient = Recipient,
              timeout = Timeout,
              trapping = Trapping
             }) ->
-  case Type =:= exit_signal of
+  EffType =
+    case {Type, Trapping, Data} of
+      {exit_signal,     _, kill} -> exit_signal;
+      {exit_signal,  true,    _} -> message;
+      {    message,     _,    _} -> message;
+      _                          -> exit_signal
+    end,
+  case EffType =:= exit_signal of
     true ->
       case Data of
         kill -> true;
@@ -217,7 +239,7 @@ dependent(#message_event{
   end;
 dependent(#receive_event{
              message = 'after',
-             patterns = Patterns,
+             receive_info = {_,  Patterns},
              recipient = Recipient,
              trapping = Trapping},
           #message_event{
@@ -344,8 +366,9 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, dictionary]}},
         end;
     _ -> false
   end;
-dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, messages]}},
-                       Other) ->
+dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, Msg]}},
+                       Other)
+  when Msg =:= messages; Msg =:= message_queue_len ->
   case Other of
     #message_event{ignored = false, recipient = Recipient} ->
       Recipient =:= Pid;

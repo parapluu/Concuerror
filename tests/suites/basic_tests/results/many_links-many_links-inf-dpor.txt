@@ -1,60 +1,43 @@
-################################################################################
-Concuerror started with options:
+Concuerror v0.17 ('91764ec') started at 19 Sep 2017 14:55:35
+ Options:
   [{after_timeout,infinity},
+   {assertions_only,false},
    {assume_racing,false},
-   {delay_bound,infinity},
-   {depth_bound,5000},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
    {entry_point,{many_links,many_links,[]}},
+   {exclude_module,[]},
    {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/many_links.erl"]},
    {ignore_error,[]},
-   {ignore_first_crash,true},
-   {instant_delivery,false},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
    {non_racing_system,[]},
-   {optimal,true},
    {print_depth,20},
    {quiet,true},
    {scheduling,round_robin},
+   {scheduling_bound_type,none},
    {show_races,false},
    {strict_scheduling,false},
    {symbolic_names,true},
    {timeout,infinity},
-   {treat_as_normal,[]}]
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
 ################################################################################
-Erroneous interleaving 1:
-* Blocked at a 'receive' (when all other processes have exited):
+Interleaving #1
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
     P in many_links.erl line 14
 --------------------------------------------------------------------------------
-Interleaving info:
+Event trace:
    1: P: false = erlang:process_flag(trap_exit, true)
     in many_links.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_links.0.39968107>,[]])
-    in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_links.1.39968107>,[]])
-    in erlang.erl line 2329
-   4: P: true = erlang:link(P.1)
-    in many_links.erl line 12
-   5: P: true = erlang:link(P.2)
-    in many_links.erl line 13
-   6: P.1: exits normally
-   7: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-   8: Exit signal (normal) from P.1 reaches P
-   9: P.2: exits normally
-  10: P.2: true = erlang:exit(P, normal)
-    (while exiting)
-  11: Exit signal (normal) from P.2 reaches P
-################################################################################
-Erroneous interleaving 2:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in many_links.erl line 14
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: false = erlang:process_flag(trap_exit, true)
-    in many_links.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_links.0.39968107>,[]])
-    in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_links.1.39968107>,[]])
-    in erlang.erl line 2329
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_links.'-many_links/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_links.'-many_links/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
    4: P: true = erlang:link(P.1)
     in many_links.erl line 12
    5: P: true = erlang:link(P.2)
@@ -65,41 +48,20 @@ Interleaving info:
    8: P.2: exits normally
    9: P.2: true = erlang:exit(P, normal)
     (while exiting)
-  10: Exit signal (normal) from P.2 reaches P
-  11: Exit signal (normal) from P.1 reaches P
 ################################################################################
-Erroneous interleaving 3:
-* Blocked at a 'receive' (when all other processes have exited):
+Interleaving #2
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
     P in many_links.erl line 14
 --------------------------------------------------------------------------------
-Interleaving info:
+Event trace:
    1: P: false = erlang:process_flag(trap_exit, true)
     in many_links.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_links.0.39968107>,[]])
-    in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_links.1.39968107>,[]])
-    in erlang.erl line 2329
-   4: P: true = erlang:link(P.1)
-    in many_links.erl line 12
-   5: P.1: exits normally
-   6: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-   7: Exit signal (normal) from P.1 reaches P
-   8: P.2: exits normally
-   9: P: true = erlang:link(P.2)
-    in many_links.erl line 13
-################################################################################
-Erroneous interleaving 4:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in many_links.erl line 14
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: false = erlang:process_flag(trap_exit, true)
-    in many_links.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_links.0.39968107>,[]])
-    in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_links.1.39968107>,[]])
-    in erlang.erl line 2329
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_links.'-many_links/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_links.'-many_links/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
    4: P: true = erlang:link(P.1)
     in many_links.erl line 12
    5: P.1: exits normally
@@ -108,19 +70,20 @@ Interleaving info:
    7: P.2: exits normally
    8: P: true = erlang:link(P.2)
     in many_links.erl line 13
-   9: Exit signal (normal) from P.1 reaches P
 ################################################################################
-Erroneous interleaving 5:
-* Blocked at a 'receive' (when all other processes have exited):
+Interleaving #3
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
     P in many_links.erl line 14
 --------------------------------------------------------------------------------
-Interleaving info:
+Event trace:
    1: P: false = erlang:process_flag(trap_exit, true)
     in many_links.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_links.0.39968107>,[]])
-    in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_links.1.39968107>,[]])
-    in erlang.erl line 2329
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_links.'-many_links/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_links.'-many_links/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
    4: P.1: exits normally
    5: P.2: exits normally
    6: P: true = erlang:link(P.1)
@@ -128,17 +91,19 @@ Interleaving info:
    7: P: true = erlang:link(P.2)
     in many_links.erl line 13
 ################################################################################
-Erroneous interleaving 6:
-* Blocked at a 'receive' (when all other processes have exited):
+Interleaving #4
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
     P in many_links.erl line 14
 --------------------------------------------------------------------------------
-Interleaving info:
+Event trace:
    1: P: false = erlang:process_flag(trap_exit, true)
     in many_links.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_links.0.39968107>,[]])
-    in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_links.1.39968107>,[]])
-    in erlang.erl line 2329
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_links.'-many_links/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_links.'-many_links/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
    4: P.1: exits normally
    5: P: true = erlang:link(P.1)
     in many_links.erl line 12
@@ -147,15 +112,22 @@ Interleaving info:
    7: P.2: exits normally
    8: P.2: true = erlang:exit(P, normal)
     (while exiting)
-   9: Exit signal (normal) from P.2 reaches P
 ################################################################################
-Concuerror Info:
+Exploration completed!
+################################################################################
+Tips:
 --------------------------------------------------------------------------------
-Instrumented: many_links
-Instrumented: io_lib
-Instrumented: gen_server
-Hijacked application_controller
-Instrumented: erlang
+Increase '--print_depth' if output/graph contains "...".
+
 ################################################################################
-Done! (Exit status: completed)
-  Summary: 6 errors, 6/6 interleavings explored
+Info:
+--------------------------------------------------------------------------------
+Instrumented & loaded module many_links
+Automatically instrumented module io_lib
+Automatically instrumented module erlang
+You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+Continuing after error (-k)
+
+################################################################################
+Done at 19 Sep 2017 14:55:36 (Exit status: error)
+  Summary: 4 errors, 4/4 interleavings explored

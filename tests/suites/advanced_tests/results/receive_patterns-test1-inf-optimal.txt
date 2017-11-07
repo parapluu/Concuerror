@@ -1,4 +1,4 @@
-Concuerror v0.17 (b40296f) started at 14 Sep 2017 14:54:20
+Concuerror v0.17 ('62ab815') started at 14 Sep 2017 14:05:57
  Options:
   [{after_timeout,infinity},
    {assertions_only,false},
@@ -6,9 +6,9 @@ Concuerror v0.17 (b40296f) started at 14 Sep 2017 14:54:20
    {depth_bound,500},
    {disable_sleep_sets,false},
    {dpor,optimal},
-   {entry_point,{sched_tests,test_3_proc_send_receive,[]}},
+   {entry_point,{receive_patterns,test1,[]}},
    {exclude_module,[]},
-   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/sched_tests.erl"]},
+   {files,["/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_patterns.erl"]},
    {ignore_error,[]},
    {instant_delivery,true},
    {interleaving_bound,infinity},
@@ -30,16 +30,17 @@ Exploration completed!
 ################################################################################
 Warnings:
 --------------------------------------------------------------------------------
-File /home/stavros/git/Concuerror/tests/suites/basic_tests/src/sched_tests.erl shadows /home/stavros/git/sched/ebin/sched_tests.beam (found in path)
+Option dpor from concuerror_options_forced overrides the one specified in command line.
 
 ################################################################################
 Info:
 --------------------------------------------------------------------------------
-Instrumented & loaded module sched_tests
+Instrumented & loaded module receive_patterns
 Automatically instrumented module io_lib
 Automatically instrumented module gen_server
 Automatically instrumented module erlang
+You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
 
 ################################################################################
-Done at 14 Sep 2017 14:54:21 (Exit status: ok)
-  Summary: 0 errors, 1/1 interleavings explored
+Done at 14 Sep 2017 14:05:58 (Exit status: ok)
+  Summary: 0 errors, 3/3 interleavings explored

@@ -26,17 +26,14 @@ ring_leader_election_barrier(N) ->
                 end
         end,
     done = lists:foldl(Fold, {Rest, First}, Pids),
-    [receive ok -> ok end || _ <- lists:seq(1, N)],
+    [receive {P, ok} -> ok end || P <- Pids],
     [P ! go || P <- Pids],
-    [receive N -> ok end || _ <- lists:seq(1, N)],
-    receive
-        _ -> deadlock
-    end.
+    [receive {P, N} -> ok end || P <- Pids].
 
 member(Id, Parent) ->
     receive
         {l, Link} ->
-            Parent ! ok,
+            Parent ! {self(), ok},
             receive
                 go -> ok
             end,
@@ -46,7 +43,7 @@ member(Id, Parent) ->
 
 member_loop(Id, Leader, Link, Parent) ->
     receive
-        Id -> Parent ! Leader;
+        Id -> Parent ! {self(), Leader};
         NewId ->
             Link ! NewId,
             NewLeader = max(NewId, Leader),

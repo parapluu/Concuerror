@@ -1,149 +1,125 @@
-################################################################################
-Concuerror started with options:
+Concuerror v0.17 ('91764ec') started at 19 Sep 2017 14:55:36
+ Options:
   [{after_timeout,infinity},
+   {assertions_only,false},
    {assume_racing,false},
-   {delay_bound,infinity},
-   {depth_bound,5000},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
    {entry_point,{many_monitors,many_monitors,[]}},
+   {exclude_module,[]},
    {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/many_monitors.erl"]},
    {ignore_error,[]},
-   {ignore_first_crash,true},
-   {instant_delivery,false},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
    {non_racing_system,[]},
-   {optimal,true},
    {print_depth,20},
    {quiet,true},
    {scheduling,round_robin},
+   {scheduling_bound_type,none},
    {show_races,false},
    {strict_scheduling,false},
    {symbolic_names,true},
    {timeout,infinity},
-   {treat_as_normal,[]}]
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
 ################################################################################
-Erroneous interleaving 1:
-* Blocked at a 'receive' (when all other processes have exited):
+Interleaving #1
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
     P in many_monitors.erl line 13
 --------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_monitors.0.86058473>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_monitors.1.86058473>,[]])
-    in erlang.erl line 2329
-   3: P: #Ref<0.0.0.125> = erlang:monitor(process, P.1)
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_monitors.'-many_monitors/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_monitors.'-many_monitors/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: #Ref<0.801199057.186908673.229136> = erlang:monitor(process, P.1)
     in many_monitors.erl line 11
-   4: P: #Ref<0.0.0.127> = erlang:monitor(process, P.2)
+   4: P: #Ref<0.801199057.186908673.229139> = erlang:monitor(process, P.2)
     in many_monitors.erl line 12
    5: P.1: exits normally
-   6: P.1: {'DOWN',#Ref<0.0.0.125>,process,P.1,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.125>,process,P.1,normal})
-    (while exiting)
-   7: Message ({'DOWN',#Ref<0.0.0.125>,process,P.1,normal}) from P.1 reaches P
-   8: P.2: exits normally
-   9: P.2: {'DOWN',#Ref<0.0.0.127>,process,P.2,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.127>,process,P.2,normal})
-    (while exiting)
-  10: Message ({'DOWN',#Ref<0.0.0.127>,process,P.2,normal}) from P.2 reaches P
-################################################################################
-Erroneous interleaving 2:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in many_monitors.erl line 13
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_monitors.0.86058473>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_monitors.1.86058473>,[]])
-    in erlang.erl line 2329
-   3: P: #Ref<0.0.0.125> = erlang:monitor(process, P.1)
-    in many_monitors.erl line 11
-   4: P: #Ref<0.0.0.127> = erlang:monitor(process, P.2)
-    in many_monitors.erl line 12
-   5: P.1: exits normally
-   6: P.1: {'DOWN',#Ref<0.0.0.125>,process,P.1,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.125>,process,P.1,normal})
+   6: P.1: {'DOWN',#Ref<0.801199057.186908673.229136>,process,P.1,normal} = erlang:send(P, {'DOWN',#Ref<0.801199057.186908673.229136>,process,P.1,normal})
     (while exiting)
    7: P.2: exits normally
-   8: P.2: {'DOWN',#Ref<0.0.0.127>,process,P.2,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.127>,process,P.2,normal})
+   8: P.2: {'DOWN',#Ref<0.801199057.186908673.229139>,process,P.2,normal} = erlang:send(P, {'DOWN',#Ref<0.801199057.186908673.229139>,process,P.2,normal})
     (while exiting)
-   9: Message ({'DOWN',#Ref<0.0.0.127>,process,P.2,normal}) from P.2 reaches P
-  10: Message ({'DOWN',#Ref<0.0.0.125>,process,P.1,normal}) from P.1 reaches P
 ################################################################################
-Erroneous interleaving 3:
-* Blocked at a 'receive' (when all other processes have exited):
+Interleaving #2
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
     P in many_monitors.erl line 13
 --------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_monitors.0.86058473>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_monitors.1.86058473>,[]])
-    in erlang.erl line 2329
-   3: P: #Ref<0.0.0.125> = erlang:monitor(process, P.1)
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_monitors.'-many_monitors/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_monitors.'-many_monitors/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: #Ref<0.801199057.186908673.229136> = erlang:monitor(process, P.1)
     in many_monitors.erl line 11
    4: P.1: exits normally
-   5: P.1: {'DOWN',#Ref<0.0.0.125>,process,P.1,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.125>,process,P.1,normal})
-    (while exiting)
-   6: Message ({'DOWN',#Ref<0.0.0.125>,process,P.1,normal}) from P.1 reaches P
-   7: P.2: exits normally
-   8: P: #Ref<0.0.0.168> = erlang:monitor(process, P.2)
-    in many_monitors.erl line 12
-################################################################################
-Erroneous interleaving 4:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in many_monitors.erl line 13
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_monitors.0.86058473>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_monitors.1.86058473>,[]])
-    in erlang.erl line 2329
-   3: P: #Ref<0.0.0.125> = erlang:monitor(process, P.1)
-    in many_monitors.erl line 11
-   4: P.1: exits normally
-   5: P.1: {'DOWN',#Ref<0.0.0.125>,process,P.1,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.125>,process,P.1,normal})
+   5: P.1: {'DOWN',#Ref<0.801199057.186908673.229136>,process,P.1,normal} = erlang:send(P, {'DOWN',#Ref<0.801199057.186908673.229136>,process,P.1,normal})
     (while exiting)
    6: P.2: exits normally
-   7: P: #Ref<0.0.0.185> = erlang:monitor(process, P.2)
+   7: P: #Ref<0.801199057.186908673.229139> = erlang:monitor(process, P.2)
     in many_monitors.erl line 12
-   8: Message ({'DOWN',#Ref<0.0.0.125>,process,P.1,normal}) from P.1 reaches P
 ################################################################################
-Erroneous interleaving 5:
-* Blocked at a 'receive' (when all other processes have exited):
+Interleaving #3
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
     P in many_monitors.erl line 13
 --------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_monitors.0.86058473>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_monitors.1.86058473>,[]])
-    in erlang.erl line 2329
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_monitors.'-many_monitors/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_monitors.'-many_monitors/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
    3: P.1: exits normally
    4: P.2: exits normally
-   5: P: #Ref<0.0.0.205> = erlang:monitor(process, P.1)
+   5: P: #Ref<0.801199057.186908673.229136> = erlang:monitor(process, P.1)
     in many_monitors.erl line 11
-   6: P: #Ref<0.0.0.209> = erlang:monitor(process, P.2)
+   6: P: #Ref<0.801199057.186908673.229139> = erlang:monitor(process, P.2)
     in many_monitors.erl line 12
 ################################################################################
-Erroneous interleaving 6:
-* Blocked at a 'receive' (when all other processes have exited):
+Interleaving #4
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
     P in many_monitors.erl line 13
 --------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_monitors.0.86058473>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_monitors.1.86058473>,[]])
-    in erlang.erl line 2329
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_monitors.'-many_monitors/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_monitors.'-many_monitors/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
    3: P.1: exits normally
-   4: P: #Ref<0.0.0.205> = erlang:monitor(process, P.1)
+   4: P: #Ref<0.801199057.186908673.229136> = erlang:monitor(process, P.1)
     in many_monitors.erl line 11
-   5: P: #Ref<0.0.0.223> = erlang:monitor(process, P.2)
+   5: P: #Ref<0.801199057.186908673.229139> = erlang:monitor(process, P.2)
     in many_monitors.erl line 12
    6: P.2: exits normally
-   7: P.2: {'DOWN',#Ref<0.0.0.223>,process,P.2,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.223>,process,P.2,normal})
+   7: P.2: {'DOWN',#Ref<0.801199057.186908673.229139>,process,P.2,normal} = erlang:send(P, {'DOWN',#Ref<0.801199057.186908673.229139>,process,P.2,normal})
     (while exiting)
-   8: Message ({'DOWN',#Ref<0.0.0.223>,process,P.2,normal}) from P.2 reaches P
 ################################################################################
-Concuerror Info:
+Exploration completed!
+################################################################################
+Tips:
 --------------------------------------------------------------------------------
-Instrumented: many_monitors
-Instrumented: io_lib
-Instrumented: gen_server
-Hijacked application_controller
-Instrumented: erlang
+Increase '--print_depth' if output/graph contains "...".
+
 ################################################################################
-Done! (Exit status: completed)
-  Summary: 6 errors, 6/6 interleavings explored
+Info:
+--------------------------------------------------------------------------------
+Instrumented & loaded module many_monitors
+Automatically instrumented module io_lib
+Automatically instrumented module erlang
+You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+Continuing after error (-k)
+
+################################################################################
+Done at 19 Sep 2017 14:55:36 (Exit status: error)
+  Summary: 4 errors, 4/4 interleavings explored

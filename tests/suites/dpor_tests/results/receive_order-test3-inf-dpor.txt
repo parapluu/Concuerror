@@ -1,34 +1,40 @@
-################################################################################
-Concuerror started with options:
+Concuerror v0.17 (b40296f) started at 14 Sep 2017 16:01:09
+ Options:
   [{after_timeout,infinity},
+   {assertions_only,false},
    {assume_racing,false},
-   {delay_bound,infinity},
-   {depth_bound,5000},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
    {entry_point,{receive_order,test3,[]}},
+   {exclude_module,[]},
    {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/receive_order.erl"]},
    {ignore_error,[]},
-   {ignore_first_crash,true},
-   {instant_delivery,false},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
    {non_racing_system,[]},
-   {optimal,true},
    {print_depth,20},
    {quiet,true},
    {scheduling,round_robin},
+   {scheduling_bound_type,none},
    {show_races,false},
    {strict_scheduling,false},
    {symbolic_names,true},
    {timeout,infinity},
-   {treat_as_normal,[]}]
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
 ################################################################################
+Exploration completed!
   No errors found!
 ################################################################################
-Concuerror Info:
+Info:
 --------------------------------------------------------------------------------
-Instrumented: receive_order
-Instrumented: io_lib
-Instrumented: gen_server
-Hijacked application_controller
-Instrumented: erlang
+Instrumented & loaded module receive_order
+Automatically instrumented module io_lib
+Automatically instrumented module gen_server
+Automatically instrumented module erlang
+
 ################################################################################
-Done! (Exit status: completed)
-  Summary: 0 errors, 3/3 interleavings explored
+Done at 14 Sep 2017 16:01:10 (Exit status: ok)
+  Summary: 0 errors, 1/1 interleavings explored
