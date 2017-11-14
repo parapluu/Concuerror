@@ -155,6 +155,9 @@ options() ->
     "                exploration is too slow. Use 'optimal' if a lot of~n"
     "                interleavings are reported as sleep-set blocked.~n"
     "- 'persistent': Using persistent sets. Do not use."}
+  ,{parallel, [experimental], $p, {boolean, false},
+    "Parallel exploration of interleavings",
+    nolong}
   ,{optimal, [por], undefined, boolean,
     "Deprecated. Use '--dpor (optimal | source)' instead.",
     nolong}
@@ -1067,6 +1070,9 @@ consistent([{disable_sleep_sets, true} = Option|Rest], Acc) ->
   check_values(
     [{dpor, fun(X) -> X =:= none end}],
     Rest ++ Acc, Option),
+  consistent(Rest, [Option|Acc]);
+consistent([{parallel, true} = Option|Rest], Acc) ->
+  %% XXX: Add any assertions you need here.
   consistent(Rest, [Option|Acc]);
 consistent([{scheduling_bound, _} = Option|Rest], Acc) ->
   VeryFun = fun(X) -> lists:member(X, [bpor, delay, ubpor]) end,
