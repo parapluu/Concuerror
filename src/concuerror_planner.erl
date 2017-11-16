@@ -135,7 +135,8 @@ loop(Status) ->
 	{crash, Class, Reason, Stack} ->
 	    Scheduler ! exit,
 	    erlang:raise(Class, Reason, Stack);
-	{explored, {Trace, Warnings, Exploring}}  ->
+	{explored, {Trace, Warnings, Exploring, BoundExceeded}}  ->
+	    put(bound_exceeded, BoundExceeded),
 	    #planner_status{scheduler_state = PreviousState} = Status,
 	    State = 
 		PreviousState#scheduler_state{
@@ -153,7 +154,7 @@ loop(Status) ->
 		       warnings = NewWarnings, 
 		       exploring = NewExploring
 		      } = NewState,
-		    Scheduler ! {explore, {NewTrace, NewWarnings, NewExploring}},
+		    Scheduler ! {explore, {NewTrace, NewWarnings, NewExploring, get(bound_exceeded)}},
 		    loop(Status#planner_status{scheduler_state = NewState});
 		false ->
 		    Scheduler ! exit,

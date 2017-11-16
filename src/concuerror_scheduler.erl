@@ -222,7 +222,7 @@ explore(State) ->
 	 exploring = Exploring,
 	 planner = Planner
 	} = UpdatedState,
-      Planner ! {explored, {UpdatedTrace, Warnings, Exploring}},
+      Planner ! {explored, {UpdatedTrace, Warnings, Exploring, get(bound_exceeded)}},
       loop(UpdatedState);
     {crash, Class, Reason, Stack} ->
       #scheduler_state{
@@ -237,7 +237,8 @@ explore(State) ->
 
 loop(State) ->
   receive
-    {explore, {NewTrace, Warnings, Exploring}} ->
+    {explore, {NewTrace, Warnings, Exploring, BoundExceeded}} ->
+      put(bound_exceeded, BoundExceeded),
       NewState = 
 	State#scheduler_state{
 	  trace = NewTrace,
