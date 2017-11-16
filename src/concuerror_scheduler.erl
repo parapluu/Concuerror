@@ -40,7 +40,7 @@
 -module(concuerror_scheduler).
 
 %% User interface
--export([run/1, log_trace/1, explain_error/1]).
+-export([run/1, log_trace/1, explain_error/1, msg/1]).
 
 %%------------------------------------------------------------------------------
 
@@ -916,10 +916,15 @@ explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
    ).
 
 %%==============================================================================
+-spec msg(
+	'after_timeout_tip' | 'assertions_only_filter' | 'assertions_only_use' |
+	'depth_bound' | 'maybe_receive_loop' | 'show_races' | 'shutdown' | 'signal' |
+	'sleep_set_block' | 'stop_first_error' | 'timeout' | 'treat_as_normal'
+       )-> [1..255,...].
 
 msg(after_timeout_tip) ->
-  "You can use e.g. '--after_timeout 5000' to treat after timeouts that exceed"
-    " some threshold (here 4999ms) as 'infinity'.~n";
+  "You can use e.g. '--after_timeout 2000' to treat after"
+    " clauses that exceed some threshold (here 2000ms) as 'impossible'.~n";
 msg(assertions_only_filter) ->
   "Only assertion failures are considered crashes ('--assertions_only').~n";
 msg(assertions_only_use) ->
@@ -956,7 +961,9 @@ msg(stop_first_error) ->
 msg(timeout) ->
   "A process crashed with reason '{timeout, ...}'. This may happen when a"
     " call to a gen_server (or similar) does not receive a reply within some"
-    " timeout (5000ms by default). "
+    " standard timeout. "
     ++ msg(after_timeout_tip);
 msg(treat_as_normal) ->
   "Some abnormal exit reasons were treated as normal ('--treat_as_normal').~n".
+
+

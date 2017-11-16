@@ -94,10 +94,12 @@
           warnings             = []    :: [concuerror_warning_info()]
          }).
 
+-type scheduler_state() :: #scheduler_state{}.
+
 -record(planner_status, {
 	  scheduler       :: pid(),
 	  logger          :: pid(),
-	  scheduler_state :: concuerror_scheduler:scheduler_state()
+	  scheduler_state :: scheduler_state()
 	 }).
 
 
@@ -202,52 +204,6 @@ patch_message_delivery({message_delivered, MessageEvent}, ReceiveInfoDict) ->
   {message_delivered, MessageEvent#message_event{receive_info = ReceiveInfo}};
 patch_message_delivery(Other, _ReceiveInfoDict) ->
   Other.
-
-
-msg(after_timeout_tip) ->
-  "You can use e.g. '--after_timeout 2000' to treat after"
-    " clauses that exceed some threshold (here 2000ms) as 'impossible'.~n";
-msg(assertions_only_filter) ->
-  "Only assertion failures are considered crashes ('--assertions_only').~n";
-msg(assertions_only_use) ->
-  "A process crashed with reason '{{assert*,_}, _}'. If you want to see only"
-    " this kind of error you can use the '--assertions_only' option.~n";
-msg(depth_bound) ->
-  "An interleaving reached the depth bound. This can happen if a test has an"
-    " infinite execution. Concuerror is not sound for testing programs with"
-    " infinite executions. Consider limiting the size of the test or increasing"
-    " the bound ('-h depth_bound').~n";
-msg(maybe_receive_loop) ->
-  "The trace contained more than ~w receive timeout events"
-    " (receive statements that executed their 'after' clause). Concuerror by"
-    " default treats 'after' clauses as always possible, so a 'receive loop'"
-    " using a timeout can lead to an infinite execution. "
-    ++ msg(after_timeout_tip);
-msg(signal) ->
-  "An abnormal exit signal was sent to a process. This is probably the worst"
-    " thing that can happen race-wise, as any other side-effecting"
-    " operation races with the arrival of the signal. If the test produces"
-    " too many interleavings consider refactoring your code.~n";
-msg(show_races) ->
-  "You can see pairs of racing instructions (in the report and"
-    " '--graph') with '--show_races true'~n";
-msg(shutdown) ->
-  "A process crashed with reason 'shutdown'. This may happen when a"
-    " supervisor is terminating its children. You can use '--treat_as_normal"
-    " shutdown' if this is expected behaviour.~n";
-msg(sleep_set_block) ->
-  "Some interleavings were 'sleep-set blocked'. This is expected, since you are"
-    " not using '--dpor optimal', but indicates wasted effort.~n";
-msg(stop_first_error) ->
-  "Stop testing on first error. (Check '-h keep_going').~n";
-msg(timeout) ->
-  "A process crashed with reason '{timeout, ...}'. This may happen when a"
-    " call to a gen_server (or similar) does not receive a reply within some"
-    " standard timeout. "
-    ++ msg(after_timeout_tip);
-msg(treat_as_normal) ->
-  "Some abnormal exit reasons were treated as normal ('--treat_as_normal').~n".
-
 
 
 
@@ -721,7 +677,7 @@ maybe_log_race(TraceState, Index, Event, State) ->
       IndexedLate = {Index, Event#event{location = []}},
       concuerror_logger:race(Logger, IndexedEarly, IndexedLate);
      true ->
-      ?unique(Logger, ?linfo, msg(show_races), [])
+      ?unique(Logger, ?linfo, concuerror_scheduler:msg(show_races), [])
   end.
 
 insert_wakeup_non_optimal(Sleeping, Wakeup, Initials, Conservative, Exploring) ->
