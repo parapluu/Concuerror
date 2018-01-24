@@ -1,4 +1,4 @@
-[![Build Status][build status badge]][travis]
+[![Travis][travis badge]][travis]
 [![Erlang Versions][erlang versions badge]][travis]
 [![Help wanted!](https://img.shields.io/waffle/label/parapluu/concuerror/help%20wanted.svg?label=help%20wanted)](https://github.com/parapluu/Concuerror/labels/help%20wanted)
 
@@ -37,5 +37,5 @@ Details can be found in the LICENSE file.
 
 <!-- Badges -->
 [travis]: https://travis-ci.org/parapluu/Concuerror
-[build status badge]: https://travis-ci.org/parapluu/Concuerror.svg?branch=master.svg?style=flat-square
-[erlang versions badge]: https://img.shields.io/badge/erlang-R16B03-1%20to%2020.2-blue.svg?style=flat-square
+[travis badge]: https://img.shields.io/travis/parapluu/Concuerror/master.svg?style=flat-square
+[erlang versions badge]: https://img.shields.io/badge/erlang-R16B03%20to%2020.2-blue.svg?style=flat-square
