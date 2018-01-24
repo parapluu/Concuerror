@@ -36,6 +36,6 @@ Details can be found in the LICENSE file.
 
 
 <!-- Badges -->
-[travis]: https://travis-ci.org/eproxus/meck
+[travis]: https://travis-ci.org/parapluu/Concuerror
 [build status badge]: https://travis-ci.org/parapluu/Concuerror.svg?branch=master.svg?style=flat-square
 [erlang versions badge]: https://img.shields.io/badge/erlang-R16B03-1%20to%2020.2-blue.svg?style=flat-square
