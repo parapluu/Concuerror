@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/parapluu/Concuerror.svg?branch=master)](https://travis-ci.org/parapluu/Concuerror)
+[![Build Status][build status badge]][travis]
 [![Erlang Versions][erlang versions badge]][travis]
 [![Help wanted!](https://img.shields.io/waffle/label/parapluu/concuerror/help%20wanted.svg?label=help%20wanted)](https://github.com/parapluu/Concuerror/labels/help%20wanted)
 
@@ -20,7 +20,7 @@ To find out more [visit the website!](http://parapluu.github.io/Concuerror)
 
 Copyright and License
 ----------------------
-Copyright (c) 2014-2017,
+Copyright (c) 2014-2018,
 Stavros Aronis (<aronisstav@gmail.com>) and
 Kostis Sagonas (<kostis@cs.ntua.gr>).
 All rights reserved
@@ -33,3 +33,9 @@ All rights reserved.
 
 Concuerror is distributed under the Simplified BSD License.
 Details can be found in the LICENSE file.
+
+
+<!-- Badges -->
+[travis]: https://travis-ci.org/eproxus/meck
+[build status badge]: https://travis-ci.org/parapluu/Concuerror.svg?branch=master.svg?style=flat-square
+[erlang versions badge]: https://img.shields.io/badge/erlang-R16B03-1%20to%2020.2-blue.svg?style=flat-square
