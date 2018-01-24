@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/parapluu/Concuerror.svg?branch=master)](https://travis-ci.org/parapluu/Concuerror)
+[![Erlang Versions][erlang versions badge]][travis]
 [![Help wanted!](https://img.shields.io/waffle/label/parapluu/concuerror/help%20wanted.svg?label=help%20wanted)](https://github.com/parapluu/Concuerror/labels/help%20wanted)
 
 # Concuerror
