@@ -4,6 +4,7 @@ language: erlang
 
 script: "make $TEST"
 
+# Two stages, so that basic tests are run first
 stages:
   - basic
   - test
@@ -11,26 +12,48 @@ stages:
 matrix:
   fast_finish: true
   include:
+
+  # otp_release is unspecified, so that the first in the list below is assumed
+
+  # Check latest Erlang version is tested
   - stage: basic
     env: TEST=travis_has_latest_otp_version
-  - env: TEST=dialyze
+
+  # Check dialyzer
+  - stage: basic
+    env: TEST=dialyze
+
+  # Code coverage test, that includes tests and tests-real
   - stage: test
     env: TEST=cover
-  - otp_release: R16B03-1
+
+  # Minimal support for R16B03-1
+  - stage: test
+    otp_release: R16B03-1
     env: TEST=tests-real
+
+  # Exclude the default tests and tests-real env for latest release,
+  # as the cover target includes them
   exclude:
-  - otp_release: 20.1
+  - otp_release: 20.2
 
 env:
   - TEST=tests-real
   - TEST=tests
 
 otp_release:
+
+  # Two latest minor versions of the most recent OTP release
+  # Remember to exclude the top one from the matrix above
   - 20.2
-  - 20.0
+  - 20.1
+
+  # Last minor version of older OTP releases
   - 19.3
   - 18.3
   - 17.4
+
+  # R16B03-1 is minimally supported (see matrix section)
 
 after_failure: "./.travis/after_failure"
 
