@@ -837,7 +837,9 @@ run_built_in(erlang, process_flag, 2, [Flag, Value],
     priority ->
       ?badarg_if_not(lists:member(Value, [low,normal,high,max])),
       {Flags#process_flags.priority,
-       Info#concuerror_info{flags = Flags#process_flags{priority = Value}}}
+       Info#concuerror_info{flags = Flags#process_flags{priority = Value}}};
+    _ ->
+      throw({unsupported_process_flag, {Flag, Value}})
   end;
 
 run_built_in(erlang, processes, 0, [], Info) ->
@@ -1892,13 +1894,13 @@ system_wrapper_loop(Name, Wrapped, Info) ->
                   ?unique(Logger, ?ltip, Msg, []),
                   {From, Reply};
                 Else ->
-                  throw({unknown_protocol_for_system, Else})
+                  throw({unknown_protocol_for_system, {Else, Data}})
               end,
             Report ! {system_reply, F, Id, R, Name},
             ok
           catch
             no_reply -> send_message_ack(Report, false, false, false);
-            {unknown_protocol_for_system, _} = Reason -> ?crash(Reason);
+            Reason -> ?crash(Reason);
             Class:Reason ->
               Stacktrace = erlang:get_stacktrace(),
               ?crash({system_wrapper_error, Name, Class, Reason, Stacktrace})
@@ -1919,15 +1921,8 @@ check_request(file_server_2, {get_cwd}) -> ok;
 check_request(file_server_2, {read_file_info, _}) -> ok;
 check_request(init, {get_argument, _}) -> ok;
 check_request(init, get_arguments) -> ok;
-check_request(Name, Other) ->
-  Request =
-    try
-      element(1, Other)
-    catch
-      _:_ ->
-        Other
-    end,
-  ?crash({unsupported_request, Name, Request}).
+check_request(Name, Request) ->
+  throw({unsupported_request, Name, Request}).
 
 reset_concuerror_info(Info) ->
   #concuerror_info{
@@ -2183,11 +2178,13 @@ explain_error({unexpected_builtin_change,
     "data that may differ on separate runs of the program.~n"
     "Location: ~p~n",
     [Module, Name, Arity, Args, M, F, length(OArgs), OArgs, Location]);
-explain_error({unknown_protocol_for_system, System}) ->
+explain_error({unknown_protocol_for_system, {System, Data}}) ->
   io_lib:format(
     "A process tried to send a message to system process ~p. Concuerror does"
     " not currently support communication with this process. Please contact the"
-    " developers for more information.",[System]);
+    " developers for more information.~n"
+    "Message:~n"
+    " ~p~n",[System, Data]);
 explain_error({unknown_built_in, {Module, Name, Arity, Location, Stack}}) ->
   LocationString =
     case Location of
@@ -2200,9 +2197,8 @@ explain_error({unknown_built_in, {Module, Name, Arity, Location, Stack}}) ->
     [Module, Name, Arity, LocationString, Stack]);
 explain_error({unsupported_request, Name, Type}) ->
   io_lib:format(
-    "A process send a request of type '~p' to ~p. Concuerror does not yet support"
-    " this type of request to this process."
-    ?notify_us_msg,
+    "A process send a request of type '~w' to ~p. Concuerror does not yet support"
+    " this type of request to this process.",
     [Type, Name]);
 explain_error({wrapper_asked_for_status, Name}) ->
   io_lib:format(
