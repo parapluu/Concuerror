@@ -567,6 +567,7 @@ finalize_2(Options) ->
     , fun group_multiples/1
     , fun initialize_loader/1
     , fun load_files/1
+    , fun ensure_module/1
     , fun add_options_from_module/1
     , fun add_derived_defaults/1
     , fun add_getopt_defaults/1
@@ -575,23 +576,11 @@ finalize_2(Options) ->
     , fun(O) ->
           add_defaults([{Opt, []} || Opt <- multiple_allowed()], false, O)
       end
+    , fun ensure_entry_point/1
     ],
   FinalOptions = run_passes(Passes, Options),
   consistent(FinalOptions),
-  {M, F, B} = proplists:get_value(entry_point, FinalOptions),
-  try
-    true = is_atom(M),
-    true = is_atom(F),
-    true = is_list(B),
-    true = lists:member({F,length(B)}, M:module_info(exports)),
-    FinalOptions
-  catch
-    _:_ ->
-      InvalidEntryPoint =
-        "The entry point ~w:~w/~w is invalid. Make sure you have"
-        " specified the correct module ('-m') and test function ('-t').",
-      opt_error(InvalidEntryPoint, [M,F,length(B)], input)
-  end.
+  FinalOptions.
 
 run_passes([], Options) ->
   Options;
@@ -617,7 +606,7 @@ set_verbosity(Options) ->
       Error = "To use verbosity > ~w, build Concuerror with 'make dev'.",
       opt_error(Error, [?ldebug - 1])
   end,
-  NewOptions = proplists:delete(verbosity, Options),
+  NewOptions = delete_options(verbosity, Options),
   [{verbosity, Verbosity}|NewOptions].
 
 %%%-----------------------------------------------------------------------------
@@ -628,7 +617,7 @@ open_files(Options) ->
     form_file_option(Options, output, ?DEFAULT_OUTPUT, HasNoOutput),
   GraphOption =
     form_file_option(Options, graph, "/dev/null", HasNoOutput),
-  NewOptions = proplists:delete(graph, proplists:delete(output, Options)),
+  NewOptions = delete_options([output, graph], Options),
   [{output, OutputOption}, {graph, GraphOption} | NewOptions].
 
 form_file_option(Options, FileOption, Default, HasNoOutput) ->
@@ -752,7 +741,7 @@ compile_and_load([], [_|More] = LoadedFiles, LastModule, Options) ->
       true -> [{module, LastModule}];
       false -> []
     end,
-  NewOptions = proplists:delete(files, proplists:delete(file, Options)),
+  NewOptions = delete_options([file, files], Options),
   MissingModule ++ [{files, lists:sort(LoadedFiles)}|NewOptions];
 compile_and_load([File|Rest], Acc, _LastModule, Options) ->
   case concuerror_loader:load_initially(File) of
@@ -766,7 +755,7 @@ compile_and_load([File|Rest], Acc, _LastModule, Options) ->
 
 %%%-----------------------------------------------------------------------------
 
-add_options_from_module(Options) ->
+ensure_module(Options) ->
   Module =
     case proplists:get_all_values(entry_point, Options) of
       [] ->
@@ -783,13 +772,19 @@ add_options_from_module(Options) ->
       _ ->
         opt_error("Multiple instances of 'entry_point' specified.", [], module)
     end,
-  Attributes =
-    try
-      Module:module_info(attributes)
-    catch
-      _:_ ->
-        opt_error("Could not find module ~w.", [Module], module)
-    end,
+  try
+    Module:module_info(attributes)
+  catch
+    _:_ ->
+      opt_error("Could not find module ~w.", [Module], module)
+  end,
+  [{module, Module}|delete_options(module,Options)].
+
+%%%-----------------------------------------------------------------------------
+
+add_options_from_module(Options) ->
+  Module = proplists:get_value(module, Options),
+  Attributes = Module:module_info(attributes),
   Forced =
     get_options_from_attribute(?ATTRIBUTE_FORCED_OPTIONS, Attributes),
   Others =
@@ -894,7 +889,7 @@ override(Where1, [{Key, _Value} = Option|Rest], Where2, Options) ->
     case lists:member(Key, multiple_allowed()) of
       true -> Options;
       false ->
-        NO = proplists:delete(Key, Options),
+        NO = delete_options(Key, Options),
         case NO =:= Options of
           true -> Options;
           false ->
@@ -975,7 +970,7 @@ group_multiples([{Key, Value} = Option|Rest], Acc) ->
   case lists:member(Key, multiple_allowed()) of
     true ->
       Values = lists:flatten([Value|proplists:get_all_values(Key, Rest)]),
-      NewRest = proplists:delete(Key, Rest),
+      NewRest = delete_options(Key, Rest),
       group_multiples(NewRest, [{Key, lists:usort(Values)}|Acc]);
     false ->
       group_multiples(Rest, [Option|Acc])
@@ -989,13 +984,6 @@ process_options(Options) ->
 process_options([], Acc) -> lists:reverse(Acc);
 process_options([{Key, Value} = Option|Rest], Acc) ->
   case Key of
-    module ->
-      case proplists:get_value(test, Rest, 1) of
-        Name when is_atom(Name) ->
-          NewRest = proplists:delete(test, Rest),
-          process_options(NewRest, [{entry_point, {Value, Name, []}}|Acc]);
-        _ -> opt_error("The name of the test function is missing")
-      end;
     optimal ->
       "0.1" ++ [_|_] = ?VSN,
       Msg =
@@ -1023,13 +1011,39 @@ process_options([{Key, Value} = Option|Rest], Acc) ->
           Error = "The value of '--~s' must be -1 (infinity) or >= ~w",
           opt_error(Error, [Key, Limit], Key)
       end;
-    test ->
-      case Rest =:= [] of
-        true -> process_options(Rest, Acc);
-        false -> process_options(Rest ++ [Option], Acc)
-      end;
     _ ->
       process_options(Rest, [Option|Acc])
+  end.
+
+%%------------------------------------------------------------------------------
+
+ensure_entry_point(Options) ->
+  EntryPoint =
+    case proplists:get_value(entry_point, Options) of
+      {_,_,_} = EP -> EP;
+      undefined ->
+        Module = proplists:get_value(module, Options),
+        case proplists:get_value(test, Options, 1) of
+          Name when is_atom(Name) ->
+            {Module, Name, []};
+          _ ->
+            opt_error("The name of the test function is missing")
+        end
+    end,
+  CleanOptions = delete_options([entry_point, module, test], Options),
+  {M, F, B} = EntryPoint,
+  try
+    true = is_atom(M),
+    true = is_atom(F),
+    true = is_list(B),
+    true = lists:member({F,length(B)}, M:module_info(exports)),
+    [{entry_point, EntryPoint}|CleanOptions]
+  catch
+    _:_ ->
+      InvalidEntryPoint =
+        "The entry point ~w:~w/~w is invalid. Make sure you have"
+        " specified the correct module ('-m') and test function ('-t').",
+      opt_error(InvalidEntryPoint, [M,F,length(B)], input)
   end.
 
 %%------------------------------------------------------------------------------
@@ -1108,6 +1122,13 @@ check_values([{Key, Validate}|Rest], Other, Reason) ->
   end.
 
 %%%-----------------------------------------------------------------------------
+
+delete_options([], Proplist) ->
+  Proplist;
+delete_options([Option|Rest], Proplist) ->
+  delete_options(Rest, proplists:delete(Option, Proplist));
+delete_options(Else, Proplist) ->
+  delete_options([Else], Proplist).
 
 -spec opt_error(string()) -> no_return().
 
