@@ -1925,42 +1925,22 @@ check_request(Name, Request) ->
   throw({unsupported_request, Name, Request}).
 
 reset_concuerror_info(Info) ->
-  #concuerror_info{
-     after_timeout = AfterTimeout,
-     ets_tables = EtsTables,
-     instant_delivery = InstantDelivery,
-     is_timer = IsTimer,
-     links = Links,
-     logger = Logger,
-     monitors = Monitors,
-     notify_when_ready = {Pid, _},
-     processes = Processes,
-     scheduler = Scheduler,
-     system_ets_entries = SystemEtsEntries,
-     timeout = Timeout,
-     timers = Timers
-    } = Info,
-  #concuerror_info{
-     after_timeout = AfterTimeout,
-     ets_tables = EtsTables,
-     instant_delivery = InstantDelivery,
-     is_timer = IsTimer,
-     links = Links,
-     logger = Logger,
-     monitors = Monitors,
-     notify_when_ready = {Pid, true},
-     processes = Processes,
-     scheduler = Scheduler,
-     system_ets_entries = SystemEtsEntries,
-     timeout = Timeout,
-     timers = Timers
-    }.
-
-%% reset_stack(#concuerror_info{stack = Stack} = Info) ->
-%%   {Stack, Info#concuerror_info{stack = []}}.
-
-%% append_stack(Value, #concuerror_info{stack = Stack} = Info) ->
-%%   Info#concuerror_info{stack = [Value|Stack]}.
+  {Pid, _} = Info#concuerror_info.notify_when_ready,
+  Info#concuerror_info{
+    demonitors = [],
+    exit_by_signal = false,
+    exit_reason = normal,
+    flags = #process_flags{},
+    message_counter = 1,
+    messages_new = queue:new(),
+    messages_old = queue:new(),
+    event = none,
+    notify_when_ready = {Pid, true},
+    receive_counter = 1,
+    ref_queue = new_ref_queue(),
+    stacktop = 'none',
+    status = 'running'
+   }.
 
 %%------------------------------------------------------------------------------
 
