@@ -2,16 +2,12 @@
 # command after changing this file, to see if there are
 # any tracked files which get ignored after the change.
 
-*.COVER.html
 *.Pbeam
 *.beam
 *.dot
 .concuerror_plt
 /concuerror
 *concuerror_report.txt
-concuerror_sha.hrl
-concuerror_version.hrl
-cover
 erl_crash.dump
 tests/test_one
 thediff
