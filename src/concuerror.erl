@@ -46,5 +46,5 @@ explain(Reason) ->
     Module:explain_error(Info)
   catch
     _:_ ->
-      io_lib:format("~n  Reason: ~p~n", [Reason])
+      io_lib:format("~n  Reason: ~p", [Reason])
   end.
