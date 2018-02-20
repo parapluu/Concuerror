@@ -1,9 +1,6 @@
 %% -*- erlang-indent-level: 2 -*-
 
-%% This module will never be instrumented. Function instrumented/3 should:
-%%  - return the result of a call, if it is called from a non-Concuerror process
-%%  - grab concuerror_info and continue to concuerror_callback
-
+%% This module will never be instrumented.
 -module(concuerror_inspect).
 
 %% Interface to instrumented code:
@@ -31,6 +28,9 @@ stop_inspection() ->
     _ -> false
   end.
 
+%%  Function inspect/3 should:
+%%  - return the result of a call, if it is called from a non-Concuerror process
+%%  - grab concuerror_info and continue to concuerror_callback, otherwise
 -spec inspect(Tag      :: instrumented_tag(),
               Args     :: [term()],
               Location :: term()) -> Return :: term().
@@ -47,12 +47,12 @@ inspect(Tag, Args, Location) ->
           0 -> doit
         end;
       {true, Info} ->
-        {R, NewInfo} = concuerror_callback:instrumented(Tag, Args, Location, Info),
+        {R, NewInfo} =
+          concuerror_callback:instrumented(Tag, Args, Location, Info),
         start_inspection(NewInfo),
         R
     end,
   case Ret of
-    {didit, Res} -> Res;
     doit ->
       case {Tag, Args} of
         {apply, [Fun, ApplyArgs]} ->
@@ -62,6 +62,7 @@ inspect(Tag, Args, Location) ->
         {'receive', [_, Timeout]} ->
           Timeout
       end;
+    {didit, Res} -> Res;
     {error, Reason} -> error(Reason);
     retry -> inspect(Tag, Args, Location);
     {skip_timeout, CreateMessage} ->

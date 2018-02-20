@@ -110,11 +110,11 @@
 
 spawn_first_process(Options) ->
   EtsTables = ets:new(ets_tables, [public]),
-  ets:insert(EtsTables, {tid,1}),
+  ets:insert(EtsTables, {tid, 1}),
   Info =
     #concuerror_info{
-       after_timeout = ?opt(after_timeout, Options),
-       ets_tables = EtsTables,
+       after_timeout  = ?opt(after_timeout, Options),
+       ets_tables     = EtsTables,
        instant_delivery = ?opt(instant_delivery, Options),
        links          = ets:new(links, [bag, public]),
        logger         = ?opt(logger, Options),
