@@ -268,9 +268,8 @@ built_in(erlang, hibernate, 3, Args, _Location, Info) ->
 built_in(erlang, get_stacktrace, 0, [], _Location, Info) ->
   #concuerror_info{logger = Logger} = Info,
   Msg =
-    "Concuerror does not fully support erlang:get_stacktrace/0, returning an"
-    " empty list instead. If you need proper support, notify the developers to"
-    " add this feature.~n",
+    "Concuerror does not properly support erlang:get_stacktrace/0, returning an"
+    " empty list instead.~n",
   ?unique(Logger, ?lwarning, Msg, []),
   {{didit, []}, Info};
 %% Instrumented processes may just call pid_to_list (we instrument this builtin
@@ -541,6 +540,13 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
         end,
       Res =
         case Item of
+          current_stacktrace ->
+            #concuerror_info{logger = Logger} = TheirInfo,
+            Msg =
+              "Concuerror does not properly support erlang:process_info(_,"
+              " current_stacktrace), returning an empty list instead.~n",
+            ?unique(Logger, ?lwarning, Msg, []),
+            [];
           dictionary ->
             TheirDict;
           group_leader ->
