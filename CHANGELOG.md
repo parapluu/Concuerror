@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased](https://github.com/parapluu/Concuerror/tree/master)
 
 ### Added
+
+### Removed
+
+### Changed
+
+### Fixed
+
+## [0.18](https://github.com/parapluu/Concuerror/releases/tag/0.18) - 2018-02-20
+
+### Added
 - `--observers` option as a synonym of `--use_receive_patterns`
 - Support for erlang:hibernate/3
 - Support for more safe built-in operations
