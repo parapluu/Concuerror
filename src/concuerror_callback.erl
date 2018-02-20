@@ -3,7 +3,7 @@
 -module(concuerror_callback).
 
 %% Interface to concuerror_inspect:
--export([instrumented/4, hijack_backend/1]).
+-export([instrumented/4]).
 
 %% Interface to scheduler:
 -export([spawn_first_process/1, start_first_process/3,
@@ -106,7 +106,7 @@
 
 %%------------------------------------------------------------------------------
 
--spec spawn_first_process(concuerror_options:options()) -> {pid(), [pid()]}.
+-spec spawn_first_process(concuerror_options:options()) -> pid().
 
 spawn_first_process(Options) ->
   EtsTables = ets:new(ets_tables, [public]),
@@ -126,13 +126,13 @@ spawn_first_process(Options) ->
        timeout        = ?opt(timeout, Options),
        timers         = ets:new(timers, [public])
       },
-  System = system_processes_wrappers(Info),
+  system_processes_wrappers(Info),
   system_ets_entries(Info),
   P = new_process(Info),
   true = ets:insert(Processes, ?new_process(P, "P")),
   {DefLeader, _} = run_built_in(erlang, whereis, 1, [user], Info),
   true = ets:update_element(Processes, P, {?process_leader, DefLeader}),
-  {P, System}.
+  P.
 
 -spec start_first_process(pid(), {atom(), atom(), [term()]}, timeout()) -> ok.
 
@@ -147,25 +147,12 @@ start_first_process(Pid, {Module, Name, Args}, Timeout) ->
 setup_logger(Processes) ->
   concuerror_inspect:start_inspection({logger, Processes}).
 
--spec hijack_backend(concuerror_info()) -> ok.
-
-hijack_backend(#concuerror_info{processes = Processes} = Info) ->
-  true = group_leader() =:= whereis(user),
-  {GroupLeader, _} = run_built_in(erlang,whereis,1,[user], Info),
-  {registered_name, Name} = process_info(self(), registered_name),
-  true = ets:insert(Processes, ?new_system_process(self(), Name, hijacked)),
-  {true, Info} =
-    run_built_in(erlang, group_leader, 2, [GroupLeader, self()], Info),
-  concuerror_inspect:start_inspection(Info),
-  ok.
-
 %%------------------------------------------------------------------------------
 
 -type instrumented_return() :: 'doit' |
                                {'didit', term()} |
                                {'error', term()} |
-                               {'skip_timeout', 'false' | {'true', term()}} |
-                               'unhijack'.
+                               {'skip_timeout', 'false' | {'true', term()}}.
 
 -spec instrumented(Tag      :: instrumented_tag(),
                    Args     :: [term()],
@@ -862,15 +849,7 @@ run_built_in(erlang, unregister, 1, [Name],
     _:_ -> error(badarg)
   end;
 run_built_in(erlang, whereis, 1, [Name], Info) ->
-  #concuerror_info{
-     logger = Logger,
-     processes = Processes
-    } = Info,
-  case Name of
-    application_controller ->
-      ?unique(Logger, ?lwarning, msg(whereis_application_controller), []);
-    _ -> ok
-  end,
+  #concuerror_info{processes = Processes} = Info,
   case ets:match(Processes, ?process_match_name_to_pid(Name)) of
     [] ->
       case whereis(Name) =:= undefined of
@@ -1251,12 +1230,9 @@ enabled(P) ->
 handle_receive(PatternFun, Timeout, Location, Info) ->
   %% No distinction between replaying/new as we have to clear the message from
   %% the queue anyway...
-  case has_matching_or_after(PatternFun, Timeout, Location, Info, blocking) of
-    unhijack ->
-      {unhijack, Info};
-    {MessageOrAfter, NewInfo} ->
-      handle_receive(MessageOrAfter, PatternFun, Timeout, Location, NewInfo)
-  end.
+  {MessageOrAfter, NewInfo} =
+    has_matching_or_after(PatternFun, Timeout, Location, Info, blocking),
+  handle_receive(MessageOrAfter, PatternFun, Timeout, Location, NewInfo).
 
 handle_receive(MessageOrAfter, PatternFun, Timeout, Location, Info) ->
   {Cnt, ReceiveInfo} = get_receive_cnt(Info),
@@ -1289,8 +1265,6 @@ handle_receive(MessageOrAfter, PatternFun, Timeout, Location, Info) ->
     end,
   {{skip_timeout, AddMessage}, delay_notify(Notification, UpdatedInfo)}.
 
-has_matching_or_after(_, _, _, unhijack, _) ->
-  unhijack;
 has_matching_or_after(PatternFun, Timeout, Location, InfoIn, Mode) ->
   {Result, NewOldMessages} = has_matching_or_after(PatternFun, Timeout, InfoIn),
   UpdatedInfo = update_messages(Result, NewOldMessages, InfoIn),
@@ -1563,8 +1537,6 @@ process_loop(Info) ->
     {get_info, To} ->
       To ! {info, {Info, get()}},
       process_loop(Info);
-    unhijack ->
-      unhijack;
     quit ->
       exit(normal)
   end.
@@ -1786,13 +1758,9 @@ ets_ops_access_rights_map(Op) ->
 cleanup_processes(ProcessesTable) ->
   Processes = ets:tab2list(ProcessesTable),
   Foreach =
-    fun(?process_pat_pid_kind(P,Kind)) ->
-        case Kind =:= hijacked of
-          true -> P ! unhijack;
-          false ->
-            unlink(P),
-            P ! quit
-        end
+    fun(?process_pat_pid(P)) ->
+        unlink(P),
+        P ! quit
     end,
   lists:foreach(Foreach, Processes).
 
@@ -1803,34 +1771,16 @@ system_ets_entries(#concuerror_info{ets_tables = EtsTables}) ->
   ets:insert(EtsTables, [Map(Tid) || Tid <- ets:all(), is_atom(Tid)]).
 
 system_processes_wrappers(Info) ->
-  Ordered = [user],
-  Registered =
-    Ordered ++ (lists:sort(registered() -- Ordered)),
-  [whereis(Name) ||
-    Name <- Registered,
-    hijacked =:= hijack_or_wrap_system(Name, Info)].
+  [wrap_system(Name, Info) || Name <- registered()],
+  ok.
 
-%% XXX: Application controller support needs to be checked
-hijack_or_wrap_system(Name, #concuerror_info{timeout = Timeout} = Info)
-  when Name =:= application_controller ->
-  Pid = whereis(Name),
-  link(Pid),
-  _ = concuerror_loader:load(gen_server),
-  ok = sys:suspend(Name),
-  Notify =
-    reset_concuerror_info(
-      Info#concuerror_info{notify_when_ready = {self(), true}}),
-  concuerror_inspect:hijack(Name, Notify),
-  ok = sys:resume(Name),
-  wait_process(Name, Timeout),
-  hijacked;  
-hijack_or_wrap_system(Name, Info) ->
+wrap_system(Name, Info) ->
   #concuerror_info{processes = Processes} = Info,
   Wrapped = whereis(Name),
   Fun = fun() -> system_wrapper_loop(Name, Wrapped, Info) end,
   Pid = spawn_link(Fun),
   ets:insert(Processes, ?new_system_process(Pid, Name, wrapper)),
-  wrapped.
+  ok.
 
 system_wrapper_loop(Name, Wrapped, Info) ->
   receive
@@ -1842,6 +1792,8 @@ system_wrapper_loop(Name, Wrapped, Info) ->
           try
             {F, R} =
               case Name of
+                application_controller ->
+                  throw(comm_application_controller);
                 code_server ->
 		  {Call, From, Request} = Data,
 		  check_request(Name, Request),
@@ -2081,12 +2033,7 @@ msg(register_eunit_server) ->
     " one after another; as a result, systematic testing will have to"
     " explore a number of schedulings that is the product of every"
     " individual test's schedulings! You should use Concuerror on single tests"
-    " instead.~n";
-msg(whereis_application_controller) ->
-  "Your test communicates with the 'application_controller' process. This"
-    " can be problematic, as this process is not under Concuerror's"
-    " control. You may want to try to start the test from a top-level"
-    " supervisor (or even better a top level gen_server).~n".
+    " instead.~n".
 
 %%------------------------------------------------------------------------------
 
@@ -2099,6 +2046,14 @@ explain_error({checking_system_process, Pid}) ->
     " Concuerror."
     ?notify_us_msg,
     [Pid]);
+explain_error(comm_application_controller) ->
+  io_lib:format(
+    "Your test communicates with the 'application_controller' process. This"
+    " is problematic, as this process is not under Concuerror's"
+    " control. Try to start the test from a top-level"
+    " supervisor (or even better a top level gen_server) instead.",
+    []
+   );
 explain_error({inconsistent_builtin,
                [Module, Name, Arity, Args, OldResult, NewResult, Location]}) ->
   io_lib:format(

@@ -9,7 +9,7 @@
 
 %%------------------------------------------------------------------------------
 
-scenarios() -> [{test, inf, dpor}].
+scenarios() -> [{test, inf, dpor, crash}].
 
 exceptional() ->
   fun(_Expected, Actual) ->
