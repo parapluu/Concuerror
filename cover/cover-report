@@ -1,14 +1,21 @@
 #!/usr/bin/env escript
 %% -*- erlang-indent-level: 2 -*-
-%%! +S1 -nostick -noshell
+%%! +S1 -nostick -noshell -pa ../ebin
 
 main([CoverDir]) ->
   {ok, Files} = file:list_dir(CoverDir),
   Full = [filename:join([CoverDir,F]) || F <- Files],
-  Foreach = fun(F) -> cover:import(F) end,
-  lists:foreach(Foreach, Full),
-  Foreach2 = fun(M) -> cover:analyse_to_file(M, [html]) end,
-  lists:foreach(Foreach2, cover:imported_modules()),
+  case os:getenv("TRAVIS") of
+    "true" ->
+      _ = coveralls:module_info(),
+      JobId = os:getenv("TRAVIS_JOB_ID"),
+      coveralls:convert_and_send_file(Full, JobId, "travis-ci", "");
+    _ ->
+      Foreach = fun(F) -> cover:import(F) end,
+      lists:foreach(Foreach, Full),
+      Foreach2 = fun(M) -> cover:analyse_to_file(M, [html]) end,
+      lists:foreach(Foreach2, cover:imported_modules())
+  end,
   {result, Result, _} = cover:analyse(coverage, module),
   print(Result).
 
