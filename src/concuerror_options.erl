@@ -442,11 +442,12 @@ cl_usage(Name) ->
       MaybeKeyword = options(Name),
       case MaybeKeyword =/= [] of
         true ->
-          getopt:usage(getopt_spec(MaybeKeyword), "./concuerror"),
           KeywordWarningFormat =
+            "~n"
             "NOTE: Only showing options with the keyword '~p'.~n"
             "      Use '--help all' to see all available options.~n",
           to_stderr(KeywordWarningFormat, [Name]),
+          getopt:usage(getopt_spec(MaybeKeyword), "./concuerror"),
           print_suffix(Name);
         false ->
           ListName = atom_to_list(Name),
