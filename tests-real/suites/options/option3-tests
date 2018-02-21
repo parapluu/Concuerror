@@ -41,4 +41,8 @@ testing "Nonexistent input file"
 ! concuerror_console -f nonexistent
 consolehas "Error: nonexistent is not a .erl or .beam file"
 
+testing "Bad .erl input file"
+! concuerror_console -f bad.erl > /dev/null
+consolehas "Error: could not compile bad.erl (try to add the .beam file instead)"
+
 . footer
