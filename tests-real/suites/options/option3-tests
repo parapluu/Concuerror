@@ -59,4 +59,11 @@ cp foo.erl foo.beam
 consolehas "Error:"
 rm foo.beam
 
+testing "Warn about shadowing"
+rm -f foo.beam
+erlc foo.erl
+concuerror_console -f foo.erl
+consolehas "Warning: File foo.erl shadows ./foo.beam (found in path)"
+rm foo.beam
+
 . footer
