@@ -66,4 +66,8 @@ concuerror_console -f foo.erl
 consolehas "Warning: File foo.erl shadows ./foo.beam (found in path)"
 rm foo.beam
 
+testing "Basic message is produced for error detection"
+! concuerror_console -f buggy.erl
+consolehas "Errors were found! (check concuerror_report.txt)"
+
 . footer
