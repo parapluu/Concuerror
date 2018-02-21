@@ -45,4 +45,11 @@ testing "Bad .erl input file"
 ! concuerror_console -f bad.erl > /dev/null
 consolehas "Error: could not compile bad.erl (try to add the .beam file instead)"
 
+testing "BEAM input file"
+rm -f foo.beam
+erlc foo.erl
+concuerror_console -f foo.beam
+good
+rm foo.beam
+
 . footer
