@@ -32,11 +32,12 @@ Kostis Sagonas (<kostis@cs.ntua.gr>).
 All rights reserved.
 
 Concuerror is distributed under the Simplified BSD License.
-Details can be found in the LICENSE file.
+Details can be found in the [LICENSE][license] file.
 
 <!-- Links -->
 [changelog]: ./CHANGELOG.md
 [help wanted]: https://github.com/parapluu/Concuerror/labels/help%20wanted
+[license]: ./LICENSE
 [travis]: https://travis-ci.org/parapluu/Concuerror
 [website]: http://parapluu.github.io/Concuerror
 
