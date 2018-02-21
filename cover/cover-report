@@ -29,20 +29,20 @@ print(List) ->
   to_stderr("~-30s | ~5s | ~6s | ~5s~n", ["Module", "Lines", "NotCov", "Cov %"]),
   print_separator(),
 
+  AddPointerSuffix =
+    fun(true) -> "  <--";
+       (false) -> ""
+    end,
+
   Fold =
     fun({Mod, {Cov, NotCov}}, {Fail, TotSum, CovSum}) ->
         Tot = Cov + NotCov,
         Pct = Cov / Tot,
         Fails = Pct < ThresholdSingle,
-        Suffix =
-          case Fails of
-            true -> "  <--";
-            false -> ""
-          end,
         %% PER MODULE ENTRY
         to_stderr(
           "~-30s | ~5w | ~6w | ~5.1f~s~n",
-          [Mod, Tot, NotCov, Pct * 100, Suffix]),
+          [Mod, Tot, NotCov, Pct * 100, AddPointerSuffix(Fails)]),
         {Fail orelse Fails, TotSum + Tot, CovSum + Cov}
     end,
   {Fail, TotSum, CovSum} = lists:foldl(Fold, {false, 0,0}, List),
@@ -50,13 +50,8 @@ print(List) ->
   TotalFail = Pct < Threshold,
   %% FOOTER
   print_separator(),
-  Suffix =
-    case TotalFail of
-      true -> "  <--";
-      false -> ""
-    end,
   to_stderr("~-30s   ~5w   ~6w   ~5.1f~s~n",
-            ["Total", TotSum, CovSum, Pct * 100, Suffix]),
+            ["Total", TotSum, CovSum, Pct * 100, AddPointerSuffix(TotalFail)]),
   case Fail of
     false -> ok;
     true ->
