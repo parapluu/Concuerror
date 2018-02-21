@@ -37,4 +37,8 @@ concuerror_console -f foo.erl --no_output -q
 ! consolehas "*"
 ! outputhas "*"
 
+testing "Nonexistent input file"
+! concuerror_console -f nonexistent
+consolehas "Error: nonexistent is not a .erl or .beam file"
+
 . footer
