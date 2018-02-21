@@ -2,7 +2,7 @@
 
 . header
 
-echo -e "\e[0;34m$0\e[0m"
+print_blue "$0"
 
 testing "Excluding works minimally"
 concuerror_console -f exclude_modules/test.erl -f exclude_modules/excluded.erl -x excluded -m test

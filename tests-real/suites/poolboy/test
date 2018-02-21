@@ -4,11 +4,13 @@ Out=concuerror_report.txt
 CONCUERROR=${CONCUERROR:-concuerror}
 CONCUERROR="$CONCUERROR --timeout -1"
 
+. ../print_colors
+
 function abort {
-    echo -e "\e[1;31m FAILED\e[0m"
+    print_red "FAILED"
     echo cat $Out
     cat $Out
-    echo -e "\e[1;31m FAILED\e[0m"
+    print_red "FAILED"
 }
 
 function testing {
@@ -16,7 +18,7 @@ function testing {
 }
 
 function good {
-    echo -e " \e[1;32mok\e[0m"
+    print_green "ok"
 }
 
 function mygrep {
@@ -32,7 +34,7 @@ function has {
 set -e
 trap 'abort' 0
 
-echo -e "\e[0;34mPart 1\e[0m"
+print_blue "Part 1"
 
 testing "Concuerror has help option"
 $CONCUERROR -h 2> /dev/null
@@ -71,7 +73,7 @@ testing "Correct error"
 mygrep "\* At step .* process P exited abnormally"
 good
 
-echo -e "\e[0;34mPart 2\e[0m"
+print_blue "Part 2"
 
 testing "Turn off symbolic"
 ! $CONCUERROR -q -f poolboy_tests_1.erl -m poolboy_tests_1 -t pool_startup  \
@@ -105,4 +107,4 @@ good
 
 trap - 0
 
-echo -e "\e[1;32mSUCCESS!\e[0m"
+print_green "SUCCESS!"
