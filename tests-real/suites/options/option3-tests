@@ -52,4 +52,11 @@ concuerror_console -f foo.beam
 good
 rm foo.beam
 
+testing "Bad BEAM input file"
+rm -f foo.beam
+cp foo.erl foo.beam
+! concuerror_console -f foo.beam
+consolehas "Error:"
+rm foo.beam
+
 . footer
