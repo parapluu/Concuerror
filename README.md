@@ -1,16 +1,18 @@
 [![Travis][travis badge]][travis]
+[![Coveralls][coveralls badge]][coveralls]
 [![Erlang Versions][erlang versions badge]][travis]
-[![Help wanted!](https://img.shields.io/waffle/label/parapluu/concuerror/help%20wanted.svg?label=help%20wanted)](https://github.com/parapluu/Concuerror/labels/help%20wanted)
+[![Help wanted!][help wanted badge]][help wanted]
+[![License][license badge]][license]
 
 # Concuerror
 
 Concuerror is a stateless model checking tool for Erlang programs. It can be used to systematically test programs for concurrency errors, detect and report errors that only occur on few, specific schedulings or **verify** their absence.
 
-To find out more [visit the website!](http://parapluu.github.io/Concuerror)
+To find out more [visit the website!][website]
 
 ## Is there a changelog?
 
-[Yes!](./CHANGELOG.md)
+[Yes!][changelog]
 
 ## How do I contribute to Concuerror?
 
@@ -32,10 +34,19 @@ Kostis Sagonas (<kostis@cs.ntua.gr>).
 All rights reserved.
 
 Concuerror is distributed under the Simplified BSD License.
-Details can be found in the LICENSE file.
+Details can be found in the [LICENSE][license] file.
 
+<!-- Links -->
+[changelog]: ./CHANGELOG.md
+[coveralls]: https://coveralls.io/github/parapluu/Concuerror
+[help wanted]: https://github.com/parapluu/Concuerror/labels/help%20wanted
+[license]: ./LICENSE
+[travis]: https://travis-ci.org/parapluu/Concuerror
+[website]: http://parapluu.github.io/Concuerror
 
 <!-- Badges -->
-[travis]: https://travis-ci.org/parapluu/Concuerror
-[travis badge]: https://img.shields.io/travis/parapluu/Concuerror/master.svg?style=flat-square
+[coveralls badge]: https://img.shields.io/coveralls/github/parapluu/Concuerror/badge.svg?style=flat-square
 [erlang versions badge]: https://img.shields.io/badge/erlang-R16B03%20to%2020.2-blue.svg?style=flat-square
+[help wanted badge]: https://img.shields.io/waffle/label/parapluu/concuerror/help%20wanted.svg?label=help%20wanted&style=flat-square
+[license badge]: https://img.shields.io/github/license/parapluu/Concuerror.svg?style=flat-square
+[travis badge]: https://img.shields.io/travis/parapluu/Concuerror/master.svg?style=flat-square

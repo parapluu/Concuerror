@@ -3,7 +3,7 @@
 ###-----------------------------------------------------------------------------
 
 NAME := concuerror
-VERSION := 0.18
+VERSION := 0.19
 
 .PHONY: default dev
 default dev native: $(NAME)
@@ -135,7 +135,7 @@ tests-real: default
 cover: cover/data
 	$(RM) $</*
 	export CONCUERROR_COVER=$(abspath cover/data); $(MAKE) tests tests-real
-	cd cover; ./cover-report data > /dev/null
+	cd cover; ./get-coveralls; ./cover-report data > /dev/null
 
 ###-----------------------------------------------------------------------------
 ### Travis

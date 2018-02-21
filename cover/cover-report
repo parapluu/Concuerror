@@ -1,14 +1,21 @@
 #!/usr/bin/env escript
 %% -*- erlang-indent-level: 2 -*-
-%%! +S1 -nostick -noshell
+%%! +S1 -nostick -noshell -pa ../ebin
 
 main([CoverDir]) ->
   {ok, Files} = file:list_dir(CoverDir),
   Full = [filename:join([CoverDir,F]) || F <- Files],
-  Foreach = fun(F) -> cover:import(F) end,
-  lists:foreach(Foreach, Full),
-  Foreach2 = fun(M) -> cover:analyse_to_file(M, [html]) end,
-  lists:foreach(Foreach2, cover:imported_modules()),
+  case os:getenv("TRAVIS") of
+    "true" ->
+      _ = coveralls:module_info(),
+      JobId = os:getenv("TRAVIS_JOB_ID"),
+      coveralls:convert_and_send_file(Full, JobId, "travis-ci", "");
+    _ ->
+      Foreach = fun(F) -> cover:import(F) end,
+      lists:foreach(Foreach, Full),
+      Foreach2 = fun(M) -> cover:analyse_to_file(M, [html]) end,
+      lists:foreach(Foreach2, cover:imported_modules())
+  end,
   {result, Result, _} = cover:analyse(coverage, module),
   print(Result).
 
@@ -19,7 +26,7 @@ print(List) ->
   Threshold = 0.91,
 
   %% HEADER
-  to_stderr("~-30s | ~5s | ~5s | ~6s~n", ["Module", "Lines", "Cov", "Cov %"]),
+  to_stderr("~-30s | ~5s | ~6s | ~5s~n", ["Module", "Lines", "NotCov", "Cov %"]),
   print_separator(),
 
   Fold =
@@ -34,31 +41,37 @@ print(List) ->
           end,
         %% PER MODULE ENTRY
         to_stderr(
-          "~-30s | ~5w | ~5w | ~6.1f~s~n",
+          "~-30s | ~5w | ~6w | ~5.1f~s~n",
           [Mod, Tot, NotCov, Pct * 100, Suffix]),
         {Fail orelse Fails, TotSum + Tot, CovSum + Cov}
     end,
   {Fail, TotSum, CovSum} = lists:foldl(Fold, {false, 0,0}, List),
   Pct = CovSum / TotSum,
-
+  TotalFail = Pct < Threshold,
   %% FOOTER
   print_separator(),
-  to_stderr("~-30s   ~5w   ~5w   ~6.1f~n", ["Total", TotSum, CovSum, Pct * 100]),
+  Suffix =
+    case TotalFail of
+      true -> "  <--";
+      false -> ""
+    end,
+  to_stderr("~-30s   ~5w   ~6w   ~5.1f~s~n",
+            ["Total", TotSum, CovSum, Pct * 100, Suffix]),
   case Fail of
     false -> ok;
     true ->
       to_stderr(
-        "~nCode coverage for some module(s) is below ~.1f% threshold!~n",
+        "~nFail: Code coverage for some module(s) is below ~.1f% threshold!~n",
         [ThresholdSingle * 100])
   end,
-  case Pct < Threshold of
+  case TotalFail of
     false -> ok;
     true ->
       to_stderr(
-        "~nTotal code coverage is below ~.1f% threshold!~n",
+        "~nFail: Total code coverage is below ~.1f% threshold!~n",
         [Threshold * 100])
   end,
-  case Fail orelse Pct < Threshold of
+  case Fail orelse TotalFail of
     true -> halt(1);
     false -> halt(0)
   end.

@@ -1,0 +1,3 @@
+*.COVER.html
+coveralls.erl
+data

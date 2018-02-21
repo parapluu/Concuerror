@@ -2,7 +2,7 @@
 
 . header
 
-echo -e "\e[0;34m$0\e[0m"
+print_blue "$0"
 
 testing "No module specified"
 ! concuerror_console -t module_info

@@ -2,7 +2,7 @@
 
 . header
 
-echo -e "\e[0;34m$0\e[0m"
+print_blue "$0"
 
 testing "Excluding works minimally"
 concuerror_console -f exclude_modules/test.erl -f exclude_modules/excluded.erl -x excluded -m test
@@ -36,5 +36,38 @@ rm -rf $Out
 concuerror_console -f foo.erl --no_output -q
 ! consolehas "*"
 ! outputhas "*"
+
+testing "Nonexistent input file"
+! concuerror_console -f nonexistent
+consolehas "Error: nonexistent is not a .erl or .beam file"
+
+testing "Bad .erl input file"
+! concuerror_console -f bad.erl > /dev/null
+consolehas "Error: could not compile bad.erl (try to add the .beam file instead)"
+
+testing "BEAM input file"
+rm -f foo.beam
+erlc foo.erl
+concuerror_console -f foo.beam
+good
+rm foo.beam
+
+testing "Bad BEAM input file"
+rm -f foo.beam
+cp foo.erl foo.beam
+! concuerror_console -f foo.beam
+consolehas "Error:"
+rm foo.beam
+
+testing "Warn about shadowing"
+rm -f foo.beam
+erlc foo.erl
+concuerror_console -f foo.erl
+consolehas "Warning: File foo.erl shadows ./foo.beam (found in path)"
+rm foo.beam
+
+testing "Basic message is produced for error detection"
+! concuerror_console -f buggy.erl
+consolehas "Errors were found! (check concuerror_report.txt)"
 
 . footer

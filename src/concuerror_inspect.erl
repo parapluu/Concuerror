@@ -1,13 +1,10 @@
 %% -*- erlang-indent-level: 2 -*-
 
-%% This module will never be instrumented. Function instrumented/3 should:
-%%  - return the result of a call, if it is called from a non-Concuerror process
-%%  - grab concuerror_info and continue to concuerror_callback
-
+%% This module will never be instrumented.
 -module(concuerror_inspect).
 
 %% Interface to instrumented code:
--export([start_inspection/1, stop_inspection/0, inspect/3, hijack/2, explain_error/1]).
+-export([start_inspection/1, stop_inspection/0, inspect/3, explain_error/1]).
 
 -include("concuerror.hrl").
 
@@ -31,6 +28,9 @@ stop_inspection() ->
     _ -> false
   end.
 
+%%  Function inspect/3 should:
+%%  - return the result of a call, if it is called from a non-Concuerror process
+%%  - grab concuerror_info and continue to concuerror_callback, otherwise
 -spec inspect(Tag      :: instrumented_tag(),
               Args     :: [term()],
               Location :: term()) -> Return :: term().
@@ -38,21 +38,14 @@ stop_inspection() ->
 inspect(Tag, Args, Location) ->
   Ret =
     case stop_inspection() of
-      false ->
-        receive
-          {hijack, I} ->
-            concuerror_callback:hijack_backend(I),
-            retry
-        after
-          0 -> doit
-        end;
+      false -> doit;
       {true, Info} ->
-        {R, NewInfo} = concuerror_callback:instrumented(Tag, Args, Location, Info),
+        {R, NewInfo} =
+          concuerror_callback:instrumented(Tag, Args, Location, Info),
         start_inspection(NewInfo),
         R
     end,
   case Ret of
-    {didit, Res} -> Res;
     doit ->
       case {Tag, Args} of
         {apply, [Fun, ApplyArgs]} ->
@@ -62,18 +55,15 @@ inspect(Tag, Args, Location) ->
         {'receive', [_, Timeout]} ->
           Timeout
       end;
+    {didit, Res} -> Res;
     {error, Reason} -> error(Reason);
-    retry -> inspect(Tag, Args, Location);
     {skip_timeout, CreateMessage} ->
       assert_no_messages(),
       case CreateMessage of
         false -> ok;
         {true, D} -> self() ! D
       end,
-      0;
-    unhijack ->
-      erase(concuerror_info),
-      inspect(Tag, Args, Location)
+      0
   end.
 
 assert_no_messages() ->
@@ -82,12 +72,6 @@ assert_no_messages() ->
   after
     0 -> ok
   end.
-
--spec hijack(atom(), term()) -> ok.
-
-hijack(Name, Info) ->
-  Name ! {hijack, Info},
-  ok.
 
 -spec explain_error(term()) -> string().
 

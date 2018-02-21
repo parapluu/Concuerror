@@ -39,7 +39,7 @@ def runTest(test):
     os.system("erlc -W0 -o %s %s/%s.erl" % (dirn, dirn, modn))
     # And extract scenarios from it
     pout = subprocess.check_output(
-        ["erl -noinput -pa %s -pa %s -s scenarios extract %s -s init stop"
+        ["erl -boot start_clean -noinput -pa %s -pa %s -s scenarios extract %s -s init stop"
          % (dirname, dirn, modn)], shell=True).splitlines()
     sema.release()
     procS = []
@@ -154,7 +154,7 @@ def equalResults(suite, name, orig, rslt):
         return True
     else:
         beamdir = "%s/suites/%s/src" % (dirname, suite)
-        cmd = ("erl -noinput -pa %s/%s -pa %s"
+        cmd = ("erl -boot start_clean -noinput -pa %s/%s -pa %s"
                " -run scenarios exceptional \"%s\" \"%s\" \"%s\""
                % (beamdir, name, beamdir, name, orig, rslt))
         return 0 == subprocess.call(cmd, shell=True)

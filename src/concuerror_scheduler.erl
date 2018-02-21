@@ -124,7 +124,6 @@
           scheduling_bound_type        :: concuerror_options:scheduling_bound_type(),
           show_races                   :: boolean(),
           strict_scheduling            :: boolean(),
-          system                       :: [pid()],
           timeout                      :: timeout(),
           trace                        :: [trace_state()],
           treat_as_normal              :: [atom()],
@@ -142,8 +141,7 @@
 run(Options) ->
   process_flag(trap_exit, true),
   put(bound_exceeded, false),
-  {FirstProcess, System} =
-    concuerror_callback:spawn_first_process(Options),
+  FirstProcess = concuerror_callback:spawn_first_process(Options),
   EntryPoint = ?opt(entry_point, Options),
   Timeout = ?opt(timeout, Options),
   ok =
@@ -181,7 +179,6 @@ run(Options) ->
        scheduling_bound_type = SchedulingBoundType,
        show_races = ?opt(show_races, Options),
        strict_scheduling = ?opt(strict_scheduling, Options),
-       system = System,
        trace = [InitialTrace],
        treat_as_normal = ?opt(treat_as_normal, Options),
        timeout = Timeout,
@@ -333,14 +330,14 @@ get_next_event(#scheduler_state{logger = _Logger, trace = [Last|_]} = State) ->
 
 get_next_event(Event, MaybeNeedsReplayState) ->
   State = replay(MaybeNeedsReplayState),
-  #scheduler_state{system = System, trace = [Last|_]} = State,
+  #scheduler_state{trace = [Last|_]} = State,
   #trace_state{actors = Actors, sleeping = Sleeping} = Last,
   SortedActors = schedule_sort(Actors, State),
   #event{actor = Actor, label = Label} = Event,
   case Actor =:= undefined of
     true ->
       AvailableActors = filter_sleeping(Sleeping, SortedActors),
-      free_schedule(Event, System ++ AvailableActors, State);
+      free_schedule(Event, AvailableActors, State);
     false ->
       #scheduler_state{print_depth = PrintDepth} = State,
       #trace_state{index = I} = Last,
