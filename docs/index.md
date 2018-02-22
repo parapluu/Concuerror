@@ -83,12 +83,12 @@ Based on this analysis, it explores more schedulings, reversing the order of exe
 
 [More details about how Concuerror works](/faq/#how-does-concuerror-work-extended).
 
-## Further Reads
+## Continue reading...
 
-* [News](/news)
-* [Download](/download)
-* [FAQ](/faq)
-* [Mailing List](/mailing-list)
-* [Tutorials](/tutorials)
-* [Publications](/publications)
-* [Contact](/contact)
+<ul style="list-style: none;">
+  {% for link in site.links %}
+    <li>
+      <a href="{{ link.url }}">{{ link.title }}</a>
+    </li>
+  {% endfor %}
+</ul>
