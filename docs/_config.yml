@@ -22,21 +22,21 @@ bing_verify:
 
 # Links to include in top navigation
 links:
-  - title: Home
+  - title: <i class="fas fa-home"></i> Home
     url: /
-  - title: News
+  - title: <i class="far fa-newspaper"></i> News
     url: /news
-  - title: Download
+  - title: <i class="fas fa-download"></i> Download
     url: /download
-  - title: FAQ
+  - title: <i class="far fa-question-circle"></i> FAQ
     url: /faq
-  - title: Tutorials
+  - title: <i class="fas fa-info-circle"></i> Tutorials
     url: /tutorials
-  - title: Publications    
+  - title: <i class="fas fa-book"></i> Publications    
     url: /publications
-  - title: Contact
+  - title: <i class="fas fa-envelope"></i> Contact
     url: /contact
-  - title: Feed
+  - title: <i class="fas fa-rss"></i> Feed
     url: /feed.xml
 
 # http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
