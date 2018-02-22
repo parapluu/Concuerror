@@ -36,6 +36,8 @@ links:
     url: /publications
   - title: Contact
     url: /contact
+  - title: Feed
+    url: /feed.xml
 
 # http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 timezone:    Europe/Stockholm
