@@ -10,18 +10,20 @@ Concuerror is a stateless model checking tool for Erlang programs. It can be use
 
 To find out more [visit the website!][website]
 
+## How to build
+
+* Compile             : `make`
+* Run the testsuites  : `make tests tests-real`
+* Run Dialyzer        : `make dialyze`
+* Check code coverage : `make cover`
+* Cleanup             : `make clean`
+
 ## Is there a changelog?
 
 [Yes!][changelog]
 
-## How do I contribute to Concuerror?
+## Copyright and License
 
-* Run the testsuite : `make tests`
-* Dialyze           : `make dialyze`
-* Cleanup           : `make clean`
-
-Copyright and License
-----------------------
 Copyright (c) 2014-2018,
 Stavros Aronis (<aronisstav@gmail.com>) and
 Kostis Sagonas (<kostis@cs.ntua.gr>).
