@@ -81,7 +81,7 @@ During execution, the tool records a trace of any calls to built-in operations t
 It then analyzes the trace, detecting pairs of operations that are really racing.
 Based on this analysis, it explores more schedulings, reversing the order of execution of such pairs. This is a technique known as _stateless model checking with dynamic partial order reduction_.
 
-You can find more details [here](/faq/#how-does-concuerror-work-extended).
+[More details about how Concuerror works](/faq/#how-does-concuerror-work-extended).
 
 ## Further Reads
 
