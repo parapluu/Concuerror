@@ -10,7 +10,13 @@ updated: 2017-10-03
 
 This is a list of publications related to Concuerror. Most titles are links to official versions of the articles.
 
-You can find more info about the developers of Concuerror [here](../contact/).
+## Dissertation
+
+<div style="margin-left:25px" markdown="1">
+[**Effective Techniques for Stateless Model Checking**](http://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-333541)
+Stavros Aronis.<br />
+PhD Dissertation, Uppsala University, 2018.
+</div>
 
 ## Papers
 

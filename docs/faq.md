@@ -15,11 +15,11 @@ updated: 2017-10-16
 ## How do I report a bug?
 
 The preferred way is to use the repository's [Issues
-page](https://github.com/parapluu/Concuerror/issues/new), but you can also use the [mailing list](/mailing-list) or [mail us](/contact) directly.
+page](https://github.com/parapluu/Concuerror/issues/new), but you can also [contact the developers](./contact) in other ways.
 
 ## Is there a mailing list?
 
-[Yes](/mailing-list)!
+[Yes](/contact)!
 
 ## Is there a changelog?
 
