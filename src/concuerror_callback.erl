@@ -223,12 +223,9 @@ instrumented_call(Module, Name, Arity, Args, Location, Info)
     true ->
       built_in(Module, Name, Arity, Args, Location, Info);
     false ->
-      case Info of
-        #concuerror_info{logger = Logger} ->
-          ?debug_flag(?non_builtin,{Module,Name,Arity,Location}),
-          ?autoload_and_log(Module, Logger);
-        _ -> ok
-      end,
+      #concuerror_info{logger = Logger} = Info,
+      ?debug_flag(?non_builtin, {Module, Name, Arity, Location}),
+      ?autoload_and_log(Module, Logger),
       {doit, Info}
   end;
 instrumented_call({Module, _} = Tuple, Name, Arity, Args, Location, Info) ->
