@@ -38,6 +38,10 @@ testing "Get help for prefixed"
 concuerror_console -h --help
 consolehas "Without an argument, prints info for basic options."
 
+testing "Unknown option"
+! concuerror_console --unknown_option
+consolehas "invalid option: --unknown_option"
+
 testing "Unknown argument to help"
 ! concuerror_console -h elp
 consolehas "invalid option/keyword (as argument to --help)"
