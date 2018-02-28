@@ -36,7 +36,7 @@ consolehas "Without an argument, prints info for basic options."
 
 testing "Unknown argument to help"
 ! concuerror_console -h elp
-consolehas "Invalid option name/keyword (as argument to --help)"
+consolehas "invalid option/keyword (as argument to --help)"
 
 testing "No additional help available"
 concuerror_console -h version
