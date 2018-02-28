@@ -598,7 +598,8 @@ set_verbosity(Options) ->
       {[], false} -> ?DEFAULT_VERBOSITY;
       {[], true} -> 0;
       {_, true} ->
-        opt_error("'--verbosity' specified together with '--quiet'.");
+        Msg = "'--verbosity' specified together with '--quiet'.",
+        opt_error(Msg, [], verbosity);
       {N, false} -> lists:sum(N)
     end,
   Verbosity = min(SpecifiedVerbosity, ?MAX_VERBOSITY),
@@ -751,7 +752,7 @@ compile_and_load([File|Rest], Acc, _LastModule, Options) ->
       lists:foreach(fun(W) -> opt_warn(W, []) end, Warnings),
       compile_and_load(Rest, [File|Acc], Module, Options);
     {error, Error} ->
-      opt_error(Error)
+      opt_error(Error, [], file)
   end.
 
 %%%-----------------------------------------------------------------------------
@@ -990,7 +991,7 @@ process_options([{Key, Value} = Option|Rest], Acc) ->
       Msg =
         "The option '--optimal' is deprecated."
         " Use '--dpor (optimal | source)' instead.",
-      opt_error(Msg);
+      opt_error(Msg, [], dpor);
     MaybeInfinity
       when
         MaybeInfinity =:= interleaving_bound;
