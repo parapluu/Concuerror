@@ -8,6 +8,10 @@ testing "Concuerror has help option"
 concuerror_console
 consolehas Usage
 
+testing "Concuerror help returns basic help"
+concuerror_console --help
+consolehas 'basic'
+
 testing "Report unknown arguments"
 ! concuerror_console unknown_argument
 consolehas "Unknown argument"
