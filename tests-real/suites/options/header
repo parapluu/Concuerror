@@ -1,4 +1,4 @@
-CONCUERROR=${CONCUERROR:-concuerror}
+CONCUERROR=${CONCUERROR:-$(which concuerror)}
 
 Out=concuerror_report.txt
 Console=console

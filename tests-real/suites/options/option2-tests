@@ -18,7 +18,7 @@ consolehas "Multiple instances of '--module' specified."
 
 testing "Unknown attribute"
 ! concuerror_console -f bad_attribute_1.erl
-consolehas "Unknown option 'unknown_unknown' in concuerror_options."
+consolehas "invalid option in concuerror_options attribute: 'unknown_unknown'"
 
 testing "Attribute not allowed"
 ! concuerror_console -f bad_attribute_2.erl

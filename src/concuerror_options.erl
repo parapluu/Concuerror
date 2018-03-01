@@ -273,7 +273,7 @@ multiple_allowed() ->
   , treat_as_normal
   ].
 
-ignored_in_module_attributes() ->
+not_allowed_in_module_attributes() ->
   [ exclude_module
   , file
   , help
@@ -455,7 +455,7 @@ cl_usage(Name) ->
             "_" ++ Rest -> cl_usage(list_to_atom(Rest));
             Other when Other =/= ListName -> cl_usage(list_to_atom(Other));
             _ ->
-              Msg = "Invalid option name/keyword (as argument to --help): '~w'.",
+              Msg = "invalid option/keyword (as argument to --help): '~w'.",
               opt_error(Msg, [Name], help)
           end
       end;
@@ -557,10 +557,8 @@ version() ->
 
 finalize_2(Options) ->
   Passes =
-    [ fun proplists:unfold/1
+    [ normalize_fun("argument")
     , fun set_verbosity/1
-    , fun assert_tuples/1
-    , fun fix_synonyms/1
     , fun open_files/1
     , fun add_to_path/1
     , fun add_missing_file/1
@@ -590,6 +588,57 @@ run_passes([Pass|Passes], Options) ->
 
 %%%-----------------------------------------------------------------------------
 
+normalize_fun(Source) ->
+  fun(Options) ->
+      Passes =
+        [ fun proplists:unfold/1
+        , fun substitute_synonyms/1
+        , fun expand_short_names/1
+        , ensure_known_options_fun(Source)
+        ],
+      run_passes(Passes, Options)
+  end.
+
+substitute_synonyms(Options) ->
+  Map =
+    fun(Key) ->
+        case lists:keyfind(Key, 1, synonyms()) of
+          false -> Key;
+          {Key, K} -> K
+        end
+    end,
+  lists:keymap(Map, 1, Options).
+
+expand_short_names(Options) ->
+  Map =
+    fun(Key) ->
+        case lists:keyfind(Key, ?OPTION_SHORT, options()) of
+          false -> Key;
+          Option -> element(?OPTION_KEY, Option)
+        end
+    end,
+  lists:keymap(Map, 1, Options).
+
+ensure_known_options_fun(Source) ->
+  fun(Options) ->
+      KnownKeys =
+        [element(?OPTION_KEY, O) || O <- options()]
+        ++ [entry_point, files],
+      Fun =
+        fun(T) ->
+            is_tuple(T) andalso
+              size(T) =:= 2 andalso
+              lists:member(element(1, T), KnownKeys)
+        end,
+      case lists:dropwhile(Fun, Options) of
+        [] -> Options;
+        [T|_] ->
+          Error = "invalid ~s: '~w'",
+          opt_error(Error, [Source, element(1, T)], input)
+      end
+  end.
+%%%-----------------------------------------------------------------------------
+
 set_verbosity(Options) ->
   HasQuiet = proplists:get_bool(quiet, Options),
   AllVerbosity = proplists:get_all_values(verbosity, Options),
@@ -598,7 +647,8 @@ set_verbosity(Options) ->
       {[], false} -> ?DEFAULT_VERBOSITY;
       {[], true} -> 0;
       {_, true} ->
-        opt_error("'--verbosity' specified together with '--quiet'.");
+        Msg = "'--verbosity' specified together with '--quiet'.",
+        opt_error(Msg, [], verbosity);
       {N, false} -> lists:sum(N)
     end,
   Verbosity = min(SpecifiedVerbosity, ?MAX_VERBOSITY),
@@ -645,26 +695,6 @@ open_file(Filename, FileOption) ->
         "Could not open '--~w' file ~s for writing.",
         [FileOption, Filename], FileOption)
   end.
-
-%%%-----------------------------------------------------------------------------
-
-assert_tuples(Options) ->
-  Fun = fun(T) -> is_tuple(T) andalso size(T) =:= 2 end,
-  case lists:dropwhile(Fun, Options) of
-    [] -> Options;
-    [T|_] ->
-      Error = "Malformed option: ~w",
-      opt_error(Error, [T], input)
-  end.
-
-%%%-----------------------------------------------------------------------------
-
-fix_synonyms(Options) ->
-  Map =
-    fun(Key) ->
-        hd([R || {K, R} <- synonyms() ++ [{Key, Key}], K =:= Key])
-    end,
-  lists:keymap(Map, 1, Options).
 
 %%%-----------------------------------------------------------------------------
 
@@ -751,7 +781,7 @@ compile_and_load([File|Rest], Acc, _LastModule, Options) ->
       lists:foreach(fun(W) -> opt_warn(W, []) end, Warnings),
       compile_and_load(Rest, [File|Acc], Module, Options);
     {error, Error} ->
-      opt_error(Error)
+      opt_error(Error, [], file)
   end.
 
 %%%-----------------------------------------------------------------------------
@@ -770,8 +800,10 @@ ensure_module(Options) ->
             multiple_opt_error(module)
         end;
       [{M,_,_}] -> M;
-      _ ->
-        opt_error("Multiple instances of 'entry_point' specified.", [], module)
+      [_,_|_] ->
+        opt_error("Multiple instances of 'entry_point' specified.", [], module);
+      [Other] ->
+        opt_error("The specified 'entry_point' '~w' is invalid.", [Other], module)
     end,
   try
     Module:module_info(attributes)
@@ -811,30 +843,18 @@ get_options_from_attribute(Attribute, Attributes) ->
   end.
 
 filter_from_attribute(OptionsRaw, Where) ->
-  Options = proplists:unfold(OptionsRaw),
-  KnownPred =
-    fun({Key, _Value}) -> lists:keymember(Key, 1, options()) end,
-  WarnUnknownFun =
+  NormalizeFun =
+    normalize_fun(io_lib:format("option in ~w attribute", [Where])),
+  Options = NormalizeFun(OptionsRaw),
+  AllowedPred =
     fun({Key, _Value}) ->
-        io_lib:format("Unknown option '~p' in ~p.", [Key, Where])
+        not lists:member(Key, not_allowed_in_module_attributes())
     end,
-  Known = filter_and_warn(KnownPred, WarnUnknownFun, Options),
-  Ignored = ignored_in_module_attributes(),
-  NotIgnoredPred =
-    fun({Key, _Value}) -> not lists:member(Key, Ignored) end,
-  WarnIgnoredFun =
-    fun({Key, _Value}) ->
-        io_lib:format("Option '~p' not allowed in ~p.", [Key, Where])
-    end,
-  filter_and_warn(NotIgnoredPred, WarnIgnoredFun, Known).
-
-filter_and_warn(Pred, WarnFun, Options) ->
-  {Satisfying, NotSatisfying} = lists:partition(Pred, Options),
-  case NotSatisfying of
-    [] -> ok;
-    [Option|_] -> opt_error(WarnFun(Option))
-  end,
-  Satisfying.
+  case lists:dropwhile(AllowedPred, Options) of
+    [] -> Options;
+    [{Key,_}|_] ->
+      opt_error("Option '~p' not allowed in ~p.", [Key, Where])
+  end.
 
 check_unique_options_from_module(Forced, Options) ->
   Pred = fun({Key, _Value}) -> not lists:member(Key, multiple_allowed()) end,
@@ -990,7 +1010,7 @@ process_options([{Key, Value} = Option|Rest], Acc) ->
       Msg =
         "The option '--optimal' is deprecated."
         " Use '--dpor (optimal | source)' instead.",
-      opt_error(Msg);
+      opt_error(Msg, [], dpor);
     MaybeInfinity
       when
         MaybeInfinity =:= interleaving_bound;
@@ -1019,20 +1039,15 @@ process_options([{Key, Value} = Option|Rest], Acc) ->
 %%------------------------------------------------------------------------------
 
 ensure_entry_point(Options) ->
-  EntryPoint =
+  {M, F, B} = EntryPoint =
     case proplists:get_value(entry_point, Options) of
       {_,_,_} = EP -> EP;
       undefined ->
         Module = proplists:get_value(module, Options),
-        case proplists:get_value(test, Options, 1) of
-          Name when is_atom(Name) ->
-            {Module, Name, []};
-          _ ->
-            opt_error("The name of the test function is missing")
-        end
+        Name = proplists:get_value(test, Options, test),
+        {Module, Name, []}
     end,
   CleanOptions = delete_options([entry_point, module, test], Options),
-  {M, F, B} = EntryPoint,
   try
     true = is_atom(M),
     true = is_atom(F),

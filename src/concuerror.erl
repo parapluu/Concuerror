@@ -2,7 +2,7 @@
 
 -module(concuerror).
 
--export([run/1]).
+-export([run/1, maybe_cover_compile/0, maybe_cover_export/1]).
 
 -export_type([exit_status/0]).
 
@@ -13,10 +13,14 @@
 -spec run(concuerror_options:options()) -> exit_status().
 
 run(RawOptions) ->
-  case concuerror_options:finalize(RawOptions) of
-    {ok, Options, LogMsgs} -> start(Options, LogMsgs);
-    {exit, ExitStatus} -> ExitStatus
-  end.
+  maybe_cover_compile(),
+  Status =
+    case concuerror_options:finalize(RawOptions) of
+      {ok, Options, LogMsgs} -> start(Options, LogMsgs);
+      {exit, ExitStatus} -> ExitStatus
+    end,
+  maybe_cover_export(RawOptions),
+  Status.
 
 start(Options, LogMsgs) ->
   error_logger:tty(false),
@@ -39,6 +43,33 @@ start(Options, LogMsgs) ->
   ExitStatus = concuerror_logger:finish(Logger, SchedulerStatus),
   ets:delete(Processes),
   ExitStatus.
+
+-spec maybe_cover_compile() -> 'ok'.
+
+maybe_cover_compile() ->
+  Cover = os:getenv("CONCUERROR_COVER"),
+  if Cover =/= false ->
+      case cover:is_compiled(?MODULE) of
+        false ->
+          EbinDir = filename:dirname(code:which(?MODULE)),
+          _ = cover:compile_beam_directory(EbinDir),
+          ok;
+        _ -> ok
+      end;
+     true -> ok
+  end.
+
+-spec maybe_cover_export(term()) -> 'ok'.
+
+maybe_cover_export(Args) ->
+  Cover = os:getenv("CONCUERROR_COVER"),
+  if Cover =/= false ->
+      Hash = binary:decode_unsigned(erlang:md5(term_to_binary(Args))),
+      Out = filename:join([Cover, io_lib:format("~.16b",[Hash])]),
+      cover:export(Out),
+      ok;
+     true -> ok
+  end.
 
 explain(Reason) ->
   try

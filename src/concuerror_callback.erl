@@ -162,7 +162,7 @@ setup_logger(Processes) ->
 
 instrumented(call, [Module, Name, Args], Location, Info) ->
   Arity = length(Args),
-  instrumented_aux(Module, Name, Arity, Args, Location, Info);
+  instrumented_call(Module, Name, Arity, Args, Location, Info);
 instrumented(apply, [Fun, Args], Location, Info) ->
   case is_function(Fun) of
     true ->
@@ -170,7 +170,7 @@ instrumented(apply, [Fun, Args], Location, Info) ->
       Name = get_fun_info(Fun, name),
       Arity = get_fun_info(Fun, arity),
       case length(Args) =:= Arity of
-        true -> instrumented_aux(Module, Name, Arity, Args, Location, Info);
+        true -> instrumented_call(Module, Name, Arity, Args, Location, Info);
         false -> {doit, Info}
       end;
     false ->
@@ -189,7 +189,7 @@ instrumented('receive', [PatternFun, RealTimeout], Location, Info) ->
       {doit, Info}
   end.
 
-instrumented_aux(Module, Name, Arity, Args, _Location,
+instrumented_call(Module, Name, Arity, Args, _Location,
                  {logger, Processes} = Info) ->
   case {Module, Name, Arity} of
     {erlang, pid_to_list, 1} ->
@@ -212,9 +212,9 @@ instrumented_aux(Module, Name, Arity, Args, _Location,
     _ ->
       {doit, Info}
   end;
-instrumented_aux(erlang, apply, 3, [Module, Name, Args], Location, Info) ->
-  instrumented_aux(Module, Name, length(Args), Args, Location, Info);
-instrumented_aux(Module, Name, Arity, Args, Location, Info)
+instrumented_call(erlang, apply, 3, [Module, Name, Args], Location, Info) ->
+  instrumented_call(Module, Name, length(Args), Args, Location, Info);
+instrumented_call(Module, Name, Arity, Args, Location, Info)
   when is_atom(Module) ->
   case
     erlang:is_builtin(Module, Name, Arity) andalso
@@ -223,17 +223,15 @@ instrumented_aux(Module, Name, Arity, Args, Location, Info)
     true ->
       built_in(Module, Name, Arity, Args, Location, Info);
     false ->
-      case Info of
-        #concuerror_info{logger = Logger} ->
-          ?debug_flag(?non_builtin,{Module,Name,Arity,Location}),
-          ?autoload_and_log(Module, Logger);
-        _ -> ok
-      end,
+      #concuerror_info{logger = Logger} = Info,
+      ?debug_flag(?non_builtin, {Module, Name, Arity, Location}),
+      ?autoload_and_log(Module, Logger),
       {doit, Info}
   end;
-instrumented_aux({Module, _} = Tuple, Name, Arity, Args, Location, Info) ->
-  instrumented_aux(Module, Name, Arity + 1, Args ++ Tuple, Location, Info);
-instrumented_aux(_, _, _, _, _, Info) ->
+instrumented_call({Module, _} = Tuple, Name, Arity, Args, Location, Info) ->
+  instrumented_call(Module, Name, Arity + 1, Args ++ Tuple, Location, Info);
+instrumented_call(_, _, _, _, _, Info) ->
+  erlang:display({nope}),
   {doit, Info}.
 
 get_fun_info(Fun, Tag) ->
