@@ -378,10 +378,6 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[_, Safe]}},
 
 %%------------------------------------------------------------------------------
 
-dependent_built_in(#builtin_event{mfargs = {erlang, make_ref, _}},
-                   #builtin_event{mfargs = {erlang, make_ref, _}}) ->
-  true;
-
 dependent_built_in(#builtin_event{mfargs = {erlang,group_leader,ArgsA}} = A,
                    #builtin_event{mfargs = {erlang,group_leader,ArgsB}} = B) ->
   case {ArgsA, ArgsB} of
