@@ -8,7 +8,7 @@ testing "Can find default in path"
 rm -rf path
 rm -rf foo.beam
 mkdir path
-erlc -o path foo.erl
+erlc -o path src/foo.erl
 concuerror_console --pz path -m foo
 rm -rf path
 good
@@ -21,28 +21,30 @@ rm -rf concuerror
 good
 
 testing "Limited automatic compilation with -m"
+cd src
 concuerror_console -m foo
 good
+cd ..
 
 testing "Long short option fixes works"
 rm -rf path
 rm -rf foo.beam
 mkdir path
-erlc -o path foo.erl
+erlc -o path src/foo.erl
 concuerror_console -pz path --ignore-error deadlock --m foo
 consolehas "converted to"
 rm -rf path
 
 testing "Interleaving bound caps total"
-concuerror_console -f six.erl -i 4
+concuerror_console -f src/six.erl -i 4
 consolehas "4/4"
 
 testing "Bad idea for EUnit"
-! concuerror_console --timeout -1 -f eunit/eunit_sample.erl
+! concuerror_console --timeout -1 -f src/eunit_sample.erl
 consolehas "bad idea"
 
 testing "Simple EUnit use"
-cd eunit
+cd src
 erlc eunit_sample.erl
 > $Console erl -pa "$(dirname $CONCUERROR)/ebin" -noinput -s eunit_sample test -s erlang halt
 consolehas "All 6 tests passed."
@@ -50,7 +52,7 @@ rm eunit_sample.beam
 cd ..
 
 testing "Report unknown arguments in shell invocation"
-cd from_shell
+cd src
 erlc from_shell.erl
 2> $Console erl -pa "$(dirname $CONCUERROR)/ebin" -noinput -s from_shell with_unknown -s erlang halt
 consolehas "invalid argument: 'unknown_option'"
@@ -58,7 +60,7 @@ rm from_shell.beam
 cd ..
 
 testing "Report bad entry_point"
-cd from_shell
+cd src
 erlc from_shell.erl
 2> $Console erl -pa "$(dirname $CONCUERROR)/ebin" -noinput -s from_shell with_bad_entry -s erlang halt
 consolehas "The specified 'entry_point' 'ugly' is invalid."
@@ -66,7 +68,7 @@ rm from_shell.beam
 cd ..
 
 testing "Report multiple entry_point s"
-cd from_shell
+cd src
 erlc from_shell.erl
 2> $Console erl -pa "$(dirname $CONCUERROR)/ebin" -noinput -s from_shell with_multiple_entries -s erlang halt
 consolehas "Multiple instances of 'entry_point' specified."

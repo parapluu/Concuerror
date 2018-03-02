@@ -1,4 +1,4 @@
--module(test).
+-module(excluding).
 
 -export([test/0]).
 
