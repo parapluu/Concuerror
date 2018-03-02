@@ -75,4 +75,11 @@ consolehas "Multiple instances of 'entry_point' specified."
 rm from_shell.beam
 cd ..
 
+testing "Can recover a -D option without debug_info"
+rm -f debug_works.beam
+erlc -DN=1 src/debug_works.erl
+concuerror_console -m debug_works
+consolehas "1/1 interleavings explored"
+rm -f debug_works.beam
+
 . footer
