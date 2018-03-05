@@ -293,12 +293,10 @@ dependent_exit(Exit, MFArgs, _Extra) ->
 
 dependent_exit(_Exit, {erlang, A, _})
   when
-    A =:= erase;
     A =:= exit;
     A =:= get_stacktrace;
     A =:= make_ref;
     A =:= process_flag;
-    A =:= put;
     A =:= send_after;
     A =:= spawn;
     A =:= spawn_opt;
@@ -353,19 +351,6 @@ dependent_process_info(#builtin_event{mfargs = {_, _, [Pid, registered_name]}},
       end;
     _ -> false
   end;
-dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, dictionary]}},
-                       Other) ->
-  case Other of
-    #builtin_event{actor = EPid, mfargs = {Module, Name, _}} ->
-      Pid =:= EPid
-        andalso
-        case Module =:= erlang of
-          true when Name =:= put; Name =:= erase ->
-            true;
-          _ -> false
-        end;
-    _ -> false
-  end;
 dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, Msg]}},
                        Other)
   when Msg =:= messages; Msg =:= message_queue_len ->
@@ -384,6 +369,7 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, group_leader]}},
   end;
 dependent_process_info(#builtin_event{mfargs = {_,_,[_, Safe]}},
                        _) when
+    Safe =:= dictionary;
     Safe =:= heap_size;
     Safe =:= reductions;
     Safe =:= stack_size
@@ -391,10 +377,6 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[_, Safe]}},
   false.
 
 %%------------------------------------------------------------------------------
-
-dependent_built_in(#builtin_event{mfargs = {erlang, make_ref, _}},
-                   #builtin_event{mfargs = {erlang, make_ref, _}}) ->
-  true;
 
 dependent_built_in(#builtin_event{mfargs = {erlang,group_leader,ArgsA}} = A,
                    #builtin_event{mfargs = {erlang,group_leader,ArgsB}} = B) ->
@@ -429,7 +411,6 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
     false
     ;A =:= date
     ;A =:= demonitor        %% Depends only with an exit event or proc_info
-    ;A =:= erase            %% Depends only with proc_info
     ;A =:= exit             %% Sending an exit signal (dependencies are on delivery)
     ;A =:= get_stacktrace   %% Depends with nothing
     ;A =:= group_leader     %% Depends only with another group_leader get/set
@@ -439,7 +420,6 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
     ;A =:= now
     ;A =:= process_flag     %% Depends only with delivery of a signal
     ;A =:= processes        %% Depends only with spawn and exit
-    ;A =:= put              %% Depends only with proc_info
     ;A =:= send_after
     ;A =:= spawn            %% Depends only with processes/0
     ;A =:= spawn_link       %% Depends only with processes/0
@@ -449,7 +429,6 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
     
     ;B =:= date
     ;B =:= demonitor
-    ;B =:= erase
     ;B =:= exit
     ;B =:= get_stacktrace
     ;B =:= group_leader
@@ -459,7 +438,6 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
     ;B =:= now
     ;B =:= process_flag
     ;B =:= processes
-    ;B =:= put
     ;B =:= send_after
     ;B =:= spawn
     ;B =:= spawn_link

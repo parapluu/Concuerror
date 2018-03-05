@@ -63,11 +63,11 @@ concuerror_console --version
 consolehas "Concuerror v"
 
 testing "Bad entry point"
-! concuerror_console -f foo.erl -t ban
+! concuerror_console -f src/foo.erl -t ban
 consolehas "The entry point foo:ban/0 is invalid."
 
 testing "Default verbosity has info"
-concuerror_console -f foo.erl
+concuerror_console -f src/foo.erl
 consolehas "Info:"
 
 testing "Verbosity and quiet"

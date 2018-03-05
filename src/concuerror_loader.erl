@@ -155,10 +155,7 @@ get_core(Beam) ->
       {options, CompileOptions} = proplists:lookup(options, CompileInfo),
       Filter =
         fun(Option) ->
-            case Option of
-              {Tag, _} -> lists:member(Tag, [d, i, parse_transform]);
-              _ -> false
-            end
+            lists:member(element(1, Option), [d, i, parse_transform])
         end,
       CleanOptions = lists:filter(Filter, CompileOptions),
       Options = [debug_info, report_errors, binary, to_core0|CleanOptions],

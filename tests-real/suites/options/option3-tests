@@ -5,7 +5,7 @@
 print_blue "$0"
 
 testing "Excluding works minimally"
-concuerror_console -f exclude_modules/test.erl -f exclude_modules/excluded.erl -x excluded -m test
+concuerror_console -f src/excluding.erl -f src/excluded.erl -x excluded -m excluding
 consolehas "1/1"
 
 testing "Mixed case options are ok"
@@ -13,7 +13,7 @@ concuerror_console --VeRsIoN
 consolehas "Concuerror v"
 
 testing "Tip for attributes"
-concuerror_console -a 1000 --assume_racing -d 5000 --ignore_error crash deadlock -i 6000 -k -f foo.erl
+concuerror_console -a 1000 --assume_racing -d 5000 --ignore_error crash deadlock -i 6000 -k -f src/foo.erl
 consolehas "help attributes"
 
 testing "Help for attributes"
@@ -22,7 +22,7 @@ consolehas "the following attributes in the module"
 
 testing "Disable output"
 rm -rf $Out
-concuerror_console -f foo.erl --no_output
+concuerror_console -f src/foo.erl --no_output
 consolehas "No output report will be generated"
 testing "... and file doesn't exist."
 if [ ! -f "$Out" ]; then
@@ -33,7 +33,7 @@ fi
 
 testing "Total silence"
 rm -rf $Out
-concuerror_console -f foo.erl --no_output -q
+concuerror_console -f src/foo.erl --no_output -q
 ! consolehas "*"
 ! outputhas "*"
 
@@ -42,32 +42,32 @@ testing "Nonexistent input file"
 consolehas "Error: nonexistent is not a .erl or .beam file"
 
 testing "Bad .erl input file"
-! concuerror_console -f bad.erl > /dev/null
-consolehas "Error: could not compile bad.erl (try to add the .beam file instead)"
+! concuerror_console -f src/bad.erl > /dev/null
+consolehas "Error: could not compile src/bad.erl (try to add the .beam file instead)"
 
 testing "BEAM input file"
 rm -f foo.beam
-erlc foo.erl
+erlc src/foo.erl
 concuerror_console -f foo.beam
 good
 rm foo.beam
 
 testing "Bad BEAM input file"
 rm -f foo.beam
-cp foo.erl foo.beam
+cp src/foo.erl foo.beam
 ! concuerror_console -f foo.beam
 consolehas "Error:"
 rm foo.beam
 
 testing "Warn about shadowing"
 rm -f foo.beam
-erlc foo.erl
-concuerror_console -f foo.erl
-consolehas "Warning: File foo.erl shadows ./foo.beam (found in path)"
+erlc src/foo.erl
+concuerror_console -f src/foo.erl
+consolehas "Warning: File src/foo.erl shadows ./foo.beam (found in path)"
 rm foo.beam
 
 testing "Basic message is produced for error detection"
-! concuerror_console -f buggy.erl
+! concuerror_console -f src/buggy.erl
 consolehas "Errors were found! (check concuerror_report.txt)"
 
 . footer
