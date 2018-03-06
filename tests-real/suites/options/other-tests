@@ -82,4 +82,8 @@ concuerror_console -m debug_works
 consolehas "1/1 interleavings explored"
 rm -f debug_works.beam
 
+testing "Decent stacktrace reports"
+! concuerror_console -f src/stacktrace.erl
+outputhas "[{file,\"src/stacktrace.erl\"},{line,93}]"
+
 . footer
