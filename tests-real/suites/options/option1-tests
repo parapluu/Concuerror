@@ -13,7 +13,7 @@ concuerror_console --help
 consolehas 'basic'
 
 testing "Report unknown arguments"
-! concuerror_console unknown_argument
+! concuerror_console unknown arguments
 consolehas "Unknown argument"
 
 testing "Report missing arguments"

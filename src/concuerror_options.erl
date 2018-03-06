@@ -331,9 +331,13 @@ parse_cl_aux(RawCommandLineArgs) ->
   CommandLineArgs = fix_common_errors(RawCommandLineArgs),
   case getopt:parse(getopt_spec_no_default(), CommandLineArgs) of
     {ok, {Options, OtherArgs}} ->
-      case OtherArgs =:= [] of
-        true -> {ok, Options};
-        false ->
+      case OtherArgs of
+        [] -> {ok, Options};
+        [MaybeFilename] ->
+          Msg = "Converting dangling argument to '--file ~s'",
+          opt_info(Msg, [MaybeFilename]),
+          {ok, Options ++ [{file, MaybeFilename}]};
+        _ ->
           Msg = "Unknown argument(s)/option(s): ~s",
           opt_error(Msg, [?join(OtherArgs, " ")])
       end;
