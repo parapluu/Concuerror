@@ -138,7 +138,7 @@ spawn_first_process(Options) ->
 start_first_process(Pid, {Module, Name, Args}, Timeout) ->
   request_system_reset(Pid),
   Pid ! {start, Module, Name, Args},
-  wait_process(Pid, Timeout),
+  ok = wait_process(Pid, Timeout),
   ok.
 
 -spec setup_logger(processes()) -> ok.
@@ -691,7 +691,7 @@ run_built_in(erlang, SendAfter, 3, [Timeout, Dest, Msg], Info)
         catch concuerror_inspect:inspect(call, [erlang, send, [Dest, ActualMessage]], foo)
     end,
   Pid ! {start, erlang, apply, [TimerFun, []]},
-  wait_process(Pid, Wait),
+  ok = wait_process(Pid, Wait),
   {Ref, FinalInfo};
 
 run_built_in(erlang, SendAfter, 4, [Timeout, Dest, Msg, []], Info)
@@ -771,7 +771,7 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
   {GroupLeader, _} = run_built_in(erlang, group_leader, 0, [], FinalInfo),
   true = ets:update_element(Processes, Pid, {?process_leader, GroupLeader}),
   Pid ! {start, Module, Name, Args},
-  wait_process(Pid, Timeout),
+  ok = wait_process(Pid, Timeout),
   {Result, FinalInfo};
 run_built_in(erlang, Send, 2, [Recipient, Message], Info)
   when Send =:= '!'; Send =:= 'send' ->
@@ -1155,18 +1155,28 @@ find_system_reply(System, [_|Special]) ->
 -spec wait_actor_reply(event(), timeout()) -> 'retry' | {'ok', event()}.
 
 wait_actor_reply(Event, Timeout) ->
+  Pid = Event#event.actor,
+  wait_process(Pid, Timeout).
+
+%% Wait for a process to instrument any code.
+wait_process(Pid, Timeout) ->
   receive
+    ready -> ok;
     exited -> retry;
     {blocked, _} -> retry;
     #event{} = NewEvent -> {ok, NewEvent};
     {'ETS-TRANSFER', _, _, given_to_scheduler} ->
-      wait_actor_reply(Event, Timeout);
+      wait_process(Pid, Timeout);
     {'EXIT', _, What} ->
       exit(What)
   after
     Timeout ->
-      Pid = Event#event.actor,
-      ?crash({process_did_not_respond, Timeout, Pid})
+      case concuerror_loader:is_instrumenting() of
+        {true, _Module} ->
+          wait_process(Pid, Timeout);
+        _ ->
+          ?crash({process_did_not_respond, Timeout, Pid})
+      end
   end.
 
 %%------------------------------------------------------------------------------
@@ -1395,16 +1405,6 @@ delete_system_entries({T, O}, true) ->
 new_process(ParentInfo) ->
   Info = ParentInfo#concuerror_info{notify_when_ready = {self(), true}},
   spawn_link(?MODULE, process_top_loop, [Info]).
-
-wait_process(Pid, Timeout) ->
-  %% Wait for the new process to instrument any code.
-  receive
-    ready -> ok
-  after
-    Timeout ->
-      ?crash({process_did_not_respond, Timeout, Pid})
-  end.
-
 
 process_loop(#concuerror_info{delayed_notification = {true, Notification},
                               scheduler = Scheduler} = Info) ->

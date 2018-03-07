@@ -40,7 +40,7 @@ concuerror_console -f src/six.erl -i 4
 consolehas "4/4"
 
 testing "Bad idea for EUnit"
-! concuerror_console --timeout -1 -f src/eunit_sample.erl
+! concuerror_console -f src/eunit_sample.erl
 consolehas "bad idea"
 
 testing "Simple EUnit use"

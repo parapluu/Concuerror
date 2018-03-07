@@ -2,12 +2,10 @@
 
 -export([scenarios/0]).
 -export([exceptional/0]).
--export([test/0]).
-
--concuerror_options_forced([{timeout, 1000}]).
+-export([test1/0, test2/0]).
 
 scenarios() ->
-    [{test, inf, dpor, crash}].
+    [{T, inf, dpor, crash} || T <- [test1, test2]].
 
 exceptional() ->
   fun(_Expected, Actual) ->
@@ -18,5 +16,12 @@ exceptional() ->
       true
   end.
 
-test() ->
-  test().
+test1() ->
+    loop().
+
+test2() ->
+    process_flag(trap_exit, true),
+    loop().
+
+loop() ->
+    loop().

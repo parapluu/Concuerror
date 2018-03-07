@@ -2,7 +2,7 @@
 
 -module(concuerror_loader).
 
--export([initialize/1, load/1, load_initially/1]).
+-export([initialize/1, load/1, load_initially/1, is_instrumenting/0]).
 
 %%------------------------------------------------------------------------------
 
@@ -25,6 +25,7 @@ load(Module) ->
 load(Module, Instrumented) ->
   case ets:lookup(Instrumented, Module) =:= [] of
     true ->
+      set_is_instrumenting({true, Module}),
       {Beam, Filename} =
         case code:which(Module) of
           preloaded ->
@@ -35,6 +36,7 @@ load(Module, Instrumented) ->
         end,
       try
         load_binary(Module, Filename, Beam, Instrumented),
+        set_is_instrumenting(false),
         ok
       catch
         _:_ -> fail
@@ -79,6 +81,21 @@ load_initially(File, Instrumented) ->
 
 %%------------------------------------------------------------------------------
 
+-spec is_instrumenting() -> {'true', module()} | 'false'.
+
+is_instrumenting() ->
+  Instrumented = get_instrumented_table(),
+  [{_, V}] = ets:lookup(Instrumented, {is_instrumenting}),
+  V.
+
+-spec set_is_instrumenting( {'true', module()} | 'false') -> 'ok'.
+
+set_is_instrumenting(Value)->
+  Instrumented = get_instrumented_table(),
+  ets:insert(Instrumented, {{is_instrumenting}, Value}),
+  ok.
+
+%%------------------------------------------------------------------------------
 get_instrumented_table() ->
   concuerror_instrumented.
 

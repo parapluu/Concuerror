@@ -110,7 +110,7 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
         pass
     # Run concuerror
     status = os.system(
-        ("%s -kq --timeout -1 --assume_racing false --show_races false"
+        ("%s -kq --assume_racing false --show_races false"
          " %s -f %s"
          " --output %s"
          " -m %s -t %s %s %s"

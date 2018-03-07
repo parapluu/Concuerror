@@ -2,7 +2,6 @@
 
 Out=concuerror_report.txt
 CONCUERROR=${CONCUERROR:-concuerror}
-CONCUERROR="$CONCUERROR --timeout -1"
 
 . ../print_colors
 

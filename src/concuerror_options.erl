@@ -42,7 +42,7 @@
 
 %%%-----------------------------------------------------------------------------
 
--define(MINIMUM_TIMEOUT, 1000).
+-define(MINIMUM_TIMEOUT, 500).
 -define(DEFAULT_VERBOSITY, ?linfo).
 -define(DEFAULT_PRINT_DEPTH, 20).
 -define(DEFAULT_OUTPUT, "concuerror_report.txt").
