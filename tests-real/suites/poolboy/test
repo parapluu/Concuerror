@@ -1,8 +1,7 @@
 #!/bin/bash
 
 Out=concuerror_report.txt
-CONCUERROR=${CONCUERROR:-concuerror}
-CONCUERROR="$CONCUERROR --timeout -1"
+CONCUERROR=${CONCUERROR:-$(which concuerror)}
 
 . ../print_colors
 

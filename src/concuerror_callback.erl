@@ -30,7 +30,6 @@
 -define(non_builtin, ?flag(2)).
 -define(receive_, ?flag(3)).
 -define(receive_messages, ?flag(4)).
--define(stack, ?flag(5)).
 -define(args, ?flag(6)).
 -define(result, ?flag(7)).
 -define(spawn, ?flag(8)).
@@ -95,7 +94,7 @@
           receive_counter = 1         :: pos_integer(),
           ref_queue = new_ref_queue() :: ref_queue_2(),
           scheduler                   :: pid(),
-          stacktop = 'none'           :: 'none' | tuple(),
+          stacktop = []               :: [tuple()],
           status = 'running'          :: status(),
           system_ets_entries          :: ets:tid(),
           timeout                     :: timeout(),
@@ -139,7 +138,7 @@ spawn_first_process(Options) ->
 start_first_process(Pid, {Module, Name, Args}, Timeout) ->
   request_system_reset(Pid),
   Pid ! {start, Module, Name, Args},
-  wait_process(Pid, Timeout),
+  ok = wait_process(Pid, Timeout),
   ok.
 
 -spec setup_logger(processes()) -> ok.
@@ -264,12 +263,8 @@ built_in(erlang, Name, _Arity, Args, _Location, Info)
 built_in(erlang, hibernate, 3, Args, _Location, Info) ->
   erlang:hibernate(?MODULE, wrapper, [Info] ++ Args);
 built_in(erlang, get_stacktrace, 0, [], _Location, Info) ->
-  #concuerror_info{logger = Logger} = Info,
-  Msg =
-    "Concuerror does not properly support erlang:get_stacktrace/0, returning an"
-    " empty list instead.~n",
-  ?unique(Logger, ?lwarning, Msg, []),
-  {{didit, []}, Info};
+  Stacktrace = get_stacktrace(Info#concuerror_info.stacktop),
+  {{didit, Stacktrace}, Info};
 %% Instrumented processes may just call pid_to_list (we instrument this builtin
 %% for the logger)
 built_in(erlang, pid_to_list, _Arity, _Args, _Location, Info) ->
@@ -284,8 +279,6 @@ built_in(erlang, system_info, 1, [A], _Location, Info)
 built_in(Module, Name, Arity, Args, Location, InfoIn) ->
   Info = process_loop(InfoIn),
   ?debug_flag(?short_builtin, {'built-in', Module, Name, Arity, Location}),
-  %% {Stack, ResetInfo} = reset_stack(Info),
-  %% ?debug_flag(?stack, {stack, Stack}),
   #concuerror_info{flags = #process_flags{trap_exit = Trapping}} = LocatedInfo =
     add_location_info(Location, Info#concuerror_info{extra = undefined}),%ResetInfo),
   try
@@ -305,7 +298,7 @@ built_in(Module, Name, Arity, Args, Location, InfoIn) ->
         },
     Notification = Event#event{event_info = EventInfo},
     NewInfo = notify(Notification, UpdatedInfo),
-    {{didit, Value}, NewInfo}
+    {{didit, Value}, NewInfo#concuerror_info{stacktop = []}}
   catch
     throw:Reason ->
       #concuerror_info{scheduler = Scheduler} = Info,
@@ -323,7 +316,7 @@ built_in(Module, Name, Arity, Args, Location, InfoIn) ->
       FNotification = FEvent#event{event_info = FEventInfo},
       FNewInfo = notify(FNotification, LocatedInfo),
       FinalInfo =
-        FNewInfo#concuerror_info{stacktop = {Module, Name, Args, Location}},
+        FNewInfo#concuerror_info{stacktop = [{Module, Name, Args, Location}]},
       {{error, Reason}, FinalInfo}
   end.
 
@@ -698,7 +691,7 @@ run_built_in(erlang, SendAfter, 3, [Timeout, Dest, Msg], Info)
         catch concuerror_inspect:inspect(call, [erlang, send, [Dest, ActualMessage]], foo)
     end,
   Pid ! {start, erlang, apply, [TimerFun, []]},
-  wait_process(Pid, Wait),
+  ok = wait_process(Pid, Wait),
   {Ref, FinalInfo};
 
 run_built_in(erlang, SendAfter, 4, [Timeout, Dest, Msg, []], Info)
@@ -778,7 +771,7 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
   {GroupLeader, _} = run_built_in(erlang, group_leader, 0, [], FinalInfo),
   true = ets:update_element(Processes, Pid, {?process_leader, GroupLeader}),
   Pid ! {start, Module, Name, Args},
-  wait_process(Pid, Timeout),
+  ok = wait_process(Pid, Timeout),
   {Result, FinalInfo};
 run_built_in(erlang, Send, 2, [Recipient, Message], Info)
   when Send =:= '!'; Send =:= 'send' ->
@@ -859,7 +852,7 @@ run_built_in(erlang, whereis, 1, [Name], Info) ->
       case whereis(Name) =:= undefined of
         true -> {undefined, Info};
         false ->
-          Stacktrace = fix_stacktrace(Info),
+          Stacktrace = get_stacktrace([]),
           ?crash_instr({registered_process_not_wrapped, Name, Stacktrace})
       end;
     [[Pid]] -> {Pid, Info}
@@ -1041,18 +1034,8 @@ run_built_in(os = Module, Name, Arity, Args, Info)
 
 run_built_in(Module, Name, Arity, _Args,
              #concuerror_info{event = #event{location = Location}}) ->
-  Clean = clean_stacktrace(),
+  Clean = get_stacktrace([]),
   ?crash_instr({unknown_built_in, {Module, Name, Arity, Location, Clean}}).
-
-clean_stacktrace() ->
-  Trace = try throw(foo) catch throw:_ -> erlang:get_stacktrace() end,
-  [T || {M,_,_,_} = T <- Trace, not_concuerror_module(M)].
-
-not_concuerror_module(Atom) ->
-  case atom_to_list(Atom) of
-    "concuerror" ++ _ -> false;
-    _ -> true
-  end.
 
 maybe_reuse_old(Module, Name, _Arity, Args, Info) ->
   #concuerror_info{event = #event{event_info = EventInfo}} = Info,
@@ -1172,18 +1155,28 @@ find_system_reply(System, [_|Special]) ->
 -spec wait_actor_reply(event(), timeout()) -> 'retry' | {'ok', event()}.
 
 wait_actor_reply(Event, Timeout) ->
+  Pid = Event#event.actor,
+  wait_process(Pid, Timeout).
+
+%% Wait for a process to instrument any code.
+wait_process(Pid, Timeout) ->
   receive
+    ready -> ok;
     exited -> retry;
     {blocked, _} -> retry;
     #event{} = NewEvent -> {ok, NewEvent};
     {'ETS-TRANSFER', _, _, given_to_scheduler} ->
-      wait_actor_reply(Event, Timeout);
+      wait_process(Pid, Timeout);
     {'EXIT', _, What} ->
       exit(What)
   after
     Timeout ->
-      Pid = Event#event.actor,
-      ?crash({process_did_not_respond, Timeout, Pid})
+      case concuerror_loader:is_instrumenting() of
+        {true, _Module} ->
+          wait_process(Pid, Timeout);
+        _ ->
+          ?crash({process_did_not_respond, Timeout, Pid})
+      end
   end.
 
 %%------------------------------------------------------------------------------
@@ -1378,7 +1371,8 @@ wrapper(Info, Module, Name, Args) ->
     Class:Reason ->
       case concuerror_inspect:stop_inspection() of
         {true, EndInfo} ->
-          Stacktrace = fix_stacktrace(EndInfo),
+          StackTop = EndInfo#concuerror_info.stacktop,
+          Stacktrace = get_stacktrace(StackTop),
           ?debug_flag(?exit, {exit, Class, Reason, Stacktrace}),
           NewReason =
             case Class of
@@ -1411,16 +1405,6 @@ delete_system_entries({T, O}, true) ->
 new_process(ParentInfo) ->
   Info = ParentInfo#concuerror_info{notify_when_ready = {self(), true}},
   spawn_link(?MODULE, process_top_loop, [Info]).
-
-wait_process(Pid, Timeout) ->
-  %% Wait for the new process to instrument any code.
-  receive
-    ready -> ok
-  after
-    Timeout ->
-      ?crash({process_did_not_respond, Timeout, Pid})
-  end.
-
 
 process_loop(#concuerror_info{delayed_notification = {true, Notification},
                               scheduler = Scheduler} = Info) ->
@@ -1894,7 +1878,7 @@ reset_concuerror_info(Info) ->
     notify_when_ready = {Pid, true},
     receive_counter = 1,
     ref_queue = new_ref_queue(),
-    stacktop = 'none',
+    stacktop = [],
     status = 'running'
    }.
 
@@ -1961,13 +1945,14 @@ is_active(#concuerror_info{exit_by_signal = ExitBySignal, status = Status}) ->
 is_active(Status) when is_atom(Status) ->
   (Status =:= running) orelse (Status =:= waiting).
 
-fix_stacktrace(#concuerror_info{stacktop = Top}) ->
-  RemoveSelf = lists:keydelete(?MODULE, 1, erlang:get_stacktrace()),
-  case lists:keyfind(concuerror_inspect, 1, RemoveSelf) of
-    false -> RemoveSelf;
-    _ ->
-      RemoveInspect = lists:keydelete(concuerror_inspect, 1, RemoveSelf),
-      [Top|RemoveInspect]
+get_stacktrace(Top) ->
+  Trace = erlang:get_stacktrace(),
+  [T || {M,_,_,_} = T <- Top ++ Trace, not_concuerror_module(M)].
+
+not_concuerror_module(Atom) ->
+  case atom_to_list(Atom) of
+    "concuerror" ++ _ -> false;
+    _ -> true
   end.
 
 %%------------------------------------------------------------------------------

@@ -42,7 +42,7 @@
 
 %%%-----------------------------------------------------------------------------
 
--define(MINIMUM_TIMEOUT, 1000).
+-define(MINIMUM_TIMEOUT, 500).
 -define(DEFAULT_VERBOSITY, ?linfo).
 -define(DEFAULT_PRINT_DEPTH, 20).
 -define(DEFAULT_OUTPUT, "concuerror_report.txt").
@@ -322,8 +322,14 @@ parse_cl(CommandLineArgs) ->
   try
     parse_cl_aux(CommandLineArgs)
   catch
-    throw:opt_error -> {exit, fail}
+    throw:opt_error ->
+      options_fail()
   end.
+
+options_fail() ->
+  [concuerror_logger:print_log_message(Level, Format, Args)
+   || {Level, Format, Args} <- get_logs()],
+  {exit, fail}.
 
 parse_cl_aux([]) ->
   {ok, [help]};
@@ -331,9 +337,13 @@ parse_cl_aux(RawCommandLineArgs) ->
   CommandLineArgs = fix_common_errors(RawCommandLineArgs),
   case getopt:parse(getopt_spec_no_default(), CommandLineArgs) of
     {ok, {Options, OtherArgs}} ->
-      case OtherArgs =:= [] of
-        true -> {ok, Options};
-        false ->
+      case OtherArgs of
+        [] -> {ok, Options};
+        [MaybeFilename] ->
+          Msg = "Converting dangling argument to '--file ~s'",
+          opt_info(Msg, [MaybeFilename]),
+          {ok, Options ++ [{file, MaybeFilename}]};
+        _ ->
           Msg = "Unknown argument(s)/option(s): ~s",
           opt_error(Msg, [?join(OtherArgs, " ")])
       end;
@@ -367,11 +377,35 @@ fix_common_error("--" ++ Text = Option) ->
 fix_common_error("-p" ++ [A] = Option) when A =:= $a; A=:= $z ->
   opt_info("\"~s\" converted to \"-~s\"", [Option, Option]),
   fix_common_error("-" ++ Option);
+fix_common_error("-" ++ [Short|[_|_] = MaybeArg] = MaybeMispelledOption) ->
+  maybe_warn_about_mispelled_option(Short, MaybeArg),
+  MaybeMispelledOption;
 fix_common_error(OptionOrArg) ->
   OptionOrArg.
 
 dash_to_underscore($-) -> $_;
 dash_to_underscore(Ch) -> Ch.
+
+maybe_warn_about_mispelled_option(Short, MaybeArg) ->
+  ShortNonBooleanToLong =
+    [{element(?OPTION_SHORT, O), element(?OPTION_KEY, O)}
+     || O <- options(),
+        element(?OPTION_SHORT, O) =/= undefined,
+        not is_boolean_option(O)
+    ],
+  case lists:keyfind(Short, 1, ShortNonBooleanToLong) of
+    {_, Long} ->
+      opt_info(
+        "Parsing '-~s' as '--~w ~s' (add a dash if this is not desired)",
+        [[Short|MaybeArg], Long, MaybeArg]);
+    _ -> ok
+  end.
+
+is_boolean_option(Option) ->
+  case element(?OPTION_GETOPT_TYPE_DEFAULT, Option) of
+    {boolean, _} -> true;
+    _ -> false
+  end.
 
 fix_multiargs(CommandLineArgs) ->
   fix_multiargs(CommandLineArgs, []).
@@ -526,7 +560,8 @@ finalize(Options) ->
         {ok, FinalOptions, get_logs()}
     end
   catch
-    throw:opt_error -> {exit, fail}
+    throw:opt_error ->
+      options_fail()
   end.
 
 check_help_and_version(Options) ->
@@ -1162,8 +1197,7 @@ opt_error(Format, Data, Extra) when is_atom(Extra) ->
   ExtraS = io_lib:format("'--help ~p'", [Extra]),
   opt_error(Format, Data, ExtraS);
 opt_error(Format, Data, Extra) ->
-  to_stderr("Error: " ++ Format, Data),
-  to_stderr("  Use ~s for more information.", [Extra]),
+  opt_log(?lerror, Format ++ "~n    Use ~s for more information.", Data ++ [Extra]),
   throw(opt_error).
 
 -spec multiple_opt_error(atom()) -> no_return().

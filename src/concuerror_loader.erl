@@ -2,7 +2,7 @@
 
 -module(concuerror_loader).
 
--export([initialize/1, load/1, load_initially/1]).
+-export([initialize/1, load/1, load_initially/1, is_instrumenting/0]).
 
 %%------------------------------------------------------------------------------
 
@@ -16,6 +16,42 @@
 
 %%------------------------------------------------------------------------------
 
+-spec initialize([atom()]) -> 'ok' | {'error', string()}.
+
+initialize(Excluded) ->
+  Instrumented = get_instrumented_table(),
+  case ets:info(Instrumented, name) =:= undefined of
+    true ->
+      setup_sticky_directories(),
+      Instrumented = ets:new(Instrumented, [named_table, public]),
+      ok;
+    false ->
+      ets:match_delete(Instrumented, {'_', concuerror_excluded}),
+      ok
+  end,
+  Entries = [{X, concuerror_excluded} || X <- Excluded],
+  try
+    true = ets:insert_new(Instrumented, Entries),
+    ok
+  catch
+    _:_ ->
+      {error, "Excluded modules have already been instrumented. Restart the shell."}
+  end.
+
+setup_sticky_directories() ->
+  {module, concuerror_inspect} = code:ensure_loaded(concuerror_inspect),
+  _ = [true = code:unstick_mod(M) || {M, preloaded} <- code:all_loaded()],
+  [] = [D || D <- code:get_path(), ok =/= code:unstick_dir(D)],
+  case code:get_object_code(erlang) =:= error of
+    true ->
+      true =
+        code:add_pathz(filename:join(code:root_dir(), "erts/preloaded/ebin"));
+    false ->
+      ok
+  end.
+
+%%------------------------------------------------------------------------------
+
 -spec load(module()) -> 'ok' | 'already_done' | 'fail'.
 
 load(Module) ->
@@ -25,6 +61,7 @@ load(Module) ->
 load(Module, Instrumented) ->
   case ets:lookup(Instrumented, Module) =:= [] of
     true ->
+      set_is_instrumenting({true, Module}),
       {Beam, Filename} =
         case code:which(Module) of
           preloaded ->
@@ -35,12 +72,15 @@ load(Module, Instrumented) ->
         end,
       try
         load_binary(Module, Filename, Beam, Instrumented),
+        set_is_instrumenting(false),
         ok
       catch
         _:_ -> fail
       end;
     false -> already_done
   end.
+
+%%------------------------------------------------------------------------------
 
 -spec load_initially(module()) ->
                         {ok, module(), [string()]} | {error, string()}.
@@ -79,44 +119,24 @@ load_initially(File, Instrumented) ->
 
 %%------------------------------------------------------------------------------
 
-get_instrumented_table() ->
-  concuerror_instrumented.
+-spec is_instrumenting() -> {'true', module()} | 'false'.
+
+is_instrumenting() ->
+  Instrumented = get_instrumented_table(),
+  [{_, V}] = ets:lookup(Instrumented, {is_instrumenting}),
+  V.
+
+-spec set_is_instrumenting( {'true', module()} | 'false') -> 'ok'.
+
+set_is_instrumenting(Value)->
+  Instrumented = get_instrumented_table(),
+  ets:insert(Instrumented, {{is_instrumenting}, Value}),
+  ok.
 
 %%------------------------------------------------------------------------------
 
--spec initialize([atom()]) -> 'ok' | {'error', string()}.
-
-initialize(Excluded) ->
-  Instrumented = get_instrumented_table(),
-  case ets:info(Instrumented, name) =:= undefined of
-    true ->
-      setup_sticky_directories(),
-      Instrumented = ets:new(Instrumented, [named_table, public]),
-      ok;
-    false ->
-      ets:match_delete(Instrumented, {'_', concuerror_excluded}),
-      ok
-  end,
-  Entries = [{X, concuerror_excluded} || X <- Excluded],
-  try
-    true = ets:insert_new(Instrumented, Entries),
-    ok
-  catch
-    _:_ ->
-      {error, "Excluded modules have already been instrumented. Restart the shell."}
-  end.
-
-setup_sticky_directories() ->
-  {module, concuerror_inspect} = code:ensure_loaded(concuerror_inspect),
-  _ = [true = code:unstick_mod(M) || {M, preloaded} <- code:all_loaded()],
-  [] = [D || D <- code:get_path(), ok =/= code:unstick_dir(D)],
-  case code:get_object_code(erlang) =:= error of
-    true ->
-      true =
-        code:add_pathz(filename:join(code:root_dir(), "erts/preloaded/ebin"));
-    false ->
-      ok
-  end.
+get_instrumented_table() ->
+  concuerror_instrumented.
 
 check_shadow(File, Module) ->
   Default = code:which(Module),

@@ -1,7 +1,6 @@
 #!/bin/bash
 
-CONCUERROR=${CONCUERROR:-concuerror}
-CONCUERROR="$CONCUERROR --timeout -1"
+CONCUERROR=${CONCUERROR:-$(which concuerror)}
 
 . ../print_colors
 
@@ -12,7 +11,7 @@ for i in t_simple_reg t_simple_reg_or_locate t_reg_or_locate2 test1 test2 test3 
     RES=$i.out
     REF=$(readlink -m ../ref/$RES)
     RUN=$(readlink -m ../run/$RES)
-    $CONCUERROR --assume_racing=false -q --timeout -1 -k --pa ebin -f ../test.erl -m test -t $i -o $RUN || true
+    $CONCUERROR --assume_racing=false -q -k --pa ebin -f ../test.erl -m test -t $i -o $RUN || true
     (bash $DIFFER $REF $RUN && print_green "ok" && rm $RUN) \
         || (print_red "FAILED" && fail=1)
 done

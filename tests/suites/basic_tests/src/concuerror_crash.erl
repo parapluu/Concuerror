@@ -3,11 +3,6 @@
 -export([scenarios/0]).
 -export([test/0]).
 
--concuerror_options_forced(
-   [ {timeout, 3000}
-   , {assume_racing, true}
-   ]).
-
 scenarios() ->
     [{test, inf, dpor, crash}].
 

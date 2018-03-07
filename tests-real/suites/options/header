@@ -38,6 +38,7 @@ function mygrepconsole {
 }
 
 function outputhas {
+    print_ok
     testing "... and output has $1"
     mygrep "$1"
     good

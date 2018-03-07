@@ -40,7 +40,7 @@ concuerror_console -f src/six.erl -i 4
 consolehas "4/4"
 
 testing "Bad idea for EUnit"
-! concuerror_console --timeout -1 -f src/eunit_sample.erl
+! concuerror_console -f src/eunit_sample.erl
 consolehas "bad idea"
 
 testing "Simple EUnit use"
@@ -81,5 +81,13 @@ erlc -DN=1 src/debug_works.erl
 concuerror_console -m debug_works
 consolehas "1/1 interleavings explored"
 rm -f debug_works.beam
+
+testing "Decent stacktrace reports"
+! concuerror_console -f src/stacktrace.erl
+outputhas "[{file,\"src/stacktrace.erl\"},{line,93}]"
+
+testing "Log messages are shown for option errors"
+! concuerror_console -module foo
+consolehas "Parsing '-module' as '--module odule' (add a dash if this is not desired)"
 
 . footer

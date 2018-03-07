@@ -5,8 +5,6 @@
 -export([scenarios/0]).
 -export([exceptional/0]).
 
--concuerror_options_forced([{timeout, 10000}]).
-
 %%------------------------------------------------------------------------------
 
 scenarios() -> [{test, inf, dpor, crash}].
