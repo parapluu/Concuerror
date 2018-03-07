@@ -5,6 +5,7 @@
 -export([start/1, complete/2, plan/1, log/5, race/3, finish/2, print/3, time/2]).
 -export([bound_reached/1, set_verbosity/2]).
 -export([graph_set_node/3, graph_new_node/5, graph_race/3]).
+-export([print_log_message/3]).
 
 -include("concuerror.hrl").
 
@@ -215,6 +216,13 @@ set_verbosity(Logger, Verbosity) ->
   Logger ! {set_verbosity, Verbosity},
   ok.
 
+-spec print_log_message(log_level(), string(), [term()]) -> ok.
+
+print_log_message(Level, Format, Args) ->
+  LevelFormat = level_to_tag(Level),
+  NewFormat = "* " ++ LevelFormat ++ Format,
+  to_stderr(NewFormat, Args).
+
 %%------------------------------------------------------------------------------
 
 loop(State) ->
@@ -298,9 +306,9 @@ loop(Message, State) ->
             case Verbosity < Level of
               true  -> ok;
               false ->
-                LevelFormat = verbosity_to_tag(Level),
-                NewFormat = LevelFormat ++ Format,
-                printout(State, "* " ++ NewFormat, Data)
+                LevelFormat = level_to_tag(Level),
+                NewFormat = "* " ++ LevelFormat ++ Format,
+                printout(State, NewFormat, Data)
             end,
             NLM =
               case Level < ?ltiming of
@@ -459,7 +467,7 @@ print_log_msgs(Output, LogMsgs) ->
     end,
   Foreach =
     fun({Type, Messages}) ->
-        Header = verbosity_to_string(Type),
+        Header = level_to_string(Type),
         Suffix =
           case Type of
             ?linfo    -> "";
@@ -473,15 +481,15 @@ print_log_msgs(Output, LogMsgs) ->
     end,
   lists:foreach(Foreach, LogMsgs).
 
-verbosity_to_tag(Level) ->
+level_to_tag(Level) ->
   Suffix =
     case Level > ?linfo of
       true -> "";
       false -> ": "
     end,
-  verbosity_to_string(Level) ++ Suffix.
+  level_to_string(Level) ++ Suffix.
 
-verbosity_to_string(Level) ->
+level_to_string(Level) ->
   case Level of
     ?lerror   -> "Error";
     ?lwarning -> "Warning";
