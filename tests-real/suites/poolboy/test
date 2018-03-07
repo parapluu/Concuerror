@@ -1,7 +1,7 @@
 #!/bin/bash
 
 Out=concuerror_report.txt
-CONCUERROR=${CONCUERROR:-concuerror}
+CONCUERROR=${CONCUERROR:-$(which concuerror)}
 
 . ../print_colors
 

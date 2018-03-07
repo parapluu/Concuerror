@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONCUERROR=${CONCUERROR:-concuerror}
+CONCUERROR=${CONCUERROR:-$(which concuerror)}
 
 . ../print_colors
 
