@@ -24,7 +24,7 @@ testing "Disable output"
 rm -rf $Out
 concuerror_console -f src/foo.erl --no_output
 consolehas "No output report will be generated"
-testing "... and file doesn't exist."
+testing "... and output file doesn't exist."
 if [ ! -f "$Out" ]; then
     good
 else
@@ -34,8 +34,19 @@ fi
 testing "Total silence"
 rm -rf $Out
 concuerror_console -f src/foo.erl --no_output -q
-! consolehas "*"
-! outputhas "*"
+good
+testing "... and output file doesn't exist"
+if [ ! -f "$Out" ]; then
+    print_ok
+else
+    exit 1
+fi
+testing "... and console is empty"
+if [ ! -f "$Console" ]; then
+    good
+else
+    exit 1
+fi
 
 testing "Nonexistent input file"
 ! concuerror_console -f nonexistent
