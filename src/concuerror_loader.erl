@@ -16,6 +16,42 @@
 
 %%------------------------------------------------------------------------------
 
+-spec initialize([atom()]) -> 'ok' | {'error', string()}.
+
+initialize(Excluded) ->
+  Instrumented = get_instrumented_table(),
+  case ets:info(Instrumented, name) =:= undefined of
+    true ->
+      setup_sticky_directories(),
+      Instrumented = ets:new(Instrumented, [named_table, public]),
+      ok;
+    false ->
+      ets:match_delete(Instrumented, {'_', concuerror_excluded}),
+      ok
+  end,
+  Entries = [{X, concuerror_excluded} || X <- Excluded],
+  try
+    true = ets:insert_new(Instrumented, Entries),
+    ok
+  catch
+    _:_ ->
+      {error, "Excluded modules have already been instrumented. Restart the shell."}
+  end.
+
+setup_sticky_directories() ->
+  {module, concuerror_inspect} = code:ensure_loaded(concuerror_inspect),
+  _ = [true = code:unstick_mod(M) || {M, preloaded} <- code:all_loaded()],
+  [] = [D || D <- code:get_path(), ok =/= code:unstick_dir(D)],
+  case code:get_object_code(erlang) =:= error of
+    true ->
+      true =
+        code:add_pathz(filename:join(code:root_dir(), "erts/preloaded/ebin"));
+    false ->
+      ok
+  end.
+
+%%------------------------------------------------------------------------------
+
 -spec load(module()) -> 'ok' | 'already_done' | 'fail'.
 
 load(Module) ->
@@ -43,6 +79,8 @@ load(Module, Instrumented) ->
       end;
     false -> already_done
   end.
+
+%%------------------------------------------------------------------------------
 
 -spec load_initially(module()) ->
                         {ok, module(), [string()]} | {error, string()}.
@@ -96,44 +134,9 @@ set_is_instrumenting(Value)->
   ok.
 
 %%------------------------------------------------------------------------------
+
 get_instrumented_table() ->
   concuerror_instrumented.
-
-%%------------------------------------------------------------------------------
-
--spec initialize([atom()]) -> 'ok' | {'error', string()}.
-
-initialize(Excluded) ->
-  Instrumented = get_instrumented_table(),
-  case ets:info(Instrumented, name) =:= undefined of
-    true ->
-      setup_sticky_directories(),
-      Instrumented = ets:new(Instrumented, [named_table, public]),
-      ok;
-    false ->
-      ets:match_delete(Instrumented, {'_', concuerror_excluded}),
-      ok
-  end,
-  Entries = [{X, concuerror_excluded} || X <- Excluded],
-  try
-    true = ets:insert_new(Instrumented, Entries),
-    ok
-  catch
-    _:_ ->
-      {error, "Excluded modules have already been instrumented. Restart the shell."}
-  end.
-
-setup_sticky_directories() ->
-  {module, concuerror_inspect} = code:ensure_loaded(concuerror_inspect),
-  _ = [true = code:unstick_mod(M) || {M, preloaded} <- code:all_loaded()],
-  [] = [D || D <- code:get_path(), ok =/= code:unstick_dir(D)],
-  case code:get_object_code(erlang) =:= error of
-    true ->
-      true =
-        code:add_pathz(filename:join(code:root_dir(), "erts/preloaded/ebin"));
-    false ->
-      ok
-  end.
 
 check_shadow(File, Module) ->
   Default = code:which(Module),
