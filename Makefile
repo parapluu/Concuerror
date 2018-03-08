@@ -38,7 +38,7 @@ dev: ERL_COMPILE_FLAGS += -DDEV=true
 dev: VERSION := $(VERSION)-dev
 
 native: ERL_COMPILE_FLAGS += +native
-native: VERSION := $(VERSION)-hipe
+native: VERSION := $(VERSION)-native
 
 $(NAME): $(DEPS_BEAMS) $(BEAMS)
 	@$(RM) $@
