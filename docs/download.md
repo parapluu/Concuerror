@@ -15,6 +15,8 @@ $ cd Concuerror
 $ make -j
 {% endhighlight %}
 
+The preferred way to start concuerror is via the `bin/concuerror` escript.
+
 ### Supported OTP Releases
 
 Concuerror's developers are always working with the latest otp/master branch

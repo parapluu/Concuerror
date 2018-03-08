@@ -18,6 +18,8 @@ To find out more [visit the website!][website]
 * Check code coverage : `make cover`
 * Cleanup             : `make clean`
 
+The preferred way to start concuerror is via the `bin/concuerror` escript.
+
 ## Is there a changelog?
 
 [Yes!][changelog]

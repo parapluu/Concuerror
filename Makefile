@@ -5,8 +5,8 @@
 NAME := concuerror
 VERSION := 0.19
 
-.PHONY: default dev
-default dev native: $(NAME)
+.PHONY: default
+default: all
 
 ###-----------------------------------------------------------------------------
 ### Files
@@ -19,12 +19,17 @@ SOURCES = $(wildcard src/*.erl)
 MODULES = $(SOURCES:src/%.erl=%)
 BEAMS = $(MODULES:%=ebin/%.beam)
 
-SHA_HRL=src/concuerror_sha.hrl
-VERSION_HRL=src/concuerror_version.hrl
+SHA_HRL = src/concuerror_sha.hrl
+VERSION_HRL = src/concuerror_version.hrl
+
+GENERATED_HRLS = $(SHA_HRL) $(VERSION_HRL)
 
 ###-----------------------------------------------------------------------------
 ### Compile
 ###-----------------------------------------------------------------------------
+
+.PHONY: all dev native
+all dev native: $(DEPS_BEAMS) $(BEAMS) $(NAME)
 
 ERL_COMPILE_FLAGS := \
 	+debug_info \
@@ -40,19 +45,26 @@ dev: VERSION := $(VERSION)-dev
 native: ERL_COMPILE_FLAGS += +native
 native: VERSION := $(VERSION)-native
 
-$(NAME): $(DEPS_BEAMS) $(BEAMS)
+$(NAME): Makefile
 	@$(RM) $@
 	@printf " GEN  $@\n"
-	@ln -s "$$(pwd -P)/src/$(NAME)" $@
+	@printf -- "#!/usr/bin/env sh\n" >> $@
+	@printf -- "SCRIPTPATH=\"\$$( cd \"\$$(dirname \"\$$0\")\" ; pwd -P )\"\n" >> $@
+	@printf -- "printf \"\nWARNING! Concuerror/concuerror will be removed in next version. Use Concuerror/bin/concuerror instead!\n\"\n" >> $@
+	@printf -- "\$$SCRIPTPATH/bin/concuerror \$$@" >> $@
+	@chmod u+x $@
 
 ###-----------------------------------------------------------------------------
 
 -include $(MODULES:%=ebin/%.Pbeam)
 
-ebin/%.beam: src/%.erl Makefile | ebin $(SHA_HRL) $(VERSION_HRL)
-	@printf " DEPS $<\n"
-	@erlc -o ebin -MD -MG $<
-	@printf " ERLC $<\n"
+ebin/%.Pbeam: src/%.erl $(GENERATED_HRLS) | ebin
+	@erlc -o ebin -MF $@.tmp -MG $<
+	@cmp -s $@.tmp $@ > /dev/null || (printf " DEPS  $<\n" && cp $@.tmp $@)
+	@$(RM) $@.tmp
+
+ebin/%.beam: src/%.erl | ebin
+	@printf " ERLC  $<\n"
 	@erlc $(ERL_COMPILE_FLAGS) -o ebin $<
 
 ###-----------------------------------------------------------------------------
@@ -99,7 +111,7 @@ DIALYZER_APPS = erts kernel stdlib compiler crypto
 DIALYZER_FLAGS = -Wunmatched_returns -Wunderspecs
 
 .PHONY: dialyze
-dialyze: default $(PLT) $(DEPS_BEAMS)
+dialyze: all $(PLT)
 	dialyzer --add_to_plt --plt $(PLT) $(DEPS_BEAMS)
 	dialyzer --plt $(PLT) $(DIALYZER_FLAGS) ebin/*.beam
 
@@ -111,16 +123,16 @@ $(PLT):
 ###-----------------------------------------------------------------------------
 
 .PHONY: tests
-tests: default
+tests: all
 	@$(RM) $@/thediff
 	@(cd $@; ./runtests.py)
 
 ## the -j 1 below is so that the outputs of tests are not shown interleaved
 .PHONY: tests-real
-tests-real: default
+tests-real: all
 	@$(RM) $@/thediff
 	$(MAKE) -j 1 -C $@ \
-		CONCUERROR=$(abspath concuerror) \
+		CONCUERROR=$(abspath bin/concuerror) \
 		DIFFER=$(abspath tests/differ) \
 		DIFFPRINTER=$(abspath $@/thediff)
 
@@ -151,11 +163,22 @@ travis_has_latest_otp_version:
 
 .PHONY: clean
 clean:
-	$(RM) $(NAME) $(SHA_HRL) $(VERSION_HRL) concuerror_report.txt
-	$(RM) -r ebin cover-data
+	$(RM) $(NAME)
+	$(RM) -r ebin
 
 .PHONY: distclean
 distclean: clean
-	$(RM) $(PLT)
+	$(RM) $(GENERATED_HRLS)
 	$(RM) -r deps/*
 	git checkout -- deps
+
+.PHONE: dialyzer-clean
+dialyzer-clean:
+	$(RM) $(PLT)
+
+cover-clean:
+	$(RM) -r cover/data
+	$(RM) cover/*.COVER.html
+
+.PHONY: maintainer-clean
+maintainer-clean: distclean dialyzer-clean cover-clean
