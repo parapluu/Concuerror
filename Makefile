@@ -107,7 +107,7 @@ deps/%/.git:
 
 PLT=.$(NAME)_plt
 
-DIALYZER_APPS = erts kernel stdlib compiler crypto
+DIALYZER_APPS = erts kernel stdlib compiler crypto tools
 DIALYZER_FLAGS = -Wunmatched_returns -Wunderspecs
 
 .PHONY: dialyze
@@ -167,7 +167,7 @@ clean:
 	$(RM) -r ebin
 
 .PHONY: distclean
-distclean: clean
+distclean: clean dialyzer-clean
 	$(RM) $(GENERATED_HRLS)
 	$(RM) -r deps/*
 	git checkout -- deps
