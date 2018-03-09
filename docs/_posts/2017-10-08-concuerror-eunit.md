@@ -2,6 +2,7 @@
 layout: post
 title: "How to run Concuerror with EUnit"
 category: tutorials
+updated: 2018-03-09
 ---
 
 Here are some guidelines on how to use Concuerror as part of an EUnit
@@ -62,7 +63,9 @@ $ erl -noinput -s eunit_sample test -s erlang halt
 {% endhighlight %}
 
 It is fairly easy to see, however, that the two latter tests can fail
-in particular interleavings.
+in particular interleavings[^1].
+
+[^1]: In fact, the second and third tests MAY fail once in a while, but most times they won't!
 
 Invoking Concuerror on `msg_test/0` easily finds the error:
 
