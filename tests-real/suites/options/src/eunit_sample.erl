@@ -2,6 +2,19 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
+-export([concuerror_tests/0]).
+
+concuerror_tests() ->
+  eunit:test(
+    [{test, ?MODULE, T} ||
+      T <-
+        [ foo_concuerror_test
+        , msg_concuerror_test
+        , reg_concuerror_test
+        ]
+    ]
+   ).
+
 %%==============================================================================
 
 foo_test() ->

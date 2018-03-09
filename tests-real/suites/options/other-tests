@@ -46,8 +46,10 @@ consolehas "bad idea"
 testing "Simple EUnit use"
 cd src
 erlc eunit_sample.erl
-> $Console erl -pa "$(dirname $CONCUERROR)/../ebin" -noinput -s eunit_sample test -s erlang halt
-consolehas "All 6 tests passed."
+> $Console erl -pa "$(dirname $CONCUERROR)/../ebin" -noinput \
+  -s eunit_sample concuerror_tests \
+  -s erlang halt
+consolehas "All 3 tests passed."
 rm eunit_sample.beam
 cd ..
 
