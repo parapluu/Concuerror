@@ -164,7 +164,7 @@ def equalResults(suite, name, orig, rslt):
 
 # Get the directory of Concuerror's testsuite
 dirname = os.path.abspath(os.path.dirname(sys.argv[0]))
-concuerror = os.path.abspath(dirname + "/../concuerror")
+concuerror = os.path.abspath(dirname + "/../bin/concuerror")
 results = os.path.abspath(dirname + "/results")
 
 # Ensure made

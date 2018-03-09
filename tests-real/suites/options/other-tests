@@ -46,7 +46,7 @@ consolehas "bad idea"
 testing "Simple EUnit use"
 cd src
 erlc eunit_sample.erl
-> $Console erl -pa "$(dirname $CONCUERROR)/ebin" -noinput -s eunit_sample test -s erlang halt
+> $Console erl -pa "$(dirname $CONCUERROR)/../ebin" -noinput -s eunit_sample test -s erlang halt
 consolehas "All 6 tests passed."
 rm eunit_sample.beam
 cd ..
@@ -54,7 +54,7 @@ cd ..
 testing "Report unknown arguments in shell invocation"
 cd src
 erlc from_shell.erl
-2> $Console erl -pa "$(dirname $CONCUERROR)/ebin" -noinput -s from_shell with_unknown -s erlang halt
+2> $Console erl -pa "$(dirname $CONCUERROR)/../ebin" -noinput -s from_shell with_unknown -s erlang halt
 consolehas "invalid argument: 'unknown_option'"
 rm from_shell.beam
 cd ..
@@ -62,7 +62,7 @@ cd ..
 testing "Report bad entry_point"
 cd src
 erlc from_shell.erl
-2> $Console erl -pa "$(dirname $CONCUERROR)/ebin" -noinput -s from_shell with_bad_entry -s erlang halt
+2> $Console erl -pa "$(dirname $CONCUERROR)/../ebin" -noinput -s from_shell with_bad_entry -s erlang halt
 consolehas "The specified 'entry_point' 'ugly' is invalid."
 rm from_shell.beam
 cd ..
@@ -70,7 +70,7 @@ cd ..
 testing "Report multiple entry_point s"
 cd src
 erlc from_shell.erl
-2> $Console erl -pa "$(dirname $CONCUERROR)/ebin" -noinput -s from_shell with_multiple_entries -s erlang halt
+2> $Console erl -pa "$(dirname $CONCUERROR)/../ebin" -noinput -s from_shell with_multiple_entries -s erlang halt
 consolehas "Multiple instances of 'entry_point' specified."
 rm from_shell.beam
 cd ..

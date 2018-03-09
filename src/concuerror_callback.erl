@@ -2121,7 +2121,7 @@ explain_error({unknown_built_in, {Module, Name, Arity, Location, Stack}}) ->
     [Module, Name, Arity, LocationString, Stack]);
 explain_error({unsupported_request, Name, Type}) ->
   io_lib:format(
-    "A process send a request of type '~w' to ~p. Concuerror does not yet support"
+    "A process sent a request of type '~w' to ~p. Concuerror does not yet support"
     " this type of request to this process.",
     [Type, Name]);
 explain_error({wrapper_asked_for_status, Name}) ->

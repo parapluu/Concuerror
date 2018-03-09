@@ -14,8 +14,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - untested code for 'hijacking' processes (e.g. application_controller (#2))
 
 ### Changed
+- moved concuerror executable to /bin directory
 
 ### Fixed
+- handling of stacktraces
+- exclude instrumentation time from timeouts
 
 ## [0.18](https://github.com/parapluu/Concuerror/releases/tag/0.18) - 2018-02-20
 
