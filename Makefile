@@ -107,7 +107,7 @@ deps/%/.git:
 
 PLT=.$(NAME)_plt
 
-DIALYZER_APPS = erts kernel stdlib compiler crypto
+DIALYZER_APPS = erts kernel stdlib compiler crypto tools
 DIALYZER_FLAGS = -Wunmatched_returns -Wunderspecs
 
 .PHONY: dialyze
