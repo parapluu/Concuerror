@@ -33,6 +33,11 @@ Use the [mailing list][mailing list] and take a look at the [FAQ][faq] if you ha
 * Do not open an issue on GitHub until you have collected positive feedback about the change. The main repository's Issues are intended for bug reports and fixes.
 
 
+## Code of Conduct
+
+This project and everyone participating in it is governed by the [Contributor Covenant Code of Conduct][Contributor Covenant Code of Conduct]. By participating, you are expected to uphold this code. Please report unacceptable behavior to info@concuerror.com .
+
+
 Thanks! :heart:
 
 [@aronisstav](https://github.com/aronisstav)
