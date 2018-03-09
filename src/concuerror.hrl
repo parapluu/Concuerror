@@ -93,9 +93,10 @@
    autoload_and_log(Module, Logger),
    case concuerror_loader:load(Module) of
      already_done -> ok;
-     ok ->
+     {ok, Warn} ->
        ?log(Logger, ?linfo,
             "Automatically instrumented module ~p~n", [Module]),
+       _ = [?log(Logger, ?lwarning, W, []) || W <- Warn],
        ok;
      fail ->
        ?log(Logger, ?lwarning,

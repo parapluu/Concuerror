@@ -52,7 +52,7 @@ setup_sticky_directories() ->
 
 %%------------------------------------------------------------------------------
 
--spec load(module()) -> 'ok' | 'already_done' | 'fail'.
+-spec load(module()) -> {'ok', iodata()} | 'already_done' | 'fail'.
 
 load(Module) ->
   Instrumented = get_instrumented_table(),
@@ -71,9 +71,9 @@ load(Module, Instrumented) ->
             {F, F}
         end,
       try
-        load_binary(Module, Filename, Beam, Instrumented),
+        {ok, Warnings} = load_binary(Module, Filename, Beam, Instrumented),
         set_is_instrumenting(false),
-        ok
+        {ok, Warnings}
       catch
         _:_ -> fail
       end;
@@ -112,8 +112,8 @@ load_initially(File, Instrumented) ->
   case MaybeModule of
     {ok, Module, Binary} ->
       Warnings = check_shadow(File, Module),
-      load_binary(Module, File, Binary, Instrumented),
-      {ok, Module, Warnings};
+      {ok, MoreWarnings} = load_binary(Module, File, Binary, Instrumented),
+      {ok, Module, Warnings ++ MoreWarnings};
     Error -> Error
   end.
 
@@ -148,18 +148,18 @@ check_shadow(File, Module) ->
 
 load_binary(Module, Filename, Beam, Instrumented) ->
   Core = get_core(Beam),
-  InstrumentedCore =
+  {InstrumentedCore, Warnings} =
     case ets:lookup(Instrumented, Module) =:= [] of
       true ->
         ets:insert(Instrumented, {Module, concuerror_instrumented}),
         concuerror_instrumenter:instrument(Module, Core, Instrumented);
       false ->
-        Core
+        {Core, []}
     end,
   {ok, _, NewBinary} =
     compile:forms(InstrumentedCore, [from_core, report_errors, binary]),
   {module, Module} = code:load_binary(Module, Filename, NewBinary),
-  ok.
+  {ok, Warnings}.
 
 get_core(Beam) ->
   {ok, {Module, [{abstract_code, ChunkInfo}]}} =
