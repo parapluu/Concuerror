@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - [Coveralls](https://coveralls.io/github/parapluu/Concuerror) code coverage tracking
+- [contributor's guide](./CONTRIBUTING.md)
+- [Github Pull Request and Issue templates](./.github/)
 
 ### Removed
 - untested code for 'hijacking' processes (e.g. application_controller (#2))
