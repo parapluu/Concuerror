@@ -19,6 +19,8 @@ Use the [mailing list][mailing list] and take a look at the [FAQ][faq] if you ha
 
 * Fork Concuerror's repository and push a new branch for your patch, using a good, descriptive name.
 
+* Make sure to include at least one test that needs the fix (and fails otherwise).
+
 * Open a Pull Request (PR) with the patch.
 
 * Ensure the PR's description explains the problem and solution. Include the relevant issue number, if applicable.
