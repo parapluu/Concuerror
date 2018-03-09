@@ -167,7 +167,7 @@ clean:
 	$(RM) -r ebin
 
 .PHONY: distclean
-distclean: clean dialyzer-clean
+distclean: clean
 	$(RM) $(GENERATED_HRLS)
 	$(RM) -r deps/*
 	git checkout -- deps
