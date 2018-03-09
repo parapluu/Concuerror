@@ -3,36 +3,38 @@
 First of all, thank you for taking time to contribute to Concuerror!
 
 
-## I just have a question!
+## I want to ask a question.
 
 Use the [mailing list][mailing list] and take a look at the [FAQ][faq] if you haven't already!
 
 
-## Did you encounter a bug?
+## I want to report a bug.
 
-* **Ensure the bug has not already been reported** by searching Github's [Issues][Issues]. If you find a relevant issue, feel free to leave a new comment there.
+* Ensure that you can reproduce the bug on the [latest version of the `master` branch][latest].
 
-* If you cannot find an existing relevant Issue, [open a new Issue][open a new Issue]. Include a **title** and a **description**, as much relevant information as possible, and a **code sample** or an **executable test case** demonstrating the expected behavior that is not occurring.
+* **Take a moment to check whether the bug has already been reported** by searching Github's [Issues][Issues]. If you find a relevant Issue, feel free to leave a comment there.
 
-
-## Did you write a patch that fixes a bug?
-
-* Fork Concuerror's repository and push a new branch for your patch, using a good, descriptive name.
-
-* Make sure to include at least one test that needs the fix (and fails otherwise).
-
-* Open a Pull Request (PR) with the patch.
-
-* Ensure the PR's description explains the problem and solution. Include the relevant issue number, if applicable.
+* If you cannot find an existing relevant Issue, [open a new bug Issue][open a new bug Issue].
 
 
-## Do you want to add a new feature or change an existing one?
+## I want to write a patch that fixes a bug.
 
-* Take a look at the Issue pages of the developers' own forks for relevant ideas and leave comments there: [@aronisstav Issues][aronisstav Issues]
+* Find/write a small test that fails without the patch.
 
-* Suggest your change in the [mailing list][mailing list] and start writing code.
+* Fork Concuerror's repository and push a new branch for your patch, using a suitably descriptive name.
 
-* Do not open an issue on GitHub until you have collected positive feedback about the change. The main repository's Issues are intended for bug reports and fixes.
+* Make sure to also commit the test that needs the patch.
+
+* Open a [Pull Request][pull request].
+
+
+## I want to suggest a feature.
+
+* **Take a moment to check whether a similar feature has not already been requested** by searching Github's [Issues][Issues]. If you find a relevant Issue, feel free to leave a comment there.
+
+* Apart from the main repository, take a look at the Issues page of the developer's own fork: [@aronisstav Issues][aronisstav Issues]
+
+* If you cannot find an existing relevant Issue, [open a new feature Issue][open a new feature Issue].
 
 
 ## Code of Conduct
@@ -50,5 +52,8 @@ Thanks! :heart:
 [Contributor Covenant Code of Conduct]: ./CODE_OF_CONDUCT.md
 [faq]: http://parapluu.github.io/Concuerror/faq
 [Issues]: https://github.com/parapluu/Concuerror/issues
+[latest]: https://github.com/parapluu/Concuerror/
 [mailing list]: http://parapluu.github.io/Concuerror/contact
-[open a new Issue]: https://github.com/parapluu/Concuerror/issues/new
+[open a new bug Issue]: https://github.com/parapluu/Concuerror/issues/new?template=issue_template_bug.md&labels=bug
+[open a new feature Issue]: https://github.com/parapluu/Concuerror/issues/new?template=issue_template_feature.md&labels=feature
+[pull request]: https://github.com/parapluu/Concuerror/compare
