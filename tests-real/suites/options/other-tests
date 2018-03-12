@@ -92,4 +92,8 @@ testing "Log messages are shown for option errors"
 ! concuerror_console -module foo
 consolehas "Parsing '-module' as '--module odule' (add a dash if this is not desired)"
 
+testing "Warn when erlang:load_nif/2 is detected"
+concuerror_console -f src/load_nif.erl
+consolehas "Module load_nif contains a call to erlang:load_nif/2."
+
 . footer

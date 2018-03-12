@@ -17,26 +17,26 @@
 -include("concuerror.hrl").
 
 -spec instrument(module(), cerl:cerl(), concuerror_loader:instrumented())
-                -> cerl:cerl().
+                -> {cerl:cerl(), [iodata()]}.
 
 instrument(?inspect, CoreCode, _Instrumented) ->
   %% The inspect module should never be instrumented.
-  CoreCode;
+  {CoreCode, []};
 instrument(Module, CoreCode, Instrumented) ->
   ?if_debug(Stripper = fun(Tree) -> cerl:set_ann(Tree, []) end),
   ?debug_flag(?input, "~s\n",
               [cerl_prettypr:format(cerl_trees:map(Stripper, CoreCode))]),
   true = ets:insert(Instrumented, {{current}, Module}),
-  {R, {Instrumented, _}} =
-    cerl_trees:mapfold(fun mapfold/2, {Instrumented, 1}, CoreCode),
+  {R, {Instrumented, _, Warnings}} =
+    cerl_trees:mapfold(fun mapfold/2, {Instrumented, 1, []}, CoreCode),
   true = ets:delete(Instrumented, {current}),
   ?debug_flag(?output, "~s\n",
               [cerl_prettypr:format(cerl_trees:map(Stripper, R))]),
-  R.
+  {R, warn_to_string(Module, lists:usort(Warnings))}.
 
-mapfold(Tree, {Instrumented, Var}) ->
+mapfold(Tree, {Instrumented, Var, Warnings}) ->
   Type = cerl:type(Tree),
-  NewTree =
+  NewTreeAndMaybeWarn =
     case Type of
       apply ->
         Op = cerl:apply_op(Tree),
@@ -51,6 +51,7 @@ mapfold(Tree, {Instrumented, Var}) ->
         Name = cerl:call_name(Tree),
         Args = cerl:call_args(Tree),
         case is_safe(Module, Name, length(Args), Instrumented) of
+          has_load_nif -> {warn, Tree, has_load_nif};
           true -> Tree;
           false ->
             inspect(call, [Module, Name, cerl:make_list(Args)], Tree)
@@ -76,12 +77,17 @@ mapfold(Tree, {Instrumented, Var}) ->
         end;
       _ -> Tree
     end,
+  {NewTree, NewWarnings} =
+    case NewTreeAndMaybeWarn of
+      {warn, NT, W} -> {NT, [W|Warnings]};
+      _ -> {NewTreeAndMaybeWarn, Warnings}
+    end,
   NewVar =
     case Type of
       'receive' -> Var + 1;
       _ -> Var
     end,
-  {NewTree, {Instrumented, NewVar}}.
+  {NewTree, {Instrumented, NewVar, NewWarnings}}.
 
 inspect(Tag, Args, Tree) ->
   CTag = cerl:c_atom(Tag),
@@ -120,11 +126,13 @@ is_safe(Module, Name, Arity, Instrumented) ->
     true ->
       NameLit = cerl:concrete(Name),
       ModuleLit = cerl:concrete(Module),
-      %% erlang:apply/3 is safe only when called inside of erlang.erl
-      case {ModuleLit, NameLit, Arity} =:= {erlang, apply, 3} of
-        true ->
+      case {ModuleLit, NameLit, Arity} of
+        %% erlang:apply/3 is safe only when called inside of erlang.erl
+        {erlang, apply, 3} ->
           ets:lookup_element(Instrumented, {current}, 2) =:= erlang;
-        false ->
+        {erlang, load_nif, 2} ->
+          has_load_nif;
+        _ ->
           case erlang:is_builtin(ModuleLit, NameLit, Arity) of
             true ->
               not is_unsafe({ModuleLit, NameLit, Arity});
@@ -133,6 +141,19 @@ is_safe(Module, Name, Arity, Instrumented) ->
           end
       end
   end.
+
+warn_to_string(Module, Tags) ->
+  [io_lib:format("Module ~w ~s", [Module, tag_to_warn(T)]) || T <- Tags].
+
+%%------------------------------------------------------------------------------
+
+tag_to_warn(has_load_nif) ->
+  "contains a call to erlang:load_nif/2."
+    " Concuerror cannot reliably execute operations that are implemented as NIFs."
+    " Moreover, Concuerror cannot even detect if a NIF is used by the test."
+    " If your test uses NIFs, you may see error messages of the form"
+    " 'replaying a built-in returned a different result than expected'."
+    " If your test does not use NIFs you have nothing to worry about.".
 
 %%------------------------------------------------------------------------------
 
@@ -206,6 +227,9 @@ erl_safe("hibernate"                 ) -> false; %% Must be instrumented.
 erl_safe("insert_element"            ) -> true;
 erl_safe("iolist_size"               ) -> true;
 erl_safe("is_builtin"                ) -> true;
+erl_safe("load_nif"                  ) ->
+
+  true;
 erl_safe("make_fun"                  ) -> true;
 erl_safe("make_tuple"                ) -> true;
 erl_safe("match_spec_test"           ) -> true;
