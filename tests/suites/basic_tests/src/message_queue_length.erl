@@ -18,5 +18,6 @@ test() ->
         end),
   receive
     two ->
-      1 = erlang:process_info(self(), message_queue_len)
+      {message_queue_len, 1}
+        = erlang:process_info(self(), message_queue_len)
   end.

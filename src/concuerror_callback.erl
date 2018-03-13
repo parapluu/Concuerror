@@ -564,7 +564,7 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
             [?process_pat_pid_name(Pid, Name)] = ets:lookup(Processes, Pid),
             case Name =:= ?process_name_none of
               true -> [];
-              false -> {Item, Name}
+              false -> Name
             end;
           status ->
             #concuerror_info{status = Status} = TheirInfo,
@@ -585,7 +585,12 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
           _ ->
             throw({unsupported_process_info, Item})
         end,
-      {Res, Info}
+      TagRes =
+        case Item =:= registered_name andalso Res =:= [] of
+          true -> Res;
+          false -> {Item, Res}
+        end,
+      {TagRes, Info}
   end;
 run_built_in(erlang, register, 2, [Name, Pid], Info) ->
   #concuerror_info{
