@@ -379,14 +379,15 @@ fix_common_error(OptionOrArg) ->
 dash_to_underscore($-) -> $_;
 dash_to_underscore(Ch) -> Ch.
 
-maybe_warn_about_mispelled_option(Short, MaybeArg) ->
-  ShortNonBooleanToLong =
+maybe_warn_about_mispelled_option(Short, [_|_] = MaybeArg) ->
+  ShortWithArgToLong =
     [{element(?OPTION_SHORT, O), element(?OPTION_KEY, O)}
      || O <- options(),
         element(?OPTION_SHORT, O) =/= undefined,
-        not is_boolean_option(O)
+        not (option_type(O) =:= boolean),
+        not (option_type(O) =:= integer)
     ],
-  case lists:keyfind(Short, 1, ShortNonBooleanToLong) of
+  case lists:keyfind(Short, 1, ShortWithArgToLong) of
     {_, Long} ->
       opt_info(
         "Parsing '-~s' as '--~w ~s' (add a dash if this is not desired)",
@@ -394,10 +395,10 @@ maybe_warn_about_mispelled_option(Short, MaybeArg) ->
     _ -> ok
   end.
 
-is_boolean_option(Option) ->
+option_type(Option) ->
   case element(?OPTION_GETOPT_TYPE_DEFAULT, Option) of
-    {boolean, _} -> true;
-    _ -> false
+    {Type, _Default} -> Type;
+    Type -> Type
   end.
 
 fix_multiargs(CommandLineArgs) ->
