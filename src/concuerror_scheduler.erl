@@ -205,9 +205,9 @@ explore(State) ->
   case Status of
     ok -> explore(UpdatedState);
     none ->
-      RacesDetectedState = plan_more_interleavings(UpdatedState),
-      LogState = log_trace(RacesDetectedState),
-      {HasMore, NewState} = has_more_to_explore(LogState),
+      LogState = log_trace(UpdatedState),
+      RacesDetectedState = plan_more_interleavings(LogState),
+      {HasMore, NewState} = has_more_to_explore(RacesDetectedState),
       case HasMore of
         true -> explore(NewState);
         false -> ok

@@ -1,51 +1,74 @@
-################################################################################
-Concuerror started with options:
+Concuerror v0.19 ('0645c4d') started at 14 Mar 2018 02:20:30
+ Options:
   [{after_timeout,infinity},
+   {assertions_only,false},
    {assume_racing,false},
-   {depth_bound,5000},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
    {entry_point,{allow_first_crash,test,[]}},
-   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/allow_first_crash.erl"]},
+   {exclude_module,[]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/allow_first_crash.erl"]},
    {ignore_error,[]},
-   {ignore_first_crash,false},
-   {instant_delivery,false},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,false},
    {non_racing_system,[]},
    {print_depth,20},
    {quiet,true},
-   {report_unknown,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
    {symbolic_names,true},
-   {timeout,infinity},
-   {treat_as_normal,[]}]
+   {timeout,500},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
 ################################################################################
-Erroneous interleaving 1:
+Interleaving #1
+--------------------------------------------------------------------------------
+Errors found:
 * At step 3 process P exited abnormally
     Reason:
       error
     Stacktrace:
       [{allow_first_crash,test,0,
-                          [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/allow_first_crash.erl"},
-                           {line,21}]}]
+                          [{file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/allow_first_crash.erl"},
+                           {line,19}]}]
 --------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<allow_first_crash.0.82603364>,[]])
-    in erlang.erl line 2329
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<allow_first_crash.0.74476157>,[]])
+    in erlang.erl line 2516
    2: P: receive timeout expired after 0 ms
-    in allow_first_crash.erl line 16
+    in allow_first_crash.erl line 14
    3: P: exits abnormally (error)
    4: P.1: ok = P ! ok
-    in allow_first_crash.erl line 15
-   5: Message (ok) from P.1 reaches P
-   6: P.1: exits normally
+    in allow_first_crash.erl line 13
+   5: P.1: exits normally
 ################################################################################
-Concuerror Errors:
+Exploration completed!
+################################################################################
+Errors:
 --------------------------------------------------------------------------------
-The first interleaving of your test had errors. Check the output file. You may then use -i to tell Concuerror to continue or use other options to filter out the reported errors, if you consider them acceptable behaviours.
+* Stop testing on first error. (Check '-h keep_going').
 
 ################################################################################
-Concuerror Info:
+Warnings:
 --------------------------------------------------------------------------------
-Instrumenting: allow_first_crash
-Instrumenting: io_lib
-Instrumenting: erlang
+* Option keep_going from concuerror_options_forced overrides the one specified in command line.
+
 ################################################################################
-Done! (Exit status: warning)
-  Summary: 1 errors, 1/2 interleavings explored
+Tips:
+--------------------------------------------------------------------------------
+* Increase '--print_depth' if output/graph contains "...".
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+* Automatically instrumented module io_lib
+* Instrumented & loaded module allow_first_crash
+* Automatically instrumented module erlang
+
+################################################################################
+Done at 14 Mar 2018 02:20:30 (Exit status: error)
+  Summary: 1 errors, 1/1 interleavings explored
