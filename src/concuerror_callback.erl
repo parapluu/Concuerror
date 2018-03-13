@@ -567,8 +567,7 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
               false -> Name
             end;
           status ->
-            #concuerror_info{status = Status} = TheirInfo,
-            Status;
+            TheirInfo#concuerror_info.status;
           trap_exit ->
             TheirInfo#concuerror_info.flags#process_flags.trap_exit;
           ReturnsANumber when
