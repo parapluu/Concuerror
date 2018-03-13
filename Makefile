@@ -3,7 +3,7 @@
 ###-----------------------------------------------------------------------------
 
 NAME := concuerror
-VERSION := 0.19
+VERSION := $(shell git describe --abbrev=6 --always --tags)
 
 .PHONY: default
 default: all
@@ -19,10 +19,9 @@ SOURCES = $(wildcard src/*.erl)
 MODULES = $(SOURCES:src/%.erl=%)
 BEAMS = $(MODULES:%=ebin/%.beam)
 
-SHA_HRL = src/concuerror_sha.hrl
-VERSION_HRL = src/concuerror_version.hrl
+OTP_VERSION_HRL = src/concuerror_otp_version.hrl
 
-GENERATED_HRLS = $(SHA_HRL) $(VERSION_HRL)
+GENERATED_HRLS = $(OTP_VERSION_HRL)
 
 ###-----------------------------------------------------------------------------
 ### Compile
@@ -34,19 +33,20 @@ MAKEFLAGS += --no-builtin-rules
 .PHONY: all dev native
 all dev native: $(DEPS_BEAMS) $(BEAMS) $(NAME)
 
-ERL_COMPILE_FLAGS := \
+dev: VERSION := $(VERSION)-dev
+dev: ERL_COMPILE_FLAGS += -DDEV=true
+
+native: VERSION := $(VERSION)-native
+native: ERL_COMPILE_FLAGS += +native
+
+ERL_COMPILE_FLAGS += \
+	-DVSN="\"$(VERSION)\"" \
 	+debug_info \
 	+warn_export_vars \
 	+warn_unused_import \
 	+warn_missing_spec \
 	+warn_untyped_record \
 	+warnings_as_errors
-
-dev: ERL_COMPILE_FLAGS += -DDEV=true
-dev: VERSION := $(VERSION)-dev
-
-native: ERL_COMPILE_FLAGS += +native
-native: VERSION := $(VERSION)-native
 
 $(NAME): Makefile
 	@$(RM) $@
@@ -61,10 +61,9 @@ $(NAME): Makefile
 
 -include $(MODULES:%=ebin/%.Pbeam)
 
-ebin/%.Pbeam: src/%.erl $(GENERATED_HRLS) | ebin
-	@erlc -o ebin -MF $@.tmp -MG $<
-	@cmp -s $@.tmp $@ > /dev/null || (printf " DEPS  $<\n" && cp $@.tmp $@)
-	@$(RM) $@.tmp
+ebin/%.Pbeam: src/%.erl | ebin $(GENERATED_HRLS)
+	@printf " DEPS  $<\n"
+	@erlc -o ebin -MD -MG $<
 
 ebin/%.beam: src/%.erl | ebin
 	@printf " ERLC  $<\n"
@@ -72,20 +71,9 @@ ebin/%.beam: src/%.erl | ebin
 
 ###-----------------------------------------------------------------------------
 
-$(SHA_HRL): version
-	@printf -- "-define(GIT_SHA, " > $@.tmp
-	@git rev-parse --short --sq HEAD >> $@.tmp
-	@printf ").\n" >> $@.tmp
-	@cmp -s $@.tmp $@ > /dev/null || (printf " GEN  $@\n" && cp $@.tmp $@)
-	@$(RM) $@.tmp
-
-$(VERSION_HRL): version
-	@src/versions $(VERSION) >> $@.tmp
-	@cmp -s $@.tmp $@ > /dev/null || (printf " GEN  $@\n" && cp $@.tmp $@)
-	@$(RM) $@.tmp
-
-.PHONY: version
-version:
+$(OTP_VERSION_HRL):
+	@printf " GEN   $@\n"
+	@src/generate_otp_version_hrl $$(./.travis/get_latest_travis ./.travis.yml) > $@
 
 ###-----------------------------------------------------------------------------
 

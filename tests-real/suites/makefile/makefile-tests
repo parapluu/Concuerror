@@ -1,0 +1,28 @@
+#!/bin/bash
+
+. header
+
+print_blue "$0"
+
+> /dev/null make -sj -C $(dirname $CONCUERROR)/..
+testing "Can clean"
+make -sj -C $(dirname $CONCUERROR)/.. clean
+good
+
+> /dev/null make -sj -C $(dirname $CONCUERROR)/..
+testing "Can distclean"
+make -sj -C $(dirname $CONCUERROR)/.. distclean
+good
+
+> /dev/null make -sj -C $(dirname $CONCUERROR)/.. distclean
+testing "Can compile and run with dev"
+make -sj -C $(dirname $CONCUERROR)/.. dev
+concuerror_console -f ../options/src/six.erl -v9
+outputhas "\-dev"
+
+testing "Restore normal Concuerror"
+> /dev/null make -sj -C $(dirname $CONCUERROR)/.. distclean
+> /dev/null make -sj -C $(dirname $CONCUERROR)/..
+good
+
+. footer
