@@ -23,12 +23,6 @@
 -define(lowercase, lowercase).
 -endif.
 
--ifdef(BEFORE_OTP_19).
--define(join(Strings, Sep), string:join(Strings, Sep)).
--else.
--define(join(Strings, Sep), lists:join(Sep, Strings)).
--endif.
-
 %%%-----------------------------------------------------------------------------
 
 -type options() :: proplists:proplist().
