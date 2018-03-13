@@ -28,6 +28,9 @@ GENERATED_HRLS = $(SHA_HRL) $(VERSION_HRL)
 ### Compile
 ###-----------------------------------------------------------------------------
 
+MAKEFLAGS += --no-builtin-rules
+.SUFFIXES:
+
 .PHONY: all dev native
 all dev native: $(DEPS_BEAMS) $(BEAMS) $(NAME)
 
