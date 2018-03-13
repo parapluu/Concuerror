@@ -194,6 +194,8 @@ is_unsafe({file, native_name_encoding, 0}) ->
   false;
 is_unsafe({net_kernel, dflag_unicode_io, 1}) ->
   false;
+is_unsafe({os, get_env_var, 1}) ->
+  false;
 is_unsafe({prim_file, internal_name2native, 1}) ->
   false;
 is_unsafe(_) ->

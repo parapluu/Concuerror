@@ -16,18 +16,11 @@
 %%%-----------------------------------------------------------------------------
 
 -include("concuerror.hrl").
--include("concuerror_sha.hrl").
 
 -ifdef(BEFORE_OTP_20).
 -define(lowercase, to_lower).
 -else.
 -define(lowercase, lowercase).
--endif.
-
--ifdef(BEFORE_OTP_19).
--define(join(Strings, Sep), string:join(Strings, Sep)).
--else.
--define(join(Strings, Sep), lists:join(Sep, Strings)).
 -endif.
 
 %%%-----------------------------------------------------------------------------
@@ -386,14 +379,15 @@ fix_common_error(OptionOrArg) ->
 dash_to_underscore($-) -> $_;
 dash_to_underscore(Ch) -> Ch.
 
-maybe_warn_about_mispelled_option(Short, MaybeArg) ->
-  ShortNonBooleanToLong =
+maybe_warn_about_mispelled_option(Short, [_|_] = MaybeArg) ->
+  ShortWithArgToLong =
     [{element(?OPTION_SHORT, O), element(?OPTION_KEY, O)}
      || O <- options(),
         element(?OPTION_SHORT, O) =/= undefined,
-        not is_boolean_option(O)
+        not (option_type(O) =:= boolean),
+        not (option_type(O) =:= integer)
     ],
-  case lists:keyfind(Short, 1, ShortNonBooleanToLong) of
+  case lists:keyfind(Short, 1, ShortWithArgToLong) of
     {_, Long} ->
       opt_info(
         "Parsing '-~s' as '--~w ~s' (add a dash if this is not desired)",
@@ -401,10 +395,10 @@ maybe_warn_about_mispelled_option(Short, MaybeArg) ->
     _ -> ok
   end.
 
-is_boolean_option(Option) ->
+option_type(Option) ->
   case element(?OPTION_GETOPT_TYPE_DEFAULT, Option) of
-    {boolean, _} -> true;
-    _ -> false
+    {Type, _Default} -> Type;
+    Type -> Type
   end.
 
 fix_multiargs(CommandLineArgs) ->
@@ -586,13 +580,14 @@ check_help_and_version(Options) ->
 -spec version() -> string().
 
 version() ->
-  io_lib:format("Concuerror v~s (~w)", [?VSN, ?GIT_SHA]).
+  io_lib:format("Concuerror v~s", [?VSN]).
 
 %%%-----------------------------------------------------------------------------
 
 finalize_2(Options) ->
   Passes =
-    [ normalize_fun("argument")
+    [ fun check_otp_version/1
+    , normalize_fun("argument")
     , fun set_verbosity/1
     , fun open_files/1
     , fun add_to_path/1
@@ -620,6 +615,23 @@ run_passes([], Options) ->
   Options;
 run_passes([Pass|Passes], Options) ->
   run_passes(Passes, Pass(Options)).
+
+%%%-----------------------------------------------------------------------------
+
+check_otp_version(Options) ->
+  CurrentOTPRelease =
+    case erlang:system_info(otp_release) of
+      "R" ++ _ -> 16; %% ... or earlier
+      [D,U|_] -> list_to_integer([D,U])
+    end,
+  case CurrentOTPRelease =:= ?OTP_VERSION of
+    true -> ok;
+    false ->
+      opt_error(
+        "Concuerror has been compiled for a different version of Erlang/OTP."
+        " Please run `make distclean; make` again.",[])
+  end,
+  Options.
 
 %%%-----------------------------------------------------------------------------
 
@@ -689,7 +701,9 @@ set_verbosity(Options) ->
   Verbosity = min(SpecifiedVerbosity, ?MAX_VERBOSITY),
   if Verbosity < ?ldebug; ?has_dev -> ok;
      true ->
-      Error = "To use verbosity > ~w, build Concuerror with 'make dev'.",
+      Error =
+        "To use verbosity > ~w, rebuild Concuerror with"
+        " 'make distclean; make dev'.",
       opt_error(Error, [?ldebug - 1])
   end,
   NewOptions = delete_options(verbosity, Options),

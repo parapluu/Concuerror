@@ -1,5 +1,11 @@
--include("concuerror_version.hrl").
+-include("concuerror_otp_version.hrl").
 
+%%------------------------------------------------------------------------------
+-ifdef(BEFORE_OTP_19).
+-define(join(Strings, Sep), string:join(Strings, Sep)).
+-else.
+-define(join(Strings, Sep), lists:join(Sep, Strings)).
+-endif.
 %%------------------------------------------------------------------------------
 -ifdef(SENSITIVE_DEBUG).
 -define(display(A), erlang:display({A, ?MODULE, ?LINE})).

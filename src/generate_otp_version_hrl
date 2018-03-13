@@ -1,0 +1,25 @@
+#!/usr/bin/env escript
+%% -*- erlang-indent-level: 2 -*-
+%%! -noshell
+
+%% The expected argument is the string returned from
+%% `/.travis/get_latest_travis /.travis.yml` e.g. "20.2"
+main([[LD,LU|_] = _LatestTravisOTP]) ->
+  %% The major version in the master branch is the corresponding major
+  %% version part of the latest version known to travis, plus one
+  MasterMajor = list_to_integer([LD,LU]) + 1,
+  CurrentOTPRelease =
+    case erlang:system_info(otp_release) of
+      "R" ++ _ -> 16; %% ... or earlier
+      [D,U|_] -> list_to_integer([D,U])
+    end,
+  io:format("-define(OTP_VERSION, ~w).~n", [CurrentOTPRelease]),
+  add_befores_for(CurrentOTPRelease + 1, MasterMajor).
+
+add_befores_for(Release, MasterMajor) when Release =< MasterMajor ->
+  add_before_for(Release),
+  add_befores_for(Release + 1, MasterMajor);
+add_befores_for(_, _MasterMajor) -> ok.
+
+add_before_for(Release) ->
+  io:format("-define(BEFORE_OTP_~p, true).~n", [Release]).

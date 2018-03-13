@@ -1154,7 +1154,7 @@ has_weak_initial_before([TraceState|Rest], V, Logger) ->
   #trace_state{done = [EarlyEvent|Done]} = TraceState,
   case has_initial(Done, [EarlyEvent|V]) of
     true ->
-      ?debug(Logger, "Check: ~s~n",[string:join([?pretty_s(0,D)||D<-Done],"~n")]),
+      ?debug(Logger, "Check: ~s~n",[?join([?pretty_s(0,D)||D<-Done],"~n")]),
       show_plan(initial, Logger, 1, [EarlyEvent|V]),
       true;
     false ->
