@@ -80,6 +80,7 @@
           exit_reason = normal        :: term(),
           extra                       :: term(),
           flags = #process_flags{}    :: #process_flags{},
+          initial_call                :: 'undefined' | mfa(),
           instant_delivery            :: boolean(),
           is_timer = false            :: 'false' | reference(),
           links                       :: links(),
@@ -548,6 +549,8 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
             TheirDict;
           group_leader ->
             get_leader(Info, Pid);
+          initial_call ->
+            TheirInfo#concuerror_info.initial_call;
           links ->
             #concuerror_info{links = Links} = TheirInfo,
             try ets:lookup_element(Links, Pid, 2)
@@ -1377,7 +1380,8 @@ process_top_loop(Info) ->
 
 -spec wrapper(concuerror_info(), module(), atom(), [term()]) -> no_return().
 
-wrapper(Info, Module, Name, Args) ->
+wrapper(InfoIn, Module, Name, Args) ->
+  Info = InfoIn#concuerror_info{initial_call = {Module, Name, length(Args)}},
   concuerror_inspect:start_inspection(set_status(Info, running)),
   try
     concuerror_inspect:inspect(call, [Module, Name, Args], start),
