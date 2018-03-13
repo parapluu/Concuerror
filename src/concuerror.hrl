@@ -89,8 +89,11 @@
 -define(has_dev, false).
 -endif.
 
--define(unique(Logger, Type, Format, Data),
-        ?log(Logger, Type, {?MODULE, ?LINE}, Format, Data)).
+-define(unique(Logger, Level, Param, Format, Data),
+        ?log(Logger, Level, {?MODULE, ?LINE, Param}, Format, Data)).
+
+-define(unique(Logger, Level, Format, Data),
+        ?unique(Logger, Level, none, Format, Data)).
 
 -define(time(Logger, Tag),
         concuerror_logger:time(Logger, Tag)).

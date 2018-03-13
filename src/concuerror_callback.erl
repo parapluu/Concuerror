@@ -571,11 +571,16 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
             Status;
           trap_exit ->
             TheirInfo#concuerror_info.flags#process_flags.trap_exit;
-          ExpectsANumber when
-              ExpectsANumber =:= heap_size;
-              ExpectsANumber =:= reductions;
-              ExpectsANumber =:= stack_size;
+          ReturnsANumber when
+              ReturnsANumber =:= heap_size;
+              ReturnsANumber =:= reductions;
+              ReturnsANumber =:= stack_size;
               false ->
+            #concuerror_info{logger = Logger} = TheirInfo,
+            Msg =
+              "Concuerror does not properly support erlang:process_info(_,"
+              " ~w), returning 42 instead.~n",
+            ?unique(Logger, ?lwarning, ReturnsANumber, Msg, [ReturnsANumber]),
             42;
           _ ->
             throw({unsupported_process_info, Item})
