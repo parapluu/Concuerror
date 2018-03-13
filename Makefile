@@ -50,7 +50,7 @@ native: VERSION := $(VERSION)-native
 
 $(NAME): Makefile
 	@$(RM) $@
-	@printf " GEN  $@\n"
+	@printf " GEN   $@\n"
 	@printf -- "#!/usr/bin/env sh\n" >> $@
 	@printf -- "SCRIPTPATH=\"\$$( cd \"\$$(dirname \"\$$0\")\" ; pwd -P )\"\n" >> $@
 	@printf -- "printf \"\nWARNING! Concuerror/concuerror will be removed in next version. Use Concuerror/bin/concuerror instead!\n\"\n" >> $@
@@ -68,7 +68,7 @@ ebin/%.Pbeam: src/%.erl $(GENERATED_HRLS) | ebin
 
 ebin/%.beam: src/%.erl | ebin
 	@printf " ERLC  $<\n"
-	@erlc $(ERL_COMPILE_FLAGS) -o ebin $<
+	@erlc -o ebin $(ERL_COMPILE_FLAGS) $<
 
 ###-----------------------------------------------------------------------------
 
@@ -102,7 +102,8 @@ ebin cover/data:
 	$(RM) -r $(dir $<).rebar
 
 deps/%/.git:
-	git submodule update --init
+	@printf " CO    $(@D)\n"
+	@git submodule update --init
 
 ###-----------------------------------------------------------------------------
 ### Dialyzer
