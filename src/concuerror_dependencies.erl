@@ -335,6 +335,33 @@ dependent_exit(_Exit, {ets, _, _}) ->
 
 %%------------------------------------------------------------------------------
 
+dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, group_leader]}},
+                       Other) ->
+  case Other of
+    #builtin_event{mfargs = {erlang,group_leader,[Pid,_]}} -> true;
+    _-> false
+  end;
+dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, links]}},
+                       Other) ->
+  case Other of
+    #builtin_event{
+       actor = Pid,
+       mfargs = {erlang, UnLink, _}
+      } when UnLink =:= link; UnLink =:= unlink -> true;
+    #builtin_event{mfargs = {erlang, UnLink, Pid}}
+      when UnLink =:= link; UnLink =:= unlink -> true;
+    _-> false
+  end;
+dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, Msg]}},
+                       Other)
+  when Msg =:= messages; Msg =:= message_queue_len ->
+  case Other of
+    #message_event{ignored = false, recipient = Recipient} ->
+      Recipient =:= Pid;
+    #receive_event{recipient = Recipient, message = M} ->
+      Recipient =:= Pid andalso M =/= 'after';
+    _ -> false
+  end;
 dependent_process_info(#builtin_event{mfargs = {_, _, [Pid, registered_name]}},
                        Other) ->
   case Other of
@@ -349,20 +376,12 @@ dependent_process_info(#builtin_event{mfargs = {_, _, [Pid, registered_name]}},
       end;
     _ -> false
   end;
-dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, Msg]}},
-                       Other)
-  when Msg =:= messages; Msg =:= message_queue_len ->
-  case Other of
-    #message_event{ignored = false, recipient = Recipient} ->
-      Recipient =:= Pid;
-    #receive_event{recipient = Recipient, message = M} ->
-      Recipient =:= Pid andalso M =/= 'after';
-    _ -> false
-  end;
-dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, group_leader]}},
+dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, trap_exit]}},
                        Other) ->
   case Other of
-    #builtin_event{mfargs = {erlang,group_leader,[Pid,_]}} -> true;
+    #builtin_event{
+       actor = Pid,
+       mfargs = {erlang, process_flag, [trap_exit, _]}} -> true;
     _-> false
   end;
 dependent_process_info(#builtin_event{mfargs = {_,_,[_, Safe]}},
