@@ -538,13 +538,32 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
         end,
       Res =
         case Item of
+          current_function ->
+            case Pid =:= self() of
+              true ->
+                case get_stacktrace([]) of
+                  [] -> TheirInfo#concuerror_info.initial_call;
+                  [{M, F, A, _}|_] -> {M, F, A}
+                end;
+              false ->
+                #concuerror_info{logger = Logger} = TheirInfo,
+                Msg =
+                  "Concuerror does not properly support erlang:process_info(Other,"
+                  " current_function), returning the initial call instead.~n",
+                ?unique(Logger, ?lwarning, Msg, []),
+                TheirInfo#concuerror_info.initial_call
+            end;
           current_stacktrace ->
-            #concuerror_info{logger = Logger} = TheirInfo,
-            Msg =
-              "Concuerror does not properly support erlang:process_info(_,"
-              " current_stacktrace), returning an empty list instead.~n",
-            ?unique(Logger, ?lwarning, Msg, []),
-            [];
+            case Pid =:= self() of
+              true -> get_stacktrace([]);
+              false ->
+                #concuerror_info{logger = Logger} = TheirInfo,
+                Msg =
+                  "Concuerror does not properly support erlang:process_info(Other,"
+                  " current_stacktrace), returning an empty list instead.~n",
+                ?unique(Logger, ?lwarning, Msg, []),
+                []
+            end;
           dictionary ->
             TheirDict;
           group_leader ->
