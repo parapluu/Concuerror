@@ -589,7 +589,12 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
               false -> Name
             end;
           status ->
-            TheirInfo#concuerror_info.status;
+            #concuerror_info{logger = Logger} = TheirInfo,
+            Msg =
+              "Concuerror does not properly support erlang:process_info(_,"
+              " status), returning always 'running' instead.~n",
+            ?unique(Logger, ?lwarning, Msg, []),
+            running;
           trap_exit ->
             TheirInfo#concuerror_info.flags#process_flags.trap_exit;
           ReturnsANumber when

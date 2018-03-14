@@ -371,7 +371,8 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[_, Safe]}},
     Safe =:= dictionary;
     Safe =:= heap_size;
     Safe =:= reductions;
-    Safe =:= stack_size
+    Safe =:= stack_size;
+    Safe =:= status
     ->
   false.
 
