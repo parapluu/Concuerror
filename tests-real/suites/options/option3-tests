@@ -98,7 +98,9 @@ testing "No warnings for -vvvvvvv"
 concuerror_console -vvvv -f src/foo.erl
 print_ok
 testing "... and console does not have \"Parsing\""
-grep -q -v "Parsing" $Console
+if grep -q "Parsing" $Console; then
+    exit 1
+fi
 good
 
 . footer
