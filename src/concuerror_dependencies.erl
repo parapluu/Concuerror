@@ -367,6 +367,7 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, group_leader]}},
   end;
 dependent_process_info(#builtin_event{mfargs = {_,_,[_, Safe]}},
                        _) when
+    Safe =:= current_function;
     Safe =:= current_stacktrace;
     Safe =:= dictionary;
     Safe =:= heap_size;
