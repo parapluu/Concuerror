@@ -261,12 +261,18 @@ options() ->
 synonyms() ->
   [{observers, use_receive_patterns}].
 
-multiple_allowed() ->
+groupable() ->
   [ exclude_module
   , ignore_error
   , non_racing_system
   , treat_as_normal
   ].
+
+multiple_allowed() ->
+  [ pa
+  , pz
+  ] ++
+    groupable().
 
 not_allowed_in_module_attributes() ->
   [ exclude_module
@@ -609,7 +615,7 @@ finalize_2(Options) ->
     , fun group_multiples/1
     , fun process_options/1
     , fun(O) ->
-          add_defaults([{Opt, []} || Opt <- multiple_allowed()], false, O)
+          add_defaults([{Opt, []} || Opt <- groupable()], false, O)
       end
     , fun ensure_entry_point/1
     ],
@@ -1043,7 +1049,7 @@ group_multiples(Options) ->
 group_multiples([], Acc) ->
   lists:reverse(Acc);
 group_multiples([{Key, Value} = Option|Rest], Acc) ->
-  case lists:member(Key, multiple_allowed()) of
+  case lists:member(Key, groupable()) of
     true ->
       Values = lists:flatten([Value|proplists:get_all_values(Key, Rest)]),
       NewRest = delete_options(Key, Rest),

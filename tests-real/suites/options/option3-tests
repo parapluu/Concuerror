@@ -4,6 +4,15 @@
 
 print_blue "$0"
 
+testing "No warnings for multiple -pa"
+concuerror_console -vvvv -f src/foo.erl -pa .. src
+print_ok
+testing "... and console does not have \"Warning\""
+if grep -q "Warning" $Console; then
+    exit 1
+fi
+good
+
 testing "Excluding works minimally"
 concuerror_console -f src/excluding.erl -f src/excluded.erl -x excluded -m excluding
 consolehas "1/1"
