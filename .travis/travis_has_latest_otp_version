@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
 
-THISDIR=$(dirname $0)
-
 curl -sO https://raw.githubusercontent.com/yrashk/kerl/master/kerl
 chmod a+x kerl
 LATEST=`./kerl update releases | tr ' ' '\n' | tail -n1`
 rm ./kerl
-REPO=`$THISDIR/get_latest_travis $THISDIR/../.travis.yml`
-if [ $LATEST != $REPO ]; then
-    printf "\nA newer OTP release is available!\n"
-    printf " (.travis.yml has $REPO on top, kerl has $LATEST)\n\n"
+if [ $LATEST != $TRAVIS_OTP_RELEASE ]; then
+    printf "\nA newer OTP release is available via kerl ($LATEST)!\n"
+    printf " (.travis.yml uses $TRAVIS_OTP_RELEASE for this test)\n\n"
+    printf "See .travis.yml for instructions about how to fix this.\n"
     false
 fi
