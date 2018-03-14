@@ -409,7 +409,13 @@ run_built_in(erlang, group_leader, 2, [GroupLeader, Pid],
   {true, Info};
 
 run_built_in(erlang, halt, _, _, Info) ->
-  #concuerror_info{event = Event} = Info,
+  #concuerror_info{
+     event = Event,
+     logger = Logger
+    } = Info,
+  Message = msg(limited_halt),
+  Logger = Info#concuerror_info.logger,
+  ?unique(Logger, ?lwarning, Message, []),
   NewEvent = Event#event{special = [halt]},
   {no_return, Info#concuerror_info{event = NewEvent}};
 
@@ -2013,6 +2019,11 @@ msg(exit_normal_self_abnormal) ->
     " signal to itself. This shouldn't make it exit, but in the current"
     " OTP it does, unless it's trapping exit signals. Concuerror respects the"
     " implementation.~n";
+msg(limited_halt) ->
+  "A process called erlang:halt/1."
+    " Concuerror does not do race analysis for calls to erlang:halt/0,1,2 as"
+    " such analysis would require reordering such calls with too many other"
+    " built-in operations.~n";
 msg(register_eunit_server) ->
   "Your test seems to try to set up an EUnit server. This is a bad"
     " idea, for at least two reasons:"

@@ -1,4 +1,4 @@
-Concuerror v0.18-89-g851a90 started at 14 Mar 2018 14:42:01
+Concuerror v0.18-86-ga0b428 started at 14 Mar 2018 10:45:40
  Options:
   [{after_timeout,infinity},
    {assertions_only,false},
@@ -6,9 +6,9 @@ Concuerror v0.18-89-g851a90 started at 14 Mar 2018 14:42:01
    {depth_bound,500},
    {disable_sleep_sets,false},
    {dpor,optimal},
-   {entry_point,{sched_tests,test_halt_1,[]}},
+   {entry_point,{halt_error,test1,[]}},
    {exclude_module,[]},
-   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/sched_tests.erl"]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/halt_error.erl"]},
    {ignore_error,[]},
    {instant_delivery,true},
    {interleaving_bound,infinity},
@@ -28,19 +28,21 @@ Concuerror v0.18-89-g851a90 started at 14 Mar 2018 14:42:01
 Interleaving #1
 --------------------------------------------------------------------------------
 Errors found:
-* At step 1 process P called halt with an abnormal status
+* At step 2 process P called halt with an abnormal status
     Status:
-      "But, it's a talking dooog!"
+      1
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: no_return = erlang:halt([66,117,116,44,32,105,116,39,115,32,97,32,116,97,108,107,105,110,103|...])
-    in sched_tests.erl line 503
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<halt_error.0.32220410>,[]])
+    in erlang.erl line 2516
+   2: P: no_return = erlang:halt(1)
+    in halt_error.erl line 13
 ################################################################################
 Exploration completed!
 ################################################################################
 Warnings:
 --------------------------------------------------------------------------------
-* A process called erlang:halt/1. Concuerror does not do race analysis for calls to erlang:halt/0,1,2 as such analysis would require reordering such calls with too many other built-in operations.
+* A process called erlang:halt/1. Concuerror does not do race analysis for calls to erlang:halt/1 as such analysis would require reordering such calls with too many other built-in operations.
 
 ################################################################################
 Tips:
@@ -52,9 +54,11 @@ Tips:
 Info:
 --------------------------------------------------------------------------------
 * Automatically instrumented module io_lib
-* Instrumented & loaded module sched_tests
+* Instrumented & loaded module halt_error
+* Automatically instrumented module erlang
+* Automatically instrumented module io
 * Continuing after error (-k)
 
 ################################################################################
-Done at 14 Mar 2018 14:42:02 (Exit status: error)
+Done at 14 Mar 2018 10:45:41 (Exit status: error)
   Summary: 1 errors, 1/1 interleavings explored

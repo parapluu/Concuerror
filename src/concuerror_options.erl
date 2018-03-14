@@ -29,7 +29,7 @@
 
 -type bound()        :: 'infinity' | non_neg_integer().
 -type dpor()         :: 'none' | 'optimal' | 'persistent' | 'source'.
--type ignore_error() :: 'crash' | 'deadlock' | 'depth_bound'.
+-type ignore_error() :: 'abnormal_halt' | 'crash' | 'deadlock' | 'depth_bound'.
 -type scheduling()   :: 'oldest' | 'newest' | 'round_robin'.
 -type scheduling_bound_type() :: 'bpor' | 'delay' | 'none' | 'ubpor'.
 
@@ -202,12 +202,14 @@ options() ->
     " flag to keep looking for more errors. Preferably, modify the test, or"
     " use the '--ignore_error' / '--treat_as_normal' options."}
   ,{ignore_error, [bug], undefined, atom,
-    "Ignore 'crash', 'deadlock' or 'depth_bound' errors",
+    "Ignore particular kinds of errors (use -h ignore_error for more info)",
     "Concuerror will not report errors of the specified kind:~n"
-    "'crash' (any process crash - check '-h treat_as_normal' for more refined"
-    " control)~n"
-    "'deadlock' (processes waiting at a receive statement)~n"
-    "'depth_bound' (the depth bound was reached - check '-h depth_bound')."}
+    "'abnormal_halt': processes executing erlang:halt/1,2 with status /= 0~n"
+    "'crash': processes crashing with any reason;"
+    " check '-h treat_as_normal' and '-h assertions_only' for more refined"
+    " control~n"
+    "'deadlock': processes waiting at a receive statement~n"
+    "'depth_bound': reaching the depth bound - check '-h depth_bound'"}
   ,{treat_as_normal, [bug], undefined, atom,
     "Exit reasons considered 'normal'",
     "A process that exits with the specified atom as reason (or with a reason"
@@ -297,6 +299,10 @@ check_validity(Key) ->
       {fun(V) -> V > 0 end, "a positive integer"};
     dpor ->
       [none, optimal, persistent, source];
+    ignore_error ->
+      Valid = [abnormal_halt, crash, deadlock, depth_bound],
+      {fun(V) -> [] =:= (V -- Valid) end,
+       io_lib:format("one or more of ~w",[Valid])};
     scheduling ->
       [newest, oldest, round_robin];
     scheduling_bound ->

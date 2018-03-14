@@ -579,6 +579,10 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
       when Reason =/= normal ->
       ?unique(Logger, ?ltip, msg(signal), []),
       State;
+    #builtin_event{mfargs = {erlang, halt, [Status|_]}}
+      when Status =/= 0 ->
+      #event{actor = Actor} = Event,
+      add_warning({abnormal_halt, {Index, Actor, Status}}, State);
     #exit_event{reason = Reason} = Exit when Reason =/= normal ->
       {Tag, WasTimeout} =
         if tuple_size(Reason) > 0 ->
