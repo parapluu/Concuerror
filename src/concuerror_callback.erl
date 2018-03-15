@@ -1025,32 +1025,6 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData], Info) ->
   true = ets:update_element(EtsTables, Tid, Update),
   {true, NewInfo#concuerror_info{extra = Tid}};
 
-run_built_in(Module, Name, Arity, Args, Info)
-  when
-    {Module, Name, Arity} =:= {os, getenv, 1}
-    ->
-  #concuerror_info{event = Event} = Info,
-  #event{event_info = EventInfo, location = Location} = Event,
-  NewResult = erlang:apply(Module, Name, Args),
-  case EventInfo of
-    %% Replaying...
-    #builtin_event{mfargs = {M,F,OArgs}, result = OldResult} ->
-      case OldResult =:= NewResult of
-        true  -> {OldResult, Info};
-        false ->
-          case M =:= Module andalso F =:= Name andalso Args =:= OArgs of
-            true ->
-              ?crash_instr({inconsistent_builtin,
-                      [Module, Name, Arity, Args, OldResult, NewResult, Location]});
-            false ->
-              ?crash_instr({unexpected_builtin_change,
-                      [Module, Name, Arity, Args, M, F, OArgs, Location]})
-          end
-      end;
-    undefined ->
-      {NewResult, Info}
-  end;
-
 run_built_in(erlang = Module, Name, Arity, Args, Info)
   when
     {Name, Arity} =:= {date, 0};
