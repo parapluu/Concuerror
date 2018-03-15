@@ -12,6 +12,17 @@ error_s(fatal, _Depth) ->
   io_lib:format("* Concuerror crashed~n", []);
 error_s({Type, Info}, Depth) ->
   case Type of
+    abnormal_halt ->
+      {Step, P, Status} = Info,
+      S1 =
+        io_lib:format(
+          "* At step ~w process ~p called halt with an abnormal status~n",
+          [Step, P]),
+      S2 =
+        io_lib:format(
+          "    Status:~n"
+          "      ~P~n", [Status, Depth]),
+      [S1,S2];
     crash ->
       {Step, P, Reason, Stacktrace} = Info,
       S1 = io_lib:format("* At step ~w process ~p exited abnormally~n", [Step, P]),

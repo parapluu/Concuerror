@@ -65,10 +65,8 @@ first_non_false([Other|_]) -> Other.
 
 %% The first event happens before the second.
 
-dependent(#builtin_event{mfargs = {erlang, halt, _}}, _) ->
-  true;
 dependent(_, #builtin_event{mfargs = {erlang, halt, _}}) ->
-  true;
+  false;
 
 dependent(#builtin_event{status = {crashed, _}},
           #builtin_event{status = {crashed, _}}) ->
