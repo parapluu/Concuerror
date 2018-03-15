@@ -80,6 +80,7 @@
           exit_reason = normal        :: term(),
           extra                       :: term(),
           flags = #process_flags{}    :: #process_flags{},
+          initial_call                :: 'undefined' | mfa(),
           instant_delivery            :: boolean(),
           is_timer = false            :: 'false' | reference(),
           links                       :: links(),
@@ -537,17 +538,38 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
         end,
       Res =
         case Item of
+          current_function ->
+            case Pid =:= self() of
+              true ->
+                case get_stacktrace([]) of
+                  [] -> TheirInfo#concuerror_info.initial_call;
+                  [{M, F, A, _}|_] -> {M, F, A}
+                end;
+              false ->
+                #concuerror_info{logger = Logger} = TheirInfo,
+                Msg =
+                  "Concuerror does not properly support erlang:process_info(Other,"
+                  " current_function), returning the initial call instead.~n",
+                ?unique(Logger, ?lwarning, Msg, []),
+                TheirInfo#concuerror_info.initial_call
+            end;
           current_stacktrace ->
-            #concuerror_info{logger = Logger} = TheirInfo,
-            Msg =
-              "Concuerror does not properly support erlang:process_info(_,"
-              " current_stacktrace), returning an empty list instead.~n",
-            ?unique(Logger, ?lwarning, Msg, []),
-            [];
+            case Pid =:= self() of
+              true -> get_stacktrace([]);
+              false ->
+                #concuerror_info{logger = Logger} = TheirInfo,
+                Msg =
+                  "Concuerror does not properly support erlang:process_info(Other,"
+                  " current_stacktrace), returning an empty list instead.~n",
+                ?unique(Logger, ?lwarning, Msg, []),
+                []
+            end;
           dictionary ->
             TheirDict;
           group_leader ->
             get_leader(Info, Pid);
+          initial_call ->
+            TheirInfo#concuerror_info.initial_call;
           links ->
             #concuerror_info{links = Links} = TheirInfo,
             try ets:lookup_element(Links, Pid, 2)
@@ -564,23 +586,37 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
             [?process_pat_pid_name(Pid, Name)] = ets:lookup(Processes, Pid),
             case Name =:= ?process_name_none of
               true -> [];
-              false -> {Item, Name}
+              false -> Name
             end;
           status ->
-            #concuerror_info{status = Status} = TheirInfo,
-            Status;
+            #concuerror_info{logger = Logger} = TheirInfo,
+            Msg =
+              "Concuerror does not properly support erlang:process_info(_,"
+              " status), returning always 'running' instead.~n",
+            ?unique(Logger, ?lwarning, Msg, []),
+            running;
           trap_exit ->
             TheirInfo#concuerror_info.flags#process_flags.trap_exit;
-          ExpectsANumber when
-              ExpectsANumber =:= heap_size;
-              ExpectsANumber =:= reductions;
-              ExpectsANumber =:= stack_size;
+          ReturnsANumber when
+              ReturnsANumber =:= heap_size;
+              ReturnsANumber =:= reductions;
+              ReturnsANumber =:= stack_size;
               false ->
+            #concuerror_info{logger = Logger} = TheirInfo,
+            Msg =
+              "Concuerror does not properly support erlang:process_info(_,"
+              " ~w), returning 42 instead.~n",
+            ?unique(Logger, ?lwarning, ReturnsANumber, Msg, [ReturnsANumber]),
             42;
           _ ->
             throw({unsupported_process_info, Item})
         end,
-      {Res, Info}
+      TagRes =
+        case Item =:= registered_name andalso Res =:= [] of
+          true -> Res;
+          false -> {Item, Res}
+        end,
+      {TagRes, Info}
   end;
 run_built_in(erlang, register, 2, [Name, Pid], Info) ->
   #concuerror_info{
@@ -1368,7 +1404,8 @@ process_top_loop(Info) ->
 
 -spec wrapper(concuerror_info(), module(), atom(), [term()]) -> no_return().
 
-wrapper(Info, Module, Name, Args) ->
+wrapper(InfoIn, Module, Name, Args) ->
+  Info = InfoIn#concuerror_info{initial_call = {Module, Name, length(Args)}},
   concuerror_inspect:start_inspection(set_status(Info, running)),
   try
     concuerror_inspect:inspect(call, [Module, Name, Args], start),
