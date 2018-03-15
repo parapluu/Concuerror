@@ -273,7 +273,8 @@ built_in(erlang, pid_to_list, _Arity, _Args, _Location, Info) ->
 built_in(erlang, system_info, 1, [A], _Location, Info)
   when A =:= os_type;
        A =:= schedulers;
-       A =:= logical_processors_available
+       A =:= logical_processors_available;
+       A =:= otp_release
        ->
   {doit, Info};
 %% XXX: Check if its redundant (e.g. link to already linked)
