@@ -233,9 +233,7 @@ erl_safe("hibernate"                 ) -> false; %% Must be instrumented.
 erl_safe("insert_element"            ) -> true;
 erl_safe("iolist_size"               ) -> true;
 erl_safe("is_builtin"                ) -> true;
-erl_safe("load_nif"                  ) ->
-
-  true;
+erl_safe("load_nif"                  ) -> true;
 erl_safe("make_fun"                  ) -> true;
 erl_safe("make_tuple"                ) -> true;
 erl_safe("match_spec_test"           ) -> true;
