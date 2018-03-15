@@ -150,14 +150,14 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
 
 def equalResults(suite, name, orig, rslt):
     global dirname
-    if 0 == subprocess.call("bash differ %s %s" % (orig, rslt), shell=True):
+    beamdir = "%s/suites/%s/src" % (dirname, suite)
+    cmd = ("erl -boot start_clean -noinput -pa %s/%s -pa %s"
+           " -run scenarios exceptional \"%s\" \"%s\" \"%s\""
+           % (beamdir, name, beamdir, name, orig, rslt))
+    if 0 == subprocess.call(cmd, shell=True):
         return True
     else:
-        beamdir = "%s/suites/%s/src" % (dirname, suite)
-        cmd = ("erl -boot start_clean -noinput -pa %s/%s -pa %s"
-               " -run scenarios exceptional \"%s\" \"%s\" \"%s\""
-               % (beamdir, name, beamdir, name, orig, rslt))
-        return 0 == subprocess.call(cmd, shell=True)
+        return 0 == subprocess.call("bash differ %s %s" % (orig, rslt), shell=True)
 
 #---------------------------------------------------------------------
 # Main program
