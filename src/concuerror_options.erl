@@ -209,7 +209,7 @@ options() ->
     " check '-h treat_as_normal' and '-h assertions_only' for more refined"
     " control~n"
     "'deadlock': processes waiting at a receive statement~n"
-    "'depth_bound': reaching the depth bound - check '-h depth_bound'"}
+    "'depth_bound': reaching the depth bound; check '-h depth_bound'"}
   ,{treat_as_normal, [bug], undefined, atom,
     "Exit reasons considered 'normal'",
     "A process that exits with the specified atom as reason (or with a reason"
