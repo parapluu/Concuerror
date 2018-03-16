@@ -95,7 +95,7 @@
           graph_ref        = make_ref() :: reference(),
           previous_actor   = 'none'     :: 'none' | actor(),
           scheduling_bound = infinity   :: concuerror_options:bound(),
-          sleeping         = []         :: [event()],
+          sleep_set        = []         :: [event()],
           wakeup_tree      = []         :: event_tree()
          }).
 
@@ -352,17 +352,17 @@ get_next_event(#scheduler_state{logger = _Logger, trace = [Last|_]} = State) ->
 get_next_event(Event, MaybeNeedsReplayState) ->
   State = replay(MaybeNeedsReplayState),
   #scheduler_state{trace = [Last|_]} = State,
-  #trace_state{actors = Actors, sleeping = Sleeping} = Last,
+  #trace_state{actors = Actors, sleep_set = SleepSet} = Last,
   SortedActors = schedule_sort(Actors, State),
   #event{actor = Actor, label = Label} = Event,
   case Actor =:= undefined of
     true ->
-      AvailableActors = filter_sleeping(Sleeping, SortedActors),
+      AvailableActors = filter_sleep_set(SleepSet, SortedActors),
       free_schedule(Event, AvailableActors, State);
     false ->
       #scheduler_state{print_depth = PrintDepth} = State,
       #trace_state{index = I} = Last,
-      false = lists:member(Actor, Sleeping),
+      false = lists:member(Actor, SleepSet),
       OkUpdatedEvent =
         case Label =/= undefined of
           true ->
@@ -392,14 +392,14 @@ get_next_event(Event, MaybeNeedsReplayState) ->
       end
   end.
 
-filter_sleeping([], AvailableActors) -> AvailableActors;
-filter_sleeping([#event{actor = Actor}|Sleeping], AvailableActors) ->
+filter_sleep_set([], AvailableActors) -> AvailableActors;
+filter_sleep_set([#event{actor = Actor}|SleepSet], AvailableActors) ->
   NewAvailableActors =
     case ?is_channel(Actor) of
       true -> lists:keydelete(Actor, 1, AvailableActors);
       false -> lists:delete(Actor, AvailableActors)
     end,
-  filter_sleeping(Sleeping, NewAvailableActors).
+  filter_sleep_set(SleepSet, NewAvailableActors).
 
 schedule_sort([], _State) -> [];
 schedule_sort(Actors, State) ->
@@ -479,12 +479,12 @@ free_schedule_1(Event, [P|ActiveProcesses], State) ->
 free_schedule_1(_Event, [], State) ->
   %% Nothing to do, trace is completely explored
   #scheduler_state{logger = _Logger, trace = [Last|_]} = State,
-  #trace_state{actors = Actors, sleeping = Sleeping} = Last,
+  #trace_state{actors = Actors, sleep_set = SleepSet} = Last,
   NewErrors =
-    case Sleeping =/= [] of
+    case SleepSet =/= [] of
       true ->
-        ?debug(_Logger, "Sleep set block:~n ~p~n", [Sleeping]),
-        [{sleep_set_block, {State#scheduler_state.origin, Sleeping}}];
+        ?debug(_Logger, "Sleep set block:~n ~p~n", [SleepSet]),
+        [{sleep_set_block, {State#scheduler_state.origin, SleepSet}}];
       false ->
         case concuerror_callback:collect_deadlock_info(Actors) of
           [] -> [];
@@ -522,7 +522,7 @@ update_state(#event{actor = Actor} = Event, State) ->
   #scheduler_state{
      logger = Logger,
      scheduling_bound_type = SchedulingBoundType,
-     trace  = [Last|Prev],
+     trace = [Last|Prev],
      use_sleep_sets = UseSleepSets
     } = State,
   #trace_state{
@@ -532,23 +532,23 @@ update_state(#event{actor = Actor} = Event, State) ->
      graph_ref   = Ref,
      previous_actor = PreviousActor,
      scheduling_bound = SchedulingBound,
-     sleeping    = Sleeping,
+     sleep_set   = SleepSet,
      wakeup_tree = WakeupTree
     } = Last,
   ?trace(Logger, "~s~n", [?pretty_s(Index, Event)]),
   concuerror_logger:graph_new_node(Logger, Ref, Index, Event, 0),
   Done = reset_receive_done(RawDone, State),
-  NextSleeping =
+  NextSleepSet =
     case UseSleepSets of
       true ->
-        AllSleeping =
+        AllSleepSet =
           case WakeupTree of
             [#backtrack_entry{conservative = true}|_] ->
               concuerror_logger:plan(Logger),
-              Sleeping;
-            _ -> ordsets:union(ordsets:from_list(Done), Sleeping)
+              SleepSet;
+            _ -> ordsets:union(ordsets:from_list(Done), SleepSet)
           end,
-        update_sleeping(Event, AllSleeping, State);
+        update_sleep_set(Event, AllSleepSet, State);
       false -> []
     end,
   {NewLastWakeupTree, NextWakeupTree} =
@@ -566,7 +566,7 @@ update_state(#event{actor = Actor} = Event, State) ->
        index       = Index + 1,
        previous_actor = Actor,
        scheduling_bound = NewSchedulingBound,
-       sleeping    = NextSleeping,
+       sleep_set   = NextSleepSet,
        wakeup_tree = NextWakeupTree
       },
   NewLastTrace =
@@ -658,7 +658,7 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
     _ -> State
   end.
 
-update_sleeping(NewEvent, Sleeping, State) ->
+update_sleep_set(NewEvent, SleepSet, State) ->
   #scheduler_state{logger = _Logger} = State,
   Pred =
     fun(OldEvent) ->
@@ -666,7 +666,7 @@ update_sleeping(NewEvent, Sleeping, State) ->
         ?trace(_Logger, "     Awaking (~p): ~s~n", [V,?pretty_s(OldEvent)]),
         V =:= false
     end,
-  lists:filter(Pred, Sleeping).
+  lists:filter(Pred, SleepSet).
 
 update_special(List, TraceState) when is_list(List) ->
   lists:foldl(fun update_special/2, TraceState, List);
@@ -1002,7 +1002,7 @@ update_trace(
      index = EarlyIndex,
      previous_actor = PreviousActor,
      scheduling_bound = BaseBound,
-     sleeping = BaseSleeping,
+     sleep_set = BaseSleepSet,
      wakeup_tree = Wakeup
     } = TraceState,
   Bound = next_bound(SchedulingBoundType, AllDone, PreviousActor, BaseBound),
@@ -1012,7 +1012,7 @@ update_trace(
        true -> Clock;
        false -> {EarlyActor, EarlyIndex}
      end},
-  Sleeping = BaseSleeping ++ Done,
+  SleepSet = BaseSleepSet ++ Done,
   RevEvent = update_context(Event, EarlyEvent),
   {MaybeNewWakeup, ConservativeInfo} =
     case Bound < 0 of
@@ -1032,7 +1032,7 @@ update_trace(
             true ->
               case UseReceivePatterns of
                 false ->
-                  {insert_wakeup_optimal(Sleeping, Wakeup, NotDep, Bound, Origin), false};
+                  {insert_wakeup_optimal(SleepSet, Wakeup, NotDep, Bound, Origin), false};
                 true ->
                   V =
                     case ObserverInfo =:= no_observer of
@@ -1060,7 +1060,7 @@ update_trace(
                   true -> Initials;
                   false -> false
                 end,
-              {insert_wakeup_non_optimal(Sleeping, Wakeup, Initials, false, Origin), AddCons}
+              {insert_wakeup_non_optimal(SleepSet, Wakeup, Initials, false, Origin), AddCons}
           end,
         case is_atom(Plan) of
           true -> NW;
@@ -1213,8 +1213,8 @@ maybe_log_race(TraceState, Index, Event, State) ->
       ?unique(Logger, ?linfo, msg(show_races), [])
   end.
 
-insert_wakeup_non_optimal(Sleeping, Wakeup, Initials, Conservative, Origin) ->
-  case existing(Sleeping, Initials) of
+insert_wakeup_non_optimal(SleepSet, Wakeup, Initials, Conservative, Origin) ->
+  case existing(SleepSet, Initials) of
     true -> skip;
     false -> add_or_make_compulsory(Wakeup, Initials, Conservative, Origin)
   end.
@@ -1247,8 +1247,8 @@ add_or_make_compulsory([Entry|Rest], Initials, Conservative, Origin, Acc) ->
       add_or_make_compulsory(Rest, Initials, Conservative, Origin, NewAcc)
   end.
 
-insert_wakeup_optimal(Sleeping, Wakeup, V, Bound, Origin) ->
-  case has_initial(Sleeping, V) of
+insert_wakeup_optimal(SleepSet, Wakeup, V, Bound, Origin) ->
+  case has_initial(SleepSet, V) of
     true -> skip;
     false -> insert_wakeup(Wakeup, V, Bound, Origin)
   end.
@@ -1368,7 +1368,7 @@ add_conservative([TraceState|Rest], Actor, Clock, Candidates, State, Acc) ->
      enabled = Enabled,
      index = EarlyIndex,
      previous_actor = PreviousActor,
-     sleeping = BaseSleeping,
+     sleep_set = BaseSleepSet,
      wakeup_tree = Wakeup
     } = TraceState,
   ?debug(_Logger,
@@ -1392,10 +1392,10 @@ add_conservative([TraceState|Rest], Actor, Clock, Candidates, State, Acc) ->
               case EnabledCandidates =:= [] of
                 true -> abort;
                 false ->
-                  Sleeping = BaseSleeping ++ Done,
+                  SleepSet = BaseSleepSet ++ Done,
                   case
                     insert_wakeup_non_optimal(
-                      Sleeping, Wakeup, EnabledCandidates, true, Origin
+                      SleepSet, Wakeup, EnabledCandidates, true, Origin
                      )
                   of
                     skip -> abort;
