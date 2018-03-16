@@ -194,7 +194,11 @@ is_unsafe({file, native_name_encoding, 0}) ->
   false;
 is_unsafe({net_kernel, dflag_unicode_io, 1}) ->
   false;
-is_unsafe({os, get_env_var, 1}) ->
+is_unsafe({os, F, A})
+  when
+    {F, A} =:= {get_env_var, 1};
+    {F, A} =:= {getenv, 1}
+    ->
   false;
 is_unsafe({prim_file, internal_name2native, 1}) ->
   false;
@@ -229,9 +233,7 @@ erl_safe("hibernate"                 ) -> false; %% Must be instrumented.
 erl_safe("insert_element"            ) -> true;
 erl_safe("iolist_size"               ) -> true;
 erl_safe("is_builtin"                ) -> true;
-erl_safe("load_nif"                  ) ->
-
-  true;
+erl_safe("load_nif"                  ) -> true;
 erl_safe("make_fun"                  ) -> true;
 erl_safe("make_tuple"                ) -> true;
 erl_safe("match_spec_test"           ) -> true;
