@@ -44,7 +44,8 @@
 
 -export_type([ interleaving_error/0,
                interleaving_error_tag/0,
-               interleaving_result/0
+               interleaving_result/0,
+               unique_id/0
              ]).
 
 %% =============================================================================
@@ -86,13 +87,15 @@
 
 -type channel_actor() :: {channel(), message_event_queue()}.
 
+-type unique_id() :: {interleaving_id(), index()}.
+
 -record(trace_state, {
-          actors           = []         :: [pid() | channel_actor()],
+          actors                        :: [pid() | channel_actor()],
           clock_map        = dict:new() :: clock_map(),
           done             = []         :: [event()],
           enabled          = []         :: [pid() | channel_actor()],
-          index            = 1          :: index(),
-          graph_ref        = make_ref() :: reference(),
+          index                         :: index(),
+          unique_id                     :: unique_id(),
           previous_actor   = 'none'     :: 'none' | actor(),
           scheduling_bound = infinity   :: concuerror_options:bound(),
           sleep_set        = []         :: [event()],
@@ -123,15 +126,15 @@
 -record(scheduler_state, {
           assertions_only              :: boolean(),
           assume_racing                :: assume_racing_opt(),
-          current_graph_ref            :: 'undefined' | reference(),
+          current_state_unique_id      :: 'undefined' | unique_id(),
           depth_bound                  :: pos_integer(),
           dpor                         :: concuerror_options:dpor(),
           entry_point                  :: mfargs(),
           first_process                :: pid(),
           ignore_error                 :: [interleaving_error_tag()],
           interleaving_bound           :: concuerror_options:bound(),
-          interleaving_errors = []     :: [interleaving_error()],
-          interleaving_id = 1          :: interleaving_id(),
+          interleaving_errors          :: [interleaving_error()],
+          interleaving_id              :: interleaving_id(),
           keep_going                   :: boolean(),
           logger                       :: pid(),
           last_scheduled               :: pid(),
@@ -140,7 +143,7 @@
           origin               = 1     :: interleaving_id(),
           print_depth                  :: pos_integer(),
           processes                    :: processes(),
-          receive_timeout_total = 0    :: non_neg_integer(),
+          receive_timeout_total        :: non_neg_integer(),
           scheduling                   :: concuerror_options:scheduling(),
           scheduling_bound_type        :: concuerror_options:scheduling_bound_type(),
           show_races                   :: boolean(),
@@ -171,7 +174,9 @@ run(Options) ->
     #trace_state{
        actors = [FirstProcess],
        enabled = [E || E <- [FirstProcess], enabled(E)],
-       scheduling_bound = ?opt(scheduling_bound, Options)
+       index = 1,
+       scheduling_bound = ?opt(scheduling_bound, Options),
+       unique_id = {1, 1}
       },
   Logger = ?opt(logger, Options),
   {SchedulingBoundType, UnsoundBPOR} =
@@ -189,12 +194,15 @@ run(Options) ->
        first_process = FirstProcess,
        ignore_error = ?opt(ignore_error, Options),
        interleaving_bound = ?opt(interleaving_bound, Options),
+       interleaving_errors = [],
+       interleaving_id = 1,
        keep_going = ?opt(keep_going, Options),
        last_scheduled = FirstProcess,
        logger = Logger,
        non_racing_system = ?opt(non_racing_system, Options),
        print_depth = ?opt(print_depth, Options),
        processes = Processes = ?opt(processes, Options),
+       receive_timeout_total = 0,
        scheduling = ?opt(scheduling, Options),
        scheduling_bound_type = SchedulingBoundType,
        show_races = ?opt(show_races, Options),
@@ -529,14 +537,14 @@ update_state(#event{actor = Actor} = Event, State) ->
      actors      = Actors,
      done        = RawDone,
      index       = Index,
-     graph_ref   = Ref,
      previous_actor = PreviousActor,
      scheduling_bound = SchedulingBound,
      sleep_set   = SleepSet,
+     unique_id   = {InterleavingId, Index} = UID,
      wakeup_tree = WakeupTree
     } = Last,
   ?trace(Logger, "~s~n", [?pretty_s(Index, Event)]),
-  concuerror_logger:graph_new_node(Logger, Ref, Index, Event, 0),
+  concuerror_logger:graph_new_node(Logger, UID, Index, Event, 0),
   Done = reset_receive_done(RawDone, State),
   NextSleepSet =
     case UseSleepSets of
@@ -560,13 +568,15 @@ update_state(#event{actor = Actor} = Event, State) ->
     next_bound(SchedulingBoundType, Done, PreviousActor, SchedulingBound),
   ?trace(Logger, "  Next bound: ~p~n", [NewSchedulingBound]),
   NewLastDone = [Event|Done],
+  NextIndex = Index + 1,
   InitNextTrace =
     #trace_state{
        actors      = Actors,
-       index       = Index + 1,
+       index       = NextIndex,
        previous_actor = Actor,
        scheduling_bound = NewSchedulingBound,
        sleep_set   = NextSleepSet,
+       unique_id   = {InterleavingId, NextIndex},
        wakeup_tree = NextWakeupTree
       },
   NewLastTrace =
@@ -899,7 +909,7 @@ plan_more_interleavings([TraceState|Rest], OldTrace, State) ->
      logger = _Logger,
      non_racing_system = NonRacingSystem
     } = State,
-  #trace_state{done = [Event|_], index = Index, graph_ref = Ref} = TraceState,
+  #trace_state{done = [Event|_], index = Index, unique_id = UID} = TraceState,
   #event{actor = Actor, event_info = EventInfo, special = Special} = Event,
   Skip =
     case proplists:lookup(system_communication, Special) of
@@ -922,7 +932,7 @@ plan_more_interleavings([TraceState|Rest], OldTrace, State) ->
           false -> ActorClock
         end,
       ?debug(_Logger, "~s~n", [?pretty_s(Index, Event)]),
-      GState = State#scheduler_state{current_graph_ref = Ref},
+      GState = State#scheduler_state{current_state_unique_id = UID},
       BaseNewOldTrace =
         more_interleavings_for_event(OldTrace, Event, Rest, BaseClock, GState, Index),
       NewOldTrace = [TraceState|BaseNewOldTrace],
@@ -1203,9 +1213,9 @@ maybe_log_race(TraceState, Index, Event, State) ->
   #scheduler_state{logger = Logger} = State,
   if State#scheduler_state.show_races ->
       #trace_state{done = [EarlyEvent|_], index = EarlyIndex} = TraceState,
-      EarlyRef = TraceState#trace_state.graph_ref,
-      Ref = State#scheduler_state.current_graph_ref,
-      concuerror_logger:graph_race(Logger, EarlyRef, Ref),
+      EarlyUID = TraceState#trace_state.unique_id,
+      UID = State#scheduler_state.current_state_unique_id,
+      concuerror_logger:graph_race(Logger, EarlyUID, UID),
       IndexedEarly = {EarlyIndex, EarlyEvent#event{location = []}},
       IndexedLate = {Index, Event#event{location = []}},
       concuerror_logger:race(Logger, IndexedEarly, IndexedLate);
@@ -1444,11 +1454,11 @@ replay(#scheduler_state{need_to_replay = false} = State) ->
   State;
 replay(State) ->
   #scheduler_state{interleaving_id = N, logger = Logger, trace = Trace} = State,
-  [#trace_state{graph_ref = Sibling} = Last|
-   [#trace_state{graph_ref = Parent}|_] = Rest] = Trace,
+  [#trace_state{index = I, unique_id = Sibling} = Last|
+   [#trace_state{unique_id = Parent}|_] = Rest] = Trace,
   concuerror_logger:graph_set_node(Logger, Parent, Sibling),
   NewTrace =
-    [Last#trace_state{graph_ref = make_ref(), clock_map = dict:new()}|Rest],
+    [Last#trace_state{unique_id = {N, I}, clock_map = dict:new()}|Rest],
   S = io_lib:format("New interleaving ~p. Replaying...", [N]),
   ?time(Logger, S),
   NewState = replay_prefix(NewTrace, State#scheduler_state{trace = NewTrace}),
