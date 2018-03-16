@@ -157,7 +157,7 @@ setup_logger(Processes) ->
                                {'error', term()} |
                                {'skip_timeout', 'false' | {'true', term()}}.
 
--spec instrumented(Tag      :: instrumented_tag(),
+-spec instrumented(Tag      :: concuerror_inspect:instrumented_tag(),
                    Args     :: [term()],
                    Location :: term(),
                    Info     :: concuerror_info()) ->
