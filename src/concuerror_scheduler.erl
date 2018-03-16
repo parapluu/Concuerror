@@ -42,6 +42,11 @@
 %% User interface
 -export([run/1, explain_error/1]).
 
+-export_type([ interleaving_error/0,
+               interleaving_error_tag/0,
+               interleaving_result/0
+             ]).
+
 %%------------------------------------------------------------------------------
 
 -include("concuerror.hrl").
@@ -96,6 +101,22 @@
 
 -type trace_state() :: #trace_state{}.
 
+-type interleaving_result() ::
+        'ok' | 'sleep_set_block' | {[interleaving_error()], [event()]}.
+
+-type interleaving_error_tag() ::
+        'abnormal_exit' |
+        'abnormal_halt' |
+        'deadlock' |
+        'depth_bound'.
+
+-type interleaving_error() ::
+        {'abnormal_exit', {index(), pid(), term(), [term()]}} |
+        {'abnormal_halt', {index(), pid(), term()}} |
+        {'deadlock', [pid()]} |
+        {'depth_bound', concuerror_options:bound()} |
+        'fatal'.
+
 %% DO NOT ADD A DEFAULT VALUE IF IT WILL ALWAYS BE OVERWRITTEN.
 %% Default values for fields should be specified in ONLY ONE PLACE.
 %% For e.g., user options this is normally in the _options module.
@@ -104,13 +125,13 @@
           assume_racing                :: assume_racing_opt(),
           current_graph_ref            :: 'undefined' | reference(),
           depth_bound                  :: pos_integer(),
-          disable_sleep_sets           :: boolean(),
           dpor                         :: concuerror_options:dpor(),
           entry_point                  :: mfargs(),
           exploring            = 1     :: integer(),
           first_process                :: pid(),
-          ignore_error                 :: [concuerror_options:ignore_error()],
+          ignore_error                 :: [interleaving_error_tag()],
           interleaving_bound           :: concuerror_options:bound(),
+          interleaving_errors = []     :: [interleaving_error()],
           keep_going                   :: boolean(),
           logger                       :: pid(),
           last_scheduled               :: pid(),
@@ -127,9 +148,9 @@
           timeout                      :: timeout(),
           trace                        :: [trace_state()],
           treat_as_normal              :: [atom()],
-          unsound_bpor                 :: boolean(),
           use_receive_patterns         :: boolean(),
-          warnings             = []    :: [concuerror_warning_info()]
+          use_sleep_sets               :: boolean(),
+          use_unsound_bpor             :: boolean()
          }).
 
 %% =============================================================================
@@ -163,7 +184,6 @@ run(Options) ->
        assertions_only = ?opt(assertions_only, Options),
        assume_racing = {?opt(assume_racing, Options), Logger},
        depth_bound = ?opt(depth_bound, Options) + 1,
-       disable_sleep_sets = ?opt(disable_sleep_sets, Options),
        dpor = ?opt(dpor, Options),
        entry_point = EntryPoint,
        first_process = FirstProcess,
@@ -182,8 +202,9 @@ run(Options) ->
        trace = [InitialTrace],
        treat_as_normal = ?opt(treat_as_normal, Options),
        timeout = Timeout,
-       unsound_bpor = UnsoundBPOR,
-       use_receive_patterns = ?opt(use_receive_patterns, Options)
+       use_receive_patterns = ?opt(use_receive_patterns, Options),
+       use_sleep_sets = not ?opt(disable_sleep_sets, Options),
+       use_unsound_bpor = UnsoundBPOR
       },
   concuerror_logger:plan(Logger),
   ?time(Logger, "Exploration start"),
@@ -213,8 +234,8 @@ explore(State) ->
         false -> ok
       end;
     {crash, Class, Reason, Stack} ->
-      #scheduler_state{trace = [_|Trace]} = UpdatedState,
-      FatalCrashState = add_warning(fatal, Trace, UpdatedState),
+      FatalCrashState =
+        add_error(fatal, discard_last_trace_state(UpdatedState)),
       catch log_trace(FatalCrashState),
       erlang:raise(Class, Reason, Stack)
   end.
@@ -223,10 +244,10 @@ explore(State) ->
 
 log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
   Log =
-    case filter_warnings(State) of
+    case filter_errors(State) of
       [] -> none;
-      Warnings ->
-        case proplists:get_value(sleep_set_block, Warnings) of
+      Errors ->
+        case proplists:get_value(sleep_set_block, Errors) of
           {Origin, Sleep} ->
             case State#scheduler_state.dpor =:= optimal of
               false ->
@@ -242,7 +263,7 @@ log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
                   [{I, A}|Acc]
               end,
             TraceInfo = lists:foldl(Fold, [], Trace),
-            {lists:reverse(Warnings), TraceInfo}
+            {lists:reverse(Errors), TraceInfo}
         end
     end,
   concuerror_logger:complete(Logger, Log),
@@ -261,8 +282,8 @@ log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
       NextState =
         State#scheduler_state{
           exploring = N + 1,
-          receive_timeout_total = 0,
-          warnings = []
+          interleaving_errors = [],
+          receive_timeout_total = 0
          },
       case NextExploring =< State#scheduler_state.interleaving_bound of
         true -> NextState;
@@ -273,36 +294,34 @@ log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
       end
   end.
 
-filter_warnings(State) ->
+filter_errors(State) ->
   #scheduler_state{
      ignore_error = Ignored,
-     logger = Logger,
-     warnings = UnfilteredWarnings
+     interleaving_errors = UnfilteredErrors,
+     logger = Logger
     } = State,
-  filter_warnings(UnfilteredWarnings, Ignored, Logger).
+  filter_errors(UnfilteredErrors, Ignored, Logger).
 
-filter_warnings(Warnings, [], _) -> Warnings;
-filter_warnings(Warnings, [Ignore|Rest] = Ignored, Logger) ->
-  case lists:keytake(Ignore, 1, Warnings) of
-    false -> filter_warnings(Warnings, Rest, Logger);
-    {value, _, NewWarnings} ->
+filter_errors(Errors, [], _) -> Errors;
+filter_errors(Errors, [Ignore|Rest] = Ignored, Logger) ->
+  case lists:keytake(Ignore, 1, Errors) of
+    false -> filter_errors(Errors, Rest, Logger);
+    {value, _, NewErrors} ->
       UniqueMsg = "Some errors were ignored ('--ignore_error').~n",
       ?unique(Logger, ?lwarning, UniqueMsg, []),
-      filter_warnings(NewWarnings, Ignored, Logger)
+      filter_errors(NewErrors, Ignored, Logger)
   end.
 
-add_warning(Warning, #scheduler_state{trace = Trace} = State) ->
-  add_warning(Warning, Trace, State).
+discard_last_trace_state(State) ->
+  #scheduler_state{trace = [_|Trace]} = State,
+  State#scheduler_state{trace = Trace}.
 
-add_warning(Warning, Trace, State) ->
-  add_warnings([Warning], Trace, State).
+add_error(Error, State) ->
+  add_errors([Error], State).
 
-add_warnings(Warnings, Trace, State) ->
-  #scheduler_state{warnings = OldWarnings} = State,
-  State#scheduler_state{
-    warnings = Warnings ++ OldWarnings,
-    trace = Trace
-   }.
+add_errors(Errors, State) ->
+  #scheduler_state{interleaving_errors = OldErrors} = State,
+  State#scheduler_state{interleaving_errors = Errors ++ OldErrors}.
 
 %%------------------------------------------------------------------------------
 
@@ -310,9 +329,10 @@ get_next_event(
   #scheduler_state{
      depth_bound = Bound,
      logger = Logger,
-     trace = [#trace_state{index = Bound}|Trace]} = State) ->
-  ?unique(Logger, ?lwarning, msg(depth_bound), []),
-  NewState = add_warning({depth_bound, Bound - 1}, Trace, State),
+     trace = [#trace_state{index = Bound}|_]} = State) ->
+  ?unique(Logger, ?lwarning, msg(depth_bound_reached), []),
+  NewState =
+    add_error({depth_bound, Bound - 1}, discard_last_trace_state(State)),
   {none, NewState};
 get_next_event(#scheduler_state{logger = _Logger, trace = [Last|_]} = State) ->
   #trace_state{index = _I, wakeup_tree = WakeupTree} = Last,
@@ -457,9 +477,9 @@ free_schedule_1(Event, [P|ActiveProcesses], State) ->
   end;
 free_schedule_1(_Event, [], State) ->
   %% Nothing to do, trace is completely explored
-  #scheduler_state{logger = _Logger, trace = [Last|Prev]} = State,
+  #scheduler_state{logger = _Logger, trace = [Last|_]} = State,
   #trace_state{actors = Actors, sleeping = Sleeping} = Last,
-  NewWarnings =
+  NewErrors =
     case Sleeping =/= [] of
       true ->
         ?debug(_Logger, "Sleep set block:~n ~p~n", [Sleeping]),
@@ -472,7 +492,7 @@ free_schedule_1(_Event, [], State) ->
             [{deadlock, Info}]
         end
     end,
-  {none, add_warnings(NewWarnings, Prev, State)}.
+  {none, add_errors(NewErrors, discard_last_trace_state(State))}.
 
 maybe_prepare_channel_event(Actor, Event) ->
   case ?is_channel(Actor) of
@@ -499,10 +519,10 @@ reset_event(#event{actor = Actor, event_info = EventInfo}) ->
 
 update_state(#event{actor = Actor} = Event, State) ->
   #scheduler_state{
-     disable_sleep_sets = DisableSleepSets,
      logger = Logger,
      scheduling_bound_type = SchedulingBoundType,
-     trace  = [Last|Prev]
+     trace  = [Last|Prev],
+     use_sleep_sets = UseSleepSets
     } = State,
   #trace_state{
      actors      = Actors,
@@ -518,9 +538,8 @@ update_state(#event{actor = Actor} = Event, State) ->
   concuerror_logger:graph_new_node(Logger, Ref, Index, Event, 0),
   Done = reset_receive_done(RawDone, State),
   NextSleeping =
-    case DisableSleepSets of
-      true -> [];
-      false ->
+    case UseSleepSets of
+      true ->
         AllSleeping =
           case WakeupTree of
             [#backtrack_entry{conservative = true}|_] ->
@@ -528,7 +547,8 @@ update_state(#event{actor = Actor} = Event, State) ->
               Sleeping;
             _ -> ordsets:union(ordsets:from_list(Done), Sleeping)
           end,
-        update_sleeping(Event, AllSleeping, State)
+        update_sleeping(Event, AllSleeping, State);
+      false -> []
     end,
   {NewLastWakeupTree, NextWakeupTree} =
     case WakeupTree of
@@ -582,7 +602,7 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
     #builtin_event{mfargs = {erlang, halt, [Status|_]}}
       when Status =/= 0 ->
       #event{actor = Actor} = Event,
-      add_warning({abnormal_halt, {Index, Actor, Status}}, State);
+      add_error({abnormal_halt, {Index, Actor, Status}}, State);
     #exit_event{reason = Reason} = Exit when Reason =/= normal ->
       {Tag, WasTimeout} =
         if tuple_size(Reason) > 0 ->
@@ -621,7 +641,7 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
           if Report ->
               #event{actor = Actor} = Event,
               Stacktrace = Exit#exit_event.stacktrace,
-              add_warning({crash, {Index, Actor, Reason, Stacktrace}}, State);
+              add_error({abnormal_exit, {Index, Actor, Reason, Stacktrace}}, State);
              true -> State
           end
       end;
@@ -973,7 +993,7 @@ update_trace(
      exploring = Exploring,
      logger = Logger,
      scheduling_bound_type = SchedulingBoundType,
-     unsound_bpor = UnsoundBPOR,
+     use_unsound_bpor = UseUnsoundBPOR,
      use_receive_patterns = UseReceivePatterns
     } = State,
   #trace_state{
@@ -1054,7 +1074,7 @@ update_trace(
       skip;
     over_bound ->
       concuerror_logger:bound_reached(Logger),
-      case UnsoundBPOR of
+      case UseUnsoundBPOR of
         true -> ok;
         false -> put(bound_exceeded, true)
       end,
@@ -1647,11 +1667,11 @@ msg(after_timeout_tip) ->
   "You can use e.g. '--after_timeout 5000' to treat after timeouts that exceed"
     " some threshold (here 4999ms) as 'infinity'.~n";
 msg(assertions_only_filter) ->
-  "Only assertion failures are considered crashes ('--assertions_only').~n";
+  "Only assertion failures are considered abnormal exits ('--assertions_only').~n";
 msg(assertions_only_use) ->
-  "A process crashed with reason '{{assert*,_}, _}'. If you want to see only"
+  "A process exited with reason '{{assert*,_}, _}'. If you want to see only"
     " this kind of error you can use the '--assertions_only' option.~n";
-msg(depth_bound) ->
+msg(depth_bound_reached) ->
   "An interleaving reached the depth bound. This can happen if a test has an"
     " infinite execution. Concuerror is not sound for testing programs with"
     " infinite executions. Consider limiting the size of the test or increasing"
@@ -1671,7 +1691,7 @@ msg(show_races) ->
   "You can see pairs of racing instructions (in the report and"
     " '--graph') with '--show_races true'~n";
 msg(shutdown) ->
-  "A process crashed with reason 'shutdown'. This may happen when a"
+  "A process exited with reason 'shutdown'. This may happen when a"
     " supervisor is terminating its children. You can use '--treat_as_normal"
     " shutdown' if this is expected behaviour.~n";
 msg(sleep_set_block) ->
@@ -1680,7 +1700,7 @@ msg(sleep_set_block) ->
 msg(stop_first_error) ->
   "Stop testing on first error. (Check '-h keep_going').~n";
 msg(timeout) ->
-  "A process crashed with reason '{timeout, ...}'. This may happen when a"
+  "A process exited with reason '{timeout, ...}'. This may happen when a"
     " call to a gen_server (or similar) does not receive a reply within some"
     " timeout (5000ms by default). "
     ++ msg(after_timeout_tip);

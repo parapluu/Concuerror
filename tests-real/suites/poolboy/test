@@ -62,9 +62,9 @@ testing "Rerun"
 good
 
 testing "Tips and errors are there"
-mygrep "A process crashed with reason"
+mygrep "A process exited with reason"
 mygrep "An abnormal exit signal was sent to a process."
-mygrep "A process crashed with reason 'shutdown'."
+mygrep "A process exited with reason 'shutdown'."
 mygrep "Stop testing on first error."
 good
 

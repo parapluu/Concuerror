@@ -6,7 +6,7 @@
 
 -include("concuerror.hrl").
 
--spec error_s(concuerror_warning_info(), pos_integer()) -> string().
+-spec error_s(concuerror_scheduler:interleaving_error(), pos_integer()) -> string().
 
 error_s(fatal, _Depth) ->
   io_lib:format("* Concuerror crashed~n", []);
@@ -23,7 +23,7 @@ error_s({Type, Info}, Depth) ->
           "    Status:~n"
           "      ~P~n", [Status, Depth]),
       [S1,S2];
-    crash ->
+    abnormal_exit ->
       {Step, P, Reason, Stacktrace} = Info,
       S1 = io_lib:format("* At step ~w process ~p exited abnormally~n", [Step, P]),
       S2 =

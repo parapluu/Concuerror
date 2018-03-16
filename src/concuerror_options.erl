@@ -8,7 +8,6 @@
 -export_type(
    [ bound/0
    , dpor/0
-   , ignore_error/0
    , scheduling/0
    , scheduling_bound_type/0
    ]).
@@ -29,7 +28,6 @@
 
 -type bound()        :: 'infinity' | non_neg_integer().
 -type dpor()         :: 'none' | 'optimal' | 'persistent' | 'source'.
--type ignore_error() :: 'abnormal_halt' | 'crash' | 'deadlock' | 'depth_bound'.
 -type scheduling()   :: 'oldest' | 'newest' | 'round_robin'.
 -type scheduling_bound_type() :: 'bpor' | 'delay' | 'none' | 'ubpor'.
 
@@ -204,10 +202,10 @@ options() ->
   ,{ignore_error, [bug], undefined, atom,
     "Ignore particular kinds of errors (use -h ignore_error for more info)",
     "Concuerror will not report errors of the specified kind:~n"
-    "'abnormal_halt': processes executing erlang:halt/1,2 with status /= 0~n"
-    "'crash': processes crashing with any reason;"
+    "'abnormal_exit': processes exiting with any abnormal reason;"
     " check '-h treat_as_normal' and '-h assertions_only' for more refined"
     " control~n"
+    "'abnormal_halt': processes executing erlang:halt/1,2 with status /= 0~n"
     "'deadlock': processes waiting at a receive statement~n"
     "'depth_bound': reaching the depth bound; check '-h depth_bound'"}
   ,{treat_as_normal, [bug], undefined, atom,
@@ -217,9 +215,9 @@ options() ->
     " reported as exiting abnormally. Useful e.g. when analyzing supervisors"
     " ('shutdown' is usually a normal exit reason in this case)."}
   ,{assertions_only, [bug], undefined, {boolean, false},
-    "Only crashes due to failed ?asserts are reported.",
+    "Only abnormal exits due to failed ?asserts are reported.",
     "Only processes that exit with a reason of form '{{assert*, _}, _}' are"
-    " considered crashes. Such exit reasons are generated e.g. by the"
+    " considered errors. Such exit reasons are generated e.g. by the"
     " stdlib/include/assert.hrl header file."}
   ,{timeout, [erlang, advanced], undefined, {integer, ?MINIMUM_TIMEOUT},
     "How long to wait for an event (>= " ++
@@ -306,7 +304,7 @@ check_validity(Key) ->
     dpor ->
       [none, optimal, persistent, source];
     ignore_error ->
-      Valid = [abnormal_halt, crash, deadlock, depth_bound],
+      Valid = [abnormal_halt, abnormal_exit, deadlock, depth_bound],
       {fun(V) -> [] =:= (V -- Valid) end,
        io_lib:format("one or more of ~w",[Valid])};
     scheduling ->
@@ -1151,7 +1149,7 @@ check_validity(Key, Value, {Valid, Explain}) when is_function(Valid) ->
 consistent([], _) -> ok;
 consistent([{assertions_only, true} = Option|Rest], Acc) ->
   check_values(
-    [{ignore_error, fun(X) -> not lists:member(crash, X) end}],
+    [{ignore_error, fun(X) -> not lists:member(abnormal_exit, X) end}],
     Rest ++ Acc, Option),
   consistent(Rest, [Option|Acc]);
 consistent([{disable_sleep_sets, true} = Option|Rest], Acc) ->

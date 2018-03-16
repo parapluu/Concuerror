@@ -6,6 +6,8 @@
 %% Interface to instrumented code:
 -export([start_inspection/1, stop_inspection/0, inspect/3, explain_error/1]).
 
+-export_type([instrumented_tag/0]).
+
 %%------------------------------------------------------------------------------
 
 -include("concuerror.hrl").

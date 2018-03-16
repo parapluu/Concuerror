@@ -22,7 +22,7 @@ concuerror_console --VeRsIoN
 consolehas "Concuerror v"
 
 testing "Tip for attributes"
-concuerror_console -a 1000 --assume_racing -d 5000 --ignore_error crash deadlock -i 6000 -k -f src/foo.erl
+concuerror_console -a 1000 --assume_racing -d 5000 --ignore_error abnormal_exit deadlock -i 6000 -k -f src/foo.erl
 consolehas "help attributes"
 
 testing "Help for attributes"

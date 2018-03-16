@@ -3,7 +3,7 @@
 -export([scenarios/0]).
 -export([test/0]).
 
--concuerror_options_forced([{ignore_error, crash}]).
+-concuerror_options_forced([{ignore_error, abnormal_exit}]).
 
 scenarios() ->
     [{test, inf, dpor}].

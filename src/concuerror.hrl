@@ -275,13 +275,3 @@
          }).
 
 -type event() :: #event{}.
-
--type concuerror_warnings() ::
-        'none' | 'sleep_set_block' | {[concuerror_warning_info()], [event()]}.
-
--type concuerror_warning_info() ::
-        {'abnormal_halt', {index(), pid(), term()}} |
-        'fatal' |
-        {'crash', {index(), pid(), term(), [term()]}} |
-        {'deadlock', [pid()]} |
-        {'depth_bound', pos_integer()}.

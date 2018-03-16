@@ -169,7 +169,7 @@ plan(Logger) ->
   Logger ! plan,
   ok.
 
--spec complete(logger(), concuerror_warnings()) -> ok.
+-spec complete(logger(), concuerror_scheduler:interleaving_result()) -> ok.
 
 complete(Logger, Warnings) ->
   Ref = make_ref(),
