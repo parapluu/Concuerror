@@ -55,6 +55,8 @@
 
 %%------------------------------------------------------------------------------
 
+-type interleaving_id() :: pos_integer().
+
 -ifdef(BEFORE_OTP_17).
 %% Not supported.
 -else.
@@ -76,7 +78,7 @@
 -record(backtrack_entry, {
           conservative = false :: boolean(),
           event                :: event(),
-          origin = 1           :: integer(),
+          origin = 1           :: interleaving_id(),
           wakeup_tree = []     :: event_tree()
          }).
 
@@ -125,17 +127,17 @@
           depth_bound                  :: pos_integer(),
           dpor                         :: concuerror_options:dpor(),
           entry_point                  :: mfargs(),
-          exploring            = 1     :: integer(),
           first_process                :: pid(),
           ignore_error                 :: [interleaving_error_tag()],
           interleaving_bound           :: concuerror_options:bound(),
           interleaving_errors = []     :: [interleaving_error()],
+          interleaving_id = 1          :: interleaving_id(),
           keep_going                   :: boolean(),
           logger                       :: pid(),
           last_scheduled               :: pid(),
           need_to_replay       = false :: boolean(),
           non_racing_system            :: [atom()],
-          origin               = 1     :: integer(),
+          origin               = 1     :: interleaving_id(),
           print_depth                  :: pos_integer(),
           processes                    :: processes(),
           receive_timeout_total = 0    :: non_neg_integer(),
@@ -240,7 +242,7 @@ explore(State) ->
 
 %%------------------------------------------------------------------------------
 
-log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
+log_trace(#scheduler_state{logger = Logger} = State) ->
   Log =
     case filter_errors(State) of
       [] -> none;
@@ -276,18 +278,19 @@ log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
         false ->
           ok
       end,
-      NextExploring = N + 1,
+      InterleavingId = State#scheduler_state.interleaving_id,
+      NextInterleavingId = InterleavingId + 1,
       NextState =
         State#scheduler_state{
-          exploring = N + 1,
           interleaving_errors = [],
+          interleaving_id = NextInterleavingId,
           receive_timeout_total = 0
          },
-      case NextExploring =< State#scheduler_state.interleaving_bound of
+      case NextInterleavingId =< State#scheduler_state.interleaving_bound of
         true -> NextState;
         false ->
           UniqueMsg = "Reached interleaving bound (~p)~n",
-          ?unique(Logger, ?lwarning, UniqueMsg, [N]),
+          ?unique(Logger, ?lwarning, UniqueMsg, [InterleavingId]),
           NextState#scheduler_state{trace = []}
       end
   end.
@@ -988,7 +991,7 @@ update_trace(
  ) ->
   #scheduler_state{
      dpor = DPOR,
-     exploring = Exploring,
+     interleaving_id = Origin,
      logger = Logger,
      scheduling_bound_type = SchedulingBoundType,
      use_unsound_bpor = UseUnsoundBPOR,
@@ -1029,7 +1032,7 @@ update_trace(
             true ->
               case UseReceivePatterns of
                 false ->
-                  {insert_wakeup_optimal(Sleeping, Wakeup, NotDep, Bound, Exploring), false};
+                  {insert_wakeup_optimal(Sleeping, Wakeup, NotDep, Bound, Origin), false};
                 true ->
                   V =
                     case ObserverInfo =:= no_observer of
@@ -1047,7 +1050,7 @@ update_trace(
                   case has_weak_initial_before(lists:reverse(FixedRest), FixedV, Logger) of
                     true -> {skip, false};
                     false ->
-                      {insert_wakeup_optimal(Done, Wakeup, FixedV, Bound, Exploring), false}
+                      {insert_wakeup_optimal(Done, Wakeup, FixedV, Bound, Origin), false}
                   end
               end;
             false ->
@@ -1057,7 +1060,7 @@ update_trace(
                   true -> Initials;
                   false -> false
                 end,
-              {insert_wakeup_non_optimal(Sleeping, Wakeup, Initials, false, Exploring), AddCons}
+              {insert_wakeup_non_optimal(Sleeping, Wakeup, Initials, false, Origin), AddCons}
           end,
         case is_atom(Plan) of
           true -> NW;
@@ -1210,24 +1213,24 @@ maybe_log_race(TraceState, Index, Event, State) ->
       ?unique(Logger, ?linfo, msg(show_races), [])
   end.
 
-insert_wakeup_non_optimal(Sleeping, Wakeup, Initials, Conservative, Exploring) ->
+insert_wakeup_non_optimal(Sleeping, Wakeup, Initials, Conservative, Origin) ->
   case existing(Sleeping, Initials) of
     true -> skip;
-    false -> add_or_make_compulsory(Wakeup, Initials, Conservative, Exploring)
+    false -> add_or_make_compulsory(Wakeup, Initials, Conservative, Origin)
   end.
 
-add_or_make_compulsory(Wakeup, Initials, Conservative, Exploring) ->
-  add_or_make_compulsory(Wakeup, Initials, Conservative, Exploring, []).
+add_or_make_compulsory(Wakeup, Initials, Conservative, Origin) ->
+  add_or_make_compulsory(Wakeup, Initials, Conservative, Origin, []).
 
-add_or_make_compulsory([], [E|_], Conservative, Exploring, Acc) ->
+add_or_make_compulsory([], [E|_], Conservative, Origin, Acc) ->
   Entry =
     #backtrack_entry{
        conservative = Conservative,
-       event = E, origin = Exploring,
+       event = E, origin = Origin,
        wakeup_tree = []
       },
   lists:reverse([Entry|Acc]);
-add_or_make_compulsory([Entry|Rest], Initials, Conservative, Exploring, Acc) ->
+add_or_make_compulsory([Entry|Rest], Initials, Conservative, Origin, Acc) ->
   #backtrack_entry{conservative = C, event = E, wakeup_tree = []} = Entry,
   #event{actor = A} = E,
   Pred = fun(#event{actor = B}) -> A =:= B end,
@@ -1241,13 +1244,13 @@ add_or_make_compulsory([Entry|Rest], Initials, Conservative, Exploring, Acc) ->
       end;
     false ->
       NewAcc = [Entry|Acc],
-      add_or_make_compulsory(Rest, Initials, Conservative, Exploring, NewAcc)
+      add_or_make_compulsory(Rest, Initials, Conservative, Origin, NewAcc)
   end.
 
-insert_wakeup_optimal(Sleeping, Wakeup, V, Bound, Exploring) ->
+insert_wakeup_optimal(Sleeping, Wakeup, V, Bound, Origin) ->
   case has_initial(Sleeping, V) of
     true -> skip;
-    false -> insert_wakeup(Wakeup, V, Bound, Exploring)
+    false -> insert_wakeup(Wakeup, V, Bound, Origin)
   end.
 
 has_initial([Event|Rest], V) ->
@@ -1257,11 +1260,11 @@ has_initial([Event|Rest], V) ->
   end;
 has_initial([], _) -> false.
 
-insert_wakeup(          _, _NotDep,  Bound, _Exploring) when Bound < 0 ->
+insert_wakeup(          _, _NotDep,  Bound, _Origin) when Bound < 0 ->
   over_bound;
-insert_wakeup(         [],  NotDep, _Bound,  Exploring) ->
-  backtrackify(NotDep, Exploring);
-insert_wakeup([Node|Rest],  NotDep,  Bound,  Exploring) ->
+insert_wakeup(         [],  NotDep, _Bound,  Origin) ->
+  backtrackify(NotDep, Origin);
+insert_wakeup([Node|Rest],  NotDep,  Bound,  Origin) ->
   #backtrack_entry{event = Event, origin = M, wakeup_tree = Deeper} = Node,
   case check_initial(Event, NotDep) of
     false ->
@@ -1270,7 +1273,7 @@ insert_wakeup([Node|Rest],  NotDep,  Bound,  Exploring) ->
           true -> Bound - 1;
           false -> Bound
         end,
-      case insert_wakeup(Rest, NotDep, NewBound, Exploring) of
+      case insert_wakeup(Rest, NotDep, NewBound, Origin) of
         Special
           when
             Special =:= skip;
@@ -1281,7 +1284,7 @@ insert_wakeup([Node|Rest],  NotDep,  Bound,  Exploring) ->
       case Deeper =:= [] of
         true  -> skip;
         false ->
-          case insert_wakeup(Deeper, NewNotDep, Bound, Exploring) of
+          case insert_wakeup(Deeper, NewNotDep, Bound, Origin) of
             Special
               when
                 Special =:= skip;
@@ -1357,7 +1360,7 @@ add_conservative([], _Actor, _Clock, _Candidates, _State, _Acc) ->
   abort;
 add_conservative([TraceState|Rest], Actor, Clock, Candidates, State, Acc) ->
   #scheduler_state{
-     exploring = Exploring,
+     interleaving_id = Origin,
      logger = _Logger
     } = State,
   #trace_state{
@@ -1392,7 +1395,7 @@ add_conservative([TraceState|Rest], Actor, Clock, Candidates, State, Acc) ->
                   Sleeping = BaseSleeping ++ Done,
                   case
                     insert_wakeup_non_optimal(
-                      Sleeping, Wakeup, EnabledCandidates, true, Exploring
+                      Sleeping, Wakeup, EnabledCandidates, true, Origin
                      )
                   of
                     skip -> abort;
@@ -1440,7 +1443,7 @@ find_prefix(Trace, SchedulingBoundType) ->
 replay(#scheduler_state{need_to_replay = false} = State) ->
   State;
 replay(State) ->
-  #scheduler_state{exploring = N, logger = Logger, trace = Trace} = State,
+  #scheduler_state{interleaving_id = N, logger = Logger, trace = Trace} = State,
   [#trace_state{graph_ref = Sibling} = Last|
    [#trace_state{graph_ref = Parent}|_] = Rest] = Trace,
   concuerror_logger:graph_set_node(Logger, Parent, Sibling),
