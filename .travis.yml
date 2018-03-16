@@ -23,11 +23,11 @@ matrix:
 
   # Check that the latest Erlang version is tested
 
-  # This test will fail with 'X' when a new version is available via kerl
-  # At that point, bump this test's otp_release to the newly available one
-  # The test will then fail with '!', until Travis supports the new version
-  # When the test starts passing again, update otp_release in the corresponding
-  #  list below
+  # This test will fail with 'X' when a new version is available via kerl.
+  # At that point, update THIS test's otp_release to the new one.
+  # The test will keep failing with '!', until Travis has the new version.
+  # When the test starts failing with 'X' again, Travis has the new version.
+  # At that point, update otp_release in the corresponding list below
 
   - stage: basic
     otp_release: 20.3

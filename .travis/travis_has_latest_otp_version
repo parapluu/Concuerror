@@ -10,3 +10,13 @@ if [ $LATEST != $TRAVIS_OTP_RELEASE ]; then
     printf "See .travis.yml for instructions about how to fix this.\n"
     false
 fi
+
+THISDIR=$(dirname $0)
+REPO=`$THISDIR/get_latest_travis $THISDIR/../.travis.yml`
+
+if [ $LATEST != $REPO ]; then
+    printf "\nA newer OTP release is available on Travis ($LATEST)!\n"
+    printf " (.travis.yml has $REPO on top)\n\n"
+    printf "See .travis.yml for instructions about how to fix this.\n"
+    false
+fi
