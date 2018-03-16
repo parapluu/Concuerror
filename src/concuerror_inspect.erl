@@ -1,6 +1,6 @@
 %% -*- erlang-indent-level: 2 -*-
 
-%% This module will never be instrumented.
+%% @doc The instrumenter replaces interesting operations with calls to inspect/3
 -module(concuerror_inspect).
 
 %% Interface to instrumented code:
