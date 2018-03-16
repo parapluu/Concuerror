@@ -257,7 +257,10 @@ options() ->
    ].
 
 synonyms() ->
-  [{observers, use_receive_patterns}].
+  [ {{observers, true}, {use_receive_patterns, true}}
+  , {{observers, false}, {use_receive_patterns, false}}
+  , {{ignore_error, crash}, {ignore_error, abnormal_exit}}
+  ].
 
 groupable() ->
   [ exclude_module
@@ -658,13 +661,17 @@ normalize_fun(Source) ->
 
 substitute_synonyms(Options) ->
   Map =
-    fun(Key) ->
-        case lists:keyfind(Key, 1, synonyms()) of
-          false -> Key;
-          {Key, K} -> K
+    fun(Option) ->
+        case lists:keyfind(Option, 1, synonyms()) of
+          false -> Option;
+          {{Key, Value}, {SKey, SValue} = Synonym} ->
+            opt_info(
+              "\"--~w ~w\" converted to \"--~w ~w\"",
+              [Key, Value, SKey, SValue]),
+            Synonym
         end
     end,
-  lists:keymap(Map, 1, Options).
+  [Map(Option) || Option <- Options].
 
 expand_short_names(Options) ->
   Map =

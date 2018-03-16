@@ -103,4 +103,8 @@ if grep -q "Parsing" $Console; then
 fi
 good
 
+testing "Notify about synonym"
+concuerror_console --ignore_error crash -f src/foo.erl
+consolehas "\"--ignore_error crash\" converted to \"--ignore_error abnormal_exit\""
+
 . footer
