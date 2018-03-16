@@ -234,7 +234,6 @@ instrumented_call(Module, Name, Arity, Args, Location, Info)
 instrumented_call({Module, _} = Tuple, Name, Arity, Args, Location, Info) ->
   instrumented_call(Module, Name, Arity + 1, Args ++ Tuple, Location, Info);
 instrumented_call(_, _, _, _, _, Info) ->
-  erlang:display({nope}),
   {doit, Info}.
 
 get_fun_info(Fun, Tag) ->
