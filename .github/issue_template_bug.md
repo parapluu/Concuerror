@@ -1,6 +1,6 @@
 ## Description
 
-[Description of the bug]
+Give a short description of the bug.
 
 ## Steps to Reproduce
 
@@ -10,11 +10,11 @@
 
 ### Expected behaviour
 
-[What you expected to happen]
+What you expected to happen.
 
 ### Actual behaviour
 
-[What actually happened]
+What actually happened.
 
 ## Version
 

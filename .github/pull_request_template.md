@@ -1,6 +1,6 @@
 ## Summary
 
-<Describe>
+Describe what will be improved after merging this Pull Request.
 
 ## Checklist
 
