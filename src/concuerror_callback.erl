@@ -1,5 +1,8 @@
 %% -*- erlang-indent-level: 2 -*-
 
+%% @doc This module contains code for:
+%%      - managing and interfacing with processes under Concuerror
+%%      - simulating built-in operations in instrumented processes
 -module(concuerror_callback).
 
 %% Interface to concuerror_inspect:
@@ -154,7 +157,7 @@ setup_logger(Processes) ->
                                {'error', term()} |
                                {'skip_timeout', 'false' | {'true', term()}}.
 
--spec instrumented(Tag      :: instrumented_tag(),
+-spec instrumented(Tag      :: concuerror_inspect:instrumented_tag(),
                    Args     :: [term()],
                    Location :: term(),
                    Info     :: concuerror_info()) ->
@@ -231,7 +234,6 @@ instrumented_call(Module, Name, Arity, Args, Location, Info)
 instrumented_call({Module, _} = Tuple, Name, Arity, Args, Location, Info) ->
   instrumented_call(Module, Name, Arity + 1, Args ++ Tuple, Location, Info);
 instrumented_call(_, _, _, _, _, Info) ->
-  erlang:display({nope}),
   {doit, Info}.
 
 get_fun_info(Fun, Tag) ->

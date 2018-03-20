@@ -14,9 +14,14 @@
 -define(TICKER_TIMEOUT, 500).
 %%------------------------------------------------------------------------------
 
+-type unique_id() :: concuerror_scheduler:unique_id().
+
 -type stream() :: 'standard_io' | 'standard_error' | 'race' | file:filename().
 -type graph_data() ::
-        {file:io_device(), reference() | 'init', reference() | 'none'}.
+        { file:io_device()
+        , unique_id() | 'init'
+        , unique_id() | 'none'
+        }.
 
 %%------------------------------------------------------------------------------
 
@@ -169,7 +174,7 @@ plan(Logger) ->
   Logger ! plan,
   ok.
 
--spec complete(logger(), concuerror_warnings()) -> ok.
+-spec complete(logger(), concuerror_scheduler:interleaving_result()) -> ok.
 
 complete(Logger, Warnings) ->
   Ref = make_ref(),
@@ -610,19 +615,19 @@ interleavings_message(State) ->
 
 %%------------------------------------------------------------------------------
 
--spec graph_set_node(logger(), reference(), reference()) -> ok.
+-spec graph_set_node(logger(), unique_id(), unique_id()) -> ok.
 
 graph_set_node(Logger, Parent, Sibling) ->
   Logger ! {graph, {set_node, Parent, Sibling}},
   ok.
 
--spec graph_new_node(logger(), reference(), index(), event(), integer()) -> ok.
+-spec graph_new_node(logger(), unique_id(), index(), event(), integer()) -> ok.
 
 graph_new_node(Logger, Ref, Index, Event, BoundConsumed) ->
   Logger ! {graph, {new_node, Ref, Index, Event, BoundConsumed}},
   ok.
 
--spec graph_race(logger(), reference(), reference()) -> ok.
+-spec graph_race(logger(), unique_id(), unique_id()) -> ok.
 graph_race(Logger, EarlyRef, Ref) ->
   Logger ! {graph, {race, EarlyRef, Ref}},
   ok.
@@ -634,7 +639,7 @@ graph_preamble({GraphFile, _}) ->
     "digraph {~n"
     "  graph [ranksep=0.3]~n"
     "  node [shape=box,width=7,fontname=Monospace]~n"
-    "  init [label=\"Initial\"];~n"
+    "  \"init\" [label=\"Initial\"];~n"
     "  subgraph {~n", []),
   {GraphFile, init, none}.
 
@@ -693,12 +698,12 @@ graph_command(Command, State) ->
           []),
         {GraphFile, NewParent, NewSibling};
       {status, Count, String, Color} ->
-        Ref = make_ref(),
+        Final = {Count + 1, final},
         to_file(
           GraphFile,
           "    \"~p\" [label=\"~p: ~s\",style=filled,fillcolor=~s];~n"
           "~s[weight=1000];~n",
-          [Ref, Count+1, String, Color, ref_edge(Parent, Ref)]),
+          [Final, Count+1, String, Color, ref_edge(Parent, Final)]),
         Graph
     end,
   State#logger_state{graph_data = NewGraph}.
