@@ -59,20 +59,16 @@
 -type interleaving_id() :: pos_integer().
 
 -ifdef(BEFORE_OTP_17).
-%% Not supported.
+%% Not used.
 -else.
--ifdef(BEFORE_OTP_18).
--type clock_vector() :: orddict:orddict().
--else.
--type clock_vector() :: orddict:orddict(pid(), index()).
--endif.
+-type vector_clock() :: #{actor() => index()}.
 -endif.
 
 -ifdef(BEFORE_OTP_17).
 -type clock_map()           :: dict().
 -type message_event_queue() :: queue().
 -else.
--type clock_map()           :: dict:dict(pid(), clock_vector()).
+-type clock_map()           :: dict:dict(pid(), vector_clock()).
 -type message_event_queue() :: queue:queue(#message_event{}).
 -endif.
 
@@ -814,7 +810,7 @@ assign_happens_before([TraceState|Later], RevLate, RevEarly, State, Mode) ->
         #event{actor = Actor, special = Special} = Event,
         ClockMap = get_base_clock(RevLate, RevEarly),
         OldClock = lookup_clock(Actor, ClockMap),
-        ActorClock = orddict:store(Actor, Index, OldClock),
+        ActorClock = clock_store(Actor, Index, OldClock),
         ?trace(_Logger, "HB: ~s~n", [?pretty_s(Index,Event)]),
         BaseHappenedBeforeClock =
           add_pre_message_clocks(Special, ClockMap, ActorClock),
@@ -825,8 +821,8 @@ assign_happens_before([TraceState|Later], RevLate, RevEarly, State, Mode) ->
           add_new_and_messages(Special, HappenedBeforeClock, BaseNewClockMap),
         StateClock = lookup_clock(state, ClockMap),
         OldActorClock = lookup_clock_value(Actor, StateClock),
-        FinalActorClock = orddict:store(Actor, OldActorClock, HappenedBeforeClock),
-        FinalStateClock = orddict:store(Actor, Index, StateClock),
+        FinalActorClock = clock_store(Actor, OldActorClock, HappenedBeforeClock),
+        FinalStateClock = clock_store(Actor, Index, StateClock),
         FinalClockMap =
           dict:store(
             Actor, FinalActorClock,
@@ -912,7 +908,7 @@ update_clock([TraceState|Rest], Event, Clock, State) ->
             #trace_state{clock_map = ClockMap} = TraceState,
             EarlyActorClock = lookup_clock(EarlyActor, ClockMap),
             max_cv(
-              Clock, orddict:store(EarlyActor, EarlyIndex, EarlyActorClock))
+              Clock, clock_store(EarlyActor, EarlyIndex, EarlyActorClock))
         end
     end,
   update_clock(Rest, Event, NewClock, State).
@@ -938,7 +934,7 @@ plan_more_interleavings([TraceState|Rest], OldTrace, State) ->
       ClockMap = get_base_clock(OldTrace, []),
       StateClock = lookup_clock(state, ClockMap),
       ActorLast = lookup_clock_value(Actor, StateClock),
-      ActorClock = orddict:store(Actor, ActorLast, lookup_clock(Actor, ClockMap)),
+      ActorClock = clock_store(Actor, ActorLast, lookup_clock(Actor, ClockMap)),
       BaseClock =
         case ?is_channel(Actor) of
           true ->
@@ -999,9 +995,8 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
     case Action =:= none of
       true -> Clock;
       false ->
-        orddict:store(
-          EarlyActor, EarlyIndex,
-          max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock))
+        MaxCV = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
+        clock_store(EarlyActor, EarlyIndex, MaxCV)
     end,
   {NewTrace, NewRest} =
     case Action of
@@ -1619,11 +1614,19 @@ assert_no_messages() ->
 lookup_clock(P, ClockMap) ->
   case dict:find(P, ClockMap) of
     {ok, Clock} -> Clock;
-    error -> orddict:new()
+    error -> clock_new()
   end.
 
-lookup_clock_value(P, CV) ->
-  case orddict:find(P, CV) of
+-ifdef(BEFORE_OTP_17).
+
+clock_new() ->
+  orddict:new().
+
+clock_store(Actor, Index, VectorClock) ->
+  orddict:store(Actor, Index, VectorClock).
+
+lookup_clock_value(Actor, VectorClock) ->
+  case orddict:find(Actor, VectorClock) of
     {ok, Value} -> Value;
     error -> 0
   end.
@@ -1631,6 +1634,26 @@ lookup_clock_value(P, CV) ->
 max_cv(D1, D2) ->
   Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
   orddict:merge(Merger, D1, D2).
+
+-else.
+
+clock_new() ->
+  #{}.
+
+clock_store(Actor, Index, VectorClock) ->
+  maps:put(Actor, Index, VectorClock).
+
+lookup_clock_value(Actor, VectorClock) ->
+  maps:get(Actor, VectorClock, 0).
+
+max_cv(VC1, VC2) ->
+  ODVC1 = orddict:from_list(maps:to_list(VC1)),
+  ODVC2 = orddict:from_list(maps:to_list(VC2)),
+  Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
+  MaxVC = orddict:merge(Merger, ODVC1, ODVC2),
+  maps:from_list(MaxVC).
+
+-endif.
 
 next_bound(SchedulingBoundType, Done, PreviousActor, Bound) ->
   case SchedulingBoundType of
