@@ -1,11 +1,12 @@
 ---
 layout: post
-title: "Testing Poolboy, Part 1: Concuerror basics"
+title: "Concuerror basics (Testing Poolboy, Part 1)"
 category: tutorials
-updated: 2016-05-11
+updated: 2018-03-21
 ---
 
-In this tutorial we will use Concuerror to analyze a few tests written for the
+In this tutorial we will explain some basic use of Concuerror
+to analyze a few tests written for the
 [Poolboy](https://github.com/devinus/poolboy) library.
 
 {:.no_toc}
@@ -19,7 +20,7 @@ Setting up Concuerror, Poolboy and our first test
 
 ### Setting up Concuerror
 
-[Download and make Concuerror as described in the Downloads section](/download)
+The first step is to download and make Concuerror as described in the [Download](/download) page.
 
 For the rest of the tutorial we will assume that the `concuerror` executable
 is in our path. For example, to get help for all of Concuerror's options we just
