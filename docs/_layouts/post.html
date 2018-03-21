@@ -48,7 +48,7 @@
       <footer class="entry-meta">
         <img src="{{ author_avatar }}" alt="{{ author_name }} photo" class="author-photo">
         <span class="author vcard" itemprop="author" itemscope itemtype="http://schema.org/Person">By <span itemprop="name" class="fn">{{ author_name }}</span></span>
-        <span class="entry-date date published"><time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished"><i class="far fa-calendar"></i> {{ page.date | date: "%B %d, %Y" }}</time></span>
+        <span class="entry-date date published"><time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished"><i class="fas fa-calendar"></i> {{ page.date | date: "%B %d, %Y" }}</time></span>
         {% if page.modified %}<span class="entry-date date modified"><time datetime="{{ page.modified | date_to_xmlschema }}" itemprop="dateModified"><i class="fas fa-pencil-alt"></i> {{ page.modified | date: "%B %d, %Y" }}</time></span>
         {% elsif page.updated %}<span class="entry-date date updated"><time datetime="{{ page.updated | date_to_xmlschema }}" itemprop="dateModified"><i class="fas fa-pencil-alt"></i> {{ page.updated | date: "%B %d, %Y" }}</time></span>
         {% else %}<span class="entry-date date updated"><time datetime="{{ page.date | date_to_xmlschema }}" itemprop="dateModified">{% endif %}
