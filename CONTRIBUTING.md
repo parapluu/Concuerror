@@ -30,7 +30,7 @@ Use the [mailing list][mailing list] and take a look at the [FAQ][faq] if you ha
 
 ## I want to suggest a feature.
 
-* **Take a moment to check whether a similar feature has not already been requested** by searching Github's [Issues][Issues]. If you find a relevant Issue, feel free to leave a comment there.
+* **Take a moment to check whether a similar feature has already been requested** by searching Github's [Issues][Issues]. If you find a relevant Issue, leave a comment there.
 
 * Apart from the main repository, take a look at the Issues page of the developer's own fork: [@aronisstav Issues][aronisstav Issues]
 
