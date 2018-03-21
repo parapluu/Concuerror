@@ -6,7 +6,7 @@ Description of the feature.
 
 ## Suggested Workflow
 
-Give a short suggested workflow for implementing this feature.
+Suggest a plan for implementing this feature.
 
 * [ ] First step
 * [ ] Second step
