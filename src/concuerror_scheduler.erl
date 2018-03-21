@@ -764,14 +764,18 @@ plan_more_interleavings(State) ->
      use_receive_patterns = UseReceivePatterns
     } = State,
   ?time(Logger, "Assigning happens-before..."),
+  {RE, UntimedLate} = split_trace(RevTrace),
   {RevEarly, Late} =
     case UseReceivePatterns of
       false ->
-        {RE, UntimedLate} = split_trace(RevTrace),
-        {RE, assign_happens_before(UntimedLate, RE, State)};
+        {RE, lists:reverse(assign_happens_before(UntimedLate, RE, State, untimed))};
       true ->
-        {ObsTrace, _Dict} = fix_receive_info(RevTrace),
-        {[], assign_happens_before(ObsTrace, [], State)}
+        RevUntimedLate = lists:reverse(UntimedLate),
+        {ObsLate, Dict} = fix_receive_info(RevUntimedLate),
+        {ObsEarly, _Dict} = fix_receive_info(RE, Dict),
+        FixedEarly = assign_happens_before(ObsEarly, [], State, new_observers),
+        FixedLate = assign_happens_before(ObsLate, FixedEarly, State, untimed),
+        {FixedEarly, lists:reverse(FixedLate)}
     end,
   ?time(Logger, "Planning more interleavings..."),
   NewRevTrace =
@@ -795,36 +799,47 @@ split_trace([#trace_state{clock_map = ClockMap} = State|RevEarlier] = RevEarly,
     false -> {RevEarly, UntimedLate}
   end.
 
-assign_happens_before(UntimedLate, RevEarly, State) ->
-  assign_happens_before(UntimedLate, [], RevEarly, State).
+assign_happens_before(UntimedLate, RevEarly, State, Mode) ->
+  assign_happens_before(UntimedLate, [], RevEarly, State, Mode).
 
-assign_happens_before([], RevLate, _RevEarly, _State) ->
-  lists:reverse(RevLate);
-assign_happens_before([TraceState|Later], RevLate, RevEarly, State) ->
-  #scheduler_state{logger = _Logger} = State,
+assign_happens_before([], RevLate, _RevEarly, _State, _Mode) ->
+  RevLate;
+assign_happens_before([TraceState|Later], RevLate, RevEarly, State, Mode) ->
   #trace_state{done = [Event|_], index = Index} = TraceState,
-  #event{actor = Actor, special = Special} = Event,
-  ClockMap = get_base_clock(RevLate, RevEarly),
-  OldClock = lookup_clock(Actor, ClockMap),
-  ActorClock = orddict:store(Actor, Index, OldClock),
-  ?trace(_Logger, "HB: ~s~n", [?pretty_s(Index,Event)]),
-  BaseHappenedBeforeClock =
-    add_pre_message_clocks(Special, ClockMap, ActorClock),
-  HappenedBeforeClock =
-    update_clock(RevLate, RevEarly, Event, BaseHappenedBeforeClock, State),
-  BaseNewClockMap = dict:store(Actor, HappenedBeforeClock, ClockMap),
-  NewClockMap =
-    add_new_and_messages(Special, HappenedBeforeClock, BaseNewClockMap),
-  StateClock = lookup_clock(state, ClockMap),
-  OldActorClock = lookup_clock_value(Actor, StateClock),
-  FinalActorClock = orddict:store(Actor, OldActorClock, HappenedBeforeClock),
-  FinalStateClock = orddict:store(Actor, Index, StateClock),
-  FinalClockMap =
-    dict:store(
-      Actor, FinalActorClock,
-      dict:store(state, FinalStateClock, NewClockMap)),
-  NewTraceState = TraceState#trace_state{clock_map = FinalClockMap},
-  assign_happens_before(Later, [NewTraceState|RevLate], RevEarly, State).
+  NewTraceState =
+    case needs_recalculation(Event, Mode) of
+      false -> TraceState;
+      true ->
+        #scheduler_state{logger = _Logger} = State,
+        #event{actor = Actor, special = Special} = Event,
+        ClockMap = get_base_clock(RevLate, RevEarly),
+        OldClock = lookup_clock(Actor, ClockMap),
+        ActorClock = orddict:store(Actor, Index, OldClock),
+        ?trace(_Logger, "HB: ~s~n", [?pretty_s(Index,Event)]),
+        BaseHappenedBeforeClock =
+          add_pre_message_clocks(Special, ClockMap, ActorClock),
+        HappenedBeforeClock =
+          update_clock(RevLate, RevEarly, Event, BaseHappenedBeforeClock, State),
+        BaseNewClockMap = dict:store(Actor, HappenedBeforeClock, ClockMap),
+        NewClockMap =
+          add_new_and_messages(Special, HappenedBeforeClock, BaseNewClockMap),
+        StateClock = lookup_clock(state, ClockMap),
+        OldActorClock = lookup_clock_value(Actor, StateClock),
+        FinalActorClock = orddict:store(Actor, OldActorClock, HappenedBeforeClock),
+        FinalStateClock = orddict:store(Actor, Index, StateClock),
+        FinalClockMap =
+          dict:store(
+            Actor, FinalActorClock,
+            dict:store(state, FinalStateClock, NewClockMap)),
+        TraceState#trace_state{clock_map = FinalClockMap}
+    end,
+  assign_happens_before(Later, [NewTraceState|RevLate], RevEarly, State, Mode).
+
+needs_recalculation(Event, Mode) ->
+  Mode =:= untimed orelse is_message(Event).
+
+is_message(#event{event_info = #message_event{}}) -> true;
+is_message(#event{}) -> false.
 
 get_base_clock(RevLate, RevEarly) ->
   case get_base_clock(RevLate) of
