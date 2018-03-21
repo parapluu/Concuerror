@@ -980,18 +980,22 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
             end
         end
     end,
-  NC =
-    orddict:store(
-      EarlyActor, EarlyIndex,
-      max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock)),
-  {NewClock, NewTrace, NewRest} =
+  NewClock =
+    case Action =:= none of
+      true -> Clock;
+      false ->
+        orddict:store(
+          EarlyActor, EarlyIndex,
+          max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock))
+    end,
+  {NewTrace, NewRest} =
     case Action of
-      none -> {Clock, [TraceState|NewOldTrace], Rest};
-      update_clock -> {NC, [TraceState|NewOldTrace], Rest};
+      none -> {[TraceState|NewOldTrace], Rest};
+      update_clock -> {[TraceState|NewOldTrace], Rest};
       {update, S, CI} ->
         maybe_log_race(TraceState, Index, Event, State),
         NR = add_conservative(Rest, EarlyActor, EarlyClock, CI, State),
-        {NC, S, NR}
+        {S, NR}
     end,
   more_interleavings_for_event(NewRest, Event, Later, NewClock, State, Index, NewTrace).
 
