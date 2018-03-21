@@ -4,7 +4,7 @@ updated: 2017-10-16
 ---
 
 <div class="download-link">
-<a href="./download"><img src="./images/button.png" alt="Get Concuerror!"></a>
+<a href="./download"><img src="./images/get_concuerror_button.png" alt="Get Concuerror!"></a>
 </div>
 
 ## Latest News
