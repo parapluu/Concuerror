@@ -1,15 +1,15 @@
 ---
 layout: post
-title: "Testing Poolboy, Part 2: Reading Concuerror's reports"
+title: "Reading Concuerror's reports (Testing Poolboy, Part 2)"
 category: tutorials
-updated: 2017-06-21
+updated: 2018-03-21
 ---
 
 We continue our tutorial on Concuerror, explaining the errors it can detect and
 the options that you can use to filter out those that are not important for your
 application.
 
-Make sure that you have read the [first part]({% post_url 2014-06-02-poolboy-example %})!
+Read also the [first part]({% post_url 2014-06-02-poolboy-example %})!
 
 {:.no_toc}
 Index

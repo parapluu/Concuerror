@@ -17,13 +17,11 @@ updated: 2017-10-16
 The preferred way is to use the repository's [Issues
 page](https://github.com/parapluu/Concuerror/issues/new), but you can also [contact the developers](./contact) in other ways.
 
-## Is there a mailing list?
+## How can I tell Concuerror where to find the code used by my test?
 
-[Yes](/contact)!
-
-## Is there a changelog?
-
-[Yes](https://github.com/parapluu/Concuerror/blob/master/CHANGELOG.md)!
+Concuerror automatically instruments and reloads any code used by your test transparently relying on Erlang's code path.
+It also supports a number of familiar options to specify input files.
+Check `concuerror -h input` for more info.
 
 ## Will the exploration ever finish?
 
@@ -100,6 +98,14 @@ functions](#how-does-concuerror-handle-non-deterministic-functions).
 ## How can I get rid of '...' in output files?
 
 Use a higher `--print_depth`.
+
+## Is there a mailing list?
+
+[Yes](/contact)!
+
+## Is there a changelog?
+
+[Yes](https://github.com/parapluu/Concuerror/blob/master/CHANGELOG.md)!
 
 ## Limitations
 

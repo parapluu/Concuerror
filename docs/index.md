@@ -4,7 +4,7 @@ updated: 2017-10-16
 ---
 
 <div class="download-link">
-<a href="./download"><img src="./images/button.png" alt="Get Concuerror!"></a>
+<a href="./download"><img src="./images/get_concuerror_button.png" alt="Get Concuerror!"></a>
 </div>
 
 ## Latest News
@@ -38,7 +38,9 @@ Read the [Download](/download) page.
 
 ## How do I use Concuerror?
 
-First you need to come up with a test that is **terminating** (ideally in any scheduling of the processes) and **closed** (does not require any inputs).
+You might find one of the [Tutorials](/tutorials) useful!
+
+In short, all you need is a test that is **terminating** (ideally in any scheduling of the processes) and **closed** (does not require any inputs).
 
 Keep in mind that systematic testing (unlike stress-testing) does not encourage (or require) the use of a ton of processes! **All** schedulings of the test will be explored, so "the simpler, the better"!
 
@@ -60,13 +62,16 @@ or:
 2> concuerror:run([{entry_point, {my_module, my_test, []}]).
 {% endhighlight %}
 
-## ... is it really that simple?
-
-Well, for many programs that is probably enough!
-If your test is named `test` you can even skip the `-t test` option!
 The tool automatically instruments any modules used in the test,
 using Erlang's automatic code loading infrastructure,
 so nothing more is in principle needed!
+
+Read the [FAQ](/faq) for more help.
+
+## ... is it really that simple?
+
+Well, for many programs that is probably enough!
+If your test is named `test` you can even skip the `-t` option!
 
 If a scheduling leads to one or more processes crashing or
 deadlocking, Concuerror will print a detailed log of all the events

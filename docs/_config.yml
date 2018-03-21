@@ -24,11 +24,11 @@ bing_verify:
 links:
   - title: <i class="fas fa-home"></i> Home
     url: /
-  - title: <i class="far fa-newspaper"></i> News
+  - title: <i class="fas fa-newspaper"></i> News
     url: /news
   - title: <i class="fas fa-download"></i> Download
     url: /download
-  - title: <i class="far fa-question-circle"></i> FAQ
+  - title: <i class="fas fa-question-circle"></i> FAQ
     url: /faq
   - title: <i class="fas fa-info-circle"></i> Tutorials
     url: /tutorials
