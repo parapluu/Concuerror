@@ -539,7 +539,7 @@ update_state(#event{actor = Actor} = Event, State) ->
      unique_id   = {InterleavingId, Index} = UID,
      wakeup_tree = WakeupTree
     } = Last,
-  ?trace(Logger, "~s~n", [?pretty_s(Index, Event)]),
+  ?debug(Logger, "~s~n", [?pretty_s(Index, Event)]),
   concuerror_logger:graph_new_node(Logger, UID, Index, Event, 0),
   Done = reset_receive_done(RawDone, State),
   NextSleepSet =
@@ -669,7 +669,7 @@ update_sleep_set(NewEvent, SleepSet, State) ->
   Pred =
     fun(OldEvent) ->
         V = concuerror_dependencies:dependent_safe(NewEvent, OldEvent),
-        ?trace(_Logger, "     Awaking (~p): ~s~n", [V,?pretty_s(OldEvent)]),
+        ?debug(_Logger, "     Awaking (~p): ~s~n", [V,?pretty_s(OldEvent)]),
         V =:= false
     end,
   lists:filter(Pred, SleepSet).
@@ -896,7 +896,7 @@ update_clock([TraceState|Rest], Event, Clock, State) ->
         #scheduler_state{assume_racing = AssumeRacing} = State,
         Dependent =
           concuerror_dependencies:dependent(EarlyEvent, Event, AssumeRacing),
-        ?trace(State#scheduler_state.logger,
+        ?debug(State#scheduler_state.logger,
                "    ~s ~s~n",
                begin
                  Star = fun(false) -> " ";(_) -> "*" end,
@@ -1207,7 +1207,7 @@ has_weak_initial_before([TraceState|Rest], V, Logger) ->
       show_plan(initial, Logger, 1, [EarlyEvent|V]),
       true;
     false ->
-      ?debug(Logger, "Up~n",[]),
+      ?trace(Logger, "Up~n",[]),
       has_weak_initial_before(Rest, [EarlyEvent|V], Logger)
   end.
 
@@ -1562,7 +1562,7 @@ replay_prefix_aux([_], State) ->
   State;
 replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
   #scheduler_state{logger = _Logger, print_depth = PrintDepth} = State,
-  ?trace(_Logger, "~s~n", [?pretty_s(I, Event)]),
+  ?debug(_Logger, "~s~n", [?pretty_s(I, Event)]),
   {ok, #event{actor = Actor} = NewEvent} = get_next_event_backend(Event, State),
   try
     true = Event =:= NewEvent
