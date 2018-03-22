@@ -222,8 +222,6 @@ dependent(#message_event{
           not Trapping andalso Reason =/= normal
       end;
     false ->
-      Timeout =/= infinity
-        andalso
         case Recv of
           'after' ->
             %% Can only happen during wakeup (otherwise an actually
@@ -232,7 +230,11 @@ dependent(#message_event{
           #message{id = RecId} ->
             %% Race exactly with the delivery of the received
             %% message
-            MsgId =:= RecId
+            MsgId =:= RecId andalso
+              case Timeout =/= infinity of
+                true -> true;
+                false -> throw(irreversible)
+              end
         end
   end;
 dependent(#receive_event{

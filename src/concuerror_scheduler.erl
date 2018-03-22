@@ -808,25 +808,33 @@ assign_happens_before([TraceState|Later], RevLate, RevEarly, State, Mode) ->
       true ->
         #scheduler_state{logger = _Logger} = State,
         #event{actor = Actor, special = Special} = Event,
-        ClockMap = get_base_clock(RevLate, RevEarly),
-        OldClock = lookup_clock(Actor, ClockMap),
-        ActorClock = clock_store(Actor, Index, OldClock),
-        ?trace(_Logger, "HB: ~s~n", [?pretty_s(Index,Event)]),
-        BaseHappenedBeforeClock =
-          add_pre_message_clocks(Special, ClockMap, ActorClock),
+        ?debug(_Logger, "HB: ~s~n", [?pretty_s(Index, Event)]),
+        %% Start from the latest vector clock of the actor itself
+        ClockMap = get_base_clock_map(RevLate, RevEarly),
+        ActorLastClock = lookup_clock(Actor, ClockMap),
+        %% And add all irreversible edges
+        IrreversibleClock =
+          add_pre_message_clocks(Special, ClockMap, ActorLastClock),
+        %% Apart from those, the new vector clock stored at the Actor
+        %% key contains all the ops that affected the state.
+        %% And anything dependent with it:
         HappenedBeforeClock =
-          update_clock(RevLate, RevEarly, Event, BaseHappenedBeforeClock, State),
-        BaseNewClockMap = dict:store(Actor, HappenedBeforeClock, ClockMap),
+          update_clock(RevLate, RevEarly, Event, IrreversibleClock, State),
+        %% and the step itself
+        ActorNewClock = clock_store(Actor, Index, HappenedBeforeClock),
+        %% The state clock contains the irreversible clock or
+        %% independent if there are no dependencies found
+        StateClock =
+          case IrreversibleClock =:= HappenedBeforeClock of
+            true -> independent;
+            false -> IrreversibleClock
+          end,
+        BaseNewClockMap = dict:store(state, StateClock, ClockMap),
+        %% The actor's clock should be added to anything else stemming
+        %% from the step (spawns, sends and deliveries)
         NewClockMap =
-          add_new_and_messages(Special, HappenedBeforeClock, BaseNewClockMap),
-        StateClock = lookup_clock(state, ClockMap),
-        OldActorClock = lookup_clock_value(Actor, StateClock),
-        FinalActorClock = clock_store(Actor, OldActorClock, HappenedBeforeClock),
-        FinalStateClock = clock_store(Actor, Index, StateClock),
-        FinalClockMap =
-          dict:store(
-            Actor, FinalActorClock,
-            dict:store(state, FinalStateClock, NewClockMap)),
+          add_new_and_messages(Special, ActorNewClock, BaseNewClockMap),
+        FinalClockMap = dict:store(Actor, ActorNewClock, NewClockMap),
         TraceState#trace_state{clock_map = FinalClockMap}
     end,
   assign_happens_before(Later, [NewTraceState|RevLate], RevEarly, State, Mode).
@@ -837,18 +845,18 @@ needs_recalculation(Event, Mode) ->
 is_message(#event{event_info = #message_event{}}) -> true;
 is_message(#event{}) -> false.
 
-get_base_clock(RevLate, RevEarly) ->
-  case get_base_clock(RevLate) of
+get_base_clock_map(RevLate, RevEarly) ->
+  case get_base_clock_map(RevLate) of
     {ok, V} -> V;
     none ->
-      case get_base_clock(RevEarly) of
+      case get_base_clock_map(RevEarly) of
         {ok, V} -> V;
         none -> dict:new()
       end
   end.
 
-get_base_clock([#trace_state{clock_map = ClockMap}|_]) -> {ok, ClockMap};
-get_base_clock([]) -> none.
+get_base_clock_map([#trace_state{clock_map = ClockMap}|_]) -> {ok, ClockMap};
+get_base_clock_map([]) -> none.
 
 add_pre_message_clocks([], _, Clock) -> Clock;
 add_pre_message_clocks([Special|Specials], ClockMap, Clock) ->
@@ -856,8 +864,6 @@ add_pre_message_clocks([Special|Specials], ClockMap, Clock) ->
     case Special of
       {message_delivered, #message_event{message = #message{id = Id}}} ->
         max_cv(Clock, lookup_clock({Id, sent}, ClockMap));
-      {message_received, Id} ->
-        max_cv(Clock, lookup_clock({Id, delivered}, ClockMap));
       _ -> Clock
     end,
   add_pre_message_clocks(Specials, ClockMap, NewClock).
@@ -871,8 +877,6 @@ add_new_and_messages([Special|Rest], Clock, ClockMap) ->
         dict:store(SpawnedPid, Clock, ClockMap);
       {message, #message_event{message = #message{id = Id}}} ->
         dict:store({Id, sent}, Clock, ClockMap);
-      {message_delivered, #message_event{message = #message{id = Id}}} ->
-        dict:store({Id, delivered}, Clock, ClockMap);
       _ -> ClockMap
     end,
   add_new_and_messages(Rest, Clock, NewClockMap).
@@ -916,38 +920,38 @@ update_clock([TraceState|Rest], Event, Clock, State) ->
 plan_more_interleavings([], OldTrace, _SchedulerState) ->
   OldTrace;
 plan_more_interleavings([TraceState|Rest], OldTrace, State) ->
-  #scheduler_state{
-     logger = _Logger,
-     non_racing_system = NonRacingSystem
-    } = State,
-  #trace_state{done = [Event|_], index = Index, unique_id = UID} = TraceState,
-  #event{actor = Actor, event_info = EventInfo, special = Special} = Event,
-  Skip =
-    case proplists:lookup(system_communication, Special) of
-      {system_communication, System} -> lists:member(System, NonRacingSystem);
-      none -> false
-    end,
-  case Skip of
+  case skip_planning(TraceState, State) of
     true ->
       plan_more_interleavings(Rest, [TraceState|OldTrace], State);
     false ->
-      ClockMap = get_base_clock(OldTrace, []),
+      #scheduler_state{logger = _Logger} = State,
+      #trace_state{
+         clock_map = ClockMap,
+         done = [Event|_],
+         index = Index,
+         unique_id = UID
+        } = TraceState,
       StateClock = lookup_clock(state, ClockMap),
-      ActorLast = lookup_clock_value(Actor, StateClock),
-      ActorClock = clock_store(Actor, ActorLast, lookup_clock(Actor, ClockMap)),
-      BaseClock =
-        case ?is_channel(Actor) of
-          true ->
-            #message_event{message = #message{id = Id}} = EventInfo,
-            lookup_clock({Id, sent}, ClockMap);
-          false -> ActorClock
-        end,
-      ?debug(_Logger, "~s~n", [?pretty_s(Index, Event)]),
-      GState = State#scheduler_state{current_state_unique_id = UID},
-      BaseNewOldTrace =
-        more_interleavings_for_event(OldTrace, Event, Rest, BaseClock, GState, Index),
-      NewOldTrace = [TraceState|BaseNewOldTrace],
-      plan_more_interleavings(Rest, NewOldTrace, State)
+      case StateClock =:= independent of
+        true ->
+          plan_more_interleavings(Rest, [TraceState|OldTrace], State);
+        false ->
+          ?debug(_Logger, "~s~n", [?pretty_s(Index, Event)]),
+          GState = State#scheduler_state{current_state_unique_id = UID},
+          BaseNewOldTrace =
+            more_interleavings_for_event(OldTrace, Event, Rest, StateClock, GState, Index),
+          NewOldTrace = [TraceState|BaseNewOldTrace],
+          plan_more_interleavings(Rest, NewOldTrace, State)
+      end
+  end.
+
+skip_planning(TraceState, State) ->
+  #scheduler_state{non_racing_system = NonRacingSystem} = State,
+  #trace_state{done = [Event|_]} = TraceState,
+  #event{special = Special} = Event,
+  case proplists:lookup(system_communication, Special) of
+    {system_communication, System} -> lists:member(System, NonRacingSystem);
+    none -> false
   end.
 
 more_interleavings_for_event(OldTrace, Event, Later, Clock, State, Index) ->
