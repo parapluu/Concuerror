@@ -79,7 +79,7 @@
 
 -ifdef(DEV).
 -define(dev_log(Logger, Level, Format, Data),
-        ?log(Logger, Level, "(~p@~p) " ++ Format, [?MODULE, ?LINE| Data])).
+        ?log(Logger, Level, "(~-25w@~4w) " ++ Format, [?MODULE, ?LINE| Data])).
 -define(debug(Logger, Format, Data), ?dev_log(Logger, ?ldebug, Format, Data)).
 -define(trace(Logger, Format, Data), ?dev_log(Logger, ?ltrace, Format, Data)).
 -define(has_dev, true).
