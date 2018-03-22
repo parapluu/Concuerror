@@ -68,7 +68,7 @@
 -type clock_map()           :: dict().
 -type message_event_queue() :: queue().
 -else.
--type clock_map()           :: dict:dict(pid(), vector_clock()).
+-type clock_map()           :: #{actor() => vector_clock()}.
 -type message_event_queue() :: queue:queue(#message_event{}).
 -endif.
 
@@ -87,7 +87,7 @@
 
 -record(trace_state, {
           actors                        :: [pid() | channel_actor()],
-          clock_map        = dict:new() :: clock_map(),
+          clock_map        = empty_map():: clock_map(),
           done             = []         :: [event()],
           enabled          = []         :: [pid() | channel_actor()],
           index                         :: index(),
@@ -790,7 +790,7 @@ split_trace([], UntimedLate) ->
   {[], UntimedLate};
 split_trace([#trace_state{clock_map = ClockMap} = State|RevEarlier] = RevEarly,
             UntimedLate) ->
-  case dict:size(ClockMap) =:= 0 of
+  case is_empty_map(ClockMap) of
     true  -> split_trace(RevEarlier, [State|UntimedLate]);
     false -> {RevEarly, UntimedLate}
   end.
@@ -829,12 +829,12 @@ assign_happens_before([TraceState|Later], RevLate, RevEarly, State, Mode) ->
             true -> independent;
             false -> IrreversibleClock
           end,
-        BaseNewClockMap = dict:store(state, StateClock, ClockMap),
+        BaseNewClockMap = clock_map_store(state, StateClock, ClockMap),
         %% The actor's clock should be added to anything else stemming
         %% from the step (spawns, sends and deliveries)
         NewClockMap =
           add_new_and_messages(Special, ActorNewClock, BaseNewClockMap),
-        FinalClockMap = dict:store(Actor, ActorNewClock, NewClockMap),
+        FinalClockMap = clock_map_store(Actor, ActorNewClock, NewClockMap),
         TraceState#trace_state{clock_map = FinalClockMap}
     end,
   assign_happens_before(Later, [NewTraceState|RevLate], RevEarly, State, Mode).
@@ -851,7 +851,7 @@ get_base_clock_map(RevLate, RevEarly) ->
     none ->
       case get_base_clock_map(RevEarly) of
         {ok, V} -> V;
-        none -> dict:new()
+        none -> empty_map()
       end
   end.
 
@@ -874,9 +874,9 @@ add_new_and_messages([Special|Rest], Clock, ClockMap) ->
   NewClockMap =
     case Special of
       {new, SpawnedPid} ->
-        dict:store(SpawnedPid, Clock, ClockMap);
+        clock_map_store(SpawnedPid, Clock, ClockMap);
       {message, #message_event{message = #message{id = Id}}} ->
-        dict:store({Id, sent}, Clock, ClockMap);
+        clock_map_store({Id, sent}, Clock, ClockMap);
       _ -> ClockMap
     end,
   add_new_and_messages(Rest, Clock, NewClockMap).
@@ -1476,7 +1476,7 @@ replay(State) ->
    [#trace_state{unique_id = Parent}|_] = Rest] = Trace,
   concuerror_logger:graph_set_node(Logger, Parent, Sibling),
   NewTrace =
-    [Last#trace_state{unique_id = {N, I}, clock_map = dict:new()}|Rest],
+    [Last#trace_state{unique_id = {N, I}, clock_map = empty_map()}|Rest],
   S = io_lib:format("New interleaving ~p. Replaying...", [N]),
   ?time(Logger, S),
   NewState = replay_prefix(NewTrace, State#scheduler_state{trace = NewTrace}),
@@ -1615,13 +1615,22 @@ assert_no_messages() ->
 %%% Helper functions
 %%%----------------------------------------------------------------------
 
+-ifdef(BEFORE_OTP_17).
+
+empty_map() ->
+  dict:new().
+
+is_empty_map(Map) ->
+  dict:size =:= 0.
+
+clock_map_store(P, V, ClockMap) ->
+  dict:store(P, V, ClockMap).
+
 lookup_clock(P, ClockMap) ->
   case dict:find(P, ClockMap) of
     {ok, Clock} -> Clock;
     error -> clock_new()
   end.
-
--ifdef(BEFORE_OTP_17).
 
 clock_new() ->
   orddict:new().
@@ -1642,6 +1651,18 @@ max_cv(D1, D2) ->
   orddict:merge(Merger, D1, D2).
 
 -else.
+
+empty_map() ->
+  #{}.
+
+is_empty_map(Map) ->
+  maps:size(Map) =:= 0.
+
+lookup_clock(P, ClockMap) ->
+  maps:get(P, ClockMap, clock_new()).
+
+clock_map_store(Actor, Clock, ClockMap) ->
+  maps:put(Actor, Clock, ClockMap).
 
 clock_new() ->
   #{}.
