@@ -1622,6 +1622,8 @@ lookup_clock(P, ClockMap) ->
 clock_new() ->
   orddict:new().
 
+clock_store(_, 0, VectorClock) ->
+  VectorClock;
 clock_store(Actor, Index, VectorClock) ->
   orddict:store(Actor, Index, VectorClock).
 
@@ -1640,6 +1642,8 @@ max_cv(D1, D2) ->
 clock_new() ->
   #{}.
 
+clock_store(_, 0, VectorClock) ->
+  VectorClock;
 clock_store(Actor, Index, VectorClock) ->
   maps:put(Actor, Index, VectorClock).
 
