@@ -764,14 +764,19 @@ plan_more_interleavings(State) ->
   {RevEarly, Late} =
     case UseReceivePatterns of
       false ->
-        {RE, lists:reverse(assign_happens_before(UntimedLate, RE, State, untimed))};
+        {RE, lists:reverse(assign_happens_before(UntimedLate, RE, State))};
       true ->
         RevUntimedLate = lists:reverse(UntimedLate),
         {ObsLate, Dict} = fix_receive_info(RevUntimedLate),
-        {ObsEarly, _Dict} = fix_receive_info(RE, Dict),
-        FixedEarly = assign_happens_before(ObsEarly, [], State, new_observers),
-        FixedLate = assign_happens_before(ObsLate, FixedEarly, State, untimed),
-        {FixedEarly, lists:reverse(FixedLate)}
+        {ObsEarly, _} = fix_receive_info(RE, Dict),
+        case lists:reverse(ObsEarly) =:= RE of
+          true ->
+            {RE, lists:reverse(assign_happens_before(ObsLate, RE, State))};
+          false ->
+            RevHBEarly = assign_happens_before(ObsEarly, [], State),
+            RevHBLate = assign_happens_before(ObsLate, RevHBEarly, State),
+            {[], lists:reverse(RevHBLate ++ RevHBEarly)}
+        end
     end,
   ?time(Logger, "Planning more interleavings..."),
   NewRevTrace =
@@ -795,55 +800,44 @@ split_trace([#trace_state{clock_map = ClockMap} = State|RevEarlier] = RevEarly,
     false -> {RevEarly, UntimedLate}
   end.
 
-assign_happens_before(UntimedLate, RevEarly, State, Mode) ->
-  assign_happens_before(UntimedLate, [], RevEarly, State, Mode).
+assign_happens_before(UntimedLate, RevEarly, State) ->
+  assign_happens_before(UntimedLate, [], RevEarly, State).
 
-assign_happens_before([], RevLate, _RevEarly, _State, _Mode) ->
+assign_happens_before([], RevLate, _RevEarly, _State) ->
   RevLate;
-assign_happens_before([TraceState|Later], RevLate, RevEarly, State, Mode) ->
+assign_happens_before([TraceState|Later], RevLate, RevEarly, State) ->
   #trace_state{done = [Event|_], index = Index} = TraceState,
-  NewTraceState =
-    case needs_recalculation(Event, Mode) of
-      false -> TraceState;
-      true ->
-        #scheduler_state{logger = _Logger} = State,
-        #event{actor = Actor, special = Special} = Event,
-        ?debug(_Logger, "HB: ~s~n", [?pretty_s(Index, Event)]),
-        %% Start from the latest vector clock of the actor itself
-        ClockMap = get_base_clock_map(RevLate, RevEarly),
-        ActorLastClock = lookup_clock(Actor, ClockMap),
-        %% And add all irreversible edges
-        IrreversibleClock =
-          add_pre_message_clocks(Special, ClockMap, ActorLastClock),
-        %% Apart from those, the new vector clock stored at the Actor
-        %% key contains all the ops that affected the state.
-        %% And anything dependent with it:
-        HappenedBeforeClock =
-          update_clock(RevLate, RevEarly, Event, IrreversibleClock, State),
-        %% and the step itself
-        ActorNewClock = clock_store(Actor, Index, HappenedBeforeClock),
-        %% The state clock contains the irreversible clock or
-        %% independent if there are no dependencies found
-        StateClock =
-          case IrreversibleClock =:= HappenedBeforeClock of
-            true -> independent;
-            false -> IrreversibleClock
-          end,
-        BaseNewClockMap = clock_map_store(state, StateClock, ClockMap),
-        %% The actor's clock should be added to anything else stemming
-        %% from the step (spawns, sends and deliveries)
-        NewClockMap =
-          add_new_and_messages(Special, ActorNewClock, BaseNewClockMap),
-        FinalClockMap = clock_map_store(Actor, ActorNewClock, NewClockMap),
-        TraceState#trace_state{clock_map = FinalClockMap}
+  #scheduler_state{logger = _Logger} = State,
+  #event{actor = Actor, special = Special} = Event,
+  ?debug(_Logger, "HB: ~s~n", [?pretty_s(Index, Event)]),
+  %% Start from the latest vector clock of the actor itself
+  ClockMap = get_base_clock_map(RevLate, RevEarly),
+  ActorLastClock = lookup_clock(Actor, ClockMap),
+  %% And add all irreversible edges
+  IrreversibleClock =
+    add_pre_message_clocks(Special, ClockMap, ActorLastClock),
+  %% Apart from those, the new vector clock stored at the Actor
+  %% key contains all the ops that affected the state.
+  %% And anything dependent with it:
+  HappenedBeforeClock =
+    update_clock(RevLate, RevEarly, Event, IrreversibleClock, State),
+  %% and the step itself
+  ActorNewClock = clock_store(Actor, Index, HappenedBeforeClock),
+  %% The state clock contains the irreversible clock or
+  %% independent if there are no dependencies found
+  StateClock =
+    case IrreversibleClock =:= HappenedBeforeClock of
+      true -> independent;
+      false -> IrreversibleClock
     end,
-  assign_happens_before(Later, [NewTraceState|RevLate], RevEarly, State, Mode).
-
-needs_recalculation(Event, Mode) ->
-  Mode =:= untimed orelse is_message(Event).
-
-is_message(#event{event_info = #message_event{}}) -> true;
-is_message(#event{}) -> false.
+  BaseNewClockMap = clock_map_store(state, StateClock, ClockMap),
+  %% The actor's clock should be added to anything else stemming
+  %% from the step (spawns, sends and deliveries)
+  NewClockMap =
+    add_new_and_messages(Special, ActorNewClock, BaseNewClockMap),
+  FinalClockMap = clock_map_store(Actor, ActorNewClock, NewClockMap),
+  NewTraceState = TraceState#trace_state{clock_map = FinalClockMap},
+  assign_happens_before(Later, [NewTraceState|RevLate], RevEarly, State).
 
 get_base_clock_map(RevLate, RevEarly) ->
   case get_base_clock_map(RevLate) of
