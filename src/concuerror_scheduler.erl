@@ -820,7 +820,7 @@ assign_happens_before([TraceState|Later], RevLate, RevEarly, State) ->
   %% key contains all the ops that affected the state.
   %% And anything dependent with it:
   HappenedBeforeClock =
-    update_clock(RevLate, RevEarly, Event, IrreversibleClock, State),
+    update_clock(RevLate ++ RevEarly, Event, IrreversibleClock, State),
   %% and the step itself
   ActorNewClock = clock_store(Actor, Index, HappenedBeforeClock),
   %% The state clock contains the irreversible clock or
@@ -874,10 +874,6 @@ add_new_and_messages([Special|Rest], Clock, ClockMap) ->
       _ -> ClockMap
     end,
   add_new_and_messages(Rest, Clock, NewClockMap).
-
-update_clock(RevLate, RevEarly, Event, Clock, State) ->
-  Clock1 = update_clock(RevLate, Event, Clock, State),
-  update_clock(RevEarly, Event, Clock1, State).
 
 update_clock([], _Event, Clock, _State) ->
   Clock;
