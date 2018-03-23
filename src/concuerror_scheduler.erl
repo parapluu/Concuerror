@@ -1621,7 +1621,7 @@ empty_map() ->
   dict:new().
 
 is_empty_map(Map) ->
-  dict:size =:= 0.
+  dict:size(Map) =:= 0.
 
 clock_map_store(P, V, ClockMap) ->
   dict:store(P, V, ClockMap).
