@@ -17,39 +17,40 @@ matrix:
   allow_failures:
   - env: TEST=".travis/travis_has_latest_otp_version"
 
+  include:
+
   # When otp_release is unspecified, the first value in the corresponding
   # list below will be used
-  include:
 
   # Check that the latest Erlang version is tested
 
-  # This test will fail with 'X' when a new version is available via kerl
-  # At that point, bump this test's otp_release to the newly available one
-  # The test will then fail with '!', until Travis supports the new version
-  # When the test starts passing again, update otp_release in the corresponding
-  #  list below
+  # This test will fail with 'X' when a new version is available via kerl.
+  # At that point, update THIS test's otp_release to the new one.
+  # The test will keep failing with '!', until Travis has the new version.
+  # When the test starts failing with 'X' again, Travis has the new version.
+  # At that point, update otp_release in the corresponding list below
 
-  - stage: basic
+  - env: TEST=".travis/travis_has_latest_otp_version"
     otp_release: 20.3
-    env: TEST=".travis/travis_has_latest_otp_version"
+    stage: basic
 
   # Check dialyzer
-  - stage: basic
-    env: TEST="make dialyze"
+  - env: TEST="make dialyze"
+    stage: basic
 
   # Code coverage test, that includes tests and tests-real
-  - stage: test
-    env: TEST="make cover"
+  - env: TEST="make cover"
+    stage: test
 
   # Minimal support for R16B03-1
-  - stage: test
+  - env: TEST="make tests-real"
     otp_release: R16B03-1
-    env: TEST="make tests-real"
+    stage: test
 
   # Exclude the default tests and tests-real env for latest release,
   # as the cover target includes them
   exclude:
-  - otp_release: 20.2
+  - otp_release: 20.3
 
 env:
   - TEST="make tests-real"
@@ -59,8 +60,8 @@ otp_release:
 
   # Two latest minor versions of the most recent OTP release
   # Remember to exclude the top one from the matrix above
+  - 20.3
   - 20.2
-  - 20.1
 
   # Last minor version of older OTP releases
   - 19.3
