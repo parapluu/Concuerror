@@ -838,8 +838,8 @@ assign_happens_before([TraceState|Later], RevLate, RevEarly, State) ->
       true -> independent;
       false -> IrreversibleClock
     end,
-  BaseNewClockMap = clock_map_store(state, StateClock, ClockMap),
-  NewClockMap = clock_map_store(Actor, HappenedBeforeClock, BaseNewClockMap),
+  BaseNewClockMap = map_store(state, StateClock, ClockMap),
+  NewClockMap = map_store(Actor, HappenedBeforeClock, BaseNewClockMap),
   %% The HB clock should also be added to anything else stemming
   %% from the step (spawns, sends and deliveries)
   FinalClockMap =
@@ -878,9 +878,9 @@ add_new_and_messages([Special|Rest], Clock, ClockMap) ->
   NewClockMap =
     case Special of
       {new, SpawnedPid} ->
-        clock_map_store(SpawnedPid, Clock, ClockMap);
+        map_store(SpawnedPid, Clock, ClockMap);
       {message, #message_event{message = #message{id = Id}}} ->
-        clock_map_store({Id, sent}, Clock, ClockMap);
+        map_store({Id, sent}, Clock, ClockMap);
       _ -> ClockMap
     end,
   add_new_and_messages(Rest, Clock, NewClockMap).
@@ -1511,13 +1511,13 @@ replay(State) ->
 
 reset_receive_done([Event|Rest], #scheduler_state{use_receive_patterns = true}) ->
   NewSpecial =
-    [patch_message_delivery(S, dict:new()) || S <- Event#event.special],
+    [patch_message_delivery(S, empty_map()) || S <- Event#event.special],
   [Event#event{special = NewSpecial}|Rest];
 reset_receive_done(Done, _) ->
   Done.
 
 fix_receive_info(RevTraceOrEvents) ->
-  fix_receive_info(RevTraceOrEvents, dict:new()).
+  fix_receive_info(RevTraceOrEvents, empty_map()).
 
 fix_receive_info(RevTraceOrEvents, ReceiveInfoDict) ->
   fix_receive_info(RevTraceOrEvents, ReceiveInfoDict, []).
@@ -1553,14 +1553,14 @@ store_receive_info(EventInfo, Special, ReceiveInfoDict) ->
           #receive_event{receive_info = RI} -> RI;
           _ -> {system, fun(_) -> true end}
         end,
-      Fold = fun(ID,Dict) -> dict:store(ID, ReceiveInfo, Dict) end,
+      Fold = fun(ID,Dict) -> map_store(ID, ReceiveInfo, Dict) end,
       lists:foldl(Fold, ReceiveInfoDict, IDs)
   end.
 
 patch_message_delivery({message_delivered, MessageEvent}, ReceiveInfoDict) ->
   #message_event{message = #message{id = Id}} = MessageEvent,
   ReceiveInfo =
-    case dict:find(Id, ReceiveInfoDict) of
+    case map_find(Id, ReceiveInfoDict) of
       {ok, RI} -> RI;
       error -> not_received
     end,
@@ -1644,11 +1644,14 @@ assert_no_messages() ->
 empty_map() ->
   dict:new().
 
+map_store(K, V, Map) ->
+  dict:store(K, V, Map).
+
+map_find(K, Map) ->
+  dict:find(K, Map).
+
 is_empty_map(Map) ->
   dict:size(Map) =:= 0.
-
-clock_map_store(P, V, ClockMap) ->
-  dict:store(P, V, ClockMap).
 
 lookup_clock(P, ClockMap) ->
   case dict:find(P, ClockMap) of
@@ -1691,14 +1694,17 @@ find_latest_hb_index(ActorClock, StateClock) ->
 empty_map() ->
   #{}.
 
+map_store(K, V, Map) ->
+  maps:put(K, V, Map).
+
+map_find(K, Map) ->
+  maps:find(K, Map).
+
 is_empty_map(Map) ->
   maps:size(Map) =:= 0.
 
 lookup_clock(P, ClockMap) ->
   maps:get(P, ClockMap, clock_new()).
-
-clock_map_store(Actor, Clock, ClockMap) ->
-  maps:put(Actor, Clock, ClockMap).
 
 clock_new() ->
   #{}.
