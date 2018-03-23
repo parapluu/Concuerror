@@ -291,7 +291,7 @@ loop(Message, State) ->
     {time, Tag} ->
       Now = timestamp(),
       Diff = timediff(Now, Timestamp),
-      Msg = "~nTimer: +~5.2fs ~s~n",
+      Msg = "~nTimer: +~6.3fs ~s~n",
       loop(
         {log, ?ltiming, none, Msg, [Diff, Tag]},
         State#logger_state{timestamp = Now});
