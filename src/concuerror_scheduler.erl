@@ -59,15 +59,10 @@
 -type interleaving_id() :: pos_integer().
 
 -ifdef(BEFORE_OTP_17).
-%% Not used.
--else.
--type vector_clock() :: #{actor() => index()}.
--endif.
-
--ifdef(BEFORE_OTP_17).
 -type clock_map()           :: dict().
 -type message_event_queue() :: queue().
 -else.
+-type vector_clock()        :: #{actor() => index()}.
 -type clock_map()           :: #{actor() => vector_clock()}.
 -type message_event_queue() :: queue:queue(#message_event{}).
 -endif.
