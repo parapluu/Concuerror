@@ -791,6 +791,8 @@ plan_more_interleavings(State) ->
     end,
   State#scheduler_state{trace = NewRevTrace}.
 
+%%------------------------------------------------------------------------------
+
 split_trace(RevTrace) ->
   split_trace(RevTrace, []).
 
@@ -802,6 +804,8 @@ split_trace([#trace_state{clock_map = ClockMap} = State|RevEarlier] = RevEarly,
     true  -> split_trace(RevEarlier, [State|UntimedLate]);
     false -> {RevEarly, UntimedLate}
   end.
+
+%%------------------------------------------------------------------------------
 
 assign_happens_before(UntimedLate, RevEarly, State) ->
   assign_happens_before(UntimedLate, [], RevEarly, State).
@@ -904,11 +908,12 @@ update_clock([TraceState|Rest], Event, Clock, State) ->
           false ->
             #trace_state{clock_map = ClockMap} = TraceState,
             EarlyActorClock = lookup_clock(EarlyActor, ClockMap),
-            max_cv(
-              Clock, clock_store(EarlyActor, EarlyIndex, EarlyActorClock))
+            max_cv(Clock, clock_store(EarlyActor, EarlyIndex, EarlyActorClock))
         end
     end,
   update_clock(Rest, Event, NewClock, State).
+
+%%------------------------------------------------------------------------------
 
 plan_more_interleavings([], OldTrace, _SchedulerState) ->
   OldTrace;
