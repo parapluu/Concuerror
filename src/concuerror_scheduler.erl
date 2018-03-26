@@ -122,7 +122,6 @@
 -record(scheduler_state, {
           assertions_only              :: boolean(),
           assume_racing                :: assume_racing_opt(),
-          current_state_unique_id      :: 'undefined' | unique_id(),
           depth_bound                  :: pos_integer(),
           dpor                         :: concuerror_options:dpor(),
           entry_point                  :: mfargs(),
@@ -919,31 +918,36 @@ update_clock([TraceState|Rest], Event, Clock, State) ->
 
 %%------------------------------------------------------------------------------
 
-plan_more_interleavings([], OldTrace, _SchedulerState) ->
-  OldTrace;
-plan_more_interleavings([TraceState|Rest], OldTrace, State) ->
+plan_more_interleavings([], RevEarly, _SchedulerState) ->
+  RevEarly;
+plan_more_interleavings([TraceState|Later], RevEarly, State) ->
   case skip_planning(TraceState, State) of
     true ->
-      plan_more_interleavings(Rest, [TraceState|OldTrace], State);
+      plan_more_interleavings(Later, [TraceState|RevEarly], State);
     false ->
       #scheduler_state{logger = _Logger} = State,
       #trace_state{
          clock_map = ClockMap,
-         done = [Event|_],
-         index = Index,
-         unique_id = UID
+         done = [#event{actor = Actor} = _Event|_],
+         index = _Index
         } = TraceState,
       StateClock = lookup_clock(state, ClockMap),
+      %% If no dependencies were found skip this altogether
       case StateClock =:= independent of
         true ->
-          plan_more_interleavings(Rest, [TraceState|OldTrace], State);
+          plan_more_interleavings(Later, [TraceState|RevEarly], State);
         false ->
-          ?debug(_Logger, "~s~n", [?pretty_s(Index, Event)]),
-          GState = State#scheduler_state{current_state_unique_id = UID},
-          BaseNewOldTrace =
-            more_interleavings_for_event(OldTrace, Event, Rest, StateClock, GState, Index),
-          NewOldTrace = [TraceState|BaseNewOldTrace],
-          plan_more_interleavings(Rest, NewOldTrace, State)
+          ?debug(_Logger, "~s~n", [?pretty_s(_Index, _Event)]),
+          ActorClock = lookup_clock(Actor, ClockMap),
+          %% Otherwise we zero-down to the latest op that happened before
+          LatestHBIndex = find_latest_hb_index(ActorClock, StateClock),
+          ?trace(_Logger, "   SC:~w~n", [StateClock]),
+          ?trace(_Logger, "   AC:~w~n", [ActorClock]),
+          ?debug(_Logger, "  Next @ ~w~n", [LatestHBIndex]),
+          NewRevEarly =
+            more_interleavings_for_event(
+              TraceState, RevEarly, LatestHBIndex, StateClock, Later, State),
+          plan_more_interleavings(Later, NewRevEarly, State)
       end
   end.
 
@@ -956,22 +960,28 @@ skip_planning(TraceState, State) ->
     none -> false
   end.
 
-more_interleavings_for_event(OldTrace, Event, Later, Clock, State, Index) ->
-  more_interleavings_for_event(OldTrace, Event, Later, Clock, State, Index, []).
+more_interleavings_for_event(TraceState, RevEarly, NextIndex, Clock, Later, State) ->
+  more_interleavings_for_event(TraceState, RevEarly, NextIndex, Clock, Later, State, []).
 
-more_interleavings_for_event([], _Event, _Later, _Clock, _State, _Index,
-                             NewOldTrace) ->
-  lists:reverse(NewOldTrace);
-more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
-                             Index, NewOldTrace) ->
+more_interleavings_for_event(TraceState, [], _NextIndex, _Clock, _Later,
+                             _State, UpdEarly) ->
+  [TraceState|lists:reverse(UpdEarly)];
+more_interleavings_for_event(TraceState, RevEarly, -1, _Clock, _Later,
+                             _State, UpdEarly) ->
+  [TraceState|lists:reverse(UpdEarly, RevEarly)];
+more_interleavings_for_event(TraceState, [EarlyTraceState|RevEarly], NextIndex,
+                             Clock, Later, State, UpdEarly) ->
+  #trace_state{
+     clock_map = ClockMap,
+     done = [#event{actor = Actor} = Event|_]
+    } = TraceState,
   #trace_state{
      clock_map = EarlyClockMap,
      done = [#event{actor = EarlyActor} = EarlyEvent|_],
      index = EarlyIndex
-    } = TraceState,
-  EarlyClock = lookup_clock_value(EarlyActor, Clock),
+    } = EarlyTraceState,
   Action =
-    case EarlyIndex > EarlyClock of
+    case NextIndex =:= EarlyIndex of
       false -> none;
       true ->
         Dependent =
@@ -988,32 +998,37 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
                    [?pretty_s(EarlyIndex, EarlyEvent)]),
             case
               update_trace(
-                EarlyEvent, Event, Clock, TraceState,
-                Later, NewOldTrace, Rest, ObserverInfo, State)
+                EarlyEvent, Event, Clock, EarlyTraceState,
+                Later, UpdEarly, RevEarly, ObserverInfo, State)
             of
               skip -> update_clock;
-              {UpdatedNewOldTrace, ConservativeCandidates} ->
-                {update, UpdatedNewOldTrace, ConservativeCandidates}
+              {UpdatedNewEarly, ConservativeCandidates} ->
+                {update, UpdatedNewEarly, ConservativeCandidates}
             end
         end
     end,
-  NewClock =
+  {NewClock, NewNextIndex} =
     case Action =:= none of
-      true -> Clock;
+      true -> {Clock, NextIndex};
       false ->
-        MaxCV = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
-        clock_store(EarlyActor, EarlyIndex, MaxCV)
+        NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
+        ActorClock = lookup_clock(Actor, ClockMap),
+        NI = find_latest_hb_index(ActorClock, NC),
+        ?debug(State#scheduler_state.logger, "  Next @ ~w~n", [NI]),
+        {NC, NI}
     end,
-  {NewTrace, NewRest} =
+  {NewUpdEarly, NewRevEarly} =
     case Action of
-      none -> {[TraceState|NewOldTrace], Rest};
-      update_clock -> {[TraceState|NewOldTrace], Rest};
-      {update, S, CI} ->
-        maybe_log_race(TraceState, Index, Event, State),
-        NR = add_conservative(Rest, EarlyActor, EarlyClock, CI, State),
-        {S, NR}
+      none -> {[EarlyTraceState|UpdEarly], RevEarly};
+      update_clock -> {[EarlyTraceState|UpdEarly], RevEarly};
+      {update, S, CC} ->
+        maybe_log_race(EarlyTraceState, TraceState, State),
+        EarlyClock = lookup_clock_value(EarlyActor, Clock),
+        NRE = add_conservative(RevEarly, EarlyActor, EarlyClock, CC, State),
+        {S, NRE}
     end,
-  more_interleavings_for_event(NewRest, Event, Later, NewClock, State, Index, NewTrace).
+  more_interleavings_for_event(TraceState, NewRevEarly, NewNextIndex, NewClock,
+                               Later, State, NewUpdEarly).
 
 update_trace(
   EarlyEvent, Event, Clock, TraceState,
@@ -1229,12 +1244,19 @@ show_plan(_Type, _Logger, _Index, _NotDep) ->
              || {I,S} <- IndexedNotDep])]
      end).
 
-maybe_log_race(TraceState, Index, Event, State) ->
+maybe_log_race(EarlyTraceState, TraceState, State) ->
   #scheduler_state{logger = Logger} = State,
   if State#scheduler_state.show_races ->
-      #trace_state{done = [EarlyEvent|_], index = EarlyIndex} = TraceState,
-      EarlyUID = TraceState#trace_state.unique_id,
-      UID = State#scheduler_state.current_state_unique_id,
+      #trace_state{
+         done = [EarlyEvent|_],
+         index = EarlyIndex,
+         unique_id = EarlyUID
+        } = EarlyTraceState,
+      #trace_state{
+         done = [Event|_],
+         index = Index,
+         unique_id = UID
+        } = TraceState,
       concuerror_logger:graph_race(Logger, EarlyUID, UID),
       IndexedEarly = {EarlyIndex, EarlyEvent#event{location = []}},
       IndexedLate = {Index, Event#event{location = []}},
@@ -1652,6 +1674,18 @@ max_cv(D1, D2) ->
   Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
   orddict:merge(Merger, D1, D2).
 
+find_latest_hb_index(ActorClock, StateClock) ->
+  %% This is the max index that is in the Actor clock but not in the
+  %% corresponding state clock.
+  Fold =
+    fun(K, V, Next) ->
+        case orddict:find(K, StateClock) =:= {ok, V} of
+          true -> Next;
+          false -> max(V, Next)
+        end
+    end,
+  orddict:fold(Fold, -1, ActorClock).
+
 -else.
 
 empty_map() ->
@@ -1683,6 +1717,18 @@ max_cv(VC1, VC2) ->
   Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
   MaxVC = orddict:merge(Merger, ODVC1, ODVC2),
   maps:from_list(MaxVC).
+
+find_latest_hb_index(ActorClock, StateClock) ->
+  %% This is the max index that is in the Actor clock but not in the
+  %% corresponding state clock.
+  Fold =
+    fun(K, V, Next) ->
+        case maps:find(K, StateClock) =:= {ok, V} of
+          true -> Next;
+          false -> max(V, Next)
+        end
+    end,
+  maps:fold(Fold, -1, ActorClock).
 
 -endif.
 
