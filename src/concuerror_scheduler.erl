@@ -1527,19 +1527,30 @@ fix_receive_info([#trace_state{} = TraceState|RevTrace], ReceiveInfoDict, Trace)
   NewTraceState = TraceState#trace_state{done = [NewEvent|Rest]},
   fix_receive_info(RevTrace, NewDict, [NewTraceState|Trace]);
 fix_receive_info([#event{} = Event|RevEvents], ReceiveInfoDict, Events) ->
-  #event{event_info = EventInfo, special = Special} = Event,
-  NewReceiveInfoDict = store_receive_info(EventInfo, Special, ReceiveInfoDict),
-  NewSpecial = [patch_message_delivery(S, NewReceiveInfoDict) || S <- Special],
-  NewEventInfo =
-    case EventInfo of
-      #message_event{} ->
-        {_, NI} =
-          patch_message_delivery({message_delivered, EventInfo}, NewReceiveInfoDict),
-        NI;
-      _ -> EventInfo
-    end,
-  NewEvent = Event#event{event_info = NewEventInfo, special = NewSpecial},
-  fix_receive_info(RevEvents, NewReceiveInfoDict, [NewEvent|Events]).
+  case has_delivery_or_receive(Event#event.special) of
+    true ->
+      #event{event_info = EventInfo, special = Special} = Event,
+      NewReceiveInfoDict = store_receive_info(EventInfo, Special, ReceiveInfoDict),
+      NewSpecial = [patch_message_delivery(S, NewReceiveInfoDict) || S <- Special],
+      NewEventInfo =
+        case EventInfo of
+          #message_event{} ->
+            {_, NI} =
+              patch_message_delivery({message_delivered, EventInfo}, NewReceiveInfoDict),
+            NI;
+          _ -> EventInfo
+        end,
+      NewEvent = Event#event{event_info = NewEventInfo, special = NewSpecial},
+      fix_receive_info(RevEvents, NewReceiveInfoDict, [NewEvent|Events]);
+    false ->
+      fix_receive_info(RevEvents, ReceiveInfoDict, [Event|Events])
+  end.
+
+has_delivery_or_receive([]) -> false;
+has_delivery_or_receive([{M,_}|_])
+  when M =:= message_delivered; M =:= message_received ->
+  true;
+has_delivery_or_receive([_|R]) -> has_delivery_or_receive(R).
 
 store_receive_info(EventInfo, Special, ReceiveInfoDict) ->
   case [ID || {message_received, ID} <- Special] of
