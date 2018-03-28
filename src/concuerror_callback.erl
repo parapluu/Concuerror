@@ -1182,7 +1182,7 @@ wait_process(Pid, Timeout) ->
   receive
     ready -> ok;
     exited -> retry;
-    {blocked, _} -> retry;
+    {blocked, _, _} -> retry;
     #event{} = NewEvent -> {ok, NewEvent};
     {'ETS-TRANSFER', _, _, given_to_scheduler} ->
       wait_process(Pid, Timeout);
@@ -1218,14 +1218,14 @@ reset_processes(Processes) ->
 
 %%------------------------------------------------------------------------------
 
--spec collect_deadlock_info([pid()]) -> [{pid(), location()}].
+-spec collect_deadlock_info([pid()]) -> [{pid(), location(), [term()]}].
 
 collect_deadlock_info(Actors) ->
   Fold =
     fun(P, Acc) ->
         P ! deadlock_poll,
         receive
-          {blocked, Location} -> [{P, Location}|Acc];
+          {blocked, Location, Messages} -> [{P, Location, Messages}|Acc];
           exited -> Acc
         end
     end,
@@ -1293,7 +1293,9 @@ has_matching_or_after(PatternFun, Timeout, Location, InfoIn, Mode) ->
           NewInfo =
             case InfoIn#concuerror_info.status =:= waiting of
               true ->
-                process_loop(notify({blocked, Location}, UpdatedInfo));
+                MessageList = [D || #message{data = D} <- queue:to_list(NewOldMessages)],
+                Notification = {blocked, Location, MessageList},
+                process_loop(notify(Notification, UpdatedInfo));
               false ->
                 process_loop(set_status(UpdatedInfo, waiting))
             end,

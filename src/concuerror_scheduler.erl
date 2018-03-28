@@ -492,7 +492,7 @@ free_schedule_1(_Event, [], State) ->
         case concuerror_callback:collect_deadlock_info(Actors) of
           [] -> [];
           Info ->
-            ?debug(_Logger, "Deadlock: ~p~n", [[P || {P,_} <- Info]]),
+            ?debug(_Logger, "Deadlock: ~p~n", [[element(1, I) || I <- Info]]),
             [{deadlock, Info}]
         end
     end,
