@@ -529,6 +529,18 @@ run_built_in(erlang, monitor, 2, [Type, InTarget], Info) ->
         end
     end,
   {Ref, FinalInfo};
+run_built_in(erlang, process_info, 2, [Pid, Items], Info) when is_list(Items) ->
+  ItemFun =
+    fun (Item) ->
+        ?badarg_if_not(is_atom(Item)),
+        {ItemRes, _} = run_built_in(erlang, process_info, 2, [Pid, Item], Info),
+        if Item =:= registered_name, ItemRes =:= [] ->
+            {registered_name, []};
+           is_tuple(ItemRes) ->
+            ItemRes
+        end
+    end,
+  {lists:map(ItemFun, Items), Info};
 run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
   {Alive, _} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
   case Alive of
