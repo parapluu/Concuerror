@@ -1,7 +1,6 @@
 [![Travis][travis badge]][travis]
 [![Coveralls][coveralls badge]][coveralls]
 [![Erlang Versions][erlang versions badge]][travis]
-[![License][license badge]][license]
 
 # Concuerror
 
@@ -49,5 +48,4 @@ Details can be found in the [LICENSE][license] file.
 <!-- Badges -->
 [coveralls badge]: https://img.shields.io/coveralls/github/parapluu/Concuerror/master.svg?style=flat-square
 [erlang versions badge]: https://img.shields.io/badge/erlang-R16B03%20to%2020.2-blue.svg?style=flat-square
-[license badge]: https://img.shields.io/github/license/parapluu/Concuerror.svg?style=flat-square
 [travis badge]: https://img.shields.io/travis/parapluu/Concuerror/master.svg?style=flat-square
