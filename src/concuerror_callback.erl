@@ -1955,7 +1955,7 @@ is_active(Status) when is_atom(Status) ->
   (Status =:= running) orelse (Status =:= waiting).
 
 get_stacktrace(Top) ->
-  Trace = erlang:get_stacktrace(),
+  {_, Trace} = erlang:process_info(self(), current_stacktrace),
   [T || {M,_,_,_} = T <- Top ++ Trace, not_concuerror_module(M)].
 
 not_concuerror_module(Atom) ->
