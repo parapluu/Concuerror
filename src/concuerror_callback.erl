@@ -399,8 +399,9 @@ run_built_in(erlang, group_leader, 0, [], Info) ->
   Leader = get_leader(Info, self()),
   {Leader, Info};
 
-run_built_in(erlang, group_leader, 2, [GroupLeader, Pid],
-             #concuerror_info{processes = Processes} = Info) ->
+run_built_in(M, group_leader, 2, [GroupLeader, Pid],
+             #concuerror_info{processes = Processes} = Info)
+  when M =:= erlang; M =:= erts_internal ->
   try
     {true, Info} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
     {true, Info} = run_built_in(erlang, is_process_alive, 1, [GroupLeader], Info),
