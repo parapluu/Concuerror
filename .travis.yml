@@ -59,11 +59,15 @@ env:
 otp_release:
 
   # Two latest minor versions of the most recent OTP release
-  # Remember to exclude the top one from the matrix above
+  # Remember to:
+  # 1) exclude the top one from the matrix above
+  # 2) update the Travis badge
+
   - 20.3
   - 20.2
 
   # Last minor version of older OTP releases
+
   - 19.3
   - 18.3
   - 17.4

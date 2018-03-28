@@ -2,6 +2,8 @@
 
 First of all, thank you for taking time to contribute to Concuerror!
 
+If you don't know where to start, here are some ["help wanted"][help wanted] issues.
+
 
 ## I want to ask a question.
 
@@ -51,6 +53,7 @@ Thanks! :heart:
 [aronisstav Issues]: https://github.com/aronisstav/Concuerror/issues
 [Contributor Covenant Code of Conduct]: ./CODE_OF_CONDUCT.md
 [faq]: http://parapluu.github.io/Concuerror/faq
+[help wanted]: https://github.com/parapluu/Concuerror/labels/help%20wanted
 [Issues]: https://github.com/parapluu/Concuerror/issues
 [latest]: https://github.com/parapluu/Concuerror/
 [mailing list]: http://parapluu.github.io/Concuerror/contact
