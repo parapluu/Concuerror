@@ -46,6 +46,6 @@ Details can be found in the [LICENSE][license] file.
 [website]: http://parapluu.github.io/Concuerror
 
 <!-- Badges -->
-[coveralls badge]: https://img.shields.io/coveralls/github/parapluu/Concuerror/master.svg?style=flat-square
+[coveralls badge]: https://coveralls.io/repos/github/parapluu/Concuerror/badge.svg?branch=master
 [erlang versions badge]: https://img.shields.io/badge/erlang-R16B03%20to%2020.2-blue.svg?style=flat-square
-[travis badge]: https://img.shields.io/travis/parapluu/Concuerror/master.svg?style=flat-square
+[travis badge]: https://travis-ci.org/parapluu/Concuerror.svg?branch=master
