@@ -818,10 +818,11 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
   Pid ! {start, Module, Name, Args},
   ok = wait_process(Pid, Timeout),
   {Result, FinalInfo};
+run_built_in(erlang, send, 3, [Recipient, Message, _Options], Info) ->
+  {_, FinalInfo} = run_built_in(erlang, send, 2, [Recipient, Message], Info),
+  {ok, FinalInfo};
 run_built_in(erlang, Send, 2, [Recipient, Message], Info)
   when Send =:= '!'; Send =:= 'send' ->
-  run_built_in(erlang, send, 3, [Recipient, Message, []], Info);
-run_built_in(erlang, send, 3, [Recipient, Message, _Options], Info) ->
   #concuerror_info{event = #event{event_info = EventInfo}} = Info,
   Pid =
     case is_pid(Recipient) of
