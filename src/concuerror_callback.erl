@@ -198,7 +198,14 @@ instrumented_call(Module, Name, Arity, Args, _Location,
       [Term] = Args,
       try
         Symbol = ets:lookup_element(Processes, Term, ?process_symbolic),
-        {{didit, Symbol}, Info}
+        PName = ets:lookup_element(Processes, Term, ?process_last_name),
+        Pretty =
+          case PName =:= ?process_name_none of
+            true -> "<" ++ Symbol ++ ">";
+            false ->
+              lists:flatten(io_lib:format("<~s/~s>", [Symbol, PName]))
+          end,
+        {{didit, Pretty}, Info}
       catch
         _:_ -> {doit, Info}
       end;
@@ -649,7 +656,8 @@ run_built_in(erlang, register, 2, [Name, Pid], Info) ->
     [] = ets:match(Processes, ?process_match_name_to_pid(Name)),
     ?process_name_none = ets:lookup_element(Processes, Pid, ?process_name),
     false = undefined =:= Name,
-    true = ets:update_element(Processes, Pid, {?process_name, Name}),
+    true = ets:update_element(Processes, Pid, [{?process_name, Name},
+                                               {?process_last_name, Name}]),
     {true, Info}
   catch
     _:_ -> error(badarg)

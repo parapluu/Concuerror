@@ -95,9 +95,15 @@ options() ->
     "The DOT graph can be converted to an image with 'dot -Tsvg -o graph.svg"
     " <graph>"}
   ,{symbolic_names, [output, visual, erlang], $s, {boolean, true},
-    "Use symbolic PIDs in graph/log",
-    "Use symbolic names for process identifiers in the output report (and"
-    " graph)."}
+    "Use symbolic process names",
+    "Replace PIDs with symbolic names in outputs. The format used is:~n"
+    "  \"<[symbolic name]/[last registered name]>\"~n"
+    "where [symbolic name] is:~n"
+    " * \"P\", for the first process and~n"
+    " * \"[parent's symbolic name].[ordinal]\", for any other process,"
+    " where [ordinal] shows the order of spawning (e.g. \"<P.2>\" is the"
+    " second process spawned by \"<P>\").~n"
+    "The [last registered name] part is shown only if relevant."}
   ,{print_depth, [output, visual], undefined, {integer, ?DEFAULT_PRINT_DEPTH},
     "Print depth for log/graph",
     "Specifies the max depth for any terms printed in the log (behaves just as"

@@ -744,5 +744,13 @@ print_depth_tip() ->
 setup_symbolic_names(SymbolicNames, Processes) ->
   case SymbolicNames of
     false -> ok;
-    true -> concuerror_callback:setup_logger(Processes)
+    true ->
+      print_symbolic_info(),
+      concuerror_callback:setup_logger(Processes)
   end.
+
+print_symbolic_info() ->
+  Tip =
+    "Showing PIDs as \"<symbolic name(/last registered name)>\""
+    " ('-h symbolic_names').~n",
+  ?unique(self(), ?linfo, Tip, []).
