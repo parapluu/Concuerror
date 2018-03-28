@@ -4,19 +4,31 @@ CONCUERROR=${CONCUERROR:-$(which concuerror)}
 
 . ../print_colors
 
-fail=0
+function abort {
+    print_red "FAILED"
+}
+
+function testing {
+    echo -n "$1..."
+}
+
+function good {
+    print_green "ok"
+}
+
+set -e
+trap 'abort' 0
+
 cd gproc
 for i in t_simple_reg t_simple_reg_or_locate t_reg_or_locate2 test1 test2 test3 test4; do
-    echo -n "Test $i... "
+    testing "Test $i"
     RES=$i.out
     REF=$(readlink -m ../ref/$RES)
     RUN=$(readlink -m ../run/$RES)
     $CONCUERROR --assume_racing=false -q -k --pa ebin -f ../test.erl -m test -t $i -o $RUN || true
-    (bash $DIFFER $REF $RUN && print_green "ok" && rm $RUN) \
-        || (print_red "FAILED" && fail=1)
+    (bash $DIFFER $REF $RUN && rm $RUN && good) || false
 done
-if [ $fail == 1 ]; then
-   false
-fi
+
+trap - 0
 
 print_green "SUCCESS!"
