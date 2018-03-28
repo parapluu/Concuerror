@@ -35,11 +35,14 @@ dependent(#event{actor = A}, #event{actor = A}, _) ->
 dependent(#event{event_info = Info1, special = Special1},
           #event{event_info = Info2, special = Special2},
           AssumeRacing) ->
-  M1 = [M || {message_delivered, M} <- Special1],
-  M2 = [M || {message_delivered, M} <- Special2],
   try
-    first_non_false(
-      [dependent(I1,I2)|| I1 <- [Info1|M1], I2 <- [Info2|M2]])
+    case dependent(Info1, Info2) of
+      false ->
+        M1 = [M || {message_delivered, M} <- Special1],
+        M2 = [M || {message_delivered, M} <- Special2],
+        first_non_false_dep([Info1|M1], M2, [Info2|M2]);
+      Else -> Else
+    end
   catch
     throw:irreversible -> irreversible;
     error:function_clause ->
@@ -59,9 +62,14 @@ dependent(#event{event_info = Info1, special = Special1},
       end
   end.
 
-first_non_false([]) -> false;
-first_non_false([false|Rest]) -> first_non_false(Rest);
-first_non_false([Other|_]) -> Other.
+first_non_false_dep([], _, _) -> false;
+first_non_false_dep([_|R], [], I2) ->
+  first_non_false_dep(R, I2, I2);
+first_non_false_dep([I1H|_] = I1, [I2H|R], I2) ->
+  case dependent(I1H, I2H) of
+    false -> first_non_false_dep(I1, R, I2);
+    Else -> Else
+  end.
 
 %% The first event happens before the second.
 
@@ -222,8 +230,6 @@ dependent(#message_event{
           not Trapping andalso Reason =/= normal
       end;
     false ->
-      Timeout =/= infinity
-        andalso
         case Recv of
           'after' ->
             %% Can only happen during wakeup (otherwise an actually
@@ -232,7 +238,11 @@ dependent(#message_event{
           #message{id = RecId} ->
             %% Race exactly with the delivery of the received
             %% message
-            MsgId =:= RecId
+            MsgId =:= RecId andalso
+              case Timeout =/= infinity of
+                true -> true;
+                false -> throw(irreversible)
+              end
         end
   end;
 dependent(#receive_event{

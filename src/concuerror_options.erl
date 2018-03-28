@@ -219,7 +219,7 @@ options() ->
     "Only processes that exit with a reason of form '{{assert*, _}, _}' are"
     " considered errors. Such exit reasons are generated e.g. by the"
     " stdlib/include/assert.hrl header file."}
-  ,{timeout, [erlang, advanced], undefined, {integer, ?MINIMUM_TIMEOUT},
+  ,{timeout, [erlang, advanced], undefined, {integer, 5000},
     "How long to wait for an event (>= " ++
       integer_to_list(?MINIMUM_TIMEOUT) ++ "ms)",
     "How many ms to wait before assuming that a process is stuck in an infinite"

@@ -4,6 +4,8 @@
 -export([exceptional/0]).
 -export([test1/0, test2/0]).
 
+-concuerror_options_forced([{timeout, 500}]).
+
 scenarios() ->
     [{T, inf, dpor, crash} || T <- [test1, test2]].
 

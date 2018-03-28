@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - untested code for 'hijacking' processes (e.g. application_controller (#2))
 
 ### Changed
+- significantly optimized DPOR implementations
 - moved concuerror executable to /bin directory
 
 ### Fixed
