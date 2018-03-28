@@ -831,7 +831,7 @@ run_built_in(erlang, send, 3, [Recipient, Message, _Options], Info) ->
           case Recipient of
             A when is_atom(A) -> Recipient;
             {A, N} when is_atom(A), N =:= node() -> A
-          end,            
+          end,
         {P, Info} = run_built_in(erlang, whereis, 1, [T], Info),
         P
     end,
@@ -1747,7 +1747,7 @@ ets_ops_access_rights_map(Op) ->
     {next          ,_} -> read;
     {select        ,_} -> read;
     {select_delete ,_} -> write;
-    {update_counter,3} -> write                            
+    {update_counter,3} -> write
   end.
 
 %%------------------------------------------------------------------------------
@@ -2081,7 +2081,7 @@ explain_error({not_local_node, Node}) ->
     " remote nodes yet.",
     [Node]);
 explain_error({process_did_not_respond, Timeout, Actor}) ->
-  io_lib:format( 
+  io_lib:format(
     "A process (~p) took more than ~pms to report a built-in event. You can try"
     " to increase the '--timeout' limit and/or ensure that there are no"
     " infinite loops in your test.",
