@@ -353,7 +353,7 @@ dependent_exit(_Exit, {ets, _, _}) ->
 dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, group_leader]}},
                        Other) ->
   case Other of
-    #builtin_event{mfargs = {_,group_leader,[Pid,_]}} -> true;
+    #builtin_event{mfargs = {_,group_leader,[_, Pid]}} -> true;
     _-> false
   end;
 dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, links]}},
