@@ -311,8 +311,9 @@ dependent_exit(_Exit, {erlang, A, _})
     A =:= spawn_link;
     A =:= start_timer ->
   false;
-dependent_exit(_Exit, {_, group_leader, _}) ->
-  false;
+dependent_exit(#exit_event{actor = Exiting},
+               {_, group_leader, [Leader, Leaded]}) ->
+  Exiting =:= Leader orelse Exiting =:= Leaded;
 dependent_exit(#exit_event{actor = Actor}, {erlang, processes, []}) ->
   is_pid(Actor);
 dependent_exit(#exit_event{actor = Cancelled},

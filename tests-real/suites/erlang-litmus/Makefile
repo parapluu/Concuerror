@@ -3,6 +3,7 @@
 test: erlang-concurrency-litmus-tests
 	./test link
 	./test mailbox
+	./test process
 	./test registry
 	./test timer
 
