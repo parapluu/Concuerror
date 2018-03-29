@@ -1,8 +1,8 @@
 .PHONY: test
 
 test: erlang-concurrency-litmus-tests
-	./test mailbox
 	./test link
+	./test mailbox
 	./test registry
 	./test timer
 
