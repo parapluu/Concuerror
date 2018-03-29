@@ -309,8 +309,9 @@ dependent_exit(_Exit, {erlang, A, _})
     A =:= spawn;
     A =:= spawn_opt;
     A =:= spawn_link;
-    A =:= start_timer;
-    A =:= group_leader ->
+    A =:= start_timer ->
+  false;
+dependent_exit(_Exit, {_, group_leader, _}) ->
   false;
 dependent_exit(#exit_event{actor = Actor}, {erlang, processes, []}) ->
   is_pid(Actor);
@@ -348,7 +349,7 @@ dependent_exit(_Exit, {ets, _, _}) ->
 dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, group_leader]}},
                        Other) ->
   case Other of
-    #builtin_event{mfargs = {erlang,group_leader,[Pid,_]}} -> true;
+    #builtin_event{mfargs = {_,group_leader,[Pid,_]}} -> true;
     _-> false
   end;
 dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, links]}},
@@ -408,8 +409,8 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[_, Safe]}},
 
 %%------------------------------------------------------------------------------
 
-dependent_built_in(#builtin_event{mfargs = {erlang,group_leader,ArgsA}} = A,
-                   #builtin_event{mfargs = {erlang,group_leader,ArgsB}} = B) ->
+dependent_built_in(#builtin_event{mfargs = {_,group_leader,ArgsA}} = A,
+                   #builtin_event{mfargs = {_,group_leader,ArgsB}} = B) ->
   case {ArgsA, ArgsB} of
     {[], []} -> false;
     {[New, For], []} ->
@@ -443,7 +444,6 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
     ;A =:= demonitor        %% Depends only with an exit event or proc_info
     ;A =:= exit             %% Sending an exit signal (dependencies are on delivery)
     ;A =:= get_stacktrace   %% Depends with nothing
-    ;A =:= group_leader     %% Depends only with another group_leader get/set
     ;A =:= is_process_alive %% Depends only with an exit event
     ;A =:= make_ref         %% Depends with nothing
     ;A =:= monitor          %% Depends only with an exit event or proc_info
@@ -461,7 +461,6 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
     ;B =:= demonitor
     ;B =:= exit
     ;B =:= get_stacktrace
-    ;B =:= group_leader
     ;B =:= is_process_alive
     ;B =:= make_ref
     ;B =:= monitor
@@ -475,6 +474,13 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
     ;B =:= start_timer
     ;B =:= time
     ->
+  false;
+
+dependent_built_in(#builtin_event{mfargs = {_, group_leader, _}},
+                   #builtin_event{}) ->
+  false;
+dependent_built_in(#builtin_event{},
+                   #builtin_event{mfargs = {_, group_leader, _}}) ->
   false;
 
 dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},

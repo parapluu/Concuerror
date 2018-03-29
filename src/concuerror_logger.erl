@@ -421,7 +421,9 @@ loop(Message, State) ->
                 undefined ->
                   case proplists:get_value(deadlock, Warnings) of
                     undefined -> "";
-                    Ps -> io_lib:format(" (~p blocked)", [[P || {P,_} <- Ps]])
+                    Deadlocks ->
+                      Pids = [element(1, D) || D <- Deadlocks],
+                      io_lib:format(" (~p blocked)", [Pids])
                   end
               end,
             {Errors + 1, TracesSSB, "Error" ++ ErrorString, "red"}

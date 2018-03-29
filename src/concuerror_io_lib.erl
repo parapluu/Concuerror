@@ -37,8 +37,10 @@ error_s({Type, Info}, Depth) ->
       [S1,S2,S3];
     deadlock ->
       InfoStr =
-        [io_lib:format("    ~p ~s~n", [P, location(F, L)]) ||
-          {P, [L, {file, F}]} <- Info],
+        [io_lib:format(
+           "    ~p ~s~n"
+           "     Mailbox contents: ~p~n", [P, location(F, L), Msgs]) ||
+          {P, [L, {file, F}], Msgs} <- Info],
       Format =
         "* Blocked at a 'receive' (\"deadlocked\"; other processes have exited):~n~s",
       io_lib:format(Format, [InfoStr]);

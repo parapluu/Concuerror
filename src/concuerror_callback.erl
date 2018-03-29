@@ -89,8 +89,7 @@
           links                       :: links(),
           logger                      :: pid(),
           message_counter = 1         :: pos_integer(),
-          messages_new = queue:new()  :: message_queue(),
-          messages_old = queue:new()  :: message_queue(),
+          message_queue = queue:new() :: message_queue(),
           monitors                    :: monitors(),
           event = none                :: 'none' | event(),
           notify_when_ready           :: {pid(), boolean()},
@@ -400,8 +399,9 @@ run_built_in(erlang, group_leader, 0, [], Info) ->
   Leader = get_leader(Info, self()),
   {Leader, Info};
 
-run_built_in(erlang, group_leader, 2, [GroupLeader, Pid],
-             #concuerror_info{processes = Processes} = Info) ->
+run_built_in(M, group_leader, 2, [GroupLeader, Pid],
+             #concuerror_info{processes = Processes} = Info)
+  when M =:= erlang; M =:= erts_internal ->
   try
     {true, Info} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
     {true, Info} = run_built_in(erlang, is_process_alive, 1, [GroupLeader], Info),
@@ -579,10 +579,10 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
             catch error:badarg -> []
             end;
           messages ->
-            #concuerror_info{messages_new = Queue} = TheirInfo,
+            #concuerror_info{message_queue = Queue} = TheirInfo,
             [M || #message{data = M} <- queue:to_list(Queue)];
           message_queue_len ->
-            #concuerror_info{messages_new = Queue} = TheirInfo,
+            #concuerror_info{message_queue = Queue} = TheirInfo,
             queue:len(Queue);
           registered_name ->
             #concuerror_info{processes = Processes} = TheirInfo,
@@ -1218,14 +1218,14 @@ reset_processes(Processes) ->
 
 %%------------------------------------------------------------------------------
 
--spec collect_deadlock_info([pid()]) -> [{pid(), location()}].
+-spec collect_deadlock_info([pid()]) -> [{pid(), location(), [term()]}].
 
 collect_deadlock_info(Actors) ->
   Fold =
     fun(P, Acc) ->
         P ! deadlock_poll,
         receive
-          {blocked, Location} -> [{P, Location}|Acc];
+          {blocked, Info} -> [Info|Acc];
           exited -> Acc
         end
     end,
@@ -1248,9 +1248,73 @@ handle_receive(PatternFun, Timeout, Location, Info) ->
   %% the queue anyway...
   {MessageOrAfter, NewInfo} =
     has_matching_or_after(PatternFun, Timeout, Location, Info, blocking),
-  handle_receive(MessageOrAfter, PatternFun, Timeout, Location, NewInfo).
+  notify_receive(MessageOrAfter, PatternFun, Timeout, Location, NewInfo).
 
-handle_receive(MessageOrAfter, PatternFun, Timeout, Location, Info) ->
+has_matching_or_after(PatternFun, Timeout, Location, InfoIn, Mode) ->
+  case Mode of
+    non_blocking ->
+      has_matching_or_after(PatternFun, Timeout, InfoIn);
+    blocking ->
+      {Result, Info} = has_matching_or_after(PatternFun, Timeout, InfoIn),
+      case Result =:= false of
+        true ->
+          ?debug_flag(?loop, blocked),
+          NewInfo =
+            case Info#concuerror_info.status =:= waiting of
+              true ->
+                Messages = Info#concuerror_info.message_queue,
+                MessageList = [D || #message{data = D} <- queue:to_list(Messages)],
+                Notification = {blocked, {self(), Location, MessageList}},
+                process_loop(notify(Notification, Info));
+              false ->
+                process_loop(set_status(Info, waiting))
+            end,
+          has_matching_or_after(PatternFun, Timeout, Location, NewInfo, Mode);
+        false ->
+          ?debug_flag(?loop, ready_to_receive),
+          NewInfo = process_loop(InfoIn),
+          {FinalResult, FinalInfo} =
+            has_matching_or_after(PatternFun, Timeout, NewInfo),
+          {FinalResult, FinalInfo}
+      end
+  end.
+
+has_matching_or_after(PatternFun, Timeout, Info) ->
+  #concuerror_info{message_queue = Messages} = Info,
+  {MatchingOrFalse, NewMessages} = find_matching_message(PatternFun, Messages),
+  Result =
+    case MatchingOrFalse =:= false of
+      false -> MatchingOrFalse;
+      true ->
+        case Timeout =:= infinity of
+          false -> 'after';
+          true -> false
+        end
+    end,
+  {Result, Info#concuerror_info{message_queue = NewMessages}}.
+
+find_matching_message(PatternFun, Messages) ->
+  find_matching_message(PatternFun, Messages, queue:new()).
+
+find_matching_message(PatternFun, NewMessages, OldMessages) ->
+  {Value, NewNewMessages} = queue:out(NewMessages),
+  ?debug_flag(?receive_, {inspect, Value}),
+  case Value of
+    {value, #message{data = Data} = Message} ->
+      case PatternFun(Data) of
+        true  ->
+          ?debug_flag(?receive_, matches),
+          {Message, queue:join(OldMessages, NewNewMessages)};
+        false ->
+          ?debug_flag(?receive_, doesnt_match),
+          NewOldMessages = queue:in(Message, OldMessages),
+          find_matching_message(PatternFun, NewNewMessages, NewOldMessages)
+      end;
+    empty ->
+      {false, OldMessages}
+  end.
+
+notify_receive(MessageOrAfter, PatternFun, Timeout, Location, Info) ->
   {Cnt, ReceiveInfo} = get_receive_cnt(Info),
   #concuerror_info{
      event = NextEvent,
@@ -1280,79 +1344,6 @@ handle_receive(MessageOrAfter, PatternFun, Timeout, Location, Info) ->
         false
     end,
   {{skip_timeout, AddMessage}, delay_notify(Notification, UpdatedInfo)}.
-
-has_matching_or_after(PatternFun, Timeout, Location, InfoIn, Mode) ->
-  {Result, NewOldMessages} = has_matching_or_after(PatternFun, Timeout, InfoIn),
-  UpdatedInfo = update_messages(Result, NewOldMessages, InfoIn),
-  case Mode of
-    non_blocking -> {Result, UpdatedInfo};
-    blocking ->
-      case Result =:= false of
-        true ->
-          ?debug_flag(?loop, blocked),
-          NewInfo =
-            case InfoIn#concuerror_info.status =:= waiting of
-              true ->
-                process_loop(notify({blocked, Location}, UpdatedInfo));
-              false ->
-                process_loop(set_status(UpdatedInfo, waiting))
-            end,
-          has_matching_or_after(PatternFun, Timeout, Location, NewInfo, Mode);
-        false ->
-          ?debug_flag(?loop, ready_to_receive),
-          NewInfo = process_loop(InfoIn),
-          {FinalResult, FinalNewOldMessages} =
-            has_matching_or_after(PatternFun, Timeout, NewInfo),
-          FinalInfo = update_messages(Result, FinalNewOldMessages, NewInfo),
-          {FinalResult, FinalInfo}
-      end
-  end.
-
-update_messages(Result, NewOldMessages, Info) ->
-  case Result =:= false of
-    true ->
-      Info#concuerror_info{
-        messages_new = queue:new(),
-        messages_old = NewOldMessages};
-    false ->
-      Info#concuerror_info{
-        messages_new = NewOldMessages,
-        messages_old = queue:new()}
-  end.      
-
-has_matching_or_after(PatternFun, Timeout, Info) ->
-  #concuerror_info{messages_new = NewMessages,
-                   messages_old = OldMessages} = Info,
-  {Result, NewOldMessages} =
-    fold_with_patterns(PatternFun, NewMessages, OldMessages),
-  AfterOrMessage =
-    case Result =:= false of
-      false -> Result;
-      true ->
-        case Timeout =:= infinity of
-          false -> 'after';
-          true -> false
-        end
-    end,
-  {AfterOrMessage, NewOldMessages}.
-
-fold_with_patterns(PatternFun, NewMessages, OldMessages) ->
-  {Value, NewNewMessages} = queue:out(NewMessages),
-  ?debug_flag(?receive_, {inspect, Value}),
-  case Value of
-    {value, #message{data = Data} = Message} ->
-      case PatternFun(Data) of
-        true  ->
-          ?debug_flag(?receive_, matches),
-          {Message, queue:join(OldMessages, NewNewMessages)};
-        false ->
-          ?debug_flag(?receive_, doesnt_match),
-          NewOldMessages = queue:in(Message, OldMessages),
-          fold_with_patterns(PatternFun, NewNewMessages, NewOldMessages)
-      end;
-    empty ->
-      {false, OldMessages}
-  end.
 
 %%------------------------------------------------------------------------------
 
@@ -1497,10 +1488,10 @@ process_loop(Info) ->
       case is_active(Info) andalso NotDemonitored of
         true ->
           ?debug_flag(?loop, enqueueing_message),
-          Old = Info#concuerror_info.messages_new,
+          Queue = Info#concuerror_info.message_queue,
           NewInfo =
             Info#concuerror_info{
-              messages_new = queue:in(Message, Old)
+              message_queue = queue:in(Message, Queue)
              },
           ?debug_flag(?loop, enqueued_msg),
           case NewInfo#concuerror_info.status =:= waiting of
@@ -1892,8 +1883,7 @@ reset_concuerror_info(Info) ->
     exit_reason = normal,
     flags = #process_flags{},
     message_counter = 1,
-    messages_new = queue:new(),
-    messages_old = queue:new(),
+    message_queue = queue:new(),
     event = none,
     notify_when_ready = {Pid, true},
     receive_counter = 1,
@@ -1966,7 +1956,7 @@ is_active(Status) when is_atom(Status) ->
   (Status =:= running) orelse (Status =:= waiting).
 
 get_stacktrace(Top) ->
-  Trace = erlang:get_stacktrace(),
+  {_, Trace} = erlang:process_info(self(), current_stacktrace),
   [T || {M,_,_,_} = T <- Top ++ Trace, not_concuerror_module(M)].
 
 not_concuerror_module(Atom) ->
