@@ -54,7 +54,7 @@ timediff(After, Before) ->
 %%------------------------------------------------------------------------------
 
 -record(rate_info, {
-          average   :: 'wait' | average:average(),
+          average   :: 'wait' | concuerror_window_average:average(),
           prev      :: non_neg_integer(),
           ready     :: boolean(),
           timestamp :: timestamp()
@@ -679,10 +679,10 @@ update_rate(RateInfo, Useful) ->
   {Rate, NewAverage, NewReady} =
     case Ready of
       true ->
-        {R, NA} = average:update(CurrentRate, Average),
+        {R, NA} = concuerror_window_average:update(CurrentRate, Average),
         {round(R), NA, true};
       false when Prev > 30 ->
-        {CurrentRate, average:init(CurrentRate, 20), true};
+        {CurrentRate, concuerror_window_average:init(CurrentRate, 20), true};
       false ->
         {wait, wait, false}
     end,

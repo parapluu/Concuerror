@@ -1,6 +1,9 @@
 %% -*- erlang-indent-level: 2 -*-
 
--module(average).
+%% @doc This module provides functions for calculating a running
+%%      window average of numerical values.
+
+-module(concuerror_window_average).
 
 -export([init/2, update/2]).
 

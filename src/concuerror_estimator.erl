@@ -26,6 +26,8 @@
 -type estimator()  :: pid() | 'none'.
 -type estimation() :: pos_integer() | 'unknown'.
 
+-type average() :: concuerror_window_average:average().
+
 %%------------------------------------------------------------------------------
 
 -define(SERVER, ?MODULE).
@@ -48,12 +50,12 @@
 -define(DELAY, 10).
 
 -record(state, {
-          average    = initial        :: 'initial' | average:average(),
+          average    = initial        :: 'initial' | average(),
           delay      = ?INITIAL_DELAY :: non_neg_integer(),
           estimation = unknown        :: estimation(),
           explored   = dict:new()     :: explored(),
           planned    = dict:new()     :: planned(),
-          style      = recursive      :: estimation_style()
+          style                       :: estimation_style()
          }).
 
 %%%=============================================================================
@@ -79,7 +81,7 @@ start_link(Options) ->
 
 -record(delay_bounded, {
           bound     = 0                   :: pos_integer(),
-          races_avg = average:init(4, 20) :: average:average()
+          races_avg = init_average(4, 20) :: average()
          }).
 
 -type estimation_style() ::
@@ -249,6 +251,12 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%=============================================================================
 
+init_average(Value, Window) ->
+  concuerror_window_average:init(Value, Window).
+
+update_average(Value, Average) ->
+  concuerror_window_average:update(Value, Average).
+
 reestimate(#state{average = Average, delay = Delay} = State) ->
   case Delay > 0 of
     true -> State#state{delay = Delay - 1};
@@ -256,8 +264,8 @@ reestimate(#state{average = Average, delay = Delay} = State) ->
       {Value, NewState} = estimate(State),
       {Estimation, NewAverage} =
         case Average =:= initial of
-          false -> average:update(Value, Average);
-          true -> {Value, average:init(Value, 10)}
+          false -> update_average(Value, Average);
+          true -> {Value, init_average(Value, 10)}
         end,
       NewState#state{
         average = NewAverage,
@@ -320,7 +328,7 @@ estimate(State) ->
       SignificantPlanned = dict:filter(MoreThanOne, Planned),
       Marks = all_keys(Explored, SignificantPlanned),
       Length = length(Marks),
-      {Races, NewRacesAvg} = average:update(Length, RacesAvg),
+      {Races, NewRacesAvg} = update_average(Length, RacesAvg),
       Est = bounded_estimation(Races, Bound),
       %% io:format("~w~n~w~n", [lists:sort(dict:to_list(Explored)), lists:sort(dict:to_list(Planned))]),
       %% io:format("~w, ~.2f, ~.2f~n", [Length, Races, Est]),
