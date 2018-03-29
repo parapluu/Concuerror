@@ -6,7 +6,7 @@
 
 options() ->
   "--assertions_only -v0 --ignore_error deadlock"
-    " --instant_delivery false".
+    " --instant_delivery false --assume_racing false".
 
 %%%-----------------------------------------------------------------------------
 
@@ -29,7 +29,6 @@ main(Tests) ->
     false -> os:putenv("CONCUERROR","concuerror");
     _ -> ok
   end,
-  to_stderr("~p",[Tests]),
   Server = initialize(),
   ok = inspect_files(Tests, Server),
   finish(Server).
