@@ -1181,7 +1181,7 @@ wait_process(Pid, Timeout) ->
   receive
     ready -> ok;
     exited -> retry;
-    {blocked, _, _} -> retry;
+    {blocked, _} -> retry;
     #event{} = NewEvent -> {ok, NewEvent};
     {'ETS-TRANSFER', _, _, given_to_scheduler} ->
       wait_process(Pid, Timeout);
@@ -1224,7 +1224,7 @@ collect_deadlock_info(Actors) ->
     fun(P, Acc) ->
         P ! deadlock_poll,
         receive
-          {blocked, Location, Messages} -> [{P, Location, Messages}|Acc];
+          {blocked, Info} -> [Info|Acc];
           exited -> Acc
         end
     end,
@@ -1263,7 +1263,7 @@ has_matching_or_after(PatternFun, Timeout, Location, InfoIn, Mode) ->
               true ->
                 Messages = Info#concuerror_info.message_queue,
                 MessageList = [D || #message{data = D} <- queue:to_list(Messages)],
-                Notification = {blocked, Location, MessageList},
+                Notification = {blocked, {self(), Location, MessageList}},
                 process_loop(notify(Notification, Info));
               false ->
                 process_loop(set_status(Info, waiting))
