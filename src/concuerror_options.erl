@@ -326,10 +326,11 @@ check_validity(Key) ->
 
 parse_cl(CommandLineArgs) ->
   try
+    %% CL parsing uses some version-dependent functions
+    check_otp_version(),
     parse_cl_aux(CommandLineArgs)
   catch
-    throw:opt_error ->
-      options_fail()
+    throw:opt_error -> options_fail()
   end.
 
 options_fail() ->
@@ -560,6 +561,8 @@ get_keywords_and_related(Tuple) ->
 
 finalize(Options) ->
   try
+    %% We might have been invoked by an Erlang shell, so check again.
+    check_otp_version(),
     case check_help_and_version(Options) of
       exit -> {exit, ok};
       ok ->
@@ -567,8 +570,7 @@ finalize(Options) ->
         {ok, FinalOptions, get_logs()}
     end
   catch
-    throw:opt_error ->
-      options_fail()
+    throw:opt_error -> options_fail()
   end.
 
 check_help_and_version(Options) ->
@@ -590,6 +592,22 @@ check_help_and_version(Options) ->
 
 %%%-----------------------------------------------------------------------------
 
+check_otp_version() ->
+  CurrentOTPRelease =
+    case erlang:system_info(otp_release) of
+      "R" ++ _ -> 16; %% ... or earlier
+      [D,U|_] -> list_to_integer([D,U])
+    end,
+  case CurrentOTPRelease =:= ?OTP_VERSION of
+    true -> ok;
+    false ->
+      opt_error(
+        "Concuerror has been compiled for a different version of Erlang/OTP."
+        " Please run `make distclean; make` again.",[])
+  end.
+
+%%%-----------------------------------------------------------------------------
+
 -spec version() -> string().
 
 version() ->
@@ -599,8 +617,7 @@ version() ->
 
 finalize_2(Options) ->
   Passes =
-    [ fun check_otp_version/1
-    , normalize_fun("argument")
+    [ normalize_fun("argument")
     , fun set_verbosity/1
     , fun open_files/1
     , fun add_to_path/1
@@ -628,23 +645,6 @@ run_passes([], Options) ->
   Options;
 run_passes([Pass|Passes], Options) ->
   run_passes(Passes, Pass(Options)).
-
-%%%-----------------------------------------------------------------------------
-
-check_otp_version(Options) ->
-  CurrentOTPRelease =
-    case erlang:system_info(otp_release) of
-      "R" ++ _ -> 16; %% ... or earlier
-      [D,U|_] -> list_to_integer([D,U])
-    end,
-  case CurrentOTPRelease =:= ?OTP_VERSION of
-    true -> ok;
-    false ->
-      opt_error(
-        "Concuerror has been compiled for a different version of Erlang/OTP."
-        " Please run `make distclean; make` again.",[])
-  end,
-  Options.
 
 %%%-----------------------------------------------------------------------------
 
