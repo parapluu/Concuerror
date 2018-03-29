@@ -3,6 +3,7 @@
 test: erlang-concurrency-litmus-tests
 	./test mailbox
 	./test link
+	./test registry
 
 #./test . #When everything works
 
