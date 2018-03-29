@@ -491,6 +491,17 @@ dependent_built_in(#builtin_event{mfargs = {erlang,LinkOp,_}} = L,
         LinkOp =:= unlink) ->
   dependent_built_in(R, L);
 
+dependent_built_in(#builtin_event{mfargs = {erlang,ReadorCancelTimerA,[TimerA]}},
+                   #builtin_event{mfargs = {erlang,ReadorCancelTimerB,[TimerB]}})
+  when (ReadorCancelTimerA =:= read_timer orelse
+        ReadorCancelTimerA =:= cancel_timer),
+       (ReadorCancelTimerB =:= read_timer orelse
+        ReadorCancelTimerB =:= cancel_timer),
+       (ReadorCancelTimerA =:= cancel_timer orelse
+        ReadorCancelTimerB =:= cancel_timer)
+       ->
+  TimerA =:= TimerB;
+
 dependent_built_in(#builtin_event{mfargs = {erlang,send,_}, extra = Extra},
                    #builtin_event{mfargs = {erlang,ReadorCancelTimer,[Timer]}})
   when is_reference(Extra),
