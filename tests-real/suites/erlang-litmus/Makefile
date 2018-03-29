@@ -5,6 +5,7 @@ test: erlang-concurrency-litmus-tests
 	./test mailbox
 	./test process
 	./test registry
+	./test signal
 	./test timer
 
 #./test . #When everything works

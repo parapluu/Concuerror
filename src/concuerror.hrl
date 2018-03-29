@@ -145,7 +145,7 @@
 
 -define(process_name_none, 0).
 -define(new_process(Pid, Symbolic),
-        {Pid, running, ?process_name_none, undefined, Symbolic, 0, regular}).
+        {Pid, exited, ?process_name_none, undefined, Symbolic, 0, regular}).
 -define(new_system_process(Pid, Name, Type),
         {Pid, running, Name, undefined, atom_to_list(Name), 0, Type}).
 -define(process_pat_pid(Pid),                {Pid,      _,    _, _, _, _,    _}).

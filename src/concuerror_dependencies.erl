@@ -311,6 +311,9 @@ dependent_exit(_Exit, {erlang, A, _})
     A =:= spawn_link;
     A =:= start_timer ->
   false;
+dependent_exit(#exit_event{},
+               {_, group_leader, []}) ->
+  false;
 dependent_exit(#exit_event{actor = Exiting},
                {_, group_leader, [Leader, Leaded]}) ->
   Exiting =:= Leader orelse Exiting =:= Leaded;
