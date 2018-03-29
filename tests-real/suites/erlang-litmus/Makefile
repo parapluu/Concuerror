@@ -1,6 +1,7 @@
 .PHONY: test
 
 test: erlang-concurrency-litmus-tests
+	./test leader
 	./test link
 	./test mailbox
 	./test process

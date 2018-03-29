@@ -425,6 +425,28 @@ dependent_built_in(#builtin_event{mfargs = {_,group_leader,ArgsA}} = A,
       ForA =:= ForB
   end;
 
+dependent_built_in(#builtin_event{actor = A, mfargs = {erlang, Spawn, _}},
+                   #builtin_event{mfargs = {_, group_leader, [_, Leaded]}})
+  when
+    Spawn =:= spawn;
+    Spawn =:= spawn_link;
+    Spawn =:= spawn_opt ->
+  Leaded =:= A;
+dependent_built_in(#builtin_event{mfargs = {_, group_leader, [_, Leaded]}},
+                   #builtin_event{actor = A, mfargs = {erlang, Spawn, _}})
+  when
+    Spawn =:= spawn;
+    Spawn =:= spawn_link;
+    Spawn =:= spawn_opt ->
+  Leaded =:= A;
+
+dependent_built_in(#builtin_event{mfargs = {_, group_leader, _}},
+                   #builtin_event{}) ->
+  false;
+dependent_built_in(#builtin_event{},
+                   #builtin_event{mfargs = {_, group_leader, _}}) ->
+  false;
+
 dependent_built_in(#builtin_event{mfargs = {erlang, processes, []}},
                    #builtin_event{mfargs = {erlang, Spawn, _}})
   when
@@ -567,13 +589,6 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
     ;B =:= start_timer
     ;B =:= time
     ->
-  false;
-
-dependent_built_in(#builtin_event{mfargs = {_, group_leader, _}},
-                   #builtin_event{}) ->
-  false;
-dependent_built_in(#builtin_event{},
-                   #builtin_event{mfargs = {_, group_leader, _}}) ->
   false;
 
 %%------------------------------------------------------------------------------
