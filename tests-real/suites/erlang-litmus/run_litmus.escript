@@ -42,7 +42,7 @@ main(Tests) ->
    , failed = 0
    , files  = 0
    , finish = false
-   , limit  = 2
+   , limit  = 4
    , tests  = 0
    }).
 
