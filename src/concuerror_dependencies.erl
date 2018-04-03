@@ -8,17 +8,6 @@
 
 -include("concuerror.hrl").
 
--define(is_lookup(V),
-        (V =:= lookup orelse V =:= lookup_element orelse V =:= member)).
--define(is_insert(V),
-        (V =:= insert orelse V =:= insert_new)).
--define(is_match(V),
-        (V =:= select) orelse (V =:= match)).
--define(is_delete(V),
-        (V =:= delete)).
--define(is_match_delete(V),
-        (V =:= select_delete orelse V =:= match_delete)).
-
 %%------------------------------------------------------------------------------
 
 -spec dependent_safe(event(), event()) ->
@@ -511,16 +500,16 @@ dependent_built_in(#builtin_event{mfargs = {erlang,UnRegisterOp,_}} = R,
 
 dependent_built_in(#builtin_event{mfargs = {erlang,RegistryOp,_}},
                    #builtin_event{mfargs = {erlang,LinkOp,_}})
-  when (RegistryOp =:= register orelse 
-        RegistryOp =:= unregister orelse 
+  when (RegistryOp =:= register orelse
+        RegistryOp =:= unregister orelse
         RegistryOp =:= whereis),
        (LinkOp =:= link orelse
         LinkOp =:= unlink) ->
   false;
 dependent_built_in(#builtin_event{mfargs = {erlang,LinkOp,_}} = L,
                    #builtin_event{mfargs = {erlang,RegistryOp,_}} = R)
-  when (RegistryOp =:= register orelse 
-        RegistryOp =:= unregister orelse 
+  when (RegistryOp =:= register orelse
+        RegistryOp =:= unregister orelse
         RegistryOp =:= whereis),
        (LinkOp =:= link orelse
         LinkOp =:= unlink) ->
@@ -670,8 +659,8 @@ ets_is_mutating(#builtin_event{mfargs = {_,Op,[_|Rest] = Args}} = Event) ->
     {member        ,_} -> false;
     {next          ,_} -> false;
     {select        ,_} -> false;
-    {select_delete ,_} -> ?deps_with_any;
-    {update_counter,3} -> with_key(hd(Rest))                   
+    {select_delete ,_} -> from_delete(hd(Rest));
+    {update_counter,3} -> with_key(hd(Rest))
   end.
 
 with_key(Key) ->
@@ -685,11 +674,12 @@ with_key(Key) ->
 ets_reads_keys(Event) ->
   case keys_or_tuples(Event) of
     any -> any;
+    {matchspec, _MS} -> any; % can't test the matchspec against a single key
     {keys, Keys} -> Keys;
     {tuples, Tuples} ->
       KeyPos = ets:info(Event#builtin_event.extra, keypos),
       [element(KeyPos, Tuple) || Tuple <- Tuples]
-  end.      
+  end.
 
 keys_or_tuples(#builtin_event{mfargs = {_,Op,[_|Rest] = Args}}) ->
   case {Op, length(Args)} of
@@ -704,12 +694,12 @@ keys_or_tuples(#builtin_event{mfargs = {_,Op,[_|Rest] = Args}}) ->
        case is_list(Inserted) of true -> Inserted; false -> [Inserted] end};
     {lookup        ,_} -> {keys, [hd(Rest)]};
     {lookup_element,_} -> {keys, [hd(Rest)]};
-    {match         ,_} -> any;
-    {match_object  ,_} -> any;
+    {match         ,_} -> {matchspec, [{hd(Rest), [], ['$$']}]};
+    {match_object  ,_} -> {matchspec, [{hd(Rest), [], ['$_']}]};
     {member        ,_} -> {keys, [hd(Rest)]};
     {next          ,_} -> any;
-    {select        ,_} -> any;
-    {select_delete ,_} -> any;
+    {select        ,_} -> {matchspec, hd(Rest)};
+    {select_delete ,_} -> {matchspec, hd(Rest)};
     {update_counter,3} -> {keys, [hd(Rest)]}
   end.
 
@@ -729,6 +719,33 @@ from_insert(Table, Insert, InsertNewOrDelete) ->
                 case lists:keyfind(element(KeyPos, Tuple), KeyPos, InsertList) of
                   false -> false;
                   InsertTuple -> InsertNewOrDelete orelse Tuple =/= InsertTuple
+                end
+            end,
+          lists:any(Pred, Tuples);
+        {matchspec, MS} ->
+          Pred =
+            fun (Tuple) ->
+                case erlang:match_spec_test(Tuple, MS, table) of
+                  {error, _} -> false;
+                  {ok, Result, [], _Warnings} -> Result =/= false
+                end
+            end,
+          lists:any(Pred, InsertList)
+      end
+  end.
+
+from_delete(MatchSpec) ->
+  fun (Event) ->
+      case keys_or_tuples(Event) of
+        any -> true;
+        {keys, _Keys} -> true;
+        {matchspec, _MS} -> true;
+        {tuples, Tuples} ->
+          Pred =
+            fun (Tuple) ->
+                case erlang:match_spec_test(Tuple, MatchSpec, table) of
+                  {error, _} -> false;
+                  {ok, Result, [], _Warnings} -> Result =:= true
                 end
             end,
           lists:any(Pred, Tuples)

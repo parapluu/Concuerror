@@ -1,0 +1,104 @@
+Concuerror v0.18-209-g66daaa started at 17 Apr 2018 14:09:44
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{ets_select,select_delete_against_matching_matchspec,[]}},
+   {exclude_module,[]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/ets_select.erl"]},
+   {first_process_errors_only,false},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,true},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,5000},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
+################################################################################
+Interleaving #1
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_select.erl line 168
+     Mailbox contents: []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: 2 = ets:new(table, [public,ordered_set])
+    in ets_select.erl line 158
+   2: <P>: true = ets:insert(2, [{1,1},{2,0},{3,1},{4,0},{5,1},{6,0},{7,1},{8,0},{9,1},{10,0}])
+    in ets_select.erl line 159
+   3: <P>: true = ets:insert(2, [{foo,foo},{bar,bar},{baz,baz}])
+    in ets_select.erl line 160
+   4: <P>: {<P.1>,#Ref<0.3633545087.3558604801.261202>} = erlang:spawn_opt({ets,select_delete,[2,[{{'$1','$2'},[{'andalso',{is_integer,'$1'},{'=:=','$2',0}}],[true]}]],[monitor]})
+    in erlang.erl line 2742
+   5: <P>: [[],[],[],[],[]] = ets:match(2, {'_',0})
+    in ets_select.erl line 164
+   6: <P.1>: 5 = ets:select_delete(2, [{{'$1','$2'},[{'andalso',{is_integer,'$1'},{'=:=','$2',0}}],[true]}])
+   7: <P.1>: exits normally
+   8: <P.1>: {'DOWN',#Ref<0.3633545087.3558604801.261202>,process,<P.1>,normal} = erlang:send(<P>, {'DOWN',#Ref<0.3633545087.3558604801.261202>,process,<P.1>,normal})
+    (while exiting)
+   9: <P>: receives message ({'DOWN',#Ref<0.3633545087.3558604801.261202>,process,<P.1>,normal})
+    in ets_select.erl line 167
+################################################################################
+Interleaving #2
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_select.erl line 168
+     Mailbox contents: []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: 2 = ets:new(table, [public,ordered_set])
+    in ets_select.erl line 158
+   2: <P>: true = ets:insert(2, [{1,1},{2,0},{3,1},{4,0},{5,1},{6,0},{7,1},{8,0},{9,1},{10,0}])
+    in ets_select.erl line 159
+   3: <P>: true = ets:insert(2, [{foo,foo},{bar,bar},{baz,baz}])
+    in ets_select.erl line 160
+   4: <P>: {<P.1>,#Ref<0.3633545087.3558604801.261202>} = erlang:spawn_opt({ets,select_delete,[2,[{{'$1','$2'},[{'andalso',{is_integer,'$1'},{'=:=','$2',0}}],[true]}]],[monitor]})
+    in erlang.erl line 2742
+   5: <P.1>: 5 = ets:select_delete(2, [{{'$1','$2'},[{'andalso',{is_integer,'$1'},{'=:=','$2',0}}],[true]}])
+   6: <P.1>: exits normally
+   7: <P.1>: {'DOWN',#Ref<0.3633545087.3558604801.261202>,process,<P.1>,normal} = erlang:send(<P>, {'DOWN',#Ref<0.3633545087.3558604801.261202>,process,<P.1>,normal})
+    (while exiting)
+   8: <P>: [] = ets:match(2, {'_',0})
+    in ets_select.erl line 164
+   9: <P>: receives message ({'DOWN',#Ref<0.3633545087.3558604801.261202>,process,<P.1>,normal})
+    in ets_select.erl line 167
+--------------------------------------------------------------------------------
+New races found:
+*    5: <P>: [[],[],[],[],[]] = ets:match(2, {'_',0})
+     6: <P.1>: 5 = ets:select_delete(2, [{{'$1','$2'},[{'andalso',{is_integer,'$1'},{'=:=','$2',0}}],[true]}])
+
+
+################################################################################
+Exploration completed!
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+* Running without a scheduling_bound corresponds to verification and may take a long time.
+* Increase '--print_depth' if output/graph contains "...".
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+* Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
+* Instrumented & loaded module ets_select
+* Automatically instrumented module lists
+* Automatically instrumented module erlang
+* Continuing after error (-k)
+
+################################################################################
+Done at 17 Apr 2018 14:09:45 (Exit status: error)
+  Summary: 2 errors, 2/2 interleavings explored
