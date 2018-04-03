@@ -54,7 +54,7 @@ has Warning
 has Tip
 
 testing "Abnormal exit found"
-mygrep "\* At step .* process P\.1 exited abnormally"
+mygrep "\* At step .* process <P\.1/poolboy_test> exited abnormally"
 good
 
 testing "Rerun"
@@ -69,7 +69,7 @@ mygrep "Stop testing on first error."
 good
 
 testing "Correct error"
-mygrep "\* At step .* process P exited abnormally"
+mygrep "\* At step .* process <P> exited abnormally"
 good
 
 print_blue "Part 2"

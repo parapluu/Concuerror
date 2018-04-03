@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - untested code for 'hijacking' processes (e.g. application_controller (#2))
 
 ### Changed
+- symbolic PIDs are now shown as "<symbol/last registered name>"
 - report shows mailbox contents when a deadlock is detected
 - significantly optimized DPOR implementations
 - moved concuerror executable to /bin directory

@@ -15,7 +15,7 @@
 -module(sched_tests).
 -export([scenarios/0]).
 -export([test_spawn/0,
-     test_send/0, test_send_2/0,
+     test_send/0, test_send_2/0, test_send_3/0,
      test_receive/0, test_receive_2/0,
      test_send_receive/0, test_send_receive_2/0, test_send_receive_3/0,
      test_receive_after_no_patterns/0, test_receive_after_with_pattern/0,
@@ -60,6 +60,7 @@ scenario_names() ->
     [{test_spawn, 0}, {test_spawn, 1}, {test_spawn, inf}
     ,{test_send, 0}, {test_send, 1}, {test_send, inf}
     ,{test_send_2, 0}, {test_send_2, 1}, {test_send_2, inf}
+    ,{test_send_3, 0}, {test_send_3, 1}, {test_send_3, inf}
     ,{test_receive, 0}, {test_receive, inf}
     ,{test_receive_2, 0}, {test_receive_2, inf}
     ,{test_send_receive, 0}, {test_send_receive, 1}
@@ -158,7 +159,14 @@ test_send() ->
 
 test_send_2() ->
     Pid = spawn(fun() -> ok end),
-    erlang:send(Pid, foo),
+    foo = erlang:send(Pid, foo),
+    ok.
+
+-spec test_send_3() -> 'ok'.
+
+test_send_3() ->
+    Pid = spawn(fun() -> ok end),
+    ok = erlang:send(Pid, foo, [noconnect]),
     ok.
 
 -spec test_receive() -> no_return().

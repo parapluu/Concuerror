@@ -350,6 +350,15 @@ dependent_exit(_Exit, {ets, _, _}) ->
 
 %%------------------------------------------------------------------------------
 
+dependent_process_info(#builtin_event{mfargs = {M,F,[Pid, List]}} = ProcessInfo,
+                       Other)
+  when is_list(List) ->
+  Pred =
+    fun(Item) ->
+        ItemInfo = ProcessInfo#builtin_event{mfargs = {M,F,[Pid,Item]}},
+        dependent_process_info(ItemInfo, Other)
+    end,
+  lists:any(Pred, List);
 dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, group_leader]}},
                        Other) ->
   case Other of

@@ -198,7 +198,14 @@ instrumented_call(Module, Name, Arity, Args, _Location,
       [Term] = Args,
       try
         Symbol = ets:lookup_element(Processes, Term, ?process_symbolic),
-        {{didit, Symbol}, Info}
+        PName = ets:lookup_element(Processes, Term, ?process_last_name),
+        Pretty =
+          case PName =:= ?process_name_none of
+            true -> "<" ++ Symbol ++ ">";
+            false ->
+              lists:flatten(io_lib:format("<~s/~s>", [Symbol, PName]))
+          end,
+        {{didit, Pretty}, Info}
       catch
         _:_ -> {doit, Info}
       end;
@@ -529,6 +536,18 @@ run_built_in(erlang, monitor, 2, [Type, InTarget], Info) ->
         end
     end,
   {Ref, FinalInfo};
+run_built_in(erlang, process_info, 2, [Pid, Items], Info) when is_list(Items) ->
+  ItemFun =
+    fun (Item) ->
+        ?badarg_if_not(is_atom(Item)),
+        {ItemRes, _} = run_built_in(erlang, process_info, 2, [Pid, Item], Info),
+        if Item =:= registered_name, ItemRes =:= [] ->
+            {registered_name, []};
+           is_tuple(ItemRes) ->
+            ItemRes
+        end
+    end,
+  {lists:map(ItemFun, Items), Info};
 run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
   {Alive, _} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
   case Alive of
@@ -637,7 +656,8 @@ run_built_in(erlang, register, 2, [Name, Pid], Info) ->
     [] = ets:match(Processes, ?process_match_name_to_pid(Name)),
     ?process_name_none = ets:lookup_element(Processes, Pid, ?process_name),
     false = undefined =:= Name,
-    true = ets:update_element(Processes, Pid, {?process_name, Name}),
+    true = ets:update_element(Processes, Pid, [{?process_name, Name},
+                                               {?process_last_name, Name}]),
     {true, Info}
   catch
     _:_ -> error(badarg)
@@ -818,10 +838,11 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
   Pid ! {start, Module, Name, Args},
   ok = wait_process(Pid, Timeout),
   {Result, FinalInfo};
+run_built_in(erlang, send, 3, [Recipient, Message, _Options], Info) ->
+  {_, FinalInfo} = run_built_in(erlang, send, 2, [Recipient, Message], Info),
+  {ok, FinalInfo};
 run_built_in(erlang, Send, 2, [Recipient, Message], Info)
   when Send =:= '!'; Send =:= 'send' ->
-  run_built_in(erlang, send, 3, [Recipient, Message, []], Info);
-run_built_in(erlang, send, 3, [Recipient, Message, _Options], Info) ->
   #concuerror_info{event = #event{event_info = EventInfo}} = Info,
   Pid =
     case is_pid(Recipient) of
@@ -831,7 +852,7 @@ run_built_in(erlang, send, 3, [Recipient, Message, _Options], Info) ->
           case Recipient of
             A when is_atom(A) -> Recipient;
             {A, N} when is_atom(A), N =:= node() -> A
-          end,            
+          end,
         {P, Info} = run_built_in(erlang, whereis, 1, [T], Info),
         P
     end,
@@ -1747,7 +1768,7 @@ ets_ops_access_rights_map(Op) ->
     {next          ,_} -> read;
     {select        ,_} -> read;
     {select_delete ,_} -> write;
-    {update_counter,3} -> write                            
+    {update_counter,3} -> write
   end.
 
 %%------------------------------------------------------------------------------
@@ -2081,7 +2102,7 @@ explain_error({not_local_node, Node}) ->
     " remote nodes yet.",
     [Node]);
 explain_error({process_did_not_respond, Timeout, Actor}) ->
-  io_lib:format( 
+  io_lib:format(
     "A process (~p) took more than ~pms to report a built-in event. You can try"
     " to increase the '--timeout' limit and/or ensure that there are no"
     " infinite loops in your test.",
