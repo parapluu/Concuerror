@@ -140,7 +140,18 @@ extract_tests(File, Server) ->
     true ->
       case compile:file(File, [binary]) of
         error ->
-          print_test(File, 'n/a', skip),
+          After17 =
+            case erlang:system_info(otp_release) of
+              "R" ++ _ -> false; %% ... 16 or earlier
+              [D,U|_] -> list_to_integer([D,U]) > 17
+            end,
+          case After17 of
+            false -> print_test(File, 'n/a', skip);
+            true ->
+              print_test(File, 'compile', error),
+              compile:file(File, [binary, report_errors]),
+              halt(1)
+          end,
           ok;
         {ok, Module, Binary} ->
           {module, Module} = code:load_binary(Module, File, Binary),
