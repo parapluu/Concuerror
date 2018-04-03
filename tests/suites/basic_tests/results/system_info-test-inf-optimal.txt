@@ -1,4 +1,4 @@
-Concuerror v0.18-223-gad8a21 started at 19 Apr 2018 15:10:25
+Concuerror v0.18-223-gad8a21 started at 19 Apr 2018 13:55:50
  Options:
   [{after_timeout,infinity},
    {assertions_only,false},
@@ -6,9 +6,9 @@ Concuerror v0.18-223-gad8a21 started at 19 Apr 2018 15:10:25
    {depth_bound,500},
    {disable_sleep_sets,false},
    {dpor,optimal},
-   {entry_point,{inspect_system,test,[]}},
+   {entry_point,{system_info,test,[]}},
    {exclude_module,[]},
-   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/inspect_system.erl"]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/system_info.erl"]},
    {first_process_errors_only,false},
    {ignore_error,[]},
    {instant_delivery,true},
@@ -39,8 +39,8 @@ Info:
 --------------------------------------------------------------------------------
 * Automatically instrumented module io_lib
 * Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
-* Instrumented & loaded module inspect_system
+* Instrumented & loaded module system_info
 
 ################################################################################
-Done at 19 Apr 2018 15:10:25 (Exit status: ok)
+Done at 19 Apr 2018 13:55:50 (Exit status: ok)
   Summary: 0 errors, 1/1 interleavings explored
