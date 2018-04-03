@@ -311,8 +311,12 @@ dependent_exit(_Exit, {erlang, A, _})
     A =:= spawn_link;
     A =:= start_timer ->
   false;
-dependent_exit(_Exit, {_, group_leader, _}) ->
+dependent_exit(#exit_event{},
+               {_, group_leader, []}) ->
   false;
+dependent_exit(#exit_event{actor = Exiting},
+               {_, group_leader, [Leader, Leaded]}) ->
+  Exiting =:= Leader orelse Exiting =:= Leaded;
 dependent_exit(#exit_event{actor = Actor}, {erlang, processes, []}) ->
   is_pid(Actor);
 dependent_exit(#exit_event{actor = Cancelled},
@@ -349,7 +353,7 @@ dependent_exit(_Exit, {ets, _, _}) ->
 dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, group_leader]}},
                        Other) ->
   case Other of
-    #builtin_event{mfargs = {_,group_leader,[Pid,_]}} -> true;
+    #builtin_event{mfargs = {_,group_leader,[_, Pid]}} -> true;
     _-> false
   end;
 dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, links]}},
@@ -421,6 +425,28 @@ dependent_built_in(#builtin_event{mfargs = {_,group_leader,ArgsA}} = A,
       ForA =:= ForB
   end;
 
+dependent_built_in(#builtin_event{actor = A, mfargs = {erlang, Spawn, _}},
+                   #builtin_event{mfargs = {_, group_leader, [_, Leaded]}})
+  when
+    Spawn =:= spawn;
+    Spawn =:= spawn_link;
+    Spawn =:= spawn_opt ->
+  Leaded =:= A;
+dependent_built_in(#builtin_event{mfargs = {_, group_leader, [_, Leaded]}},
+                   #builtin_event{actor = A, mfargs = {erlang, Spawn, _}})
+  when
+    Spawn =:= spawn;
+    Spawn =:= spawn_link;
+    Spawn =:= spawn_opt ->
+  Leaded =:= A;
+
+dependent_built_in(#builtin_event{mfargs = {_, group_leader, _}},
+                   #builtin_event{}) ->
+  false;
+dependent_built_in(#builtin_event{},
+                   #builtin_event{mfargs = {_, group_leader, _}}) ->
+  false;
+
 dependent_built_in(#builtin_event{mfargs = {erlang, processes, []}},
                    #builtin_event{mfargs = {erlang, Spawn, _}})
   when
@@ -435,53 +461,6 @@ dependent_built_in(#builtin_event{mfargs = {erlang, Spawn, _}},
     Spawn =:= spawn_link;
     Spawn =:= spawn_opt ->
   true;
-
-dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
-                   #builtin_event{mfargs = {erlang, B, _}})
-  when
-    false
-    ;A =:= date
-    ;A =:= demonitor        %% Depends only with an exit event or proc_info
-    ;A =:= exit             %% Sending an exit signal (dependencies are on delivery)
-    ;A =:= get_stacktrace   %% Depends with nothing
-    ;A =:= is_process_alive %% Depends only with an exit event
-    ;A =:= make_ref         %% Depends with nothing
-    ;A =:= monitor          %% Depends only with an exit event or proc_info
-    ;A =:= now
-    ;A =:= process_flag     %% Depends only with delivery of a signal
-    ;A =:= processes        %% Depends only with spawn and exit
-    ;A =:= send_after
-    ;A =:= spawn            %% Depends only with processes/0
-    ;A =:= spawn_link       %% Depends only with processes/0
-    ;A =:= spawn_opt        %% Depends only with processes/0
-    ;A =:= start_timer
-    ;A =:= time
-    
-    ;B =:= date
-    ;B =:= demonitor
-    ;B =:= exit
-    ;B =:= get_stacktrace
-    ;B =:= is_process_alive
-    ;B =:= make_ref
-    ;B =:= monitor
-    ;B =:= now
-    ;B =:= process_flag
-    ;B =:= processes
-    ;B =:= send_after
-    ;B =:= spawn
-    ;B =:= spawn_link
-    ;B =:= spawn_opt
-    ;B =:= start_timer
-    ;B =:= time
-    ->
-  false;
-
-dependent_built_in(#builtin_event{mfargs = {_, group_leader, _}},
-                   #builtin_event{}) ->
-  false;
-dependent_built_in(#builtin_event{},
-                   #builtin_event{mfargs = {_, group_leader, _}}) ->
-  false;
 
 dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
                    #builtin_event{mfargs = {erlang, B, _}})
@@ -511,6 +490,16 @@ dependent_built_in(#builtin_event{mfargs = {erlang,UnRegisterOp,_}} = R,
        (SendOrWhereis =:= '!' orelse SendOrWhereis =:= send orelse
         SendOrWhereis =:= whereis) ->
   dependent_built_in(S, R);
+
+dependent_built_in(#builtin_event{mfargs = {erlang,monitor,[process,SName]}},
+                   #builtin_event{mfargs = {erlang,UnRegisterOp,[RName|_]}})
+  when (UnRegisterOp =:= register orelse UnRegisterOp =:= unregister) ->
+  SName =:= RName;
+dependent_built_in(#builtin_event{mfargs = {erlang,UnRegisterOp,_}} = R,
+                   #builtin_event{mfargs = {erlang,monitor,_}} = S)
+  when (UnRegisterOp =:= register orelse UnRegisterOp =:= unregister) ->
+  dependent_built_in(S, R);
+
 dependent_built_in(#builtin_event{mfargs = {erlang,RegistryOp,_}},
                    #builtin_event{mfargs = {erlang,LinkOp,_}})
   when (RegistryOp =:= register orelse 
@@ -527,6 +516,17 @@ dependent_built_in(#builtin_event{mfargs = {erlang,LinkOp,_}} = L,
        (LinkOp =:= link orelse
         LinkOp =:= unlink) ->
   dependent_built_in(R, L);
+
+dependent_built_in(#builtin_event{mfargs = {erlang,ReadorCancelTimerA,[TimerA]}},
+                   #builtin_event{mfargs = {erlang,ReadorCancelTimerB,[TimerB]}})
+  when (ReadorCancelTimerA =:= read_timer orelse
+        ReadorCancelTimerA =:= cancel_timer),
+       (ReadorCancelTimerB =:= read_timer orelse
+        ReadorCancelTimerB =:= cancel_timer),
+       (ReadorCancelTimerA =:= cancel_timer orelse
+        ReadorCancelTimerB =:= cancel_timer)
+       ->
+  TimerA =:= TimerB;
 
 dependent_built_in(#builtin_event{mfargs = {erlang,send,_}, extra = Extra},
                    #builtin_event{mfargs = {erlang,ReadorCancelTimer,[Timer]}})
@@ -549,6 +549,46 @@ dependent_built_in(#builtin_event{},
                    #builtin_event{mfargs = {erlang,ReadorCancelTimer,_}})
   when ReadorCancelTimer =:= read_timer;
        ReadorCancelTimer =:= cancel_timer ->
+  false;
+
+dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
+                   #builtin_event{mfargs = {erlang, B, _}})
+  when
+    false
+    ;A =:= date
+    ;A =:= demonitor        %% Depends only with an exit event or proc_info
+    ;A =:= exit             %% Sending an exit signal (dependencies are on delivery)
+    ;A =:= get_stacktrace   %% Depends with nothing
+    ;A =:= is_process_alive %% Depends only with an exit event
+    ;A =:= make_ref         %% Depends with nothing
+    ;A =:= monitor          %% Depends only with an exit event or proc_info
+    ;A =:= now
+    ;A =:= process_flag     %% Depends only with delivery of a signal
+    ;A =:= processes        %% Depends only with spawn and exit
+    ;A =:= send_after
+    ;A =:= spawn            %% Depends only with processes/0
+    ;A =:= spawn_link       %% Depends only with processes/0
+    ;A =:= spawn_opt        %% Depends only with processes/0
+    ;A =:= start_timer
+    ;A =:= time
+
+    ;B =:= date
+    ;B =:= demonitor
+    ;B =:= exit
+    ;B =:= get_stacktrace
+    ;B =:= is_process_alive
+    ;B =:= make_ref
+    ;B =:= monitor
+    ;B =:= now
+    ;B =:= process_flag
+    ;B =:= processes
+    ;B =:= send_after
+    ;B =:= spawn
+    ;B =:= spawn_link
+    ;B =:= spawn_opt
+    ;B =:= start_timer
+    ;B =:= time
+    ->
   false;
 
 %%------------------------------------------------------------------------------

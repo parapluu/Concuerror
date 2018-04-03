@@ -1,0 +1,45 @@
+Concuerror v0.18-178-g56f492 started at 29 Mar 2018 19:04:34
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{group_leader3,test,[]}},
+   {exclude_module,[]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/group_leader3.erl"]},
+   {ignore_error,[deadlock]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,5000},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
+################################################################################
+Exploration completed!
+  No errors found!
+################################################################################
+Warnings:
+--------------------------------------------------------------------------------
+* Some errors were ignored ('--ignore_error').
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+* Automatically instrumented module io_lib
+* Instrumented & loaded module group_leader3
+* Automatically instrumented module erlang
+* You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+
+################################################################################
+Done at 29 Mar 2018 19:04:35 (Exit status: ok)
+  Summary: 0 errors, 2/2 interleavings explored

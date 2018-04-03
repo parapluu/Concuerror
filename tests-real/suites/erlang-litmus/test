@@ -1,0 +1,25 @@
+#!/bin/bash
+
+REPO="erlang-concurrency-litmus-tests"
+
+CONCUERROR=${CONCUERROR:-$(which concuerror)}
+
+. ../print_colors
+
+function abort {
+    cat *.out
+    print_red "FAILED"
+}
+
+set -e
+trap 'abort' 0
+
+print_blue "Litmus Suite $1"
+
+cd $REPO/litmus
+
+../../run_litmus.escript $1
+
+trap - 0
+
+print_green "SUCCESS!"
