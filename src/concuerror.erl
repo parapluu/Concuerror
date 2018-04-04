@@ -2,13 +2,23 @@
 
 -module(concuerror).
 
--export([run/1, maybe_cover_compile/0, maybe_cover_export/1]).
+%% Main entry point.
+-export([run/1]).
+
+%%------------------------------------------------------------------------------
+
+%% Internal export
+-export([maybe_cover_compile/0, maybe_cover_export/1]).
+
+%%------------------------------------------------------------------------------
 
 -export_type([exit_status/0]).
 
 -type exit_status() :: 'ok' | 'error' | 'fail'.
 
 -include("concuerror.hrl").
+
+%%------------------------------------------------------------------------------
 
 -spec run(concuerror_options:options()) -> exit_status().
 
@@ -21,6 +31,8 @@ run(RawOptions) ->
     end,
   maybe_cover_export(RawOptions),
   Status.
+
+%%------------------------------------------------------------------------------
 
 start(Options, LogMsgs) ->
   error_logger:tty(false),
@@ -44,6 +56,8 @@ start(Options, LogMsgs) ->
   ets:delete(Processes),
   ExitStatus.
 
+%%------------------------------------------------------------------------------
+
 -spec maybe_cover_compile() -> 'ok'.
 
 maybe_cover_compile() ->
@@ -59,6 +73,8 @@ maybe_cover_compile() ->
      true -> ok
   end.
 
+%%------------------------------------------------------------------------------
+
 -spec maybe_cover_export(term()) -> 'ok'.
 
 maybe_cover_export(Args) ->
@@ -70,6 +86,8 @@ maybe_cover_export(Args) ->
       ok;
      true -> ok
   end.
+
+%%------------------------------------------------------------------------------
 
 explain(Reason) ->
   try
