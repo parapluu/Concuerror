@@ -178,6 +178,8 @@ run(Options) ->
       ubpor -> {bpor, true};
       Else -> {Else, false}
     end,
+  {IgnoreError, ReportError} =
+    generate_filtering_rules(Options, FirstProcess),
   InitialState =
     #scheduler_state{
        assertions_only = ?opt(assertions_only, Options),
@@ -186,7 +188,7 @@ run(Options) ->
        dpor = ?opt(dpor, Options),
        entry_point = EntryPoint,
        first_process = FirstProcess,
-       ignore_error = [{IE, all} || IE <- ?opt(ignore_error, Options)],
+       ignore_error = IgnoreError,
        interleaving_bound = ?opt(interleaving_bound, Options),
        interleaving_errors = [],
        interleaving_id = 1,
@@ -199,7 +201,7 @@ run(Options) ->
        print_depth = ?opt(print_depth, Options),
        processes = Processes = ?opt(processes, Options),
        receive_timeout_total = 0,
-       report_error = [],
+       report_error = ReportError,
        scheduling = ?opt(scheduling, Options),
        scheduling_bound_type = SchedulingBoundType,
        show_races = ?opt(show_races, Options),
@@ -307,6 +309,20 @@ log_trace(#scheduler_state{logger = Logger} = State) ->
           ?unique(Logger, ?lwarning, UniqueMsg, [InterleavingId]),
           NextState#scheduler_state{trace = []}
       end
+  end.
+
+%%------------------------------------------------------------------------------
+
+generate_filtering_rules(Options, FirstProcess) ->
+  IgnoreErrors = ?opt(ignore_error, Options),
+  OnlyFirstProcessErrors = ?opt(first_process_errors_only, Options),
+  case OnlyFirstProcessErrors of
+    false -> {[{IE, all} || IE <- IgnoreErrors], []};
+    true ->
+      AllCategories = [abnormal_exit, abnormal_halt, deadlock],
+      Ignored = [{IE, all} || IE <- AllCategories],
+      Reported = [{IE, [FirstProcess]} || IE <- AllCategories -- IgnoreErrors],
+      {Ignored, Reported}
   end.
 
 filter_errors(State) ->

@@ -4,6 +4,18 @@
 
 print_blue "$0"
 
+testing "Only first process errors"
+concuerror_console -f src/other_deadlock.erl --first_process_errors_only
+good
+
+testing "Only first process errors with error"
+! concuerror_console -f src/first_and_other_deadlock.erl --first_process_errors_only
+good
+
+testing "Only first process errors with ignored error"
+concuerror_console -f src/first_and_other_deadlock.erl --ignore_error deadlock --first_process_errors_only
+good
+
 testing "Symbolic registered names Info"
 ! concuerror_console -f src/register.erl
 consolehas "Showing PIDs as \"<symbolic name(/last registered name)>\" ('-h symbolic_names')."

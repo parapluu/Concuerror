@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased](https://github.com/parapluu/Concuerror/tree/master)
 
 ### Added
+- `--first_process_errors_only` option
 - Parts of [aronisstav/erlang-concurrency-litmus-tests](https://github.com/aronisstav/erlang-concurrency-litmus-tests) as a testsuite
 - [Coveralls](https://coveralls.io/github/parapluu/Concuerror) code coverage tracking
 - [contributor's guide](./CONTRIBUTING.md)

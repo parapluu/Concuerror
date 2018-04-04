@@ -225,6 +225,9 @@ options() ->
     "Only processes that exit with a reason of form '{{assert*, _}, _}' are"
     " considered errors. Such exit reasons are generated e.g. by the"
     " stdlib/include/assert.hrl header file."}
+  ,{first_process_errors_only, [errors], undefined, {boolean, false},
+    "Only report errors that involve the first process",
+    "All errors involving only children processes will be ignored."}
   ,{timeout, [erlang, advanced], undefined, {integer, 5000},
     "How long to wait for an event (>= " ++
       integer_to_list(?MINIMUM_TIMEOUT) ++ "ms)",
