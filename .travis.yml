@@ -44,8 +44,9 @@ matrix:
     stage: test
 
 env:
-  - TEST=".travis/run_make tests-real"
+
   - TEST=".travis/run_make tests"
+  - TEST=".travis/run_make tests-real"
 
 otp_release:
 
