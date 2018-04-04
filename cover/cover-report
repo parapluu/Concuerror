@@ -66,9 +66,14 @@ print(List) ->
         "~nFail: Total code coverage is below ~.1f% threshold!~n",
         [Threshold * 100])
   end,
-  case Fail orelse TotalFail of
-    true -> halt(1);
-    false -> halt(0)
+  case os:getenv("TRAVIS") of
+    "true" ->
+      halt(0);
+    _ ->
+      case Fail orelse TotalFail of
+        true -> halt(1);
+        false -> halt(0)
+      end
   end.
 
 print_separator() ->
