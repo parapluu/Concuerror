@@ -639,7 +639,7 @@ finalize_2(Options) ->
     , fun add_derived_defaults/1
     , fun add_getopt_defaults/1
     , fun group_multiples/1
-    , fun process_options/1
+    , fun fix_infinities/1
     , fun(O) ->
           add_defaults([{Opt, []} || Opt <- groupable()], false, O)
       end
@@ -1073,11 +1073,11 @@ group_multiples([{Key, Value} = Option|Rest], Acc) ->
 
 %%------------------------------------------------------------------------------
 
-process_options(Options) ->
-  process_options(Options, []).
+fix_infinities(Options) ->
+  fix_infinities(Options, []).
 
-process_options([], Acc) -> lists:reverse(Acc);
-process_options([{Key, Value} = Option|Rest], Acc) ->
+fix_infinities([], Acc) -> lists:reverse(Acc);
+fix_infinities([{Key, Value} = Option|Rest], Acc) ->
   case Key of
     MaybeInfinity
       when
@@ -1091,17 +1091,17 @@ process_options([{Key, Value} = Option|Rest], Acc) ->
         end,
       case Value of
         infinity ->
-          process_options(Rest, [Option|Acc]);
+          fix_infinities(Rest, [Option|Acc]);
         -1 ->
-          process_options(Rest, [{MaybeInfinity, infinity}|Acc]);
+          fix_infinities(Rest, [{MaybeInfinity, infinity}|Acc]);
         N when is_integer(N), N >= Limit ->
-          process_options(Rest, [Option|Acc]);
+          fix_infinities(Rest, [Option|Acc]);
         _Else ->
           Error = "The value of '--~s' must be -1 (infinity) or >= ~w",
           opt_error(Error, [Key, Limit], Key)
       end;
     _ ->
-      process_options(Rest, [Option|Acc])
+      fix_infinities(Rest, [Option|Acc])
   end.
 
 %%------------------------------------------------------------------------------
