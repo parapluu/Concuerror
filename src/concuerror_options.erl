@@ -206,7 +206,7 @@ options() ->
     " flag to keep looking for more errors. Preferably, modify the test, or"
     " use the '--ignore_error' / '--treat_as_normal' options."}
   ,{ignore_error, [bug], undefined, atom,
-    "Ignore particular kinds of errors (use -h ignore_error for more info)",
+    "Ignore particular kinds of errors",
     "Concuerror will not report errors of the specified kind:~n"
     "'abnormal_exit': processes exiting with any abnormal reason;"
     " check '-h treat_as_normal' and '-h assertions_only' for more refined"
