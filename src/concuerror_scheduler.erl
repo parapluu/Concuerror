@@ -136,6 +136,7 @@
           print_depth                  :: pos_integer(),
           processes                    :: processes(),
           receive_timeout_total        :: non_neg_integer(),
+          report_error                 :: [{interleaving_error_tag(), scope()}],
           scheduling                   :: concuerror_options:scheduling(),
           scheduling_bound_type        :: concuerror_options:scheduling_bound_type(),
           show_races                   :: boolean(),
@@ -198,6 +199,7 @@ run(Options) ->
        print_depth = ?opt(print_depth, Options),
        processes = Processes = ?opt(processes, Options),
        receive_timeout_total = 0,
+       report_error = [],
        scheduling = ?opt(scheduling, Options),
        scheduling_bound_type = SchedulingBoundType,
        show_races = ?opt(show_races, Options),
@@ -311,11 +313,13 @@ filter_errors(State) ->
   #scheduler_state{
      ignore_error = Ignored,
      interleaving_errors = UnfilteredErrors,
-     logger = Logger
+     logger = Logger,
+     report_error = Reported
     } = State,
   TaggedErrors = [{true, E} || E <- UnfilteredErrors],
   IgnoredErrors = update_all_tags(TaggedErrors, Ignored, false),
-  FinalErrors = [E || {true, E} <- IgnoredErrors],
+  ReportedErrors = update_all_tags(IgnoredErrors, Reported, true),
+  FinalErrors = [E || {true, E} <- ReportedErrors],
   case FinalErrors =/= UnfilteredErrors of
     true ->
       UniqueMsg = "Some errors were ignored ('--ignore_error').~n",
