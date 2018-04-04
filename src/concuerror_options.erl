@@ -200,12 +200,12 @@ options() ->
     "Forces preemptions",
     "Whether Concuerror should enforce the scheduling strategy strictly or let"
     " a process run until blocked before reconsidering the scheduling policy."}
-  ,{keep_going, [basic, bug], $k, {boolean, false},
+  ,{keep_going, [basic, errors], $k, {boolean, false},
     "Keep running after an error is found",
     "Concuerror stops by default when the first error is found. Enable this"
     " flag to keep looking for more errors. Preferably, modify the test, or"
     " use the '--ignore_error' / '--treat_as_normal' options."}
-  ,{ignore_error, [bug], undefined, atom,
+  ,{ignore_error, [errors], undefined, atom,
     "Ignore particular kinds of errors",
     "Concuerror will not report errors of the specified kind:~n"
     "'abnormal_exit': processes exiting with any abnormal reason;"
@@ -214,14 +214,14 @@ options() ->
     "'abnormal_halt': processes executing erlang:halt/1,2 with status /= 0~n"
     "'deadlock': processes waiting at a receive statement~n"
     "'depth_bound': reaching the depth bound; check '-h depth_bound'"}
-  ,{treat_as_normal, [bug], undefined, atom,
-    "Exit reasons considered 'normal'",
+  ,{treat_as_normal, [errors], undefined, atom,
+    "Exit reasons treated as 'normal'",
     "A process that exits with the specified atom as reason (or with a reason"
     " that is a tuple with the specified atom as a first element) will not be"
     " reported as exiting abnormally. Useful e.g. when analyzing supervisors"
     " ('shutdown' is usually a normal exit reason in this case)."}
-  ,{assertions_only, [bug], undefined, {boolean, false},
-    "Only abnormal exits due to failed ?asserts are reported.",
+  ,{assertions_only, [errors], undefined, {boolean, false},
+    "Only report abnormal exits due to ?asserts",
     "Only processes that exit with a reason of form '{{assert*, _}, _}' are"
     " considered errors. Such exit reasons are generated e.g. by the"
     " stdlib/include/assert.hrl header file."}
