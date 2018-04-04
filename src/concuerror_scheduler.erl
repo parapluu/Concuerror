@@ -88,7 +88,7 @@
           index                         :: index(),
           unique_id                     :: unique_id(),
           previous_actor   = 'none'     :: 'none' | actor(),
-          scheduling_bound = infinity   :: concuerror_options:bound(),
+          scheduling_bound              :: concuerror_options:bound(),
           sleep_set        = []         :: [event()],
           wakeup_tree      = []         :: event_tree()
          }).
@@ -160,12 +160,13 @@ run(Options) ->
   Timeout = ?opt(timeout, Options),
   ok =
     concuerror_callback:start_first_process(FirstProcess, EntryPoint, Timeout),
+  SchedulingBound = ?opt(scheduling_bound, Options, infinity),
   InitialTrace =
     #trace_state{
        actors = [FirstProcess],
        enabled = [E || E <- [FirstProcess], enabled(E)],
        index = 1,
-       scheduling_bound = ?opt(scheduling_bound, Options),
+       scheduling_bound = SchedulingBound,
        unique_id = {1, 1}
       },
   Logger = ?opt(logger, Options),
@@ -206,6 +207,12 @@ run(Options) ->
        use_sleep_sets = not ?opt(disable_sleep_sets, Options),
        use_unsound_bpor = UnsoundBPOR
       },
+  case SchedulingBound =:= infinity of
+    true ->
+      ?unique(Logger, ?ltip, msg(scheduling_bound_tip), []);
+    false ->
+      ok
+  end,
   concuerror_logger:plan(Logger),
   ?time(Logger, "Exploration start"),
   Ret = explore_scheduling(InitialState),
@@ -449,7 +456,7 @@ free_schedule(Event, Actors, State) ->
             lists:sublist(Enabled, SchedulingBound + 1)
         end,
       case ToBeExplored < Enabled of
-        true -> concuerror_logger:bound_reached(Logger);
+        true -> bound_reached(Logger);
         false -> ok
       end,
       Eventify = [maybe_prepare_channel_event(E, #event{}) || E <- ToBeExplored],
@@ -1116,7 +1123,7 @@ update_trace(
       ?debug(Logger, "     SKIP~n",[]),
       skip;
     over_bound ->
-      concuerror_logger:bound_reached(Logger),
+      bound_reached(Logger),
       case UseUnsoundBPOR of
         true -> ok;
         false -> put(bound_exceeded, true)
@@ -1761,6 +1768,11 @@ next_bound(SchedulingBoundType, Done, PreviousActor, Bound) ->
       Bound - length(Done)
   end.
 
+bound_reached(Logger) ->
+  ?unique(Logger, ?lwarning, msg(scheduling_bound_warning), []),
+  ?debug(Logger, "OVER BOUND~n",[]),
+  concuerror_logger:bound_reached(Logger).
+
 %% =============================================================================
 
 -spec explain_error(term()) -> string().
@@ -1826,6 +1838,12 @@ msg(maybe_receive_loop) ->
     " default treats 'after' clauses as always possible, so a 'receive loop'"
     " using a timeout can lead to an infinite execution. "
     ++ msg(after_timeout_tip);
+msg(scheduling_bound_tip) ->
+  "Running without a scheduling_bound corresponds to verification and"
+    " may take a long time.~n";
+msg(scheduling_bound_warning) ->
+  "Some interleavings will not be explored because they exceed the scheduling"
+    " bound.~n";
 msg(signal) ->
   "An abnormal exit signal was sent to a process. This is probably the worst"
     " thing that can happen race-wise, as any other side-effecting"

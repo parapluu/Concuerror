@@ -54,6 +54,7 @@
 -type assume_racing_opt() :: {boolean(), logger() | 'ignore'}.
 %%------------------------------------------------------------------------------
 -define(opt(A,O), proplists:get_value(A,O)).
+-define(opt(A,O,D), proplists:get_value(A,O,D)).
 %%------------------------------------------------------------------------------
 %% Logger verbosity
 -define(lquiet,    0).
