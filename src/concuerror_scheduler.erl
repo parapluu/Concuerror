@@ -111,6 +111,8 @@
         {'depth_bound', concuerror_options:bound()} |
         'fatal'.
 
+-type scope() :: 'all' | [pid()].
+
 %% DO NOT ADD A DEFAULT VALUE IF IT WILL ALWAYS BE OVERWRITTEN.
 %% Default values for fields should be specified in ONLY ONE PLACE.
 %% For e.g., user options this is normally in the _options module.
@@ -121,7 +123,7 @@
           dpor                         :: concuerror_options:dpor(),
           entry_point                  :: mfargs(),
           first_process                :: pid(),
-          ignore_error                 :: [interleaving_error_tag()],
+          ignore_error                 :: [{interleaving_error_tag(), scope()}],
           interleaving_bound           :: concuerror_options:bound(),
           interleaving_errors          :: [interleaving_error()],
           interleaving_id              :: interleaving_id(),
@@ -183,7 +185,7 @@ run(Options) ->
        dpor = ?opt(dpor, Options),
        entry_point = EntryPoint,
        first_process = FirstProcess,
-       ignore_error = ?opt(ignore_error, Options),
+       ignore_error = [{IE, all} || IE <- ?opt(ignore_error, Options)],
        interleaving_bound = ?opt(interleaving_bound, Options),
        interleaving_errors = [],
        interleaving_id = 1,
@@ -311,16 +313,42 @@ filter_errors(State) ->
      interleaving_errors = UnfilteredErrors,
      logger = Logger
     } = State,
-  filter_errors(UnfilteredErrors, Ignored, Logger).
-
-filter_errors(Errors, [], _) -> Errors;
-filter_errors(Errors, [Ignore|Rest] = Ignored, Logger) ->
-  case lists:keytake(Ignore, 1, Errors) of
-    false -> filter_errors(Errors, Rest, Logger);
-    {value, _, NewErrors} ->
+  TaggedErrors = [{true, E} || E <- UnfilteredErrors],
+  IgnoredErrors = update_all_tags(TaggedErrors, Ignored, false),
+  FinalErrors = [E || {true, E} <- IgnoredErrors],
+  case FinalErrors =/= UnfilteredErrors of
+    true ->
       UniqueMsg = "Some errors were ignored ('--ignore_error').~n",
-      ?unique(Logger, ?lwarning, UniqueMsg, []),
-      filter_errors(NewErrors, Ignored, Logger)
+      ?unique(Logger, ?lwarning, UniqueMsg, []);
+    false -> ok
+  end,
+  FinalErrors.
+
+update_all_tags([], _, _) -> [];
+update_all_tags(TaggedErrors, [], _) -> TaggedErrors;
+update_all_tags(TaggedErrors, Rules, Value) ->
+  [update_tag(E, Rules, Value) || E <- TaggedErrors].
+
+update_tag({OldTag, Error}, Rules, NewTag) ->
+  RuleAppliesPred = fun(Rule) -> rule_applies(Rule, Error) end,
+  case lists:any(RuleAppliesPred, Rules) of
+    true -> {NewTag, Error};
+    false -> {OldTag, Error}
+  end.
+
+rule_applies({Tag, Scope}, {Tag, _} = Error) ->
+  scope_applies(Scope, Error);
+rule_applies(_, _) -> false.
+
+scope_applies(all, _) -> true;
+scope_applies(Pids, ErrorInfo) ->
+  case ErrorInfo of
+    {deadlock, Deadlocked} ->
+      DPids = [element(1, D) || D <- Deadlocked],
+      DPids -- Pids =/= DPids;
+    {abnormal_exit, {_, Pid, _, _}} -> lists:member(Pid, Pids);
+    {abnormal_halt, {_, Pid, _}} -> lists:member(Pid, Pids);
+    _ -> false
   end.
 
 discard_last_trace_state(State) ->
