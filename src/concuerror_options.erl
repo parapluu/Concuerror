@@ -153,7 +153,7 @@ options() ->
     "                interleavings are reported as sleep-set blocked.~n"
     "- 'persistent': Using persistent sets. Do not use."}
   ,{optimal, [por], undefined, boolean,
-    "Deprecated. Use '--dpor (optimal | source)' instead.",
+    "Synonym for `--dpor optimal (true) | source (false)`.",
     nolong}
   ,{scheduling_bound_type, [bound, experimental], $c, {atom, none},
     "* Schedule bounding technique",
@@ -265,6 +265,8 @@ options() ->
 synonyms() ->
   [ {{observers, true}, {use_receive_patterns, true}}
   , {{observers, false}, {use_receive_patterns, false}}
+  , {{optimal, true}, {dpor, optimal}}
+  , {{optimal, false}, {dpor, source}}
   , {{ignore_error, crash}, {ignore_error, abnormal_exit}}
   ].
 
@@ -1077,12 +1079,6 @@ process_options(Options) ->
 process_options([], Acc) -> lists:reverse(Acc);
 process_options([{Key, Value} = Option|Rest], Acc) ->
   case Key of
-    optimal ->
-      "0.1" ++ [_|_] = ?VSN,
-      Msg =
-        "The option '--optimal' is deprecated."
-        " Use '--dpor (optimal | source)' instead.",
-      opt_error(Msg, [], dpor);
     MaybeInfinity
       when
         MaybeInfinity =:= interleaving_bound;
