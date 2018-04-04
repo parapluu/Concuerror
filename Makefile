@@ -139,7 +139,7 @@ tests-real: all
 cover: cover/data
 	$(RM) $</*
 	export CONCUERROR_COVER=$(abspath cover/data); $(MAKE) tests tests-real
-	cd cover; ./get-coveralls; ./cover-report data > /dev/null
+	cd cover; ./cover-report data > /dev/null
 
 ###-----------------------------------------------------------------------------
 ### Clean

@@ -38,30 +38,19 @@ matrix:
   - env: TEST="make dialyze"
     stage: basic
 
-  # Code coverage test, that includes tests and tests-real
-  - env: TEST="make cover"
-    stage: test
-
   # Minimal support for R16B03-1
-  - env: TEST="make tests-real"
+  - env: TEST=".travis/run_make tests-real"
     otp_release: R16B03-1
     stage: test
 
-  # Exclude the default tests and tests-real env for latest release,
-  # as the cover target includes them
-  exclude:
-  - otp_release: 20.3
-
 env:
-  - TEST="make tests-real"
-  - TEST="make tests"
+  - TEST=".travis/run_make tests-real"
+  - TEST=".travis/run_make tests"
 
 otp_release:
 
   # Two latest minor versions of the most recent OTP release
-  # Remember to:
-  # 1) exclude the top one from the matrix above
-  # 2) update the Travis badge
+  # Remember to update the Travis badge
 
   - 20.3
   - 20.2
@@ -75,6 +64,9 @@ otp_release:
   # R16B03-1 is minimally supported (see matrix section)
 
 after_failure: "./.travis/after_failure"
+
+notifications:
+  webhooks: https://coveralls.io/webhook?repo_token=$COVERALLS_REPO_TOKEN
 
 before_script: "./.travis/recover_plt"
 before_cache: "./.travis/store_plt"
