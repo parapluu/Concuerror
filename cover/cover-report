@@ -8,13 +8,11 @@ main([CoverDir]) ->
   case os:getenv("TRAVIS") of
     "true" ->
       _ = coveralls:module_info(),
-      Number = os:getenv("TRAVIS_BUILD_ID"),
       JobId = os:getenv("TRAVIS_JOB_ID"),
       Parameters =
         [ {service_name, "travis-ci"}
-        , {service_number, Number}
         , {service_job_id, JobId}
-        , {parallel, "true"}
+        , {parallel, true}
         ],
       coveralls:convert_and_send_file(Full, Parameters);
     _ ->
