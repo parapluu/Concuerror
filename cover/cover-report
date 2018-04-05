@@ -8,8 +8,15 @@ main([CoverDir]) ->
   case os:getenv("TRAVIS") of
     "true" ->
       _ = coveralls:module_info(),
+      Number = os:getenv("TRAVIS_BUILD_ID"),
       JobId = os:getenv("TRAVIS_JOB_ID"),
-      coveralls:convert_and_send_file(Full, JobId, "travis-ci", "");
+      Parameters =
+        [ {service_name, "travis-ci"}
+        , {service_number, Number}
+        , {service_job_id, JobId}
+        , {parallel, "true"}
+        ],
+      coveralls:convert_and_send_file(Full, Parameters);
     _ ->
       Foreach = fun(F) -> cover:import(F) end,
       lists:foreach(Foreach, Full),

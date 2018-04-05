@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-if [ "$TRAVIS" = "true" ]; then
-   rm -f coveralls.*
-   wget "https://raw.githubusercontent.com/markusn/coveralls-erl/98130d71/src/coveralls.erl"
-   erlc coveralls.erl
-fi
+COVERALLS="https://raw.githubusercontent.com/aronisstav/coveralls-erl/parametric/src/coveralls.erl"
+
+rm -f coveralls.*
+wget $COVERALLS
+erlc coveralls.erl
