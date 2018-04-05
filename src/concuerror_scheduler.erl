@@ -88,7 +88,7 @@
           index                         :: index(),
           unique_id                     :: unique_id(),
           previous_actor   = 'none'     :: 'none' | actor(),
-          scheduling_bound = infinity   :: concuerror_options:bound(),
+          scheduling_bound              :: concuerror_options:bound(),
           sleep_set        = []         :: [event()],
           wakeup_tree      = []         :: event_tree()
          }).
@@ -111,6 +111,8 @@
         {'depth_bound', concuerror_options:bound()} |
         'fatal'.
 
+-type scope() :: 'all' | [pid()].
+
 %% DO NOT ADD A DEFAULT VALUE IF IT WILL ALWAYS BE OVERWRITTEN.
 %% Default values for fields should be specified in ONLY ONE PLACE.
 %% For e.g., user options this is normally in the _options module.
@@ -121,7 +123,7 @@
           dpor                         :: concuerror_options:dpor(),
           entry_point                  :: mfargs(),
           first_process                :: pid(),
-          ignore_error                 :: [interleaving_error_tag()],
+          ignore_error                 :: [{interleaving_error_tag(), scope()}],
           interleaving_bound           :: concuerror_options:bound(),
           interleaving_errors          :: [interleaving_error()],
           interleaving_id              :: interleaving_id(),
@@ -134,6 +136,7 @@
           print_depth                  :: pos_integer(),
           processes                    :: processes(),
           receive_timeout_total        :: non_neg_integer(),
+          report_error                 :: [{interleaving_error_tag(), scope()}],
           scheduling                   :: concuerror_options:scheduling(),
           scheduling_bound_type        :: concuerror_options:scheduling_bound_type(),
           show_races                   :: boolean(),
@@ -160,12 +163,13 @@ run(Options) ->
   Timeout = ?opt(timeout, Options),
   ok =
     concuerror_callback:start_first_process(FirstProcess, EntryPoint, Timeout),
+  SchedulingBound = ?opt(scheduling_bound, Options, infinity),
   InitialTrace =
     #trace_state{
        actors = [FirstProcess],
        enabled = [E || E <- [FirstProcess], enabled(E)],
        index = 1,
-       scheduling_bound = ?opt(scheduling_bound, Options),
+       scheduling_bound = SchedulingBound,
        unique_id = {1, 1}
       },
   Logger = ?opt(logger, Options),
@@ -174,6 +178,8 @@ run(Options) ->
       ubpor -> {bpor, true};
       Else -> {Else, false}
     end,
+  {IgnoreError, ReportError} =
+    generate_filtering_rules(Options, FirstProcess),
   InitialState =
     #scheduler_state{
        assertions_only = ?opt(assertions_only, Options),
@@ -182,7 +188,7 @@ run(Options) ->
        dpor = ?opt(dpor, Options),
        entry_point = EntryPoint,
        first_process = FirstProcess,
-       ignore_error = ?opt(ignore_error, Options),
+       ignore_error = IgnoreError,
        interleaving_bound = ?opt(interleaving_bound, Options),
        interleaving_errors = [],
        interleaving_id = 1,
@@ -195,6 +201,7 @@ run(Options) ->
        print_depth = ?opt(print_depth, Options),
        processes = Processes = ?opt(processes, Options),
        receive_timeout_total = 0,
+       report_error = ReportError,
        scheduling = ?opt(scheduling, Options),
        scheduling_bound_type = SchedulingBoundType,
        show_races = ?opt(show_races, Options),
@@ -206,6 +213,12 @@ run(Options) ->
        use_sleep_sets = not ?opt(disable_sleep_sets, Options),
        use_unsound_bpor = UnsoundBPOR
       },
+  case SchedulingBound =:= infinity of
+    true ->
+      ?unique(Logger, ?ltip, msg(scheduling_bound_tip), []);
+    false ->
+      ok
+  end,
   concuerror_logger:plan(Logger),
   ?time(Logger, "Exploration start"),
   Ret = explore_scheduling(InitialState),
@@ -298,22 +311,64 @@ log_trace(#scheduler_state{logger = Logger} = State) ->
       end
   end.
 
+%%------------------------------------------------------------------------------
+
+generate_filtering_rules(Options, FirstProcess) ->
+  IgnoreErrors = ?opt(ignore_error, Options),
+  OnlyFirstProcessErrors = ?opt(first_process_errors_only, Options),
+  case OnlyFirstProcessErrors of
+    false -> {[{IE, all} || IE <- IgnoreErrors], []};
+    true ->
+      AllCategories = [abnormal_exit, abnormal_halt, deadlock],
+      Ignored = [{IE, all} || IE <- AllCategories],
+      Reported = [{IE, [FirstProcess]} || IE <- AllCategories -- IgnoreErrors],
+      {Ignored, Reported}
+  end.
+
 filter_errors(State) ->
   #scheduler_state{
      ignore_error = Ignored,
      interleaving_errors = UnfilteredErrors,
-     logger = Logger
+     logger = Logger,
+     report_error = Reported
     } = State,
-  filter_errors(UnfilteredErrors, Ignored, Logger).
-
-filter_errors(Errors, [], _) -> Errors;
-filter_errors(Errors, [Ignore|Rest] = Ignored, Logger) ->
-  case lists:keytake(Ignore, 1, Errors) of
-    false -> filter_errors(Errors, Rest, Logger);
-    {value, _, NewErrors} ->
+  TaggedErrors = [{true, E} || E <- UnfilteredErrors],
+  IgnoredErrors = update_all_tags(TaggedErrors, Ignored, false),
+  ReportedErrors = update_all_tags(IgnoredErrors, Reported, true),
+  FinalErrors = [E || {true, E} <- ReportedErrors],
+  case FinalErrors =/= UnfilteredErrors of
+    true ->
       UniqueMsg = "Some errors were ignored ('--ignore_error').~n",
-      ?unique(Logger, ?lwarning, UniqueMsg, []),
-      filter_errors(NewErrors, Ignored, Logger)
+      ?unique(Logger, ?lwarning, UniqueMsg, []);
+    false -> ok
+  end,
+  FinalErrors.
+
+update_all_tags([], _, _) -> [];
+update_all_tags(TaggedErrors, [], _) -> TaggedErrors;
+update_all_tags(TaggedErrors, Rules, Value) ->
+  [update_tag(E, Rules, Value) || E <- TaggedErrors].
+
+update_tag({OldTag, Error}, Rules, NewTag) ->
+  RuleAppliesPred = fun(Rule) -> rule_applies(Rule, Error) end,
+  case lists:any(RuleAppliesPred, Rules) of
+    true -> {NewTag, Error};
+    false -> {OldTag, Error}
+  end.
+
+rule_applies({Tag, Scope}, {Tag, _} = Error) ->
+  scope_applies(Scope, Error);
+rule_applies(_, _) -> false.
+
+scope_applies(all, _) -> true;
+scope_applies(Pids, ErrorInfo) ->
+  case ErrorInfo of
+    {deadlock, Deadlocked} ->
+      DPids = [element(1, D) || D <- Deadlocked],
+      DPids -- Pids =/= DPids;
+    {abnormal_exit, {_, Pid, _, _}} -> lists:member(Pid, Pids);
+    {abnormal_halt, {_, Pid, _}} -> lists:member(Pid, Pids);
+    _ -> false
   end.
 
 discard_last_trace_state(State) ->
@@ -449,7 +504,7 @@ free_schedule(Event, Actors, State) ->
             lists:sublist(Enabled, SchedulingBound + 1)
         end,
       case ToBeExplored < Enabled of
-        true -> concuerror_logger:bound_reached(Logger);
+        true -> bound_reached(Logger);
         false -> ok
       end,
       Eventify = [maybe_prepare_channel_event(E, #event{}) || E <- ToBeExplored],
@@ -1116,7 +1171,7 @@ update_trace(
       ?debug(Logger, "     SKIP~n",[]),
       skip;
     over_bound ->
-      concuerror_logger:bound_reached(Logger),
+      bound_reached(Logger),
       case UseUnsoundBPOR of
         true -> ok;
         false -> put(bound_exceeded, true)
@@ -1761,6 +1816,11 @@ next_bound(SchedulingBoundType, Done, PreviousActor, Bound) ->
       Bound - length(Done)
   end.
 
+bound_reached(Logger) ->
+  ?unique(Logger, ?lwarning, msg(scheduling_bound_warning), []),
+  ?debug(Logger, "OVER BOUND~n",[]),
+  concuerror_logger:bound_reached(Logger).
+
 %% =============================================================================
 
 -spec explain_error(term()) -> string().
@@ -1826,6 +1886,12 @@ msg(maybe_receive_loop) ->
     " default treats 'after' clauses as always possible, so a 'receive loop'"
     " using a timeout can lead to an infinite execution. "
     ++ msg(after_timeout_tip);
+msg(scheduling_bound_tip) ->
+  "Running without a scheduling_bound corresponds to verification and"
+    " may take a long time.~n";
+msg(scheduling_bound_warning) ->
+  "Some interleavings will not be explored because they exceed the scheduling"
+    " bound.~n";
 msg(signal) ->
   "An abnormal exit signal was sent to a process. This is probably the worst"
     " thing that can happen race-wise, as any other side-effecting"

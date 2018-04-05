@@ -162,9 +162,6 @@ delete_props([Key|Rest], Proplist) ->
 -spec bound_reached(logger()) -> ok.
 
 bound_reached(Logger) ->
-  Msg = "Some interleavings were not considered due to schedule bounding.~n",
-  ?unique(Logger, ?lwarning, Msg, []),
-  ?debug(Logger, "OVER BOUND~n",[]),
   Logger ! bound_reached,
   ok.
 

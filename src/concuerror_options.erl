@@ -153,7 +153,7 @@ options() ->
     "                interleavings are reported as sleep-set blocked.~n"
     "- 'persistent': Using persistent sets. Do not use."}
   ,{optimal, [por], undefined, boolean,
-    "Deprecated. Use '--dpor (optimal | source)' instead.",
+    "Synonym for `--dpor optimal (true) | source (false)`.",
     nolong}
   ,{scheduling_bound_type, [bound, experimental], $c, {atom, none},
     "* Schedule bounding technique",
@@ -200,13 +200,13 @@ options() ->
     "Forces preemptions",
     "Whether Concuerror should enforce the scheduling strategy strictly or let"
     " a process run until blocked before reconsidering the scheduling policy."}
-  ,{keep_going, [basic, bug], $k, {boolean, false},
+  ,{keep_going, [basic, errors], $k, {boolean, false},
     "Keep running after an error is found",
     "Concuerror stops by default when the first error is found. Enable this"
     " flag to keep looking for more errors. Preferably, modify the test, or"
     " use the '--ignore_error' / '--treat_as_normal' options."}
-  ,{ignore_error, [bug], undefined, atom,
-    "Ignore particular kinds of errors (use -h ignore_error for more info)",
+  ,{ignore_error, [errors], undefined, atom,
+    "Ignore particular kinds of errors",
     "Concuerror will not report errors of the specified kind:~n"
     "'abnormal_exit': processes exiting with any abnormal reason;"
     " check '-h treat_as_normal' and '-h assertions_only' for more refined"
@@ -214,17 +214,20 @@ options() ->
     "'abnormal_halt': processes executing erlang:halt/1,2 with status /= 0~n"
     "'deadlock': processes waiting at a receive statement~n"
     "'depth_bound': reaching the depth bound; check '-h depth_bound'"}
-  ,{treat_as_normal, [bug], undefined, atom,
-    "Exit reasons considered 'normal'",
+  ,{treat_as_normal, [errors], undefined, atom,
+    "Exit reasons treated as 'normal'",
     "A process that exits with the specified atom as reason (or with a reason"
     " that is a tuple with the specified atom as a first element) will not be"
     " reported as exiting abnormally. Useful e.g. when analyzing supervisors"
     " ('shutdown' is usually a normal exit reason in this case)."}
-  ,{assertions_only, [bug], undefined, {boolean, false},
-    "Only abnormal exits due to failed ?asserts are reported.",
+  ,{assertions_only, [errors], undefined, {boolean, false},
+    "Only report abnormal exits due to ?asserts",
     "Only processes that exit with a reason of form '{{assert*, _}, _}' are"
     " considered errors. Such exit reasons are generated e.g. by the"
     " stdlib/include/assert.hrl header file."}
+  ,{first_process_errors_only, [errors], undefined, {boolean, false},
+    "Only report errors that involve the first process",
+    "All errors involving only children processes will be ignored."}
   ,{timeout, [erlang, advanced], undefined, {integer, 5000},
     "How long to wait for an event (>= " ++
       integer_to_list(?MINIMUM_TIMEOUT) ++ "ms)",
@@ -265,6 +268,8 @@ options() ->
 synonyms() ->
   [ {{observers, true}, {use_receive_patterns, true}}
   , {{observers, false}, {use_receive_patterns, false}}
+  , {{optimal, true}, {dpor, optimal}}
+  , {{optimal, false}, {dpor, source}}
   , {{ignore_error, crash}, {ignore_error, abnormal_exit}}
   ].
 
@@ -637,7 +642,7 @@ finalize_2(Options) ->
     , fun add_derived_defaults/1
     , fun add_getopt_defaults/1
     , fun group_multiples/1
-    , fun process_options/1
+    , fun fix_infinities/1
     , fun(O) ->
           add_defaults([{Opt, []} || Opt <- groupable()], false, O)
       end
@@ -1071,18 +1076,12 @@ group_multiples([{Key, Value} = Option|Rest], Acc) ->
 
 %%------------------------------------------------------------------------------
 
-process_options(Options) ->
-  process_options(Options, []).
+fix_infinities(Options) ->
+  fix_infinities(Options, []).
 
-process_options([], Acc) -> lists:reverse(Acc);
-process_options([{Key, Value} = Option|Rest], Acc) ->
+fix_infinities([], Acc) -> lists:reverse(Acc);
+fix_infinities([{Key, Value} = Option|Rest], Acc) ->
   case Key of
-    optimal ->
-      "0.1" ++ [_|_] = ?VSN,
-      Msg =
-        "The option '--optimal' is deprecated."
-        " Use '--dpor (optimal | source)' instead.",
-      opt_error(Msg, [], dpor);
     MaybeInfinity
       when
         MaybeInfinity =:= interleaving_bound;
@@ -1095,17 +1094,17 @@ process_options([{Key, Value} = Option|Rest], Acc) ->
         end,
       case Value of
         infinity ->
-          process_options(Rest, [Option|Acc]);
+          fix_infinities(Rest, [Option|Acc]);
         -1 ->
-          process_options(Rest, [{MaybeInfinity, infinity}|Acc]);
+          fix_infinities(Rest, [{MaybeInfinity, infinity}|Acc]);
         N when is_integer(N), N >= Limit ->
-          process_options(Rest, [Option|Acc]);
+          fix_infinities(Rest, [Option|Acc]);
         _Else ->
           Error = "The value of '--~s' must be -1 (infinity) or >= ~w",
           opt_error(Error, [Key, Limit], Key)
       end;
     _ ->
-      process_options(Rest, [Option|Acc])
+      fix_infinities(Rest, [Option|Acc])
   end.
 
 %%------------------------------------------------------------------------------
