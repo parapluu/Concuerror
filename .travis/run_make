@@ -24,6 +24,6 @@ echo "make $1 done"
 if [ "$REPO_LATEST" = "$TRAVIS_OTP_RELEASE" ]; then
   echo "Generate and send coverage report..."
   cd cover
-  ./cover-report data > /dev/null
+  ./cover-report data
   echo "Report sent!"
 fi
