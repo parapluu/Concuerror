@@ -38,6 +38,8 @@ links:
     url: /contact
   - title: <i class="fas fa-rss"></i> Feed
     url: /feed.xml
+  - title: <i class="fab fa-github"></i> Github
+    url: https://github.com/parapluu/Concuerror
 
 # http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 timezone:    Europe/Stockholm
