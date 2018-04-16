@@ -14,8 +14,9 @@ if [ "$REPO_LATEST" = "$TRAVIS_OTP_RELEASE" ]; then
   echo "Testing latest release. Prepare to collect coverage data."
   make cover/data
   cd cover
-  ./get-covertool
   export CONCUERROR_COVER=$(pwd)/data
-  cd ..
+  git clone https://github.com/idubrov/covertool.git
+  cd covertool
+  make compile
   echo "Ready to collect coverage data!"
 fi
