@@ -40,12 +40,12 @@ Details can be found in the [LICENSE][license] file.
 
 <!-- Links -->
 [changelog]: ./CHANGELOG.md
-[codecov]: https://codecov.io/github/parapluu/Concuerror?branch=master
+[codecov]: https://codecov.io/gh/parapluu/Concuerror
 [license]: ./LICENSE
 [travis]: https://travis-ci.org/parapluu/Concuerror
 [website]: http://parapluu.github.io/Concuerror
 
 <!-- Badges -->
-[codecov badge]: https://codecov.io/github/parapluu/Concuerror/coverage.svg?branch=master
+[codecov badge]: https://codecov.io/gh/parapluu/Concuerror/branch/master/graph/badge.svg
 [erlang versions badge]: https://img.shields.io/badge/erlang-R16B03%20to%2020.3-blue.svg
 [travis badge]: https://travis-ci.org/parapluu/Concuerror.svg?branch=master
