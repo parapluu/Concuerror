@@ -5,21 +5,14 @@
 main([CoverDir]) ->
   {ok, Files} = file:list_dir(CoverDir),
   Full = [filename:join([CoverDir,F]) || F <- Files],
-  case os:getenv("TRAVIS") of
-    "true" ->
-      _ = coveralls:module_info(),
-      JobId = os:getenv("TRAVIS_JOB_ID"),
-      Parameters =
-        [ {parallel, true}
-        , {service_job_id, JobId}
-        , {service_name, "travis-ci"}
-        ],
-      coveralls:convert_and_send_file(Full, Parameters);
-    _ ->
-      Foreach = fun(F) -> cover:import(F) end,
-      lists:foreach(Foreach, Full),
+  Foreach = fun(F) -> cover:import(F) end,
+  lists:foreach(Foreach, Full),
+  case is_run_to_combine() of
+    false ->
       Foreach2 = fun(M) -> cover:analyse_to_file(M, [html]) end,
-      lists:foreach(Foreach2, cover:imported_modules())
+      lists:foreach(Foreach2, cover:imported_modules());
+    {true, Combine} ->
+      cover:export(Combine)
   end,
   {result, Result, _} = cover:analyse(coverage, module),
   print(Result).
@@ -71,14 +64,9 @@ print(List) ->
         "~nFail: Total code coverage is below ~.1f% threshold!~n",
         [Threshold * 100])
   end,
-  case os:getenv("TRAVIS") of
-    "true" ->
-      halt(0);
-    _ ->
-      case Fail orelse TotalFail of
-        true -> halt(1);
-        false -> halt(0)
-      end
+  case Fail orelse TotalFail of
+    true -> halt(1);
+    false -> halt(0)
   end.
 
 print_separator() ->
@@ -86,3 +74,9 @@ print_separator() ->
 
 to_stderr(Format, Args) ->
   io:format(standard_error, Format, Args).
+
+is_run_to_combine() ->
+  case os:getenv("COVER_COMBINE") of
+    false -> false;
+    Else -> {true, Else}
+  end.

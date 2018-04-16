@@ -2,8 +2,6 @@ sudo: false
 
 language: erlang
 
-script: "$TEST"
-
 # Two stages, so that basic tests are run first
 stages:
   - basic
@@ -39,14 +37,14 @@ matrix:
     stage: basic
 
   # Minimal support for R16B03-1
-  - env: TEST=".travis/run_make tests-real"
+  - env: TEST="make tests-real"
     otp_release: R16B03-1
     stage: test
 
 env:
 
-  - TEST=".travis/run_make tests"
-  - TEST=".travis/run_make tests-real"
+  - TEST="make tests"
+  - TEST="make tests-real"
 
 otp_release:
 
@@ -64,10 +62,27 @@ otp_release:
 
   # R16B03-1 is minimally supported (see matrix section)
 
-after_failure: "./.travis/after_failure"
 
-before_script: "./.travis/recover_plt"
-before_cache: "./.travis/store_plt"
+# Travis build steps configuration
+
 cache:
    directories:
    - plts
+
+before_install:
+  - pip install --user codecov
+
+before_script:
+  - .travis/before_script
+
+script:
+ - $TEST
+
+before_cache:
+  - .travis/before_cache
+
+after_success:
+  - .travis/after_success
+
+after_failure:
+  - .travis/after_failure

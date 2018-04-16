@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-COVERALLS="https://raw.githubusercontent.com/aronisstav/coveralls-erl/parametric/src/coveralls.erl"
-
-rm -f coveralls.*
-wget $COVERALLS
-erlc coveralls.erl

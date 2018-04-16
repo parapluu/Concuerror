@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -e
+
+export COVER_COMBINE=all.coverdata
+
+if [ "$REPO_LATEST" = "$TRAVIS_OTP_RELEASE" ]; then
+  echo "Generate coverage report..."
+  cd cover
+  ./cover-report data
+  covertool -cover $COVER_COMBINE -src ../src -output cover.xml
+  echo "Report generated!"
+  codecov
+  echo "Report sent!"
+fi
