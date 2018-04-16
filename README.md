@@ -1,5 +1,5 @@
 [![Travis][travis badge]][travis]
-[![Coveralls][coveralls badge]][coveralls]
+[![Codecov][codecov badge]][codecov]
 [![Erlang Versions][erlang versions badge]][travis]
 
 # Concuerror
@@ -40,12 +40,12 @@ Details can be found in the [LICENSE][license] file.
 
 <!-- Links -->
 [changelog]: ./CHANGELOG.md
-[coveralls]: https://coveralls.io/github/parapluu/Concuerror
+[codecov]: https://codecov.io/gh/parapluu/Concuerror
 [license]: ./LICENSE
 [travis]: https://travis-ci.org/parapluu/Concuerror
 [website]: http://parapluu.github.io/Concuerror
 
 <!-- Badges -->
-[coveralls badge]: https://coveralls.io/repos/github/parapluu/Concuerror/badge.svg?branch=master
+[codecov badge]: https://codecov.io/gh/parapluu/Concuerror/branch/master/graph/badge.svg
 [erlang versions badge]: https://img.shields.io/badge/erlang-R16B03%20to%2020.3-blue.svg
 [travis badge]: https://travis-ci.org/parapluu/Concuerror.svg?branch=master

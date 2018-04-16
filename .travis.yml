@@ -2,8 +2,6 @@ sudo: false
 
 language: erlang
 
-script: "$TEST"
-
 # Two stages, so that basic tests are run first
 stages:
   - basic
@@ -38,30 +36,20 @@ matrix:
   - env: TEST="make dialyze"
     stage: basic
 
-  # Code coverage test, that includes tests and tests-real
-  - env: TEST="make cover"
-    stage: test
-
   # Minimal support for R16B03-1
-  - env: TEST="make tests-real"
+  - env: TEST=".travis/script tests-real"
     otp_release: R16B03-1
     stage: test
 
-  # Exclude the default tests and tests-real env for latest release,
-  # as the cover target includes them
-  exclude:
-  - otp_release: 20.3
-
 env:
-  - TEST="make tests-real"
-  - TEST="make tests"
+
+  - TEST=".travis/script tests"
+  - TEST=".travis/script tests-real"
 
 otp_release:
 
   # Two latest minor versions of the most recent OTP release
-  # Remember to:
-  # 1) exclude the top one from the matrix above
-  # 2) update the Travis badge
+  # Remember to also update the badge in README.md
 
   - 20.3
   - 20.2
@@ -71,13 +59,29 @@ otp_release:
   - 19.3
   - 18.3
   - 17.4
-
   # R16B03-1 is minimally supported (see matrix section)
 
-after_failure: "./.travis/after_failure"
 
-before_script: "./.travis/recover_plt"
-before_cache: "./.travis/store_plt"
+# Travis build steps configuration
+
 cache:
    directories:
    - plts
+
+before_install:
+  - .travis/before_install
+
+before_script:
+  - .travis/before_script
+
+script:
+ - $TEST
+
+before_cache:
+  - .travis/before_cache
+
+after_success:
+  - .travis/after_success
+
+after_failure:
+  - .travis/after_failure

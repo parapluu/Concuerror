@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+THISDIR=$(dirname $0)
+REPO_LATEST=`$THISDIR/get_latest_travis $THISDIR/../.travis.yml`
+
+if [ "$REPO_LATEST" = "$TRAVIS_OTP_RELEASE" ]; then
+  echo "Generate coverage report..."
+  cd cover
+  export COVER_COMBINE=all.coverdata
+  ./cover-report data
+  covertool/covertool -cover $COVER_COMBINE -src ../src -output cobertura.xml
+  codecov
+  echo "Report sent!"
+fi
