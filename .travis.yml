@@ -76,7 +76,7 @@ before_script:
   - .travis/before_script
 
 script:
- - $TEST
+ - .travis/script $TEST
 
 before_cache:
   - .travis/before_cache
