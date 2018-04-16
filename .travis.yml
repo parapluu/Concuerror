@@ -43,8 +43,8 @@ matrix:
 
 env:
 
-  - TEST="make tests"
-  - TEST="make tests-real"
+  - TEST=".travis/script tests"
+  - TEST=".travis/script tests-real"
 
 otp_release:
 
@@ -76,7 +76,7 @@ before_script:
   - .travis/before_script
 
 script:
- - .travis/script $TEST
+ - $TEST
 
 before_cache:
   - .travis/before_cache
