@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 
 git clone https://github.com/idubrov/covertool.git
+cd covertool
 make compile
+cp covertool ..
