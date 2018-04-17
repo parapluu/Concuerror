@@ -25,7 +25,7 @@ PhD Dissertation, Uppsala University, 2018.
 Stavros Aronis, Bengt Jonsson, Magnus Lång, and Konstantinos Sagonas.<br />
 TACAS 2018, Tools and Algorithms for the Construction and Analysis of Systems. Lecture Notes in Computer Science, vol 10806, 2018.<br />
 <span class="footnotes">
-The official publication is available at link.springer.com via <a href="https://doi.org/10.1007/978-3-319-89963-3_14">its DOI link</a>.
+The official publication is available at link.springer.com via [its DOI link](https://doi.org/10.1007/978-3-319-89963-3_14).
 </span>
 </div>
 
@@ -34,7 +34,7 @@ The official publication is available at link.springer.com via <a href="https://
 Stavros Aronis, Scott Lystig Fritchie, and Konstantinos Sagonas.<br />
 IFM 2017, Integrated Formal Methods: Proceedings of the 13th International Conference, 2017.<br />
 <span class="footnotes">
-The official publication is available at link.springer.com via <a href="https://doi.org/10.1007/978-3-319-66845-1_15">its DOI link</a>.
+The official publication is available at link.springer.com via [its DOI link](https://doi.org/10.1007/978-3-319-66845-1_15).
 </span>
 </div>
 
@@ -58,7 +58,7 @@ The official publication is available at link.springer.com via <a href="https://
 Maria Christakis, Alkis Gotovos, and Konstantinos Sagonas.<br />
 ICST 2013, Proceedings of the International Conference on Software Testing, Verification and Validation (ICST), 2013.<br />
 <span class="footnotes">
-The official publication is available at ieeexplore.ieee.org via <a href="https://doi.org/10.1109/ICST.2013.50">its DOI link</a>.
+The official publication is available at ieeexplore.ieee.org via [its DOI link](https://doi.org/10.1109/ICST.2013.50).
 </span>
 </div>
 
