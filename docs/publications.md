@@ -13,7 +13,7 @@ This is a list of publications related to Concuerror. Most titles are links to o
 ## Dissertation
 
 <div style="margin-left:25px" markdown="1">
-[**Effective Techniques for Stateless Model Checking**](http://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-333541)
+[**Effective Techniques for Stateless Model Checking**](http://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-333541)<br />
 Stavros Aronis.<br />
 PhD Dissertation, Uppsala University, 2018.
 </div>
@@ -21,9 +21,7 @@ PhD Dissertation, Uppsala University, 2018.
 ## Papers
 
 <div style="margin-left:25px" markdown="1">
-<a href="/assets/pdf/iFM2017.pdf">
-**Testing and Verifying Chain Repair Methods for Corfu Using Stateless Model Checking**
-</a>  
+[**Testing and Verifying Chain Repair Methods for Corfu Using Stateless Model Checking**](/assets/pdf/iFM2017.pdf)<br />
 Stavros Aronis, Scott Lystig Fritchie, and Konstantinos Sagonas.<br />
 IFM 2017, Integrated Formal Methods: Proceedings of the 13th International Conference, 2017.<br />
 <span class="footnotes">
@@ -47,9 +45,7 @@ The official publication is available at link.springer.com via <a href="https://
 <div class="acmdlstat footnotes" id ="stats2535845"><iframe src="https://dl.acm.org/authorizestats?N87798" width="100%" height="30" scrolling="no" frameborder="0">frames are not supported</iframe></div>
 
 <div style="margin-left:25px" markdown="1">
-<a href="/assets/pdf/ICST2013.pdf">
-**Systematic Testing for Detecting Concurrency Errors in Erlang Programs**
-</a>  
+[**Systematic Testing for Detecting Concurrency Errors in Erlang Programs**](/assets/pdf/ICST2013.pdf)<br />
 Maria Christakis, Alkis Gotovos, and Konstantinos Sagonas.<br />
 ICST 2013, Proceedings of the International Conference on Software Testing, Verification and Validation (ICST), 2013.<br />
 <span class="footnotes">
@@ -65,13 +61,13 @@ The official publication is available at ieeexplore.ieee.org via <a href="https:
 ## Theses
 
 <div style="margin-left:25px" markdown="1">
-[**Systematic Testing of Concurrent Erlang Programs: Some Experiences**](http://artemis-new.cslab.ece.ntua.gr:8080/jspui/bitstream/123456789/6823/1/DT2013-0245.pdf)  
+[**Systematic Testing of Concurrent Erlang Programs: Some Experiences**](http://artemis-new.cslab.ece.ntua.gr:8080/jspui/bitstream/123456789/6823/1/DT2013-0245.pdf)<br />
 Ilias Tsitsimpis.<br />
 Diploma Thesis, National Technical University of Athens, 2013.
 </div>
 
 <div style="margin-left:25px" markdown="1">
-[**Dynamic Systematic Testing of Concurrent Erlang Programs**](http://artemis-new.cslab.ece.ntua.gr:8080/jspui/bitstream/123456789/5505/1/DT2011-0081.pdf)  
+[**Dynamic Systematic Testing of Concurrent Erlang Programs**](http://artemis-new.cslab.ece.ntua.gr:8080/jspui/bitstream/123456789/5505/1/DT2011-0081.pdf)<br />
 Alkis Gotovos.<br />
 Diploma Thesis, National Technical University of Athens, 2011.
 </div>
