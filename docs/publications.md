@@ -21,6 +21,15 @@ PhD Dissertation, Uppsala University, 2018.
 ## Papers
 
 <div style="margin-left:25px" markdown="1">
+[**Optimal Dynamic Partial Order Reduction with Observers**](https://rdcu.be/LLeU)<br />
+Stavros Aronis, Bengt Jonsson, Magnus Lång, and Konstantinos Sagonas.<br />
+TACAS 2018, Tools and Algorithms for the Construction and Analysis of Systems. Lecture Notes in Computer Science, vol 10806, 2018.<br />
+<span class="footnotes">
+The official publication is available at link.springer.com via <a href="https://doi.org/10.1007/978-3-319-89963-3_14">its DOI link</a>.
+</span>
+</div>
+
+<div style="margin-left:25px" markdown="1">
 [**Testing and Verifying Chain Repair Methods for Corfu Using Stateless Model Checking**](/assets/pdf/iFM2017.pdf)<br />
 Stavros Aronis, Scott Lystig Fritchie, and Konstantinos Sagonas.<br />
 IFM 2017, Integrated Formal Methods: Proceedings of the 13th International Conference, 2017.<br />
