@@ -593,9 +593,7 @@ print_stream(Tag, Buffer, Output) ->
 
 stream_tag_to_string(standard_io) -> "Standard Output:~n";
 stream_tag_to_string(standard_error) -> "Standard Error:~n";
-stream_tag_to_string(race) -> "New races found:"; % ~n is added by buffer
-stream_tag_to_string(Filename) when is_list(Filename) ->
-  io_lib:format("Text printed to ~s:~n", [Filename]).
+stream_tag_to_string(race) -> "New races found:". % ~n is added by buffer
 
 interleavings_message(State) ->
   #logger_state{
