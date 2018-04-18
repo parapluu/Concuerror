@@ -594,7 +594,7 @@ update_state(#event{actor = Actor} = Event, State) ->
      wakeup_tree = WakeupTree
     } = Last,
   ?debug(Logger, "~s~n", [?pretty_s(Index, Event)]),
-  concuerror_logger:graph_new_node(Logger, UID, Index, Event, 0),
+  concuerror_logger:graph_new_node(Logger, UID, Index, Event),
   Done = reset_receive_done(RawDone, State),
   NextSleepSet =
     case UseSleepSets of
