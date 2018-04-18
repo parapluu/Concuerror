@@ -703,6 +703,9 @@ keys_or_tuples(#builtin_event{mfargs = {_,Op,[_|Rest] = Args}}) ->
     {update_counter,3} -> {keys, [hd(Rest)]}
   end.
 
+from_insert(undefined, _, _) ->
+  %% If table is undefined the op crashed so not mutating
+  false;
 from_insert(Table, Insert, InsertNewOrDelete) ->
   KeyPos = ets:info(Table, keypos),
   InsertList = case is_list(Insert) of true -> Insert; false -> [Insert] end,
