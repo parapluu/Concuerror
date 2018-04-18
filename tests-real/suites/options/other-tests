@@ -4,10 +4,6 @@
 
 print_blue "$0"
 
-testing "Deadlock shows messages"
-! concuerror_console -f src/deadlock.erl
-outputhas "Mailbox contents: \[foo\]"
-
 testing "Can find default in path"
 rm -rf path
 rm -rf foo.beam
@@ -87,10 +83,6 @@ erlc -DN=1 src/debug_works.erl
 concuerror_console -m debug_works
 consolehas "1/1 interleavings explored"
 rm -f debug_works.beam
-
-testing "Decent stacktrace reports"
-! concuerror_console -f src/stacktrace.erl
-outputhas "[{file,\"src/stacktrace.erl\"},{line,93}]"
 
 testing "Log messages are shown for option errors"
 ! concuerror_console -module foo

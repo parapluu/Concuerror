@@ -4,7 +4,6 @@
 
 *.Pbeam
 *.beam
-*.dot
 .concuerror_plt
 /concuerror
 *concuerror_report.txt

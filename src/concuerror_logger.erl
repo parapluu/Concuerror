@@ -4,7 +4,7 @@
 
 -export([start/1, complete/2, plan/1, log/5, race/3, finish/2, print/3, time/2]).
 -export([bound_reached/1, set_verbosity/2]).
--export([graph_set_node/3, graph_new_node/5, graph_race/3]).
+-export([graph_set_node/3, graph_new_node/4, graph_race/3]).
 -export([print_log_message/3]).
 
 -include("concuerror.hrl").
@@ -593,9 +593,7 @@ print_stream(Tag, Buffer, Output) ->
 
 stream_tag_to_string(standard_io) -> "Standard Output:~n";
 stream_tag_to_string(standard_error) -> "Standard Error:~n";
-stream_tag_to_string(race) -> "New races found:"; % ~n is added by buffer
-stream_tag_to_string(Filename) when is_list(Filename) ->
-  io_lib:format("Text printed to ~s:~n", [Filename]).
+stream_tag_to_string(race) -> "New races found:". % ~n is added by buffer
 
 interleavings_message(State) ->
   #logger_state{
@@ -628,10 +626,10 @@ graph_set_node(Logger, Parent, Sibling) ->
   Logger ! {graph, {set_node, Parent, Sibling}},
   ok.
 
--spec graph_new_node(logger(), unique_id(), index(), event(), integer()) -> ok.
+-spec graph_new_node(logger(), unique_id(), index(), event()) -> ok.
 
-graph_new_node(Logger, Ref, Index, Event, BoundConsumed) ->
-  Logger ! {graph, {new_node, Ref, Index, Event, BoundConsumed}},
+graph_new_node(Logger, Ref, Index, Event) ->
+  Logger ! {graph, {new_node, Ref, Index, Event}},
   ok.
 
 -spec graph_race(logger(), unique_id(), unique_id()) -> ok.
@@ -647,7 +645,7 @@ graph_preamble({GraphFile, _}) ->
     "  graph [ranksep=0.3]~n"
     "  node [shape=box,width=7,fontname=Monospace]~n"
     "  \"init\" [label=\"Initial\"];~n"
-    "  subgraph {~n", []),
+    "  subgraph interleaving_1 {~n", []),
   {GraphFile, init, none}.
 
 graph_command(_Command, #logger_state{graph_data = disable} = State) -> State;
@@ -658,7 +656,7 @@ graph_command(Command, State) ->
     } = State,
   NewGraph =
     case Command of
-      {new_node, Ref, I, Event, BoundConsumed} ->
+      {new_node, Ref, I, Event} ->
         ErrorS =
           case Event#event.event_info of
             #exit_event{reason = normal} ->
@@ -671,45 +669,40 @@ graph_command(Command, State) ->
           end,
         print_depth_tip(),
         Label = concuerror_io_lib:pretty_s({I,Event#event{location=[]}}, PrintDepth - 19),
-        EnabledLabel =
-          case BoundConsumed =:= 0 of
-            true -> "    ";
-            false -> io_lib:format("!~2w",[BoundConsumed])
-          end,
         to_file(
           GraphFile,
-          "    \"~p\" [label=\"~s ~s\\l\"~s];~n",
-          [Ref, EnabledLabel, Label, ErrorS]),
+          "    \"~p\" [label=\"~s\\l\"~s];~n",
+          [Ref, Label, ErrorS]),
         case Sibling =:= none of
           true ->
-            to_file(GraphFile,"~s[weight=1000];~n",[ref_edge(Parent, Ref)]);
+            to_file(GraphFile,"~s [weight=1000];~n",[ref_edge(Parent, Ref)]);
           false ->
             to_file(
               GraphFile,
-              "~s[style=invis,weight=1];~n"
-              "~s[constraint=false];~n",
+              "~s [style=invis,weight=1];~n"
+              "~s [constraint=false];~n",
               [ref_edge(Parent, Ref), ref_edge(Sibling, Ref)])
         end,
         {GraphFile, Ref, none};
       {race, EarlyRef, Ref} ->
         to_file(
           GraphFile,
-          "~s[constraint=false, color=red, dir=back, penwidth=3, style=dashed];~n",
+          "~s [constraint=false, color=red, dir=back, penwidth=3, style=dashed];~n",
           [dref_edge(EarlyRef, Ref)]),
         Graph;
-      {set_node, NewParent, NewSibling} ->
+      {set_node, {I, _} = NewParent, NewSibling} ->
         to_file(
           GraphFile,
           "  }~n"
-          "  subgraph{~n",
-          []),
+          "  subgraph interleaving_~w {~n",
+          [I + 1]),
         {GraphFile, NewParent, NewSibling};
       {status, Count, String, Color} ->
         Final = {Count + 1, final},
         to_file(
           GraphFile,
           "    \"~p\" [label=\"~p: ~s\",style=filled,fillcolor=~s];~n"
-          "~s[weight=1000];~n",
+          "~s [weight=1000];~n",
           [Final, Count+1, String, Color, ref_edge(Parent, Final)]),
         Graph
     end,

@@ -1,0 +1,33 @@
+digraph {
+  graph [ranksep=0.3]
+  node [shape=box,width=7,fontname=Monospace]
+  "init" [label="Initial"];
+  subgraph interleaving_1 {
+    "{1,1}" [label="   1: <P>: <P.1> = erlang:spawn(erlang, apply, [...])\l"];
+    "init" -> "{1,1}" [weight=1000];
+    "{1,2}" [label="   2: <P>: receive timeout expired after 0 ms\l"];
+    "{1,1}" -> "{1,2}" [weight=1000];
+    "{1,3}" [label="   3: <P>: exits normally\l",color=limegreen,penwidth=5];
+    "{1,2}" -> "{1,3}" [weight=1000];
+    "{1,4}" [label="   4: <P.1>: foo = <P> ! foo\l"];
+    "{1,3}" -> "{1,4}" [weight=1000];
+    "{1,5}" [label="   5: <P.1>: exits normally\l",color=limegreen,penwidth=5];
+    "{1,4}" -> "{1,5}" [weight=1000];
+    "{1,final}" [label="1: Ok",style=filled,fillcolor=limegreen];
+    "{1,5}" -> "{1,final}" [weight=1000];
+    "{1,2}":e -> "{1,4}":e [constraint=false, color=red, dir=back, penwidth=3, style=dashed];
+  }
+  subgraph interleaving_2 {
+    "{2,2}" [label="   2: <P.1>: foo = <P> ! foo\l"];
+    "{1,1}" -> "{2,2}" [style=invis,weight=1];
+    "{1,2}" -> "{2,2}" [constraint=false];
+    "{2,3}" [label="   3: <P.1>: exits normally\l",color=limegreen,penwidth=5];
+    "{2,2}" -> "{2,3}" [weight=1000];
+    "{2,4}" [label="   4: <P>: receives message (foo)\l"];
+    "{2,3}" -> "{2,4}" [weight=1000];
+    "{2,5}" [label="   5: <P>: exits normally\l",color=limegreen,penwidth=5];
+    "{2,4}" -> "{2,5}" [weight=1000];
+    "{2,final}" [label="2: Ok",style=filled,fillcolor=limegreen];
+    "{2,5}" -> "{2,final}" [weight=1000];
+  }
+}
