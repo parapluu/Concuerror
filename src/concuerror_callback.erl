@@ -1978,7 +1978,7 @@ is_active(Status) when is_atom(Status) ->
 
 get_stacktrace(Top) ->
   {_, Trace} = erlang:process_info(self(), current_stacktrace),
-  [T || {M,_,_,_} = T <- Top ++ Trace, not_concuerror_module(M)].
+  [T || T <- Top ++ Trace, not_concuerror_module(element(1, T))].
 
 not_concuerror_module(Atom) ->
   case atom_to_list(Atom) of
