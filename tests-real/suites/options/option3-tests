@@ -16,14 +16,6 @@ testing "Only first process errors with ignored error"
 concuerror_console -f src/first_and_other_deadlock.erl --ignore_error deadlock --first_process_errors_only
 good
 
-testing "Symbolic registered names Info"
-! concuerror_console -f src/register.erl
-consolehas "Showing PIDs as \"<symbolic name(/last registered name)>\" ('-h symbolic_names')."
-
-testing "Symbolic registered names error info"
-! concuerror_console -f src/register.erl
-outputhas "process <P.1/foo> exited abnormally"
-
 testing "No warnings for multiple -pa"
 concuerror_console -vvvv -f src/foo.erl -pa .. src
 print_ok
