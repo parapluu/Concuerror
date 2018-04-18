@@ -4,10 +4,6 @@
 
 print_blue "$0"
 
-testing "Deadlock shows messages"
-! concuerror_console -f src/deadlock.erl
-outputhas "Mailbox contents: \[foo\]"
-
 testing "Can find default in path"
 rm -rf path
 rm -rf foo.beam

@@ -8,4 +8,8 @@ testing "Basic message is produced for error detection"
 ! concuerror_console -f src/buggy.erl
 consolehas "Errors were found! (check concuerror_report.txt)"
 
+testing "Deadlock shows messages"
+! concuerror_console -f src/deadlock.erl
+outputhas "Mailbox contents: \[foo\]"
+
 . footer
