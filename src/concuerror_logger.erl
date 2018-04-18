@@ -60,6 +60,7 @@ timediff(After, Before) ->
           errors = 0                   :: non_neg_integer(),
           graph_data                   :: graph_data() | 'disable',
           interleaving_bound           :: concuerror_options:bound(),
+          last_had_errors = false      :: boolean(),
           log_msgs = []                :: [string()],
           output                       :: file:io_device() | 'disable',
           output_name                  :: string(),
@@ -272,6 +273,7 @@ loop(Message, State) ->
   #logger_state{
      already_emitted = AlreadyEmitted,
      errors = Errors,
+     last_had_errors = LastHadErrors,
      log_msgs = LogMsgs,
      output = Output,
      output_name = OutputName,
@@ -296,7 +298,7 @@ loop(Message, State) ->
       print_depth_tip(),
       Msg =
         io_lib:format(
-          "* ~s~n  ~s~n~n",
+          "~n* ~s~n  ~s~n",
           [concuerror_io_lib:pretty_s(E, PrintDepth)
            || E <- [EarlyEvent,Event]]),
       loop({print, race, Msg}, State);
@@ -384,19 +386,27 @@ loop(Message, State) ->
       NewState = State#logger_state{verbosity = NewVerbosity},
       loop(NewState);
     {complete, Warn, Scheduler, Ref} ->
+      %% We may have race information referring to the previous
+      %% interleaving, as race analysis happens after trace logging.
+      RaceInfo = [S || S = {T, _} <- Streams, T =:= race],
+      case RaceInfo =:= [] of
+        true -> ok;
+        false ->
+          case LastHadErrors of
+            true -> ok;
+            false ->
+              %% Add missing header
+              separator(Output, $#),
+              to_file(Output, "Interleaving #~p~n", [TracesExplored])
+          end,
+          separator(Output, $-),
+          print_streams(RaceInfo, Output)
+      end,
       {NewErrors, NewSSB, GraphFinal, GraphColor} =
         case Warn of
           sleep_set_block ->
             {Errors, TracesSSB + 1, "SSB", "yellow"};
           none ->
-            RaceInfo = [S || S = {T, _} <- Streams, T =:= race],
-            case RaceInfo =:= [] of
-              true -> ok;
-              false ->
-                separator(Output, $#),
-                to_file(Output, "Interleaving #~p~n", [TracesExplored + 1]),
-                print_streams(RaceInfo, Output)
-            end,
             {Errors, TracesSSB, "Ok", "limegreen"};
           {Warnings, TraceInfo} ->
             separator(Output, $#),
@@ -411,7 +421,6 @@ loop(Message, State) ->
             print_streams([S || S = {T, _} <- Streams, T =/= race], Output),
             to_file(Output, "Event trace:~n", []),
             concuerror_io_lib:pretty(Output, TraceInfo, PrintDepth),
-            print_streams([S || S = {T, _} <- Streams, T =:= race], Output),
             ErrorString =
               case proplists:get_value(fatal, Warnings) of
                 true -> " (Concuerror crashed)";
@@ -429,6 +438,7 @@ loop(Message, State) ->
         graph_command({status, TracesExplored, GraphFinal, GraphColor}, State),
       NewState =
         State#logger_state{
+          last_had_errors = NewErrors =/= Errors,
           streams = [],
           traces_explored = TracesExplored + 1,
           traces_ssb = NewSSB,
@@ -572,7 +582,7 @@ print_streams(Streams, Output) ->
   orddict:fold(Fold, ok, Streams).
 
 print_stream(Tag, Buffer, Output) ->
-  to_file(Output, tag_to_filename(Tag) ++ ":~n", []),
+  to_file(Output, stream_tag_to_string(Tag), []),
   to_file(Output, "~s~n", [Buffer]),
   case Tag =/= race of
     true ->
@@ -581,13 +591,11 @@ print_stream(Tag, Buffer, Output) ->
     false -> ok
   end.
 
-tag_to_filename(standard_io) -> "Standard Output";
-tag_to_filename(standard_error) -> "Standard Error";
-tag_to_filename(race) ->
-  separator_string($-) ++
-    "~nNew races found";
-tag_to_filename(Filename) when is_list(Filename) ->
-  io_lib:format("Text printed to ~s", [Filename]).
+stream_tag_to_string(standard_io) -> "Standard Output:~n";
+stream_tag_to_string(standard_error) -> "Standard Error:~n";
+stream_tag_to_string(race) -> "New races found:"; % ~n is added by buffer
+stream_tag_to_string(Filename) when is_list(Filename) ->
+  io_lib:format("Text printed to ~s:~n", [Filename]).
 
 interleavings_message(State) ->
   #logger_state{
