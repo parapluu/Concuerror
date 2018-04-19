@@ -86,7 +86,7 @@ start_link(Options) ->
 
 -type estimation_style() ::
         {'hard_bound', pos_integer(), estimation_style()} |
-        {'recursive', 'branch' | 'tree'} |
+        {'recursive', 'one_step' | 'tree'} |
         #delay_bounded{} |
         'unknown'.
 
@@ -104,7 +104,7 @@ estimation_style(Options) ->
             #delay_bounded{bound = Bound};
           none ->
             case ?opt(dpor, Options) =:= optimal of
-              false -> {recursive, branch};
+              false -> {recursive, one_step};
               true -> {recursive, tree}
             end;
           _ ->
@@ -301,17 +301,22 @@ estimate(State) ->
                 {ok, More} -> [L|More]
               end,
             Sum = lists:sum(AllExplored),
-            Average = Sum / length(AllExplored),
             AllPlanned =
               case dict:find(M, Planned) of
                 error -> 0;
                 {ok, P} ->
-                  Mult =
-                    case Subtree of
-                      branch -> P;
-                      tree -> math:log(P) + 1
-                    end,
-                  Mult * Average
+                  case Subtree of
+                    one_step ->
+                      %% Each one-step plan will explore a similar tree
+                      P * Sum / length(AllExplored);
+                    tree ->
+                      %% Each plan is a single planned execution so
+                      %% plans are the size of the tree and the
+                      %% estimation is an average between everything
+                      %% we so far know (already explored plus this
+                      %% planned tree).
+                      (Sum + P) / (length(AllExplored) + 1)
+                  end
               end,
             Sum + AllPlanned
         end,
