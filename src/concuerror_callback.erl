@@ -1797,9 +1797,11 @@ system_processes_wrappers(Info) ->
 wrap_system(Name, Info) ->
   #concuerror_info{processes = Processes} = Info,
   Wrapped = whereis(Name),
+  {_, Leader} = process_info(Wrapped, group_leader),
   Fun = fun() -> system_wrapper_loop(Name, Wrapped, Info) end,
   Pid = spawn_link(Fun),
   ets:insert(Processes, ?new_system_process(Pid, Name, wrapper)),
+  true = ets:update_element(Processes, Pid, {?process_leader, Leader}),
   ok.
 
 system_wrapper_loop(Name, Wrapped, Info) ->
@@ -1877,8 +1879,9 @@ system_wrapper_loop(Name, Wrapped, Info) ->
               Stacktrace = erlang:get_stacktrace(),
               ?crash({system_wrapper_error, Name, Class, Reason, Stacktrace})
           end;
-        {get_info, _} ->
-          ?crash({wrapper_asked_for_status, Name})
+        {get_info, To} ->
+          To ! {info, {Info, get()}},
+          ok
       end,
       system_wrapper_loop(Name, Wrapped, Info)
   end.
@@ -1978,7 +1981,7 @@ is_active(Status) when is_atom(Status) ->
 
 get_stacktrace(Top) ->
   {_, Trace} = erlang:process_info(self(), current_stacktrace),
-  [T || {M,_,_,_} = T <- Top ++ Trace, not_concuerror_module(M)].
+  [T || T <- Top ++ Trace, not_concuerror_module(element(1, T))].
 
 not_concuerror_module(Atom) ->
   case atom_to_list(Atom) of
@@ -2159,15 +2162,7 @@ explain_error({unsupported_request, Name, Type}) ->
   io_lib:format(
     "A process sent a request of type '~w' to ~p. Concuerror does not yet support"
     " this type of request to this process.",
-    [Type, Name]);
-explain_error({wrapper_asked_for_status, Name}) ->
-  io_lib:format(
-    "A process attempted to request process_info for a system process (~p)."
-    " Concuerror cannot track and restore the state of system processes, so"
-    " this information may change between interleavings, leading to errors in"
-    " the exploration. It should be possible to refactor your test to avoid"
-    " this problem.",
-    [Name]).
+    [Type, Name]).
 
 location(F, L) ->
   Basename = filename:basename(F),

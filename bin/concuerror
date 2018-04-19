@@ -2,6 +2,9 @@
 %% -*- erlang-indent-level: 2 -*-
 %%! +S1 -boot start_clean -noshell -pa . -pa ebin
 
+%% This script's purpose is to do the absolute minimum work required
+%% to call concuerror:run/1.
+
 main(Args) ->
   ScriptDir = filename:dirname(read_link(escript:script_name())),
   EbinDir = filename:join([ScriptDir,"..","ebin"]),
@@ -18,6 +21,7 @@ main(Args) ->
   cl_exit(Status).
 
 -spec read_link(file:filename()) -> file:filename().
+
 read_link(Filename) ->
   case file:read_link_all(Filename) of
     {ok, Follow} -> read_link(Follow);
