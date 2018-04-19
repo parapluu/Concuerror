@@ -6,6 +6,7 @@
 -export([bound_reached/1, set_verbosity/2]).
 -export([graph_set_node/3, graph_new_node/4, graph_race/3]).
 -export([print_log_message/3]).
+-export([showing_progress/1]).
 
 -include("concuerror.hrl").
 
@@ -113,9 +114,9 @@ initialize(Options) ->
       "~s started at ~s~n",
       [concuerror_options:version(), Timestamp]),
   Ticker =
-    case (Verbosity =:= ?lquiet) orelse (Verbosity >= ?ltiming) of
-      true -> none;
-      false ->
+    case showing_progress(Verbosity) of
+      false -> none;
+      true ->
         to_stderr("~s", [Header]),
         if Output =:= disable ->
             Msg = "No output report will be generated~n",
@@ -233,6 +234,11 @@ print_log_message(Level, Format, Args) ->
   LevelFormat = level_to_tag(Level),
   NewFormat = "* " ++ LevelFormat ++ Format,
   to_stderr(NewFormat, Args).
+
+-spec showing_progress(log_level()) -> boolean().
+
+showing_progress(Verbosity) ->
+  (Verbosity =/= ?lquiet) andalso (Verbosity < ?ltiming).
 
 %%------------------------------------------------------------------------------
 

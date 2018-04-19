@@ -94,12 +94,9 @@ start_link(Options) ->
 
 estimation_style(Options) ->
   Verbosity = ?opt(verbosity, Options),
-  case
-    (Verbosity =:= ?lquiet) orelse
-    (Verbosity >= ?ltiming)
-  of
-    true -> unknown;
-    false ->
+  case concuerror_logger:showing_progress(Verbosity) of
+    false -> unknown;
+    true ->
       Style =
         case ?opt(scheduling_bound_type, Options) of
           delay ->
