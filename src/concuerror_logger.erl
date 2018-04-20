@@ -615,7 +615,7 @@ progress_header(_State) ->
 
 progress_header_common(SSB) ->
   "    Errors |  Explored " ++ SSB ++
-    "| Planned | ~ Rate |  Total(?) | Time(?) ".
+    "| Planned |  ~ Rate |  Total(?) | Time(?) ".
 
 progress_line(#logger_state{traces_ssb = 0}) ->
   progress_line_common("");
@@ -624,7 +624,7 @@ progress_line(_State) ->
 
 progress_line_common(SSB) ->
   "-----------------------" ++ SSB ++
-    "-----------------------------------------".
+    "------------------------------------------".
 
 progress_content(State) ->
   #logger_state{
@@ -648,9 +648,9 @@ progress_content(State) ->
     concuerror_estimator:estimate_completion(Estimation, TracesExplored, Rate),
   RateStr =
     case Rate of
-      wait -> "  wait";
+      wait -> "   wait";
       0    -> " <1 /s";
-      _    -> io_lib:format("~3w /s", [Rate])
+      _    -> io_lib:format("~4w /s", [Rate])
     end,
   Str =
     io_lib:format(
