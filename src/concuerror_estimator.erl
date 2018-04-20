@@ -381,10 +381,10 @@ estimate_completion(Estimated, Explored, Rate) ->
          }).
 
 approximate_time_formatters() ->
-  SecondsSplitFun = fun(_) -> 5 end,
+  SecondsSplitFun = fun(_) -> 1 end,
   SecondsATF =
     #approximate_time_formatter{
-       threshold  = 5 * 60,
+       threshold  = 1 * 60,
        rounding   = 60,
        split_fun  = SecondsSplitFun,
        one_format = "   <~pm"
