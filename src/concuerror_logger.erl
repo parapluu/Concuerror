@@ -55,9 +55,8 @@ timediff(After, Before) ->
 %%------------------------------------------------------------------------------
 
 -record(rate_info, {
-          average   :: 'wait' | concuerror_window_average:average(),
+          average   :: concuerror_window_average:average(),
           prev      :: non_neg_integer(),
-          ready     :: boolean(),
           timestamp :: timestamp()
          }).
 
@@ -667,8 +666,7 @@ progress_content(State) ->
     concuerror_estimator:estimate_completion(Estimation, TracesExplored, Rate),
   RateStr =
     case Rate of
-      wait -> "   wait";
-      0    -> " <1 /s";
+      0    -> "  <1 /s";
       _    -> io_lib:format("~4w /s", [Rate])
     end,
   Str =
@@ -684,9 +682,8 @@ progress_content(State) ->
 
 init_rate_info() ->
   #rate_info{
-     average   = wait,
+     average   = concuerror_window_average:init(0, 10),
      prev      = 0,
-     ready     = false,
      timestamp = timestamp()
     }.
 
@@ -694,31 +691,20 @@ update_rate(RateInfo, Useful) ->
   #rate_info{
      average   = Average,
      prev      = Prev,
-     ready     = Ready,
      timestamp = Old
     } = RateInfo,
   New = timestamp(),
   Time = timediff(New, Old),
   Diff = Useful - Prev,
   CurrentRate = Diff / (Time + 0.0001),
-  {Rate, NewAverage, NewReady} =
-    case Ready of
-      true ->
-        {R, NA} = concuerror_window_average:update(CurrentRate, Average),
-        {round(R), NA, true};
-      false when Prev > 30 ->
-        {CurrentRate, concuerror_window_average:init(CurrentRate, 20), true};
-      false ->
-        {wait, wait, false}
-    end,
+  {Rate, NewAverage} = concuerror_window_average:update(CurrentRate, Average),
   NewRateInfo =
     RateInfo#rate_info{
       average   = NewAverage,
       prev      = Useful,
-      ready     = NewReady,
       timestamp = New
      },
-  {Rate, NewRateInfo}.
+  {round(Rate), NewRateInfo}.
 
 %%------------------------------------------------------------------------------
 
