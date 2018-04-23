@@ -63,7 +63,7 @@ good
 
 testing "Tips and errors are there"
 mygrep "A process exited with reason"
-mygrep "An abnormal exit signal was sent to a process."
+mygrep "An abnormal exit signal killed a process."
 mygrep "A process exited with reason 'shutdown'."
 mygrep "Stop testing on first error."
 good

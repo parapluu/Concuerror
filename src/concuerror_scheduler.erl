@@ -656,10 +656,6 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
       false -> State0
     end,
   case Event#event.event_info of
-    #builtin_event{mfargs = {erlang, exit, [_,Reason]}}
-      when Reason =/= normal ->
-      ?unique(Logger, ?ltip, msg(signal), []),
-      State;
     #builtin_event{mfargs = {erlang, halt, [Status|_]}}
       when Status =/= 0 ->
       #event{actor = Actor} = Event,
@@ -1892,11 +1888,6 @@ msg(scheduling_bound_tip) ->
 msg(scheduling_bound_warning) ->
   "Some interleavings will not be explored because they exceed the scheduling"
     " bound.~n";
-msg(signal) ->
-  "An abnormal exit signal was sent to a process. This is probably the worst"
-    " thing that can happen race-wise, as any other side-effecting"
-    " operation races with the arrival of the signal. If the test produces"
-    " too many interleavings consider refactoring your code.~n";
 msg(show_races) ->
   "You can see pairs of racing instructions (in the report and"
     " '--graph') with '--show_races true'~n";
