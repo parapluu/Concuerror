@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased](https://github.com/parapluu/Concuerror/tree/master)
 
 ### Added
+- Total state space size and time to completion estimation
 - `--first_process_errors_only` option
 - Parts of [aronisstav/erlang-concurrency-litmus-tests](https://github.com/aronisstav/erlang-concurrency-litmus-tests) as a testsuite
 - [Codecov](https://codecov.io/github/parapluu/Concuerror) code coverage tracking
@@ -18,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - untested code for 'hijacking' processes (e.g. application_controller (#2))
 
 ### Changed
+- progress bar format
 - symbolic PIDs are now shown as "<symbol/last registered name>"
 - report shows mailbox contents when a deadlock is detected
 - significantly optimized DPOR implementations
