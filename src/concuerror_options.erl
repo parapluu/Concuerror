@@ -254,6 +254,8 @@ options() ->
     "With 'all' as argument, prints info for all options.~n~n"
     "With 'attributes' as argument, prints info about passing options using"
     " module attributes.~n~n"
+    "With 'progress' as argument, prints info about what the items in the"
+    " progress info mean.~n~n"
     "With an option name as argument, prints more help for that option.~n~n"
     "Options have keywords associated with them (shown in their help)."
     " With a keyword as argument, prints a list of all options with the"
@@ -469,6 +471,7 @@ cl_usage(Attribute)
   when Attribute =:= attribute;
        Attribute =:= attributes ->
   Msg =
+    "~n"
     "Passing options using module attributes:~n"
     "----------------------------------------~n"
     "You can use the following attributes in the module specified by '--module'"
@@ -480,6 +483,15 @@ cl_usage(Attribute)
     "    A list of Options that override any other options.~n"
     ,
   to_stderr(Msg, [?ATTRIBUTE_OPTIONS, ?ATTRIBUTE_FORCED_OPTIONS]);
+cl_usage(progress) ->
+  Msg =
+    "~n"
+    "Progress bar item explanations:~n"
+    "-------------------------------~n"
+    "~n"
+    "~s"
+    ,
+  to_stderr(Msg, [concuerror_logger:progress_help()]);
 cl_usage(Name) ->
   Optname =
     case lists:keyfind(Name, ?OPTION_KEY, options()) of

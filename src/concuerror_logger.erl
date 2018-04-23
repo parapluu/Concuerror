@@ -6,7 +6,7 @@
 -export([bound_reached/1, set_verbosity/2]).
 -export([graph_set_node/3, graph_new_node/4, graph_race/3]).
 -export([print_log_message/3]).
--export([showing_progress/1]).
+-export([showing_progress/1, progress_help/0]).
 
 -include("concuerror.hrl").
 
@@ -118,6 +118,8 @@ initialize(Options) ->
       true ->
         to_stderr("~s~n", [Header]),
         initialize_ticker(),
+        ProgressHelpMsg = "Showing progress (-h progress, for details)~n",
+        ?log(self(), ?linfo, ProgressHelpMsg, []),
         Self = self(),
         spawn_link(fun() -> ticker(Self) end)
     end,
@@ -630,6 +632,26 @@ progress_header(0) ->
   progress_header_common("");
 progress_header(_State) ->
   progress_header_common("|     SSB ").
+
+-spec progress_help() -> string().
+
+progress_help() ->
+  io_lib:format(
+    "Errors    : Schedulings with errors~n"
+    "Explored  : Schedulings already explored~n"
+    "(SSB)     : Sleep set blocked schedulings (wasted effort)~n"
+    "Planned   : Schedulings that will certainly be explored~n"
+    "~~ Rate    : Average rate of exploration (in schedulings/s)~n"
+    "Total(?)  : Estimation of total number of schedulings (see below)~n"
+    "Time(?)   : Estimated time to completion (see below)~n"
+    "~n"
+    "Estimations:~n"
+    "The total number of schedulings is estimated from the shape of the"
+    " exploration tree. It has been observed to be WITHIN ONE ORDER OF"
+    " MAGNITUDE of the actual number, when using default options.~n"
+    "The time to completion is estimated using the estimated remaining"
+    " schedulings (Total - Explored) divided by the current Rate.~n"
+    , []).
 
 progress_header_common(SSB) ->
   "    Errors |  Explored " ++ SSB ++
