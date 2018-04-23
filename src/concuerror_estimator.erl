@@ -262,7 +262,7 @@ reestimate(#state{average = Average, delay = Delay} = State) ->
       NewState#state{
         average = NewAverage,
         delay = ?DELAY,
-        estimation = round(Estimation)
+        estimation = two_significant(round(Estimation))
        }
   end.
 
@@ -336,6 +336,9 @@ bounded_estimation(_Races, 0, Acc) ->
 bounded_estimation(Races, N , Acc) ->
   %% XXX: Think more about this...
   bounded_estimation(Races, N - 1, 1 + Races * Acc).
+
+two_significant(Number) when Number < 100 -> Number;
+two_significant(Number) -> 10 * two_significant(Number div 10).
 
 %%%=============================================================================
 %%% Other functions

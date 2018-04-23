@@ -650,14 +650,10 @@ progress_content(State) ->
     io_lib:format(
       " ~9w | ~9w |~s ~7w | ~s | ~9w | ~s",
       [Errors, TracesExplored, SSBStr, Planned,
-       RateStr, two_significant(Estimation), CompletionStr]
+       RateStr, Estimation, CompletionStr]
      ),
   NewState = State#logger_state{rate_info = NewRateInfo},
   {Str, NewState}.
-
-two_significant(Other) when not is_integer(Other) -> Other;
-two_significant(Number) when Number < 100 -> Number;
-two_significant(Number) -> 10 * two_significant(Number div 10 + 1).
 
 %%------------------------------------------------------------------------------
 
