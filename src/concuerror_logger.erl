@@ -417,6 +417,17 @@ loop(Message, State) ->
       {NewErrors, NewSSB, GraphFinal, GraphColor} =
         case Warn of
           sleep_set_block ->
+            %% Can only happen if --dpor is not optimal (scheduler
+            %% crashes otherwise).
+            case TracesSSB =:= 0 of
+              true ->
+                Msg =
+                  "Some interleavings were 'sleep-set blocked' (SSB). This"
+                  " is expected, since you are not using '--dpor"
+                  " optimal', but indicates wasted effort.~n",
+                ?log(self(), ?lwarning, Msg, []);
+              false -> ok
+            end,
             {Errors, TracesSSB + 1, "SSB", "yellow"};
           none ->
             {Errors, TracesSSB, "Ok", "limegreen"};

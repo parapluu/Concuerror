@@ -268,10 +268,8 @@ log_trace(#scheduler_state{logger = Logger} = State) ->
         case proplists:get_value(sleep_set_block, Errors) of
           {Origin, Sleep} ->
             case State#scheduler_state.dpor =:= optimal of
-              false ->
-                ?unique(Logger, ?lwarning, msg(sleep_set_block), []);
-              true ->
-                ?crash({optimal_sleep_set_block, Origin, Sleep})
+              true -> ?crash({optimal_sleep_set_block, Origin, Sleep});
+              false -> ok
             end,
             sleep_set_block;
           undefined ->
@@ -1908,9 +1906,6 @@ msg(shutdown) ->
   "A process exited with reason 'shutdown'. This may happen when a"
     " supervisor is terminating its children. You can use '--treat_as_normal"
     " shutdown' if this is expected behaviour.~n";
-msg(sleep_set_block) ->
-  "Some interleavings were 'sleep-set blocked'. This is expected, since you are"
-    " not using '--dpor optimal', but indicates wasted effort.~n";
 msg(stop_first_error) ->
   "Stop testing on first error. (Check '-h keep_going').~n";
 msg(timeout) ->
