@@ -122,12 +122,12 @@ initialize(Options) ->
             Msg = "No output report will be generated~n",
             ?log(self(), ?lwarning, Msg, []);
            true ->
-            to_stderr("~nWriting results in ~s~n", [OutputName])
+            to_stderr("~nWriting results in ~s", [OutputName])
         end,
         if GraphData =:= disable -> ok;
            true ->
             {_, GraphName} = Graph,
-            to_stderr("Writing graph in ~s~n", [GraphName])
+            to_stderr("~nWriting graph in ~s", [GraphName])
         end,
         progress_initial_padding(),
         Self = self(),
