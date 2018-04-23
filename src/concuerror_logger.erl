@@ -117,22 +117,22 @@ initialize(Options) ->
     case showing_progress(Verbosity) of
       false -> none;
       true ->
-        to_stderr("~s", [Header]),
-        if Output =:= disable ->
-            Msg = "No output report will be generated~n",
-            ?log(self(), ?lwarning, Msg, []);
-           true ->
-            to_stderr("~nWriting results in ~s", [OutputName])
-        end,
-        if GraphData =:= disable -> ok;
-           true ->
-            {_, GraphName} = Graph,
-            to_stderr("~nWriting graph in ~s", [GraphName])
-        end,
-        progress_initial_padding(),
+        to_stderr("~s~n", [Header]),
+        initialize_ticker(),
         Self = self(),
         spawn_link(fun() -> ticker(Self) end)
     end,
+  if Output =:= disable ->
+      Msg = "No output report will be generated~n",
+      ?log(self(), ?lwarning, Msg, []);
+     true ->
+      ?log(self(), ?linfo, "Writing results in ~s~n", [OutputName])
+  end,
+  if GraphData =:= disable -> ok;
+     true ->
+      {_, GraphName} = Graph,
+      ?log(self(), ?linfo, "Writing graph in ~s~n", [GraphName])
+  end,
   PrintableOptions =
     delete_props(
       [estimator, graph, output, processes, timers, verbosity],
@@ -535,6 +535,10 @@ level_to_string(Level) ->
 
 %%------------------------------------------------------------------------------
 
+initialize_ticker() ->
+  self() ! tick,
+  progress_initial_padding().
+
 ticker(Logger) ->
   Logger ! tick,
   receive
@@ -594,7 +598,11 @@ stream_tag_to_string(race) -> "New races found:". % ~n is added by buffer
 %%------------------------------------------------------------------------------
 
 progress_initial_padding() ->
-  to_stderr("~n~n~n~n~n~n",[]).
+  Line = progress_line(0),
+  to_stderr("~s~n", [Line]),
+  to_stderr("~s~n", [progress_header(0)]),
+  to_stderr("~s~n", [Line]),
+  to_stderr("~n",[]).
 
 progress_clear() ->
   delete_lines(4).
@@ -611,15 +619,15 @@ delete_lines(N) ->
   to_stderr("~c[1A~c[2K\r", [27, 27]),
   delete_lines(N - 1).
 
-progress_print(State) ->
-  Line = progress_line(State),
+progress_print(#logger_state{traces_ssb = SSB} = State) ->
+  Line = progress_line(SSB),
   to_stderr("~s~n", [Line]),
-  to_stderr("~s~n", [progress_header(State)]),
+  to_stderr("~s~n", [progress_header(SSB)]),
   to_stderr("~s~n", [Line]),
   {Str, _NewState} = progress_content(State),
   to_stderr("~s~n", [Str]).
 
-progress_header(#logger_state{traces_ssb = 0}) ->
+progress_header(0) ->
   progress_header_common("");
 progress_header(_State) ->
   progress_header_common("|     SSB ").
@@ -628,7 +636,7 @@ progress_header_common(SSB) ->
   "    Errors |  Explored " ++ SSB ++
     "| Planned |  ~ Rate |  Total(?) | Time(?) ".
 
-progress_line(#logger_state{traces_ssb = 0}) ->
+progress_line(0) ->
   progress_line_common("");
 progress_line(_State) ->
   progress_line_common("-----------").
