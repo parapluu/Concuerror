@@ -1616,9 +1616,14 @@ exiting(Reason, Stacktrace, InfoIn) ->
   %% XXX:  - send monitor messages
   #concuerror_info{
      exit_by_signal = ExitBySignal,
+     logger = Logger,
      status = Status
     } = InfoIn,
-  ?debug_flag(?loop, {going_to_exit, Reason}),
+  case ExitBySignal of
+    true ->
+      ?unique(Logger, ?ltip, msg(signal), []);
+    false -> ok
+  end,
   Info = process_loop(InfoIn),
   Self = self(),
   {MaybeName, Info} =
@@ -2061,7 +2066,12 @@ msg(register_eunit_server) ->
     " one after another; as a result, systematic testing will have to"
     " explore a number of schedulings that is the product of every"
     " individual test's schedulings! You should use Concuerror on single tests"
-    " instead.~n".
+    " instead.~n";
+msg(signal) ->
+  "An abnormal exit signal killed a process. This is probably the worst"
+    " thing that can happen race-wise, as any other side-effecting"
+    " operation races with the arrival of the signal. If the test produces"
+    " too many interleavings consider refactoring your code.~n".
 
 %%------------------------------------------------------------------------------
 

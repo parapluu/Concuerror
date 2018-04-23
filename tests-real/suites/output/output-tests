@@ -4,6 +4,16 @@
 
 print_blue "$0"
 
+testing "No tip for harmless exit signals"
+! concuerror_console -f src/harmless_exit.erl -k
+print_ok
+Target="An abnormal exit signal"
+testing "... and output does not have \"$Target\""
+if grep -q "$Target" $Out; then
+    exit 1
+fi
+good
+
 testing "Graph format"
 concuerror_console -f src/race_info.erl --show_races --graph graph.dot
 print_ok
