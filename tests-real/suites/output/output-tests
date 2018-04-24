@@ -13,7 +13,7 @@ if ! grep -q "$Target" $Out; then
     exit 1
 fi
 print_ok
-Target="         0 |         0 |       1 |   <1 /s |   unknown | unknown"
+Target="         0 |         0 |       0 |   <1 /s |   unknown | unknown"
 testing "... and output has \"$Target\""
 if ! grep -q "$Target" $Out; then
     exit 1
@@ -29,7 +29,7 @@ if ! grep -q "$Target" $Out; then
     exit 1
 fi
 print_ok
-Target="         0 |         0 |       1 |   <1 /s |   unknown | unknown"
+Target="         0 |         0 |       0 |   <1 /s |   unknown | unknown"
 testing "... and output has \"$Target\""
 if ! grep -q "$Target" $Out; then
     exit 1
@@ -45,7 +45,7 @@ if ! grep -q "$Target" $Out; then
     exit 1
 fi
 print_ok
-Target="         0 |         0 |       1 |   <1 /s |   unknown | unknown"
+Target="         0 |         0 |       0 |   <1 /s |   unknown | unknown"
 testing "... and output has \"$Target\""
 if ! grep -q "$Target" $Out; then
     exit 1
@@ -61,7 +61,7 @@ if ! grep -q "$Target" $Out; then
     exit 1
 fi
 print_ok
-Target="         0 |         0 |       1 |   <1 /s |   unknown | unknown"
+Target="         0 |         0 |       0 |   <1 /s |   unknown | unknown"
 testing "... and output has \"$Target\""
 if ! grep -q "$Target" $Out; then
     exit 1

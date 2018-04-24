@@ -20,6 +20,10 @@ make -sj -C $(dirname $CONCUERROR)/.. dev
 concuerror_console -f ../options/src/six.erl -v9
 outputhas "\-dev"
 
+> /dev/null make -sj -C $(dirname $CONCUERROR)/.. distclean
+testing "Can compile and run with pedantic"
+make -sj -C $(dirname $CONCUERROR)/.. pedantic
+
 testing "Restore normal Concuerror"
 > /dev/null make -sj -C $(dirname $CONCUERROR)/.. distclean
 > /dev/null make -sj -C $(dirname $CONCUERROR)/..
