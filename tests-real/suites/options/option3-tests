@@ -4,6 +4,10 @@
 
 print_blue "$0"
 
+testing "Help for progress"
+concuerror_console -h progress
+consolehas "Progress bar item explanations"
+
 testing "Only first process errors"
 concuerror_console -f src/other_deadlock.erl --first_process_errors_only
 good

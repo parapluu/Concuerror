@@ -4,6 +4,70 @@
 
 print_blue "$0"
 
+testing "Progress bar sample"
+$CONCUERROR -f src/many_scheds.erl -v1 2>&1 | tr '\033' '#' | cat > $Out
+print_ok
+Target="    Errors |  Explored | Planned |  ~ Rate |  Total(?) | Time(?)"
+testing "... and output has \"$Target\""
+if ! grep -q "$Target" $Out; then
+    exit 1
+fi
+print_ok
+Target="         0 |         0 |       1 |   <1 /s |   unknown | unknown"
+testing "... and output has \"$Target\""
+if ! grep -q "$Target" $Out; then
+    exit 1
+fi
+good
+
+testing "Progress bar sample for source"
+$CONCUERROR -f src/many_scheds.erl -v1 --dpor source 2>&1 | tr '\033' '#' | cat > $Out
+print_ok
+Target="    Errors |  Explored | Planned |  ~ Rate |  Total(?) | Time(?)"
+testing "... and output has \"$Target\""
+if ! grep -q "$Target" $Out; then
+    exit 1
+fi
+print_ok
+Target="         0 |         0 |       1 |   <1 /s |   unknown | unknown"
+testing "... and output has \"$Target\""
+if ! grep -q "$Target" $Out; then
+    exit 1
+fi
+good
+
+testing "Progress bar sample with hard bound"
+$CONCUERROR -f src/many_scheds.erl -v1 --dpor source -i 300 2>&1 | tr '\033' '#' | cat > $Out
+print_ok
+Target="    Errors |  Explored | Planned |  ~ Rate |  Total(?) | Time(?)"
+testing "... and output has \"$Target\""
+if ! grep -q "$Target" $Out; then
+    exit 1
+fi
+print_ok
+Target="         0 |         0 |       1 |   <1 /s |   unknown | unknown"
+testing "... and output has \"$Target\""
+if ! grep -q "$Target" $Out; then
+    exit 1
+fi
+good
+
+testing "Progress bar sample with delay bound"
+$CONCUERROR -f src/many_scheds.erl -v1 -b 7 2>&1 | tr '\033' '#' | cat > $Out
+print_ok
+Target="    Errors |  Explored | Planned |  ~ Rate |  Total(?) | Time(?)"
+testing "... and output has \"$Target\""
+if ! grep -q "$Target" $Out; then
+    exit 1
+fi
+print_ok
+Target="         0 |         0 |       1 |   <1 /s |   unknown | unknown"
+testing "... and output has \"$Target\""
+if ! grep -q "$Target" $Out; then
+    exit 1
+fi
+good
+
 testing "No tip for harmless exit signals"
 ! concuerror_console -f src/harmless_exit.erl -k
 print_ok

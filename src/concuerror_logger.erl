@@ -6,6 +6,7 @@
 -export([bound_reached/1, set_verbosity/2]).
 -export([graph_set_node/3, graph_new_node/4, graph_race/3]).
 -export([print_log_message/3]).
+-export([showing_progress/1, progress_help/0]).
 
 -include("concuerror.hrl").
 
@@ -53,11 +54,18 @@ timediff(After, Before) ->
 
 %%------------------------------------------------------------------------------
 
+-record(rate_info, {
+          average   :: concuerror_window_average:average(),
+          prev      :: non_neg_integer(),
+          timestamp :: timestamp()
+         }).
+
 -record(logger_state, {
           already_emitted = sets:new() :: unique_ids(),
           bound_reached = false        :: boolean(),
           emit_logger_tips = initial   :: 'initial' | 'false',
           errors = 0                   :: non_neg_integer(),
+          estimator                    :: concuerror_estimator:estimator(),
           graph_data                   :: graph_data() | 'disable',
           interleaving_bound           :: concuerror_options:bound(),
           last_had_errors = false      :: boolean(),
@@ -65,12 +73,10 @@ timediff(After, Before) ->
           output                       :: file:io_device() | 'disable',
           output_name                  :: string(),
           print_depth                  :: pos_integer(),
-          rate_timestamp = timestamp() :: timestamp(),
-          rate_prev = 0                :: non_neg_integer(),
-          rate_width = 3               :: non_neg_integer(),
+          rate_info = init_rate_info() :: #rate_info{},
           streams = []                 :: [{stream(), [string()]}],
           timestamp = timestamp()      :: timestamp(),
-          ticker = none                :: pid() | 'none' | 'show',
+          ticker = none                :: pid() | 'none' | 'force',
           traces_explored = 0          :: non_neg_integer(),
           traces_ssb = 0               :: non_neg_integer(),
           traces_total = 0             :: non_neg_integer(),
@@ -83,15 +89,16 @@ timediff(After, Before) ->
 
 start(Options) ->
   Parent = self(),
+  Ref = make_ref(),
   Fun =
     fun() ->
         State = initialize(Options),
-        Parent ! logger_ready,
+        Parent ! Ref,
         loop(State)
     end,
   P = spawn_link(Fun),
   receive
-    logger_ready -> P
+    Ref -> P
   end.
 
 initialize(Options) ->
@@ -106,28 +113,30 @@ initialize(Options) ->
       "~s started at ~s~n",
       [concuerror_options:version(), Timestamp]),
   Ticker =
-    case (Verbosity =:= ?lquiet) orelse (Verbosity >= ?ltiming) of
-      true -> none;
-      false ->
-        to_stderr("~s", [Header]),
-        if Output =:= disable ->
-            Msg = "No output report will be generated~n",
-            ?log(self(), ?lwarning, Msg, []);
-           true ->
-            to_stderr("~nWriting results in ~s~n", [OutputName])
-        end,
-        if GraphData =:= disable -> ok;
-           true ->
-            {_, GraphName} = Graph,
-            to_stderr("Writing graph in ~s~n", [GraphName])
-        end,
-        to_stderr("~n~n",[]),
+    case showing_progress(Verbosity) of
+      false -> none;
+      true ->
+        to_stderr("~s~n", [Header]),
+        initialize_ticker(),
+        ProgressHelpMsg = "Showing progress (-h progress, for details)~n",
+        ?log(self(), ?linfo, ProgressHelpMsg, []),
         Self = self(),
         spawn_link(fun() -> ticker(Self) end)
     end,
+  if Output =:= disable ->
+      Msg = "No output report will be generated~n",
+      ?log(self(), ?lwarning, Msg, []);
+     true ->
+      ?log(self(), ?linfo, "Writing results in ~s~n", [OutputName])
+  end,
+  if GraphData =:= disable -> ok;
+     true ->
+      {_, GraphName} = Graph,
+      ?log(self(), ?linfo, "Writing graph in ~s~n", [GraphName])
+  end,
   PrintableOptions =
     delete_props(
-      [graph, output, processes, timers, verbosity],
+      [estimator, graph, output, processes, timers, verbosity],
       Options),
   to_file(Output, "~s", [Header]),
   to_file(
@@ -138,6 +147,7 @@ initialize(Options) ->
   ?autoload_and_log(io_lib, self()),
   ok = setup_symbolic_names(SymbolicNames, Processes),
   #logger_state{
+     estimator = ?opt(estimator, Options),
      graph_data = GraphData,
      interleaving_bound = ?opt(interleaving_bound, Options),
      output = Output,
@@ -225,6 +235,11 @@ print_log_message(Level, Format, Args) ->
   LevelFormat = level_to_tag(Level),
   NewFormat = "* " ++ LevelFormat ++ Format,
   to_stderr(NewFormat, Args).
+
+-spec showing_progress(log_level()) -> boolean().
+
+showing_progress(Verbosity) ->
+  (Verbosity =/= ?lquiet) andalso (Verbosity < ?ltiming).
 
 %%------------------------------------------------------------------------------
 
@@ -332,10 +347,7 @@ loop(Message, State) ->
     {graph, Command} ->
       loop(graph_command(Command, State));
     {finish, SchedulerStatus, Scheduler} ->
-      case is_pid(Ticker) of
-        true -> Ticker ! stop;
-        false -> ok
-      end,
+      stop_ticker(Ticker),
       separator(Output, $#),
       to_file(Output, "Exploration completed!~n",[]),
       ExitStatus =
@@ -362,13 +374,14 @@ loop(Message, State) ->
       Format = "Done at ~s (Exit status: ~p)~n  Summary: ",
       Args = [FinishTimestamp, ExitStatus],
       to_file(Output, Format, Args),
-      IntMsg = interleavings_message(State),
+      IntMsg = final_interleavings_message(State),
       to_file(Output, "~s", [IntMsg]),
       ok = close_files(State),
       case Verbosity =:= ?lquiet of
         true -> ok;
         false ->
-          force_printout(State, Format, Args)
+          FinalFormat = Format ++ IntMsg,
+          printout(State#logger_state{ticker = none}, FinalFormat, Args)
       end,
       Scheduler ! {finished, ExitStatus},
       ok;
@@ -405,6 +418,17 @@ loop(Message, State) ->
       {NewErrors, NewSSB, GraphFinal, GraphColor} =
         case Warn of
           sleep_set_block ->
+            %% Can only happen if --dpor is not optimal (scheduler
+            %% crashes otherwise).
+            case TracesSSB =:= 0 of
+              true ->
+                Msg =
+                  "Some interleavings were 'sleep-set blocked' (SSB). This"
+                  " is expected, since you are not using '--dpor"
+                  " optimal', but indicates wasted effort.~n",
+                ?log(self(), ?lwarning, Msg, []);
+              false -> ok
+            end,
             {Errors, TracesSSB + 1, "SSB", "yellow"};
           none ->
             {Errors, TracesSSB, "Ok", "limegreen"};
@@ -448,8 +472,7 @@ loop(Message, State) ->
       loop(NewState);
     tick ->
       clear_ticks(),
-      NewState = update_on_ticker(State),
-      loop(NewState)
+      loop(progress_refresh(State))
   end.
 
 format_utc_timestamp() ->
@@ -463,14 +486,13 @@ format_utc_timestamp() ->
                 [Day, Mstr, Year, Hour, Minute, Second]).
 
 force_printout(State, Format, Data) ->
-  printout(State#logger_state{ticker = show}, Format, Data).
+  printout(State#logger_state{ticker = force}, Format, Data).
 
 printout(#logger_state{ticker = Ticker} = State, Format, Data)
   when Ticker =/= none ->
-  IntMsg = interleavings_message(State),
-  clear_progress(),
+  progress_clear(),
   to_stderr(Format, Data),
-  to_stderr("~s", [IntMsg]);
+  progress_print(State);
 printout(_, Format, Data) ->
   to_stderr(Format, Data).
 
@@ -512,22 +534,16 @@ level_to_string(Level) ->
     _ -> ""
   end.
 
-clear_progress() ->
-  to_stderr("~c[1A~c[2K\r", [27, 27]).
+%%------------------------------------------------------------------------------
 
-to_stderr(Format, Data) ->
-  to_file(standard_error, Format, Data).
-
-to_file(disable, _, _) ->
-  ok;
-to_file(Output, Format, Data) ->
-  Msg = io_lib:format(Format, Data),
-  io:format(Output, "~s", [Msg]).
+initialize_ticker() ->
+  self() ! tick,
+  progress_initial_padding().
 
 ticker(Logger) ->
   Logger ! tick,
   receive
-    stop -> ok
+    {stop, L} -> L ! stopped
   after
     ?TICKER_TIMEOUT -> ticker(Logger)
   end.
@@ -539,33 +555,18 @@ clear_ticks() ->
     0 -> ok
   end.
 
-update_on_ticker(State) ->
-  {Rate, NewState} = update_rate(State),
-  printout(State, "~s", [Rate]),
-  NewState.
+stop_ticker(Ticker) ->
+  case is_pid(Ticker) of
+    true ->
+      Ticker ! {stop, self()},
+      progress_clear(),
+      receive
+        stopped -> ok
+      end;
+    false -> ok
+  end.
 
-update_rate(State) ->
-  #logger_state{
-     rate_timestamp = Old,
-     rate_prev = Prev,
-     rate_width = OldWidth,
-     traces_explored = Current,
-     traces_ssb = TracesSSB
-    } = State,
-  New = timestamp(),
-  Time = timediff(New, Old),
-  Useful = Current - TracesSSB,
-  Diff = Useful - Prev,
-  Rate = (Diff / (Time + 0.0001)) + 0.01,
-  Width = max(OldWidth, trunc(math:log10(Rate)) + 3),
-  WidthStr = [$0 + Width],
-  RateStr = io_lib:format("(~"++WidthStr++".1f/s) ", [Rate]),
-  NewState =
-    State#logger_state{
-      rate_timestamp = New,
-      rate_prev = Useful,
-      rate_width = Width},
-  {RateStr, NewState}.
+%%------------------------------------------------------------------------------
 
 separator_string(Char) ->
   lists:duplicate(80, Char).
@@ -595,7 +596,152 @@ stream_tag_to_string(standard_io) -> "Standard Output:~n";
 stream_tag_to_string(standard_error) -> "Standard Error:~n";
 stream_tag_to_string(race) -> "New races found:". % ~n is added by buffer
 
-interleavings_message(State) ->
+%%------------------------------------------------------------------------------
+
+progress_initial_padding() ->
+  Line = progress_line(0),
+  to_stderr("~s~n", [Line]),
+  to_stderr("~s~n", [progress_header(0)]),
+  to_stderr("~s~n", [Line]),
+  to_stderr("~n",[]).
+
+progress_clear() ->
+  delete_lines(4).
+
+progress_refresh(State) ->
+  %% No extra line afterwards to ease printing of 'running logs'.
+  delete_lines(1),
+  {Str, NewState} = progress_content(State),
+  to_stderr("~s~n", [Str]),
+  NewState.
+
+delete_lines(0) -> ok;
+delete_lines(N) ->
+  to_stderr("~c[1A~c[2K\r", [27, 27]),
+  delete_lines(N - 1).
+
+progress_print(#logger_state{traces_ssb = SSB} = State) ->
+  Line = progress_line(SSB),
+  to_stderr("~s~n", [Line]),
+  to_stderr("~s~n", [progress_header(SSB)]),
+  to_stderr("~s~n", [Line]),
+  {Str, _NewState} = progress_content(State),
+  to_stderr("~s~n", [Str]).
+
+progress_header(0) ->
+  progress_header_common("");
+progress_header(_State) ->
+  progress_header_common("|     SSB ").
+
+-spec progress_help() -> string().
+
+progress_help() ->
+  io_lib:format(
+    "Errors    : Schedulings with errors~n"
+    "Explored  : Schedulings already explored~n"
+    "(SSB)     : Sleep set blocked schedulings (wasted effort)~n"
+    "Planned   : Schedulings that will certainly be explored~n"
+    "~~ Rate    : Average rate of exploration (in schedulings/s)~n"
+    "Total(?)  : Estimation of total number of schedulings (see below)~n"
+    "Time(?)   : Estimated time to completion (see below)~n"
+    "~n"
+    "Estimations:~n"
+    "The total number of schedulings is estimated from the shape of the"
+    " exploration tree. It has been observed to be WITHIN ONE ORDER OF"
+    " MAGNITUDE of the actual number, when using default options.~n"
+    "The time to completion is estimated using the estimated remaining"
+    " schedulings (Total - Explored) divided by the current Rate.~n"
+    , []).
+
+progress_header_common(SSB) ->
+  "    Errors |  Explored " ++ SSB ++
+    "| Planned |  ~ Rate |  Total(?) | Time(?) ".
+
+progress_line(0) ->
+  progress_line_common("");
+progress_line(_State) ->
+  progress_line_common("-----------").
+
+progress_line_common(SSB) ->
+  "-----------------------" ++ SSB ++
+    "------------------------------------------".
+
+progress_content(State) ->
+  #logger_state{
+     errors = Errors,
+     estimator = Estimator,
+     rate_info = RateInfo,
+     traces_explored = TracesExplored,
+     traces_ssb = TracesSSB,
+     traces_total = TracesTotal
+    } = State,
+  Estimation = max(concuerror_estimator:get_estimation(Estimator), TracesTotal),
+  Useful = TracesExplored - TracesSSB,
+  {Rate, NewRateInfo} = update_rate(RateInfo, Useful),
+  Planned = TracesTotal - TracesExplored,
+  SSBStr =
+    case TracesSSB =:= 0 of
+      true -> "";
+      false -> io_lib:format(" ~7w |", [TracesSSB])
+    end,
+  CompletionStr =
+    concuerror_estimator:estimate_completion(Estimation, TracesExplored, Rate),
+  RateStr =
+    case Rate of
+      0    -> "  <1 /s";
+      _    -> io_lib:format("~4w /s", [Rate])
+    end,
+  Str =
+    io_lib:format(
+      " ~9w | ~9w |~s ~7w | ~s | ~9w | ~s",
+      [Errors, TracesExplored, SSBStr, Planned,
+       RateStr, Estimation, CompletionStr]
+     ),
+  NewState = State#logger_state{rate_info = NewRateInfo},
+  {Str, NewState}.
+
+%%------------------------------------------------------------------------------
+
+init_rate_info() ->
+  #rate_info{
+     average   = concuerror_window_average:init(0, 10),
+     prev      = 0,
+     timestamp = timestamp()
+    }.
+
+update_rate(RateInfo, Useful) ->
+  #rate_info{
+     average   = Average,
+     prev      = Prev,
+     timestamp = Old
+    } = RateInfo,
+  New = timestamp(),
+  Time = timediff(New, Old),
+  Diff = Useful - Prev,
+  CurrentRate = Diff / (Time + 0.0001),
+  {Rate, NewAverage} = concuerror_window_average:update(CurrentRate, Average),
+  NewRateInfo =
+    RateInfo#rate_info{
+      average   = NewAverage,
+      prev      = Useful,
+      timestamp = New
+     },
+  {round(Rate), NewRateInfo}.
+
+%%------------------------------------------------------------------------------
+
+to_stderr(Format, Data) ->
+  to_file(standard_error, Format, Data).
+
+to_file(disable, _, _) ->
+  ok;
+to_file(Output, Format, Data) ->
+  Msg = io_lib:format(Format, Data),
+  io:format(Output, "~s", [Msg]).
+
+%%------------------------------------------------------------------------------
+
+final_interleavings_message(State) ->
   #logger_state{
      bound_reached = BoundReached,
      errors = Errors,

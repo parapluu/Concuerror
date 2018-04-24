@@ -122,6 +122,7 @@
           depth_bound                  :: pos_integer(),
           dpor                         :: concuerror_options:dpor(),
           entry_point                  :: mfargs(),
+          estimator                    :: concuerror_estimator:estimator(),
           first_process                :: pid(),
           ignore_error                 :: [{interleaving_error_tag(), scope()}],
           interleaving_bound           :: concuerror_options:bound(),
@@ -187,6 +188,7 @@ run(Options) ->
        depth_bound = ?opt(depth_bound, Options) + 1,
        dpor = ?opt(dpor, Options),
        entry_point = EntryPoint,
+       estimator = ?opt(estimator, Options),
        first_process = FirstProcess,
        ignore_error = IgnoreError,
        interleaving_bound = ?opt(interleaving_bound, Options),
@@ -266,10 +268,8 @@ log_trace(#scheduler_state{logger = Logger} = State) ->
         case proplists:get_value(sleep_set_block, Errors) of
           {Origin, Sleep} ->
             case State#scheduler_state.dpor =:= optimal of
-              false ->
-                ?unique(Logger, ?lwarning, msg(sleep_set_block), []);
-              true ->
-                ?crash({optimal_sleep_set_block, Origin, Sleep})
+              true -> ?crash({optimal_sleep_set_block, Origin, Sleep});
+              false -> ok
             end,
             sleep_set_block;
           undefined ->
@@ -487,6 +487,7 @@ schedule_sort(Actors, State) ->
 free_schedule(Event, Actors, State) ->
   #scheduler_state{
      dpor = DPOR,
+     estimator = Estimator,
      logger = Logger,
      scheduling_bound_type = SchedulingBoundType,
      trace = [Last|Prev]
@@ -513,6 +514,8 @@ free_schedule(Event, Actors, State) ->
         [] -> ok;
         [_|L] ->
           _ = [concuerror_logger:plan(Logger) || _ <- L],
+          Index = Last#trace_state.index,
+          _ = [concuerror_estimator:plan(Estimator, Index) || _ <- L],
           ok
       end,
       NewLast = Last#trace_state{wakeup_tree = FullBacktrack},
@@ -578,6 +581,7 @@ reset_event(#event{actor = Actor, event_info = EventInfo}) ->
 
 update_state(#event{actor = Actor} = Event, State) ->
   #scheduler_state{
+     estimator = Estimator,
      logger = Logger,
      scheduling_bound_type = SchedulingBoundType,
      trace = [Last|Prev],
@@ -603,6 +607,7 @@ update_state(#event{actor = Actor} = Event, State) ->
           case WakeupTree of
             [#backtrack_entry{conservative = true}|_] ->
               concuerror_logger:plan(Logger),
+              concuerror_estimator:plan(Estimator, Index),
               SleepSet;
             _ -> ordsets:union(ordsets:from_list(Done), SleepSet)
           end,
@@ -1084,6 +1089,7 @@ update_trace(
  ) ->
   #scheduler_state{
      dpor = DPOR,
+     estimator = Estimator,
      interleaving_id = Origin,
      logger = Logger,
      scheduling_bound_type = SchedulingBoundType,
@@ -1176,6 +1182,7 @@ update_trace(
     NewWakeup ->
       NS = TraceState#trace_state{wakeup_tree = NewWakeup},
       concuerror_logger:plan(Logger),
+      concuerror_estimator:plan(Estimator, EarlyIndex),
       {[NS|NewOldTrace], ConservativeInfo}
   end.
 
@@ -1512,6 +1519,7 @@ add_conservative([TraceState|Rest], Actor, Clock, Candidates, State, Acc) ->
 
 has_more_to_explore(State) ->
   #scheduler_state{
+     estimator = Estimator,
      scheduling_bound_type = SchedulingBoundType,
      trace = Trace
     } = State,
@@ -1521,6 +1529,9 @@ has_more_to_explore(State) ->
     false ->
       NewState =
         State#scheduler_state{need_to_replay = true, trace = TracePrefix},
+      [Last|_] = TracePrefix,
+      TopIndex = Last#trace_state.index,
+      concuerror_estimator:restart(Estimator, TopIndex),
       {true, NewState}
   end.
 
@@ -1895,9 +1906,6 @@ msg(shutdown) ->
   "A process exited with reason 'shutdown'. This may happen when a"
     " supervisor is terminating its children. You can use '--treat_as_normal"
     " shutdown' if this is expected behaviour.~n";
-msg(sleep_set_block) ->
-  "Some interleavings were 'sleep-set blocked'. This is expected, since you are"
-    " not using '--dpor optimal', but indicates wasted effort.~n";
 msg(stop_first_error) ->
   "Stop testing on first error. (Check '-h keep_going').~n";
 msg(timeout) ->
