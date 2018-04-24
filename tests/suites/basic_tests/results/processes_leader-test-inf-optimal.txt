@@ -1,0 +1,789 @@
+Concuerror v0.18-255-g0959df started at 24 Apr 2018 15:07:53
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{processes_leader,test,[]}},
+   {exclude_module,[]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/processes_leader.erl"]},
+   {first_process_errors_only,false},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,5000},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
+################################################################################
+Interleaving #1
+--------------------------------------------------------------------------------
+Errors found:
+* At step 22 process <P.1> exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: true = erlang:group_leader(<P>, <P>)
+    in processes_leader.erl line 13
+   2: <P>: {<P.1>,#Ref<0.0.1.124>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+   3: <P>: [<P.erl_prim_loader/erl_prim_loader>,<P.code_server/code_server>,<P.application_controller/application_controller>,<P.error_logger/error_logger>,<P.rex/rex>,<P.standard_error/standard_error>,<P.kernel_sup/kernel_sup>,<P.global_group/global_group>,<P.user/user>,<P.init/init>,<P.global_name_server/global_name_server>,<P.standard_error_sup/standard_error_sup>,<P.kernel_safe_sup/kernel_safe_sup>,<P.inet_db/inet_db>,<P.file_server_2/file_server_2>,<P>,<P.1>] = erlang:processes()
+    in processes_leader.erl line 19
+   4: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.erl_prim_loader/erl_prim_loader>, group_leader)
+    in processes_leader.erl line 21
+   5: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.code_server/code_server>, group_leader)
+    in processes_leader.erl line 21
+   6: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.application_controller/application_controller>, group_leader)
+    in processes_leader.erl line 21
+   7: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.error_logger/error_logger>, group_leader)
+    in processes_leader.erl line 21
+   8: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.rex/rex>, group_leader)
+    in processes_leader.erl line 21
+   9: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error/standard_error>, group_leader)
+    in processes_leader.erl line 21
+  10: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_sup/kernel_sup>, group_leader)
+    in processes_leader.erl line 21
+  11: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_group/global_group>, group_leader)
+    in processes_leader.erl line 21
+  12: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.user/user>, group_leader)
+    in processes_leader.erl line 21
+  13: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.init/init>, group_leader)
+    in processes_leader.erl line 21
+  14: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_name_server/global_name_server>, group_leader)
+    in processes_leader.erl line 21
+  15: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error_sup/standard_error_sup>, group_leader)
+    in processes_leader.erl line 21
+  16: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_safe_sup/kernel_safe_sup>, group_leader)
+    in processes_leader.erl line 21
+  17: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.inet_db/inet_db>, group_leader)
+    in processes_leader.erl line 21
+  18: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.file_server_2/file_server_2>, group_leader)
+    in processes_leader.erl line 21
+  19: <P>: {group_leader,<P>} = erlang:process_info(<P.1>, group_leader)
+    in processes_leader.erl line 21
+  20: <P>: true = erlang:exit(<P.1>, kill)
+    in processes_leader.erl line 18
+  21: <P>: exits normally
+  22: <P.1>: exits abnormally (killed)
+  23: <P.1>: {'DOWN',#Ref<0.0.1.124>,process,<P.1>,killed} = erlang:send(<P>, {'DOWN',#Ref<0.0.1.124>,process,<P.1>,killed})
+    (while exiting)
+################################################################################
+Interleaving #3
+--------------------------------------------------------------------------------
+Errors found:
+* At step 25 process <P.1> exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: true = erlang:group_leader(<P>, <P>)
+    in processes_leader.erl line 13
+   2: <P>: {<P.1>,#Ref<0.0.1.124>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+   3: <P>: [<P.erl_prim_loader/erl_prim_loader>,<P.code_server/code_server>,<P.application_controller/application_controller>,<P.error_logger/error_logger>,<P.rex/rex>,<P.standard_error/standard_error>,<P.kernel_sup/kernel_sup>,<P.global_group/global_group>,<P.user/user>,<P.init/init>,<P.global_name_server/global_name_server>,<P.standard_error_sup/standard_error_sup>,<P.kernel_safe_sup/kernel_safe_sup>,<P.inet_db/inet_db>,<P.file_server_2/file_server_2>,<P>,<P.1>] = erlang:processes()
+    in processes_leader.erl line 19
+   4: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.erl_prim_loader/erl_prim_loader>, group_leader)
+    in processes_leader.erl line 21
+   5: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.code_server/code_server>, group_leader)
+    in processes_leader.erl line 21
+   6: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.application_controller/application_controller>, group_leader)
+    in processes_leader.erl line 21
+   7: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.error_logger/error_logger>, group_leader)
+    in processes_leader.erl line 21
+   8: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.rex/rex>, group_leader)
+    in processes_leader.erl line 21
+   9: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error/standard_error>, group_leader)
+    in processes_leader.erl line 21
+  10: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_sup/kernel_sup>, group_leader)
+    in processes_leader.erl line 21
+  11: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_group/global_group>, group_leader)
+    in processes_leader.erl line 21
+  12: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.user/user>, group_leader)
+    in processes_leader.erl line 21
+  13: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.init/init>, group_leader)
+    in processes_leader.erl line 21
+  14: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_name_server/global_name_server>, group_leader)
+    in processes_leader.erl line 21
+  15: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error_sup/standard_error_sup>, group_leader)
+    in processes_leader.erl line 21
+  16: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_safe_sup/kernel_safe_sup>, group_leader)
+    in processes_leader.erl line 21
+  17: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.inet_db/inet_db>, group_leader)
+    in processes_leader.erl line 21
+  18: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.file_server_2/file_server_2>, group_leader)
+    in processes_leader.erl line 21
+  19: <P>: {group_leader,<P>} = erlang:process_info(<P.1>, group_leader)
+    in processes_leader.erl line 21
+  20: <P.1>: {<P.1.1>,#Ref<0.0.1.179>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+  21: <P.1.1>: exits normally
+  22: <P.1.1>: {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,normal} = erlang:send(<P.1>, {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,normal})
+    (while exiting)
+  23: <P>: true = erlang:exit(<P.1>, kill)
+    in processes_leader.erl line 18
+  24: <P>: exits normally
+  25: <P.1>: exits abnormally (killed)
+  26: <P.1>: {'DOWN',#Ref<0.0.1.124>,process,<P.1>,killed} = erlang:send(<P>, {'DOWN',#Ref<0.0.1.124>,process,<P.1>,killed})
+    (while exiting)
+################################################################################
+Interleaving #4
+--------------------------------------------------------------------------------
+Errors found:
+* At step 24 process <P.1> exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: true = erlang:group_leader(<P>, <P>)
+    in processes_leader.erl line 13
+   2: <P>: {<P.1>,#Ref<0.0.1.124>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+   3: <P>: [<P.erl_prim_loader/erl_prim_loader>,<P.code_server/code_server>,<P.application_controller/application_controller>,<P.error_logger/error_logger>,<P.rex/rex>,<P.standard_error/standard_error>,<P.kernel_sup/kernel_sup>,<P.global_group/global_group>,<P.user/user>,<P.init/init>,<P.global_name_server/global_name_server>,<P.standard_error_sup/standard_error_sup>,<P.kernel_safe_sup/kernel_safe_sup>,<P.inet_db/inet_db>,<P.file_server_2/file_server_2>,<P>,<P.1>] = erlang:processes()
+    in processes_leader.erl line 19
+   4: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.erl_prim_loader/erl_prim_loader>, group_leader)
+    in processes_leader.erl line 21
+   5: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.code_server/code_server>, group_leader)
+    in processes_leader.erl line 21
+   6: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.application_controller/application_controller>, group_leader)
+    in processes_leader.erl line 21
+   7: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.error_logger/error_logger>, group_leader)
+    in processes_leader.erl line 21
+   8: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.rex/rex>, group_leader)
+    in processes_leader.erl line 21
+   9: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error/standard_error>, group_leader)
+    in processes_leader.erl line 21
+  10: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_sup/kernel_sup>, group_leader)
+    in processes_leader.erl line 21
+  11: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_group/global_group>, group_leader)
+    in processes_leader.erl line 21
+  12: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.user/user>, group_leader)
+    in processes_leader.erl line 21
+  13: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.init/init>, group_leader)
+    in processes_leader.erl line 21
+  14: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_name_server/global_name_server>, group_leader)
+    in processes_leader.erl line 21
+  15: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error_sup/standard_error_sup>, group_leader)
+    in processes_leader.erl line 21
+  16: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_safe_sup/kernel_safe_sup>, group_leader)
+    in processes_leader.erl line 21
+  17: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.inet_db/inet_db>, group_leader)
+    in processes_leader.erl line 21
+  18: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.file_server_2/file_server_2>, group_leader)
+    in processes_leader.erl line 21
+  19: <P>: {group_leader,<P>} = erlang:process_info(<P.1>, group_leader)
+    in processes_leader.erl line 21
+  20: <P.1>: {<P.1.1>,#Ref<0.0.1.179>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+  21: <P.1.1>: exits normally
+  22: <P>: true = erlang:exit(<P.1>, kill)
+    in processes_leader.erl line 18
+  23: <P>: exits normally
+  24: <P.1>: exits abnormally (killed)
+  25: <P.1>: {'DOWN',#Ref<0.0.1.124>,process,<P.1>,killed} = erlang:send(<P>, {'DOWN',#Ref<0.0.1.124>,process,<P.1>,killed})
+    (while exiting)
+  26: <P.1.1>: {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,normal} = erlang:send(<P.1>, {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,normal})
+    (while exiting)
+################################################################################
+Interleaving #7
+--------------------------------------------------------------------------------
+Errors found:
+* At step 25 process <P.1.1> exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: true = erlang:group_leader(<P>, <P>)
+    in processes_leader.erl line 13
+   2: <P>: {<P.1>,#Ref<0.0.1.124>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+   3: <P.1>: {<P.1.1>,#Ref<0.0.1.179>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+   4: <P.1>: exits normally
+   5: <P.1>: {'DOWN',#Ref<0.0.1.124>,process,<P.1>,normal} = erlang:send(<P>, {'DOWN',#Ref<0.0.1.124>,process,<P.1>,normal})
+    (while exiting)
+   6: <P>: [<P.erl_prim_loader/erl_prim_loader>,<P.code_server/code_server>,<P.application_controller/application_controller>,<P.error_logger/error_logger>,<P.rex/rex>,<P.standard_error/standard_error>,<P.kernel_sup/kernel_sup>,<P.global_group/global_group>,<P.user/user>,<P.init/init>,<P.global_name_server/global_name_server>,<P.standard_error_sup/standard_error_sup>,<P.kernel_safe_sup/kernel_safe_sup>,<P.inet_db/inet_db>,<P.file_server_2/file_server_2>,<P>,<P.1.1>] = erlang:processes()
+    in processes_leader.erl line 19
+   7: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.erl_prim_loader/erl_prim_loader>, group_leader)
+    in processes_leader.erl line 21
+   8: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.code_server/code_server>, group_leader)
+    in processes_leader.erl line 21
+   9: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.application_controller/application_controller>, group_leader)
+    in processes_leader.erl line 21
+  10: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.error_logger/error_logger>, group_leader)
+    in processes_leader.erl line 21
+  11: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.rex/rex>, group_leader)
+    in processes_leader.erl line 21
+  12: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error/standard_error>, group_leader)
+    in processes_leader.erl line 21
+  13: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_sup/kernel_sup>, group_leader)
+    in processes_leader.erl line 21
+  14: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_group/global_group>, group_leader)
+    in processes_leader.erl line 21
+  15: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.user/user>, group_leader)
+    in processes_leader.erl line 21
+  16: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.init/init>, group_leader)
+    in processes_leader.erl line 21
+  17: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_name_server/global_name_server>, group_leader)
+    in processes_leader.erl line 21
+  18: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error_sup/standard_error_sup>, group_leader)
+    in processes_leader.erl line 21
+  19: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_safe_sup/kernel_safe_sup>, group_leader)
+    in processes_leader.erl line 21
+  20: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.inet_db/inet_db>, group_leader)
+    in processes_leader.erl line 21
+  21: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.file_server_2/file_server_2>, group_leader)
+    in processes_leader.erl line 21
+  22: <P>: {group_leader,<P>} = erlang:process_info(<P.1.1>, group_leader)
+    in processes_leader.erl line 21
+  23: <P>: true = erlang:exit(<P.1.1>, kill)
+    in processes_leader.erl line 18
+  24: <P>: exits normally
+  25: <P.1.1>: exits abnormally (killed)
+  26: <P.1.1>: {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,killed} = erlang:send(<P.1>, {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,killed})
+    (while exiting)
+################################################################################
+Interleaving #10
+--------------------------------------------------------------------------------
+Errors found:
+* At step 25 process <P.1> exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: true = erlang:group_leader(<P>, <P>)
+    in processes_leader.erl line 13
+   2: <P>: {<P.1>,#Ref<0.0.1.124>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+   3: <P.1>: {<P.1.1>,#Ref<0.0.1.179>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+   4: <P.1.1>: exits normally
+   5: <P.1.1>: {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,normal} = erlang:send(<P.1>, {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,normal})
+    (while exiting)
+   6: <P>: [<P.erl_prim_loader/erl_prim_loader>,<P.code_server/code_server>,<P.application_controller/application_controller>,<P.error_logger/error_logger>,<P.rex/rex>,<P.standard_error/standard_error>,<P.kernel_sup/kernel_sup>,<P.global_group/global_group>,<P.user/user>,<P.init/init>,<P.global_name_server/global_name_server>,<P.standard_error_sup/standard_error_sup>,<P.kernel_safe_sup/kernel_safe_sup>,<P.inet_db/inet_db>,<P.file_server_2/file_server_2>,<P>,<P.1>] = erlang:processes()
+    in processes_leader.erl line 19
+   7: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.erl_prim_loader/erl_prim_loader>, group_leader)
+    in processes_leader.erl line 21
+   8: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.code_server/code_server>, group_leader)
+    in processes_leader.erl line 21
+   9: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.application_controller/application_controller>, group_leader)
+    in processes_leader.erl line 21
+  10: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.error_logger/error_logger>, group_leader)
+    in processes_leader.erl line 21
+  11: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.rex/rex>, group_leader)
+    in processes_leader.erl line 21
+  12: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error/standard_error>, group_leader)
+    in processes_leader.erl line 21
+  13: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_sup/kernel_sup>, group_leader)
+    in processes_leader.erl line 21
+  14: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_group/global_group>, group_leader)
+    in processes_leader.erl line 21
+  15: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.user/user>, group_leader)
+    in processes_leader.erl line 21
+  16: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.init/init>, group_leader)
+    in processes_leader.erl line 21
+  17: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_name_server/global_name_server>, group_leader)
+    in processes_leader.erl line 21
+  18: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error_sup/standard_error_sup>, group_leader)
+    in processes_leader.erl line 21
+  19: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_safe_sup/kernel_safe_sup>, group_leader)
+    in processes_leader.erl line 21
+  20: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.inet_db/inet_db>, group_leader)
+    in processes_leader.erl line 21
+  21: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.file_server_2/file_server_2>, group_leader)
+    in processes_leader.erl line 21
+  22: <P>: {group_leader,<P>} = erlang:process_info(<P.1>, group_leader)
+    in processes_leader.erl line 21
+  23: <P>: true = erlang:exit(<P.1>, kill)
+    in processes_leader.erl line 18
+  24: <P>: exits normally
+  25: <P.1>: exits abnormally (killed)
+  26: <P.1>: {'DOWN',#Ref<0.0.1.124>,process,<P.1>,killed} = erlang:send(<P>, {'DOWN',#Ref<0.0.1.124>,process,<P.1>,killed})
+    (while exiting)
+################################################################################
+Interleaving #13
+--------------------------------------------------------------------------------
+Errors found:
+* At step 24 process <P.1> exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: true = erlang:group_leader(<P>, <P>)
+    in processes_leader.erl line 13
+   2: <P>: {<P.1>,#Ref<0.0.1.124>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+   3: <P.1>: {<P.1.1>,#Ref<0.0.1.179>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+   4: <P.1.1>: exits normally
+   5: <P>: [<P.erl_prim_loader/erl_prim_loader>,<P.code_server/code_server>,<P.application_controller/application_controller>,<P.error_logger/error_logger>,<P.rex/rex>,<P.standard_error/standard_error>,<P.kernel_sup/kernel_sup>,<P.global_group/global_group>,<P.user/user>,<P.init/init>,<P.global_name_server/global_name_server>,<P.standard_error_sup/standard_error_sup>,<P.kernel_safe_sup/kernel_safe_sup>,<P.inet_db/inet_db>,<P.file_server_2/file_server_2>,<P>,<P.1>] = erlang:processes()
+    in processes_leader.erl line 19
+   6: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.erl_prim_loader/erl_prim_loader>, group_leader)
+    in processes_leader.erl line 21
+   7: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.code_server/code_server>, group_leader)
+    in processes_leader.erl line 21
+   8: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.application_controller/application_controller>, group_leader)
+    in processes_leader.erl line 21
+   9: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.error_logger/error_logger>, group_leader)
+    in processes_leader.erl line 21
+  10: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.rex/rex>, group_leader)
+    in processes_leader.erl line 21
+  11: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error/standard_error>, group_leader)
+    in processes_leader.erl line 21
+  12: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_sup/kernel_sup>, group_leader)
+    in processes_leader.erl line 21
+  13: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_group/global_group>, group_leader)
+    in processes_leader.erl line 21
+  14: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.user/user>, group_leader)
+    in processes_leader.erl line 21
+  15: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.init/init>, group_leader)
+    in processes_leader.erl line 21
+  16: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_name_server/global_name_server>, group_leader)
+    in processes_leader.erl line 21
+  17: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error_sup/standard_error_sup>, group_leader)
+    in processes_leader.erl line 21
+  18: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_safe_sup/kernel_safe_sup>, group_leader)
+    in processes_leader.erl line 21
+  19: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.inet_db/inet_db>, group_leader)
+    in processes_leader.erl line 21
+  20: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.file_server_2/file_server_2>, group_leader)
+    in processes_leader.erl line 21
+  21: <P>: {group_leader,<P>} = erlang:process_info(<P.1>, group_leader)
+    in processes_leader.erl line 21
+  22: <P>: true = erlang:exit(<P.1>, kill)
+    in processes_leader.erl line 18
+  23: <P>: exits normally
+  24: <P.1>: exits abnormally (killed)
+  25: <P.1>: {'DOWN',#Ref<0.0.1.124>,process,<P.1>,killed} = erlang:send(<P>, {'DOWN',#Ref<0.0.1.124>,process,<P.1>,killed})
+    (while exiting)
+  26: <P.1.1>: {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,normal} = erlang:send(<P.1>, {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,normal})
+    (while exiting)
+################################################################################
+Interleaving #14
+--------------------------------------------------------------------------------
+Errors found:
+* At step 25 process <P.1> exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+* At step 27 process <P.1.1> exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: true = erlang:group_leader(<P>, <P>)
+    in processes_leader.erl line 13
+   2: <P>: {<P.1>,#Ref<0.0.1.124>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+   3: <P.1>: {<P.1.1>,#Ref<0.0.1.179>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+   4: <P>: [<P.erl_prim_loader/erl_prim_loader>,<P.code_server/code_server>,<P.application_controller/application_controller>,<P.error_logger/error_logger>,<P.rex/rex>,<P.standard_error/standard_error>,<P.kernel_sup/kernel_sup>,<P.global_group/global_group>,<P.user/user>,<P.init/init>,<P.global_name_server/global_name_server>,<P.standard_error_sup/standard_error_sup>,<P.kernel_safe_sup/kernel_safe_sup>,<P.inet_db/inet_db>,<P.file_server_2/file_server_2>,<P>,<P.1>,<P.1.1>] = erlang:processes()
+    in processes_leader.erl line 19
+   5: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.erl_prim_loader/erl_prim_loader>, group_leader)
+    in processes_leader.erl line 21
+   6: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.code_server/code_server>, group_leader)
+    in processes_leader.erl line 21
+   7: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.application_controller/application_controller>, group_leader)
+    in processes_leader.erl line 21
+   8: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.error_logger/error_logger>, group_leader)
+    in processes_leader.erl line 21
+   9: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.rex/rex>, group_leader)
+    in processes_leader.erl line 21
+  10: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error/standard_error>, group_leader)
+    in processes_leader.erl line 21
+  11: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_sup/kernel_sup>, group_leader)
+    in processes_leader.erl line 21
+  12: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_group/global_group>, group_leader)
+    in processes_leader.erl line 21
+  13: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.user/user>, group_leader)
+    in processes_leader.erl line 21
+  14: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.init/init>, group_leader)
+    in processes_leader.erl line 21
+  15: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_name_server/global_name_server>, group_leader)
+    in processes_leader.erl line 21
+  16: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error_sup/standard_error_sup>, group_leader)
+    in processes_leader.erl line 21
+  17: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_safe_sup/kernel_safe_sup>, group_leader)
+    in processes_leader.erl line 21
+  18: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.inet_db/inet_db>, group_leader)
+    in processes_leader.erl line 21
+  19: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.file_server_2/file_server_2>, group_leader)
+    in processes_leader.erl line 21
+  20: <P>: {group_leader,<P>} = erlang:process_info(<P.1>, group_leader)
+    in processes_leader.erl line 21
+  21: <P>: true = erlang:exit(<P.1>, kill)
+    in processes_leader.erl line 18
+  22: <P>: {group_leader,<P>} = erlang:process_info(<P.1.1>, group_leader)
+    in processes_leader.erl line 21
+  23: <P>: true = erlang:exit(<P.1.1>, kill)
+    in processes_leader.erl line 18
+  24: <P>: exits normally
+  25: <P.1>: exits abnormally (killed)
+  26: <P.1>: {'DOWN',#Ref<0.0.1.124>,process,<P.1>,killed} = erlang:send(<P>, {'DOWN',#Ref<0.0.1.124>,process,<P.1>,killed})
+    (while exiting)
+  27: <P.1.1>: exits abnormally (killed)
+  28: <P.1.1>: {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,killed} = erlang:send(<P.1>, {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,killed})
+    (while exiting)
+################################################################################
+Interleaving #15
+--------------------------------------------------------------------------------
+Errors found:
+* At step 23 process <P.1> exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: true = erlang:group_leader(<P>, <P>)
+    in processes_leader.erl line 13
+   2: <P>: {<P.1>,#Ref<0.0.1.124>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+   3: <P.1>: {<P.1.1>,#Ref<0.0.1.179>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+   4: <P>: [<P.erl_prim_loader/erl_prim_loader>,<P.code_server/code_server>,<P.application_controller/application_controller>,<P.error_logger/error_logger>,<P.rex/rex>,<P.standard_error/standard_error>,<P.kernel_sup/kernel_sup>,<P.global_group/global_group>,<P.user/user>,<P.init/init>,<P.global_name_server/global_name_server>,<P.standard_error_sup/standard_error_sup>,<P.kernel_safe_sup/kernel_safe_sup>,<P.inet_db/inet_db>,<P.file_server_2/file_server_2>,<P>,<P.1>,<P.1.1>] = erlang:processes()
+    in processes_leader.erl line 19
+   5: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.erl_prim_loader/erl_prim_loader>, group_leader)
+    in processes_leader.erl line 21
+   6: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.code_server/code_server>, group_leader)
+    in processes_leader.erl line 21
+   7: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.application_controller/application_controller>, group_leader)
+    in processes_leader.erl line 21
+   8: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.error_logger/error_logger>, group_leader)
+    in processes_leader.erl line 21
+   9: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.rex/rex>, group_leader)
+    in processes_leader.erl line 21
+  10: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error/standard_error>, group_leader)
+    in processes_leader.erl line 21
+  11: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_sup/kernel_sup>, group_leader)
+    in processes_leader.erl line 21
+  12: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_group/global_group>, group_leader)
+    in processes_leader.erl line 21
+  13: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.user/user>, group_leader)
+    in processes_leader.erl line 21
+  14: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.init/init>, group_leader)
+    in processes_leader.erl line 21
+  15: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_name_server/global_name_server>, group_leader)
+    in processes_leader.erl line 21
+  16: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error_sup/standard_error_sup>, group_leader)
+    in processes_leader.erl line 21
+  17: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_safe_sup/kernel_safe_sup>, group_leader)
+    in processes_leader.erl line 21
+  18: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.inet_db/inet_db>, group_leader)
+    in processes_leader.erl line 21
+  19: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.file_server_2/file_server_2>, group_leader)
+    in processes_leader.erl line 21
+  20: <P>: {group_leader,<P>} = erlang:process_info(<P.1>, group_leader)
+    in processes_leader.erl line 21
+  21: <P>: true = erlang:exit(<P.1>, kill)
+    in processes_leader.erl line 18
+  22: <P>: {group_leader,<P>} = erlang:process_info(<P.1.1>, group_leader)
+    in processes_leader.erl line 21
+  23: <P.1>: exits abnormally (killed)
+  24: <P.1>: {'DOWN',#Ref<0.0.1.124>,process,<P.1>,killed} = erlang:send(<P>, {'DOWN',#Ref<0.0.1.124>,process,<P.1>,killed})
+    (while exiting)
+  25: <P.1.1>: exits normally
+  26: <P.1.1>: {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,normal} = erlang:send(<P.1>, {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,normal})
+    (while exiting)
+  27: <P>: true = erlang:exit(<P.1.1>, kill)
+    in processes_leader.erl line 18
+  28: <P>: exits normally
+################################################################################
+Interleaving #16
+--------------------------------------------------------------------------------
+Errors found:
+* At step 22 process <P.1> exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: true = erlang:group_leader(<P>, <P>)
+    in processes_leader.erl line 13
+   2: <P>: {<P.1>,#Ref<0.0.1.124>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+   3: <P.1>: {<P.1.1>,#Ref<0.0.1.179>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+   4: <P>: [<P.erl_prim_loader/erl_prim_loader>,<P.code_server/code_server>,<P.application_controller/application_controller>,<P.error_logger/error_logger>,<P.rex/rex>,<P.standard_error/standard_error>,<P.kernel_sup/kernel_sup>,<P.global_group/global_group>,<P.user/user>,<P.init/init>,<P.global_name_server/global_name_server>,<P.standard_error_sup/standard_error_sup>,<P.kernel_safe_sup/kernel_safe_sup>,<P.inet_db/inet_db>,<P.file_server_2/file_server_2>,<P>,<P.1>,<P.1.1>] = erlang:processes()
+    in processes_leader.erl line 19
+   5: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.erl_prim_loader/erl_prim_loader>, group_leader)
+    in processes_leader.erl line 21
+   6: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.code_server/code_server>, group_leader)
+    in processes_leader.erl line 21
+   7: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.application_controller/application_controller>, group_leader)
+    in processes_leader.erl line 21
+   8: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.error_logger/error_logger>, group_leader)
+    in processes_leader.erl line 21
+   9: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.rex/rex>, group_leader)
+    in processes_leader.erl line 21
+  10: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error/standard_error>, group_leader)
+    in processes_leader.erl line 21
+  11: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_sup/kernel_sup>, group_leader)
+    in processes_leader.erl line 21
+  12: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_group/global_group>, group_leader)
+    in processes_leader.erl line 21
+  13: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.user/user>, group_leader)
+    in processes_leader.erl line 21
+  14: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.init/init>, group_leader)
+    in processes_leader.erl line 21
+  15: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_name_server/global_name_server>, group_leader)
+    in processes_leader.erl line 21
+  16: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error_sup/standard_error_sup>, group_leader)
+    in processes_leader.erl line 21
+  17: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_safe_sup/kernel_safe_sup>, group_leader)
+    in processes_leader.erl line 21
+  18: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.inet_db/inet_db>, group_leader)
+    in processes_leader.erl line 21
+  19: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.file_server_2/file_server_2>, group_leader)
+    in processes_leader.erl line 21
+  20: <P>: {group_leader,<P>} = erlang:process_info(<P.1>, group_leader)
+    in processes_leader.erl line 21
+  21: <P>: true = erlang:exit(<P.1>, kill)
+    in processes_leader.erl line 18
+  22: <P.1>: exits abnormally (killed)
+  23: <P.1>: {'DOWN',#Ref<0.0.1.124>,process,<P.1>,killed} = erlang:send(<P>, {'DOWN',#Ref<0.0.1.124>,process,<P.1>,killed})
+    (while exiting)
+  24: <P.1.1>: exits normally
+  25: <P.1.1>: {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,normal} = erlang:send(<P.1>, {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,normal})
+    (while exiting)
+  26: <P>: undefined = erlang:process_info(<P.1.1>, group_leader)
+    in processes_leader.erl line 21
+  27: <P>: exits normally
+################################################################################
+Interleaving #18
+--------------------------------------------------------------------------------
+Errors found:
+* At step 27 process <P.1.1> exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: true = erlang:group_leader(<P>, <P>)
+    in processes_leader.erl line 13
+   2: <P>: {<P.1>,#Ref<0.0.1.124>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+   3: <P.1>: {<P.1.1>,#Ref<0.0.1.179>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+   4: <P>: [<P.erl_prim_loader/erl_prim_loader>,<P.code_server/code_server>,<P.application_controller/application_controller>,<P.error_logger/error_logger>,<P.rex/rex>,<P.standard_error/standard_error>,<P.kernel_sup/kernel_sup>,<P.global_group/global_group>,<P.user/user>,<P.init/init>,<P.global_name_server/global_name_server>,<P.standard_error_sup/standard_error_sup>,<P.kernel_safe_sup/kernel_safe_sup>,<P.inet_db/inet_db>,<P.file_server_2/file_server_2>,<P>,<P.1>,<P.1.1>] = erlang:processes()
+    in processes_leader.erl line 19
+   5: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.erl_prim_loader/erl_prim_loader>, group_leader)
+    in processes_leader.erl line 21
+   6: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.code_server/code_server>, group_leader)
+    in processes_leader.erl line 21
+   7: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.application_controller/application_controller>, group_leader)
+    in processes_leader.erl line 21
+   8: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.error_logger/error_logger>, group_leader)
+    in processes_leader.erl line 21
+   9: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.rex/rex>, group_leader)
+    in processes_leader.erl line 21
+  10: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error/standard_error>, group_leader)
+    in processes_leader.erl line 21
+  11: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_sup/kernel_sup>, group_leader)
+    in processes_leader.erl line 21
+  12: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_group/global_group>, group_leader)
+    in processes_leader.erl line 21
+  13: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.user/user>, group_leader)
+    in processes_leader.erl line 21
+  14: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.init/init>, group_leader)
+    in processes_leader.erl line 21
+  15: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_name_server/global_name_server>, group_leader)
+    in processes_leader.erl line 21
+  16: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error_sup/standard_error_sup>, group_leader)
+    in processes_leader.erl line 21
+  17: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_safe_sup/kernel_safe_sup>, group_leader)
+    in processes_leader.erl line 21
+  18: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.inet_db/inet_db>, group_leader)
+    in processes_leader.erl line 21
+  19: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.file_server_2/file_server_2>, group_leader)
+    in processes_leader.erl line 21
+  20: <P>: {group_leader,<P>} = erlang:process_info(<P.1>, group_leader)
+    in processes_leader.erl line 21
+  21: <P.1>: exits normally
+  22: <P.1>: {'DOWN',#Ref<0.0.1.124>,process,<P.1>,normal} = erlang:send(<P>, {'DOWN',#Ref<0.0.1.124>,process,<P.1>,normal})
+    (while exiting)
+  23: <P>: true = erlang:exit(<P.1>, kill)
+    in processes_leader.erl line 18
+  24: <P>: {group_leader,<P>} = erlang:process_info(<P.1.1>, group_leader)
+    in processes_leader.erl line 21
+  25: <P>: true = erlang:exit(<P.1.1>, kill)
+    in processes_leader.erl line 18
+  26: <P>: exits normally
+  27: <P.1.1>: exits abnormally (killed)
+  28: <P.1.1>: {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,killed} = erlang:send(<P.1>, {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,killed})
+    (while exiting)
+################################################################################
+Interleaving #20
+--------------------------------------------------------------------------------
+Errors found:
+* At step 26 process <P.1> exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: true = erlang:group_leader(<P>, <P>)
+    in processes_leader.erl line 13
+   2: <P>: {<P.1>,#Ref<0.0.1.124>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+   3: <P.1>: {<P.1.1>,#Ref<0.0.1.179>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+   4: <P>: [<P.erl_prim_loader/erl_prim_loader>,<P.code_server/code_server>,<P.application_controller/application_controller>,<P.error_logger/error_logger>,<P.rex/rex>,<P.standard_error/standard_error>,<P.kernel_sup/kernel_sup>,<P.global_group/global_group>,<P.user/user>,<P.init/init>,<P.global_name_server/global_name_server>,<P.standard_error_sup/standard_error_sup>,<P.kernel_safe_sup/kernel_safe_sup>,<P.inet_db/inet_db>,<P.file_server_2/file_server_2>,<P>,<P.1>,<P.1.1>] = erlang:processes()
+    in processes_leader.erl line 19
+   5: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.erl_prim_loader/erl_prim_loader>, group_leader)
+    in processes_leader.erl line 21
+   6: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.code_server/code_server>, group_leader)
+    in processes_leader.erl line 21
+   7: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.application_controller/application_controller>, group_leader)
+    in processes_leader.erl line 21
+   8: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.error_logger/error_logger>, group_leader)
+    in processes_leader.erl line 21
+   9: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.rex/rex>, group_leader)
+    in processes_leader.erl line 21
+  10: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error/standard_error>, group_leader)
+    in processes_leader.erl line 21
+  11: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_sup/kernel_sup>, group_leader)
+    in processes_leader.erl line 21
+  12: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_group/global_group>, group_leader)
+    in processes_leader.erl line 21
+  13: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.user/user>, group_leader)
+    in processes_leader.erl line 21
+  14: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.init/init>, group_leader)
+    in processes_leader.erl line 21
+  15: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_name_server/global_name_server>, group_leader)
+    in processes_leader.erl line 21
+  16: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error_sup/standard_error_sup>, group_leader)
+    in processes_leader.erl line 21
+  17: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_safe_sup/kernel_safe_sup>, group_leader)
+    in processes_leader.erl line 21
+  18: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.inet_db/inet_db>, group_leader)
+    in processes_leader.erl line 21
+  19: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.file_server_2/file_server_2>, group_leader)
+    in processes_leader.erl line 21
+  20: <P>: {group_leader,<P>} = erlang:process_info(<P.1>, group_leader)
+    in processes_leader.erl line 21
+  21: <P.1.1>: exits normally
+  22: <P.1.1>: {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,normal} = erlang:send(<P.1>, {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,normal})
+    (while exiting)
+  23: <P>: true = erlang:exit(<P.1>, kill)
+    in processes_leader.erl line 18
+  24: <P>: undefined = erlang:process_info(<P.1.1>, group_leader)
+    in processes_leader.erl line 21
+  25: <P>: exits normally
+  26: <P.1>: exits abnormally (killed)
+  27: <P.1>: {'DOWN',#Ref<0.0.1.124>,process,<P.1>,killed} = erlang:send(<P>, {'DOWN',#Ref<0.0.1.124>,process,<P.1>,killed})
+    (while exiting)
+################################################################################
+Interleaving #22
+--------------------------------------------------------------------------------
+Errors found:
+* At step 26 process <P.1.1> exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: true = erlang:group_leader(<P>, <P>)
+    in processes_leader.erl line 13
+   2: <P>: {<P.1>,#Ref<0.0.1.124>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+   3: <P.1>: {<P.1.1>,#Ref<0.0.1.179>} = erlang:spawn_opt({erlang,apply,[#Fun<processes_leader.2.119913664>,[]],[monitor]})
+    in erlang.erl line 2560
+   4: <P>: [<P.erl_prim_loader/erl_prim_loader>,<P.code_server/code_server>,<P.application_controller/application_controller>,<P.error_logger/error_logger>,<P.rex/rex>,<P.standard_error/standard_error>,<P.kernel_sup/kernel_sup>,<P.global_group/global_group>,<P.user/user>,<P.init/init>,<P.global_name_server/global_name_server>,<P.standard_error_sup/standard_error_sup>,<P.kernel_safe_sup/kernel_safe_sup>,<P.inet_db/inet_db>,<P.file_server_2/file_server_2>,<P>,<P.1>,<P.1.1>] = erlang:processes()
+    in processes_leader.erl line 19
+   5: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.erl_prim_loader/erl_prim_loader>, group_leader)
+    in processes_leader.erl line 21
+   6: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.code_server/code_server>, group_leader)
+    in processes_leader.erl line 21
+   7: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.application_controller/application_controller>, group_leader)
+    in processes_leader.erl line 21
+   8: <P>: {group_leader,<0.24.0>} = erlang:process_info(<P.error_logger/error_logger>, group_leader)
+    in processes_leader.erl line 21
+   9: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.rex/rex>, group_leader)
+    in processes_leader.erl line 21
+  10: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error/standard_error>, group_leader)
+    in processes_leader.erl line 21
+  11: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_sup/kernel_sup>, group_leader)
+    in processes_leader.erl line 21
+  12: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_group/global_group>, group_leader)
+    in processes_leader.erl line 21
+  13: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.user/user>, group_leader)
+    in processes_leader.erl line 21
+  14: <P>: {group_leader,<0.0.0>} = erlang:process_info(<P.init/init>, group_leader)
+    in processes_leader.erl line 21
+  15: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.global_name_server/global_name_server>, group_leader)
+    in processes_leader.erl line 21
+  16: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.standard_error_sup/standard_error_sup>, group_leader)
+    in processes_leader.erl line 21
+  17: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.kernel_safe_sup/kernel_safe_sup>, group_leader)
+    in processes_leader.erl line 21
+  18: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.inet_db/inet_db>, group_leader)
+    in processes_leader.erl line 21
+  19: <P>: {group_leader,<0.9.0>} = erlang:process_info(<P.file_server_2/file_server_2>, group_leader)
+    in processes_leader.erl line 21
+  20: <P.1>: exits normally
+  21: <P.1>: {'DOWN',#Ref<0.0.1.124>,process,<P.1>,normal} = erlang:send(<P>, {'DOWN',#Ref<0.0.1.124>,process,<P.1>,normal})
+    (while exiting)
+  22: <P>: undefined = erlang:process_info(<P.1>, group_leader)
+    in processes_leader.erl line 21
+  23: <P>: {group_leader,<P>} = erlang:process_info(<P.1.1>, group_leader)
+    in processes_leader.erl line 21
+  24: <P>: true = erlang:exit(<P.1.1>, kill)
+    in processes_leader.erl line 18
+  25: <P>: exits normally
+  26: <P.1.1>: exits abnormally (killed)
+  27: <P.1.1>: {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,killed} = erlang:send(<P.1>, {'DOWN',#Ref<0.0.1.179>,process,<P.1.1>,killed})
+    (while exiting)
+################################################################################
+Exploration completed!
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+* Check '--help attributes' for info on how to pass options via module attributes.
+* Running without a scheduling_bound corresponds to verification and may take a long time.
+* An abnormal exit signal killed a process. This is probably the worst thing that can happen race-wise, as any other side-effecting operation races with the arrival of the signal. If the test produces too many interleavings consider refactoring your code.
+* Increase '--print_depth' if output/graph contains "...".
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+* Writing results in /Users/stavros.aronis/git/Concuerror/tests/results/basic_tests/results/processes_leader-test-inf-optimal.txt
+* Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
+* Instrumented & loaded module processes_leader
+* Automatically instrumented module erlang
+* Continuing after error (-k)
+* You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+
+################################################################################
+Done at 24 Apr 2018 15:07:54 (Exit status: error)
+  Summary: 12 errors, 23/23 interleavings explored

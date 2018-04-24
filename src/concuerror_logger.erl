@@ -76,7 +76,7 @@ timediff(After, Before) ->
           rate_info = init_rate_info() :: #rate_info{},
           streams = []                 :: [{stream(), [string()]}],
           timestamp = timestamp()      :: timestamp(),
-          ticker = none                :: pid() | 'none' | 'force',
+          ticker = none                :: pid() | 'none',
           traces_explored = 0          :: non_neg_integer(),
           traces_ssb = 0               :: non_neg_integer(),
           traces_total = 0             :: non_neg_integer(),
@@ -294,7 +294,6 @@ loop(Message, State) ->
      output_name = OutputName,
      print_depth = PrintDepth,
      streams = Streams,
-     ticker = Ticker,
      timestamp = Timestamp,
      traces_explored = TracesExplored,
      traces_ssb = TracesSSB,
@@ -347,7 +346,7 @@ loop(Message, State) ->
     {graph, Command} ->
       loop(graph_command(Command, State));
     {finish, SchedulerStatus, Scheduler} ->
-      stop_ticker(Ticker),
+      NewState = stop_ticker(State),
       separator(Output, $#),
       to_file(Output, "Exploration completed!~n",[]),
       ExitStatus =
@@ -359,7 +358,7 @@ loop(Message, State) ->
                   true -> ok;
                   false ->
                     Form = "Errors were found! (check ~s)~n",
-                    force_printout(State, Form, [OutputName])
+                    printout(NewState, Form, [OutputName])
                 end,
                 error;
               false ->
@@ -374,14 +373,14 @@ loop(Message, State) ->
       Format = "Done at ~s (Exit status: ~p)~n  Summary: ",
       Args = [FinishTimestamp, ExitStatus],
       to_file(Output, Format, Args),
-      IntMsg = final_interleavings_message(State),
+      IntMsg = final_interleavings_message(NewState),
       to_file(Output, "~s", [IntMsg]),
-      ok = close_files(State),
+      ok = close_files(NewState),
       case Verbosity =:= ?lquiet of
         true -> ok;
         false ->
           FinalFormat = Format ++ IntMsg,
-          printout(State#logger_state{ticker = none}, FinalFormat, Args)
+          printout(NewState, FinalFormat, Args)
       end,
       Scheduler ! {finished, ExitStatus},
       ok;
@@ -485,9 +484,6 @@ format_utc_timestamp() ->
   io_lib:format("~2..0w ~s ~4w ~2..0w:~2..0w:~2..0w",
                 [Day, Mstr, Year, Hour, Minute, Second]).
 
-force_printout(State, Format, Data) ->
-  printout(State#logger_state{ticker = force}, Format, Data).
-
 printout(#logger_state{ticker = Ticker} = State, Format, Data)
   when Ticker =/= none ->
   progress_clear(),
@@ -555,15 +551,15 @@ clear_ticks() ->
     0 -> ok
   end.
 
-stop_ticker(Ticker) ->
+stop_ticker(#logger_state{ticker = Ticker} = State) ->
   case is_pid(Ticker) of
     true ->
       Ticker ! {stop, self()},
       progress_clear(),
       receive
-        stopped -> ok
+        stopped -> State#logger_state{ticker = none}
       end;
-    false -> ok
+    false -> State
   end.
 
 %%------------------------------------------------------------------------------
