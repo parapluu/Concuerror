@@ -30,8 +30,8 @@ GENERATED_HRLS = $(OTP_VERSION_HRL)
 MAKEFLAGS += --no-builtin-rules
 .SUFFIXES:
 
-.PHONY: all dev native
-all dev native: $(DEPS_BEAMS) $(BEAMS) $(NAME)
+.PHONY: all dev native pedantic
+all dev native pedantic: $(DEPS_BEAMS) $(BEAMS) $(NAME)
 
 dev: VERSION := $(VERSION)-dev
 dev: ERL_COMPILE_FLAGS += -DDEV=true
@@ -39,14 +39,15 @@ dev: ERL_COMPILE_FLAGS += -DDEV=true
 native: VERSION := $(VERSION)-native
 native: ERL_COMPILE_FLAGS += +native
 
+pedantic: ERL_COMPILE_FLAGS += +warnings_as_errors
+
 ERL_COMPILE_FLAGS += \
 	-DVSN="\"$(VERSION)\"" \
 	+debug_info \
 	+warn_export_vars \
 	+warn_unused_import \
 	+warn_missing_spec \
-	+warn_untyped_record \
-	+warnings_as_errors
+	+warn_untyped_record
 
 $(NAME): Makefile
 	@$(RM) $@
