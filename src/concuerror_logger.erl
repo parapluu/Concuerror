@@ -678,7 +678,7 @@ progress_content(State) ->
   SSBStr =
     case TracesSSB =:= 0 of
       true -> "";
-      false -> io_lib:format(" ~7w |", [TracesSSB])
+      false -> io_lib:format("~8s |", [add_seps_to_int(TracesSSB)])
     end,
   CompletionStr = estimate_completion(Estimation, TracesExplored, Rate),
   RateStr =
@@ -686,11 +686,13 @@ progress_content(State) ->
       0    -> "  <1 /s";
       _    -> io_lib:format("~4w /s", [Rate])
     end,
+  [ErrorsStr, TracesExploredStr, PlannedStr, EstimationStr] =
+    [add_seps_to_int(S) || S <- [Errors, TracesExplored, Planned, Estimation]],
   Str =
     io_lib:format(
-      " ~9w | ~9w |~s ~7w | ~s | ~9w | ~s",
-      [Errors, TracesExplored, SSBStr, Planned,
-       RateStr, Estimation, CompletionStr]
+      "~10s |~10s |~s~8s | ~s |~10s | ~s",
+      [ErrorsStr, TracesExploredStr, SSBStr, PlannedStr,
+       RateStr, EstimationStr, CompletionStr]
      ),
   NewState = State#logger_state{rate_info = NewRateInfo},
   {Str, NewState}.
@@ -878,6 +880,15 @@ approximate_time_formatters() ->
   , DayQuartersATF
   , DaysATF
   ].
+
+%%------------------------------------------------------------------------------
+
+add_seps_to_int(Integer) when Integer < 1000 -> integer_to_list(Integer);
+add_seps_to_int(Integer) when is_integer(Integer) ->
+  Rem = Integer rem 1000,
+  DivS = add_seps_to_int(Integer div 1000),
+  io_lib:format("~s ~3..0w", [DivS, Rem]);
+add_seps_to_int(Other) -> io_lib:format("~w", [Other]).
 
 %%------------------------------------------------------------------------------
 
