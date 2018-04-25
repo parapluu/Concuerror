@@ -680,8 +680,7 @@ progress_content(State) ->
       true -> "";
       false -> io_lib:format(" ~7w |", [TracesSSB])
     end,
-  CompletionStr =
-    concuerror_estimator:estimate_completion(Estimation, TracesExplored, Rate),
+  CompletionStr = estimate_completion(Estimation, TracesExplored, Rate),
   RateStr =
     case Rate of
       0    -> "  <1 /s";
@@ -759,6 +758,126 @@ final_interleavings_message(State) ->
   ExploreTotal = min(TracesTotal, InterleavingBound),
   io_lib:format("~p errors, ~p/~p interleavings explored~s~s~n",
                 [Errors, TracesExplored, ExploreTotal, SSB, BR]).
+
+%%------------------------------------------------------------------------------
+
+estimate_completion(Estimated, Explored, Rate)
+  when not is_number(Estimated);
+       not is_number(Explored);
+       not is_number(Rate) ->
+  "unknown";
+estimate_completion(Estimated, Explored, Rate) ->
+  Remaining = Estimated - Explored,
+  Completion = round(Remaining/(Rate + 0.001)),
+  " " ++ approximate_time_string(Completion).
+
+%%------------------------------------------------------------------------------
+
+-type posint() :: pos_integer().
+-type split_fun() :: fun((posint()) -> posint() | {posint(), posint()}).
+
+-record(approximate_time_formatter, {
+          threshold  = 1       :: pos_integer() | 'infinity',
+          rounding   = 1       :: pos_integer(),
+          split_fun            :: split_fun(),
+          one_format = "~w"    :: string(),
+          two_format = "~w ~w" :: string()
+         }).
+
+-spec approximate_time_string(pos_integer()) -> iodata().
+
+approximate_time_string(Seconds) ->
+  approximate_time_string(approximate_time_formatters(), Seconds).
+
+approximate_time_string([ATF|Rest], Value) ->
+  #approximate_time_formatter{
+     threshold  = Threshold,
+     rounding   = Rounding,
+     split_fun  = SplitFun,
+     one_format = OneFormat,
+     two_format = TwoFormat
+    } = ATF,
+  case Value > Threshold of
+    true -> approximate_time_string(Rest, round(Value/Rounding));
+    false ->
+      case SplitFun(Value) of
+        {High, Low} -> io_lib:format(TwoFormat, [High, Low]);
+        Single -> io_lib:format(OneFormat, [Single])
+      end
+  end.
+
+approximate_time_formatters() ->
+  SecondsSplitFun = fun(_) -> 1 end,
+  SecondsATF =
+    #approximate_time_formatter{
+       threshold  = 1 * 60,
+       rounding   = 60,
+       split_fun  = SecondsSplitFun,
+       one_format = "   <~pm"
+      },
+  MinutesSplitFun =
+    fun(Minutes) ->
+        case Minutes < 60 of
+          true -> Minutes;
+          false -> {Minutes div 60, Minutes rem 60}
+        end
+    end,
+  MinutesATF =
+    #approximate_time_formatter{
+       threshold  = 60,
+       rounding   = 15,
+       split_fun  = MinutesSplitFun,
+       one_format = "   ~2wm",
+       two_format = "~2wh~2..0wm"
+      },
+  QuartersSplitFun =
+    fun(Quarters) -> {Quarters div 4, (Quarters rem 4) * 15} end,
+  QuartersATF =
+    #approximate_time_formatter{
+       threshold  = 4 * 3,
+       rounding   = 4,
+       split_fun  = QuartersSplitFun,
+       two_format = "~2wh~2..0wm"
+      },
+  HoursSplitFun =
+    fun(Hours) ->
+        case Hours < 60 of
+          true -> Hours;
+          false -> {Hours div 24, Hours rem 24}
+        end
+    end,
+  HoursATF =
+    #approximate_time_formatter{
+       threshold  = 3 * 24,
+       rounding   = 6,
+       split_fun  = HoursSplitFun,
+       one_format = "   ~2wh",
+       two_format = "~2wd~2..0wh"
+      },
+  DayQuartersSplitFun =
+    fun(Quarters) -> {Quarters div 4, (Quarters rem 4) * 6} end,
+  DayQuartersATF =
+    #approximate_time_formatter{
+       threshold  = 4 * 15,
+       rounding   = 4,
+       split_fun  = DayQuartersSplitFun,
+       one_format = "   ~2wh",
+       two_format = "~2wd~2..0wh"
+      },
+  DaysSplitFun = fun(Days) -> Days end,
+  DaysATF =
+    #approximate_time_formatter{
+       threshold  = infinity,
+       split_fun  = DaysSplitFun,
+       one_format = "~5wd"
+      },
+  [ SecondsATF
+  , MinutesATF
+  , QuartersATF
+  , HoursATF
+  , DayQuartersATF
+  , DaysATF
+  ].
 
 %%------------------------------------------------------------------------------
 
