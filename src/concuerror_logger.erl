@@ -936,9 +936,36 @@ approximate_time_formatters() ->
   DaysSplitFun = fun(Days) -> Days end,
   DaysATF =
     #time_formatter{
-       threshold  = infinity,
+       threshold  = 12*30,
+       rounding   = 30,
        split_fun  = DaysSplitFun,
        one_format = "~5wd"
+      },
+  MonthsSplitFun =
+    fun(Months) -> {Months div 12, Months rem 12} end,
+  MonthsATF =
+    #time_formatter{
+       threshold  = 12*50,
+       rounding   = 12,
+       split_fun  = MonthsSplitFun,
+       two_format = "~2wy~2..0wm"
+      },
+  YearsSplitFun =
+    fun(Years) -> Years end,
+  YearsATF =
+    #time_formatter{
+       threshold  = 10000,
+       rounding = 1,
+       split_fun  = YearsSplitFun,
+       one_format = "~5wy"
+      },
+  TooMuchSplitFun =
+    fun(_) -> 10000 end,
+  TooMuchATF =
+    #time_formatter{
+       threshold  = infinity,
+       split_fun  = TooMuchSplitFun,
+       one_format = "> ~wy"
       },
   [ SecondsATF
   , MinutesATF
@@ -946,6 +973,9 @@ approximate_time_formatters() ->
   , HoursATF
   , DayQuartersATF
   , DaysATF
+  , MonthsATF
+  , YearsATF
+  , TooMuchATF
   ].
 
 %%------------------------------------------------------------------------------
