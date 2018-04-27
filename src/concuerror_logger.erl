@@ -77,6 +77,7 @@ timediff(After, Before) ->
           streams = []                 :: [{stream(), [string()]}],
           timestamp = timestamp()      :: timestamp(),
           ticker = none                :: pid() | 'none',
+          ticks = 0                    :: non_neg_integer(),
           traces_explored = 0          :: non_neg_integer(),
           traces_ssb = 0               :: non_neg_integer(),
           traces_total = 0             :: non_neg_integer(),
@@ -470,8 +471,8 @@ loop(Message, State) ->
       Scheduler ! Ref,
       loop(NewState);
     tick ->
-      clear_ticks(),
-      loop(progress_refresh(State))
+      N = clear_ticks(1),
+      loop(progress_refresh(N, State))
   end.
 
 format_utc_timestamp() ->
@@ -544,11 +545,11 @@ ticker(Logger) ->
     ?TICKER_TIMEOUT -> ticker(Logger)
   end.
 
-clear_ticks() ->
+clear_ticks(N) ->
   receive
-    tick -> clear_ticks()
+    tick -> clear_ticks(N + 1)
   after
-    0 -> ok
+    0 -> N
   end.
 
 stop_ticker(#logger_state{ticker = Ticker} = State) ->
@@ -604,10 +605,10 @@ progress_initial_padding() ->
 progress_clear() ->
   delete_lines(4).
 
-progress_refresh(State) ->
+progress_refresh(N, #logger_state{ticks = T} = State) ->
   %% No extra line afterwards to ease printing of 'running logs'.
   delete_lines(1),
-  {Str, NewState} = progress_content(State),
+  {Str, NewState} = progress_content(State#logger_state{ticks = T + N}),
   to_stderr("~s~n", [Str]),
   NewState.
 
@@ -633,6 +634,7 @@ progress_help() ->
     "SSB (if >0) : Sleep set blocked schedulings (wasted effort)~n"
     "Planned     : Schedulings that will certainly be explored~n"
     "~~Rate       : Average rate of exploration (in schedulings/s)~n"
+    "Elapsed     : Time elapsed (actively running)~n"
     "Est.Total   : Estimation of total number of schedulings (see below)~n"
     "Est.TTC     : Estimated time to completion (see below)~n"
     "~n"
@@ -656,6 +658,7 @@ progress_header_common(SSB) ->
     ++ SSB ++
     " Planned |"
     " ~Rate |"
+    " Elapsed |"
     " Est.Total |"
     " Est.TTC".
 
@@ -668,6 +671,7 @@ progress_content(State) ->
      errors = Errors,
      estimator = Estimator,
      rate_info = RateInfo,
+     ticks = Ticks,
      traces_explored = TracesExplored,
      traces_ssb = TracesSSB,
      traces_total = TracesTotal
@@ -700,6 +704,7 @@ progress_content(State) ->
         Low = trunc(math:log10(EstimatedTotal)),
         io_lib:format("< 10e~w", [Low + 1])
     end,
+  ElapsedStr = time_string(round(Ticks * ?TICKER_TIMEOUT / 1000)),
   CompletionStr = estimate_completion(EstimatedTotal, TracesExplored, Rate),
   Str =
     io_lib:format(
@@ -708,10 +713,11 @@ progress_content(State) ->
       "~s"
       "~8s |"
       "~4s/s |"
+      "~8s |"
       "~10s |"
       "~8s",
       [ErrorsStr, TracesExploredStr, SSBStr, PlannedStr,
-       RateStr, EstimatedTotalStr, CompletionStr]
+       RateStr, ElapsedStr, EstimatedTotalStr, CompletionStr]
      ),
   NewState = State#logger_state{rate_info = NewRateInfo},
   {Str, NewState}.
@@ -797,7 +803,7 @@ estimate_completion(Estimated, Explored, Rate) ->
 -type posint() :: pos_integer().
 -type split_fun() :: fun((posint()) -> posint() | {posint(), posint()}).
 
--record(approximate_time_formatter, {
+-record(time_formatter, {
           threshold  = 1       :: pos_integer() | 'infinity',
           rounding   = 1       :: pos_integer(),
           split_fun            :: split_fun(),
@@ -805,13 +811,14 @@ estimate_completion(Estimated, Explored, Rate) ->
           two_format = "~w ~w" :: string()
          }).
 
--spec approximate_time_string(pos_integer()) -> iodata().
-
 approximate_time_string(Seconds) ->
-  approximate_time_string(approximate_time_formatters(), Seconds).
+  time_string(approximate_time_formatters(), Seconds).
 
-approximate_time_string([ATF|Rest], Value) ->
-  #approximate_time_formatter{
+time_string(Seconds) ->
+  time_string(time_formatters(), Seconds).
+
+time_string([ATF|Rest], Value) ->
+  #time_formatter{
      threshold  = Threshold,
      rounding   = Rounding,
      split_fun  = SplitFun,
@@ -819,7 +826,7 @@ approximate_time_string([ATF|Rest], Value) ->
      two_format = TwoFormat
     } = ATF,
   case Value > Threshold of
-    true -> approximate_time_string(Rest, round(Value/Rounding));
+    true -> time_string(Rest, round(Value/Rounding));
     false ->
       case SplitFun(Value) of
         {High, Low} -> io_lib:format(TwoFormat, [High, Low]);
@@ -827,10 +834,51 @@ approximate_time_string([ATF|Rest], Value) ->
       end
   end.
 
+time_formatters() ->
+  SecondsSplitFun = fun(S) -> S end,
+  SecondsATF =
+    #time_formatter{
+       threshold  = 1 * 60,
+       rounding   = 1,
+       split_fun  = SecondsSplitFun,
+       one_format = "   ~2ws"
+      },
+  MinutesSplitFun =
+    fun(Seconds) -> {Seconds div 60, Seconds rem 60} end,
+  MinutesATF =
+    #time_formatter{
+       threshold  = 60 * 60,
+       rounding   = 60,
+       split_fun  = MinutesSplitFun,
+       two_format = "~2wm~2..0ws"
+      },
+  HoursSplitFun =
+    fun(Minutes) -> {Minutes div 60, Minutes rem 60} end,
+  HoursATF =
+    #time_formatter{
+       threshold  = 48 * 60,
+       rounding   = 60,
+       split_fun  = HoursSplitFun,
+       two_format = "~2wh~2..0wm"
+      },
+  DaysSplitFun =
+    fun(Hours) -> {Hours div 24, Hours rem 24} end,
+  DaysATF =
+    #time_formatter{
+       threshold  = infinity,
+       split_fun  = DaysSplitFun,
+       two_format = "~2wd~2..0wh"
+      },
+  [ SecondsATF
+  , MinutesATF
+  , HoursATF
+  , DaysATF
+  ].
+
 approximate_time_formatters() ->
   SecondsSplitFun = fun(_) -> 1 end,
   SecondsATF =
-    #approximate_time_formatter{
+    #time_formatter{
        threshold  = 1 * 60,
        rounding   = 60,
        split_fun  = SecondsSplitFun,
@@ -844,7 +892,7 @@ approximate_time_formatters() ->
         end
     end,
   MinutesATF =
-    #approximate_time_formatter{
+    #time_formatter{
        threshold  = 60,
        rounding   = 15,
        split_fun  = MinutesSplitFun,
@@ -854,7 +902,7 @@ approximate_time_formatters() ->
   QuartersSplitFun =
     fun(Quarters) -> {Quarters div 4, (Quarters rem 4) * 15} end,
   QuartersATF =
-    #approximate_time_formatter{
+    #time_formatter{
        threshold  = 4 * 3,
        rounding   = 4,
        split_fun  = QuartersSplitFun,
@@ -868,7 +916,7 @@ approximate_time_formatters() ->
         end
     end,
   HoursATF =
-    #approximate_time_formatter{
+    #time_formatter{
        threshold  = 3 * 24,
        rounding   = 6,
        split_fun  = HoursSplitFun,
@@ -878,7 +926,7 @@ approximate_time_formatters() ->
   DayQuartersSplitFun =
     fun(Quarters) -> {Quarters div 4, (Quarters rem 4) * 6} end,
   DayQuartersATF =
-    #approximate_time_formatter{
+    #time_formatter{
        threshold  = 4 * 15,
        rounding   = 4,
        split_fun  = DayQuartersSplitFun,
@@ -887,7 +935,7 @@ approximate_time_formatters() ->
       },
   DaysSplitFun = fun(Days) -> Days end,
   DaysATF =
-    #approximate_time_formatter{
+    #time_formatter{
        threshold  = infinity,
        split_fun  = DaysSplitFun,
        one_format = "~5wd"
