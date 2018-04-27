@@ -624,43 +624,44 @@ progress_print(#logger_state{traces_ssb = SSB} = State) ->
   {Str, _NewState} = progress_content(State),
   to_stderr("~s~n", [Str]).
 
-progress_header(0) ->
-  progress_header_common("");
-progress_header(_State) ->
-  progress_header_common("|     SSB ").
-
 -spec progress_help() -> string().
 
 progress_help() ->
   io_lib:format(
-    "Errors    : Schedulings with errors~n"
-    "Explored  : Schedulings already explored~n"
-    "(SSB)     : Sleep set blocked schedulings (wasted effort)~n"
-    "Planned   : Schedulings that will certainly be explored~n"
-    "~~ Rate    : Average rate of exploration (in schedulings/s)~n"
-    "Total(?)  : Estimation of total number of schedulings (see below)~n"
-    "Time(?)   : Estimated time to completion (see below)~n"
+    "Errors      : Schedulings with errors~n"
+    "Explored    : Schedulings already explored~n"
+    "SSB (if >0) : Sleep set blocked schedulings (wasted effort)~n"
+    "Planned     : Schedulings that will certainly be explored~n"
+    "~~Rate       : Average rate of exploration (in schedulings/s)~n"
+    "Est.Total   : Estimation of total number of schedulings (see below)~n"
+    "Est.TTC     : Estimated time to completion (see below)~n"
     "~n"
     "Estimations:~n"
     "The total number of schedulings is estimated from the shape of the"
     " exploration tree. It has been observed to be WITHIN ONE ORDER OF"
     " MAGNITUDE of the actual number, when using default options.~n"
     "The time to completion is estimated using the estimated remaining"
-    " schedulings (Total - Explored) divided by the current Rate.~n"
+    " schedulings (Est.Total - Explored) divided by the current Rate.~n"
     , []).
 
+progress_header(0) ->
+  progress_header_common("");
+progress_header(_State) ->
+  progress_header_common("     SSB |").
+
 progress_header_common(SSB) ->
-  "    Errors |  Explored " ++ SSB ++
-    "| Planned |  ~ Rate |  Total(?) | Time(?) ".
+  ""
+    "Errors |"
+    "   Explored |"
+    ++ SSB ++
+    " Planned |"
+    " ~Rate |"
+    " Est.Total |"
+    " Est.TTC".
 
-progress_line(0) ->
-  progress_line_common("");
-progress_line(_State) ->
-  progress_line_common("-----------").
-
-progress_line_common(SSB) ->
-  "-----------------------" ++ SSB ++
-    "------------------------------------------".
+progress_line(SSB) ->
+  L = lists:duplicate(length(progress_header(SSB)), $-),
+  io_lib:format("~s", [L]).
 
 progress_content(State) ->
   #logger_state{
@@ -671,28 +672,46 @@ progress_content(State) ->
      traces_ssb = TracesSSB,
      traces_total = TracesTotal
     } = State,
-  Estimation = max(concuerror_estimator:get_estimation(Estimator), TracesTotal),
-  Useful = TracesExplored - TracesSSB,
-  {Rate, NewRateInfo} = update_rate(RateInfo, Useful),
   Planned = TracesTotal - TracesExplored,
-  SSBStr =
-    case TracesSSB =:= 0 of
-      true -> "";
-      false -> io_lib:format("~8s |", [add_seps_to_int(TracesSSB)])
+  {Rate, NewRateInfo} = update_rate(RateInfo, TracesExplored),
+  EstimatedTotal =
+    max(concuerror_estimator:get_estimation(Estimator), TracesTotal),
+  ErrorsStr =
+    if Errors =:= 0 -> "none";
+       Errors < 10000 -> add_seps_to_int(Errors);
+       true -> "> 10k"
     end,
-  CompletionStr = estimate_completion(Estimation, TracesExplored, Rate),
+  [TracesExploredStr, PlannedStr] =
+    [add_seps_to_int(S) || S <- [TracesExplored, Planned]],
+  SSBStr =
+    if TracesSSB =:= 0 -> "";
+       TracesSSB < 100000 -> io_lib:format("~8s |", [add_seps_to_int(TracesSSB)]);
+       true -> io_lib:format("~8s |", ["> 100k"])
+    end,
   RateStr =
     case Rate of
-      0    -> "  <1 /s";
-      _    -> io_lib:format("~4w /s", [Rate])
+      0    -> "<1";
+      _    -> io_lib:format("~w", [Rate])
     end,
-  [ErrorsStr, TracesExploredStr, PlannedStr, EstimationStr] =
-    [add_seps_to_int(S) || S <- [Errors, TracesExplored, Planned, Estimation]],
+  EstimatedTotalStr =
+    if EstimatedTotal =:= unknown -> "...";
+       EstimatedTotal < 10000000 -> add_seps_to_int(EstimatedTotal);
+       true ->
+        Low = trunc(math:log10(EstimatedTotal)),
+        io_lib:format("< 10e~w", [Low + 1])
+    end,
+  CompletionStr = estimate_completion(EstimatedTotal, TracesExplored, Rate),
   Str =
     io_lib:format(
-      "~10s |~10s |~s~8s | ~s |~10s | ~s",
+      "~6s |"
+      "~11s |"
+      "~s"
+      "~8s |"
+      "~4s/s |"
+      "~10s |"
+      "~8s",
       [ErrorsStr, TracesExploredStr, SSBStr, PlannedStr,
-       RateStr, EstimationStr, CompletionStr]
+       RateStr, EstimatedTotalStr, CompletionStr]
      ),
   NewState = State#logger_state{rate_info = NewRateInfo},
   {Str, NewState}.
@@ -706,7 +725,7 @@ init_rate_info() ->
      timestamp = timestamp()
     }.
 
-update_rate(RateInfo, Useful) ->
+update_rate(RateInfo, TracesExplored) ->
   #rate_info{
      average   = Average,
      prev      = Prev,
@@ -714,13 +733,13 @@ update_rate(RateInfo, Useful) ->
     } = RateInfo,
   New = timestamp(),
   Time = timediff(New, Old),
-  Diff = Useful - Prev,
+  Diff = TracesExplored - Prev,
   CurrentRate = Diff / (Time + 0.0001),
   {Rate, NewAverage} = concuerror_window_average:update(CurrentRate, Average),
   NewRateInfo =
     RateInfo#rate_info{
       average   = NewAverage,
-      prev      = Useful,
+      prev      = TracesExplored,
       timestamp = New
      },
   {round(Rate), NewRateInfo}.
@@ -767,7 +786,7 @@ estimate_completion(Estimated, Explored, Rate)
   when not is_number(Estimated);
        not is_number(Explored);
        not is_number(Rate) ->
-  "unknown";
+  "...";
 estimate_completion(Estimated, Explored, Rate) ->
   Remaining = Estimated - Explored,
   Completion = round(Remaining/(Rate + 0.001)),
