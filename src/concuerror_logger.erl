@@ -55,7 +55,7 @@ timediff(After, Before) ->
 %%------------------------------------------------------------------------------
 
 -record(rate_info, {
-          average   :: concuerror_window_average:average(),
+          average   :: 'init' | concuerror_window_average:average(),
           prev      :: non_neg_integer(),
           timestamp :: timestamp()
          }).
@@ -694,8 +694,9 @@ progress_content(State) ->
     end,
   RateStr =
     case Rate of
-      0    -> "<1";
-      _    -> io_lib:format("~w", [Rate])
+      init -> "...";
+      0    -> "<1/s";
+      _    -> io_lib:format("~w/s", [Rate])
     end,
   EstimatedTotalStr =
     if EstimatedTotal =:= unknown -> "...";
@@ -712,7 +713,7 @@ progress_content(State) ->
       "~11s |"
       "~s"
       "~8s |"
-      "~4s/s |"
+      "~6s |"
       "~8s |"
       "~10s |"
       "~8s",
@@ -726,7 +727,7 @@ progress_content(State) ->
 
 init_rate_info() ->
   #rate_info{
-     average   = concuerror_window_average:init(0, 10),
+     average   = init,
      prev      = 0,
      timestamp = timestamp()
     }.
@@ -738,17 +739,31 @@ update_rate(RateInfo, TracesExplored) ->
      timestamp = Old
     } = RateInfo,
   New = timestamp(),
-  Time = timediff(New, Old),
-  Diff = TracesExplored - Prev,
-  CurrentRate = Diff / (Time + 0.0001),
-  {Rate, NewAverage} = concuerror_window_average:update(CurrentRate, Average),
+  {Rate, NewAverage} =
+    case TracesExplored < 10 of
+      true ->
+        {init, init};
+      false ->
+        Time = timediff(New, Old),
+        Diff = TracesExplored - Prev,
+        CurrentRate = Diff / (Time + 0.0001),
+        case Average =:= init of
+          true ->
+            NA = concuerror_window_average:init(CurrentRate, 50),
+            {round(CurrentRate), NA};
+          false ->
+            {R, NA} =
+              concuerror_window_average:update(CurrentRate, Average),
+            {round(R), NA}
+        end
+    end,
   NewRateInfo =
     RateInfo#rate_info{
       average   = NewAverage,
       prev      = TracesExplored,
       timestamp = New
      },
-  {round(Rate), NewRateInfo}.
+  {Rate, NewRateInfo}.
 
 %%------------------------------------------------------------------------------
 

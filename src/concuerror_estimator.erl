@@ -43,8 +43,8 @@
 
 %%------------------------------------------------------------------------------
 
--define(INITIAL_DELAY, 100).
--define(DELAY, 10).
+-define(INITIAL_DELAY, 500).
+-define(DELAY, 200).
 
 -record(state, {
           average    = initial        :: 'initial' | average(),
