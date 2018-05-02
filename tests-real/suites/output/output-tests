@@ -4,32 +4,33 @@
 
 print_blue "$0"
 
+function has_basic_progress {
+    print_ok
+    Target="Errors |   Explored | Planned | ~Rate | Elapsed | Est.Total | Est.TTC"
+    testing "... and console has \"$Target\""
+    if ! grep -q "$Target" $Console; then
+        exit 1
+    fi
+    print_ok
+    Target="  none |          0 |       0 |   ... |      1s |       ... |     ..."
+    testing "... and console has \"$Target\" or 2s"
+    if ! grep -q "$Target" $Console; then
+        "  none |          0 |       0 |   ... |      2s |       ... |     ..."
+        if ! grep -q "$Target" $Console; then
+            exit 1
+        fi
+    fi
+    good
+}
+
 testing "Progress bar sample"
 $CONCUERROR -f src/many_scheds.erl -v1 2>&1 | tr '\033' '#' | cat > $Console
-print_ok
-Target="    Errors |  Explored | Planned |  ~ Rate |  Total(?) | Time(?)"
-testing "... and console has \"$Target\""
-if ! grep -q "$Target" $Console; then
-    exit 1
-fi
-print_ok
-Target="         0 |         0 |       0 |   <1 /s |   unknown | unknown"
-testing "... and console has \"$Target\""
-if ! grep -q "$Target" $Console; then
-    exit 1
-fi
-good
+has_basic_progress
 
-testing "Progress bar sample for source"
-$CONCUERROR -f src/many_scheds.erl -v1 --dpor source 2>&1 | tr '\033' '#' | cat > $Console
+testing "Progress bar sample for source (with SSB)"
+$CONCUERROR -f src/fig3.1-ext.erl --dpor source 2>&1 | tr '\033' '#' | cat > $Console
 print_ok
-Target="    Errors |  Explored | Planned |  ~ Rate |  Total(?) | Time(?)"
-testing "... and console has \"$Target\""
-if ! grep -q "$Target" $Console; then
-    exit 1
-fi
-print_ok
-Target="         0 |         0 |       0 |   <1 /s |   unknown | unknown"
+Target="Errors |   Explored |     SSB | Planned | ~Rate | Elapsed | Est.Total | Est.TTC"
 testing "... and console has \"$Target\""
 if ! grep -q "$Target" $Console; then
     exit 1
@@ -38,35 +39,11 @@ good
 
 testing "Progress bar sample with hard bound"
 $CONCUERROR -f src/many_scheds.erl -v1 --dpor source -i 300 2>&1 | tr '\033' '#' | cat > $Console
-print_ok
-Target="    Errors |  Explored | Planned |  ~ Rate |  Total(?) | Time(?)"
-testing "... and console has \"$Target\""
-if ! grep -q "$Target" $Console; then
-    exit 1
-fi
-print_ok
-Target="         0 |         0 |       0 |   <1 /s |   unknown | unknown"
-testing "... and console has \"$Target\""
-if ! grep -q "$Target" $Console; then
-    exit 1
-fi
-good
+has_basic_progress
 
 testing "Progress bar sample with delay bound"
 $CONCUERROR -f src/many_scheds.erl -v1 -b 7 2>&1 | tr '\033' '#' | cat > $Console
-print_ok
-Target="    Errors |  Explored | Planned |  ~ Rate |  Total(?) | Time(?)"
-testing "... and console has \"$Target\""
-if ! grep -q "$Target" $Console; then
-    exit 1
-fi
-print_ok
-Target="         0 |         0 |       0 |   <1 /s |   unknown | unknown"
-testing "... and console has \"$Target\""
-if ! grep -q "$Target" $Console; then
-    exit 1
-fi
-good
+has_basic_progress
 
 testing "No tip for harmless exit signals"
 ! concuerror_console -f src/harmless_exit.erl -k

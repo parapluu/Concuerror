@@ -55,7 +55,7 @@ timediff(After, Before) ->
 %%------------------------------------------------------------------------------
 
 -record(rate_info, {
-          average   :: concuerror_window_average:average(),
+          average   :: 'init' | concuerror_window_average:average(),
           prev      :: non_neg_integer(),
           timestamp :: timestamp()
          }).
@@ -77,6 +77,7 @@ timediff(After, Before) ->
           streams = []                 :: [{stream(), [string()]}],
           timestamp = timestamp()      :: timestamp(),
           ticker = none                :: pid() | 'none',
+          ticks = 0                    :: non_neg_integer(),
           traces_explored = 0          :: non_neg_integer(),
           traces_ssb = 0               :: non_neg_integer(),
           traces_total = 0             :: non_neg_integer(),
@@ -470,8 +471,8 @@ loop(Message, State) ->
       Scheduler ! Ref,
       loop(NewState);
     tick ->
-      clear_ticks(),
-      loop(progress_refresh(State))
+      N = clear_ticks(1),
+      loop(progress_refresh(N, State))
   end.
 
 format_utc_timestamp() ->
@@ -544,11 +545,11 @@ ticker(Logger) ->
     ?TICKER_TIMEOUT -> ticker(Logger)
   end.
 
-clear_ticks() ->
+clear_ticks(N) ->
   receive
-    tick -> clear_ticks()
+    tick -> clear_ticks(N + 1)
   after
-    0 -> ok
+    0 -> N
   end.
 
 stop_ticker(#logger_state{ticker = Ticker} = State) ->
@@ -604,10 +605,10 @@ progress_initial_padding() ->
 progress_clear() ->
   delete_lines(4).
 
-progress_refresh(State) ->
+progress_refresh(N, #logger_state{ticks = T} = State) ->
   %% No extra line afterwards to ease printing of 'running logs'.
   delete_lines(1),
-  {Str, NewState} = progress_content(State),
+  {Str, NewState} = progress_content(State#logger_state{ticks = T + N}),
   to_stderr("~s~n", [Str]),
   NewState.
 
@@ -624,74 +625,100 @@ progress_print(#logger_state{traces_ssb = SSB} = State) ->
   {Str, _NewState} = progress_content(State),
   to_stderr("~s~n", [Str]).
 
-progress_header(0) ->
-  progress_header_common("");
-progress_header(_State) ->
-  progress_header_common("|     SSB ").
-
 -spec progress_help() -> string().
 
 progress_help() ->
   io_lib:format(
-    "Errors    : Schedulings with errors~n"
-    "Explored  : Schedulings already explored~n"
-    "(SSB)     : Sleep set blocked schedulings (wasted effort)~n"
-    "Planned   : Schedulings that will certainly be explored~n"
-    "~~ Rate    : Average rate of exploration (in schedulings/s)~n"
-    "Total(?)  : Estimation of total number of schedulings (see below)~n"
-    "Time(?)   : Estimated time to completion (see below)~n"
+    "Errors      : Schedulings with errors~n"
+    "Explored    : Schedulings already explored~n"
+    "SSB (if >0) : Sleep set blocked schedulings (wasted effort)~n"
+    "Planned     : Schedulings that will certainly be explored~n"
+    "~~Rate       : Average rate of exploration (in schedulings/s)~n"
+    "Elapsed     : Time elapsed (actively running)~n"
+    "Est.Total   : Estimation of total number of schedulings (see below)~n"
+    "Est.TTC     : Estimated time to completion (see below)~n"
     "~n"
     "Estimations:~n"
     "The total number of schedulings is estimated from the shape of the"
     " exploration tree. It has been observed to be WITHIN ONE ORDER OF"
     " MAGNITUDE of the actual number, when using default options.~n"
     "The time to completion is estimated using the estimated remaining"
-    " schedulings (Total - Explored) divided by the current Rate.~n"
+    " schedulings (Est.Total - Explored) divided by the current Rate.~n"
     , []).
 
+progress_header(0) ->
+  progress_header_common("");
+progress_header(_State) ->
+  progress_header_common("     SSB |").
+
 progress_header_common(SSB) ->
-  "    Errors |  Explored " ++ SSB ++
-    "| Planned |  ~ Rate |  Total(?) | Time(?) ".
+  ""
+    "Errors |"
+    "   Explored |"
+    ++ SSB ++
+    " Planned |"
+    " ~Rate |"
+    " Elapsed |"
+    " Est.Total |"
+    " Est.TTC".
 
-progress_line(0) ->
-  progress_line_common("");
-progress_line(_State) ->
-  progress_line_common("-----------").
-
-progress_line_common(SSB) ->
-  "-----------------------" ++ SSB ++
-    "------------------------------------------".
+progress_line(SSB) ->
+  L = lists:duplicate(length(progress_header(SSB)), $-),
+  io_lib:format("~s", [L]).
 
 progress_content(State) ->
   #logger_state{
      errors = Errors,
      estimator = Estimator,
      rate_info = RateInfo,
+     ticks = Ticks,
      traces_explored = TracesExplored,
      traces_ssb = TracesSSB,
      traces_total = TracesTotal
     } = State,
-  Estimation = max(concuerror_estimator:get_estimation(Estimator), TracesTotal),
-  Useful = TracesExplored - TracesSSB,
-  {Rate, NewRateInfo} = update_rate(RateInfo, Useful),
   Planned = TracesTotal - TracesExplored,
-  SSBStr =
-    case TracesSSB =:= 0 of
-      true -> "";
-      false -> io_lib:format(" ~7w |", [TracesSSB])
+  {Rate, NewRateInfo} = update_rate(RateInfo, TracesExplored),
+  EstimatedTotal =
+    max(concuerror_estimator:get_estimation(Estimator), TracesTotal),
+  ErrorsStr =
+    if Errors =:= 0 -> "none";
+       Errors < 10000 -> add_seps_to_int(Errors);
+       true -> "> 10k"
     end,
-  CompletionStr =
-    concuerror_estimator:estimate_completion(Estimation, TracesExplored, Rate),
+  [TracesExploredStr, PlannedStr] =
+    [add_seps_to_int(S) || S <- [TracesExplored, Planned]],
+  SSBStr =
+    if TracesSSB =:= 0 -> "";
+       TracesSSB < 100000 -> io_lib:format("~8s |", [add_seps_to_int(TracesSSB)]);
+       true -> io_lib:format("~8s |", ["> 100k"])
+    end,
   RateStr =
     case Rate of
-      0    -> "  <1 /s";
-      _    -> io_lib:format("~4w /s", [Rate])
+      init -> "...";
+      0    -> "<1/s";
+      _    -> io_lib:format("~w/s", [Rate])
     end,
+  EstimatedTotalStr =
+    if EstimatedTotal =:= unknown -> "...";
+       EstimatedTotal < 10000000 -> add_seps_to_int(EstimatedTotal);
+       true ->
+        Low = trunc(math:log10(EstimatedTotal)),
+        io_lib:format("< 10e~w", [Low + 1])
+    end,
+  ElapsedStr = time_string(round(Ticks * ?TICKER_TIMEOUT / 1000)),
+  CompletionStr = estimate_completion(EstimatedTotal, TracesExplored, Rate),
   Str =
     io_lib:format(
-      " ~9w | ~9w |~s ~7w | ~s | ~9w | ~s",
-      [Errors, TracesExplored, SSBStr, Planned,
-       RateStr, Estimation, CompletionStr]
+      "~6s |"
+      "~11s |"
+      "~s"
+      "~8s |"
+      "~6s |"
+      "~8s |"
+      "~10s |"
+      "~8s",
+      [ErrorsStr, TracesExploredStr, SSBStr, PlannedStr,
+       RateStr, ElapsedStr, EstimatedTotalStr, CompletionStr]
      ),
   NewState = State#logger_state{rate_info = NewRateInfo},
   {Str, NewState}.
@@ -700,29 +727,43 @@ progress_content(State) ->
 
 init_rate_info() ->
   #rate_info{
-     average   = concuerror_window_average:init(0, 10),
+     average   = init,
      prev      = 0,
      timestamp = timestamp()
     }.
 
-update_rate(RateInfo, Useful) ->
+update_rate(RateInfo, TracesExplored) ->
   #rate_info{
      average   = Average,
      prev      = Prev,
      timestamp = Old
     } = RateInfo,
   New = timestamp(),
-  Time = timediff(New, Old),
-  Diff = Useful - Prev,
-  CurrentRate = Diff / (Time + 0.0001),
-  {Rate, NewAverage} = concuerror_window_average:update(CurrentRate, Average),
+  {Rate, NewAverage} =
+    case TracesExplored < 10 of
+      true ->
+        {init, init};
+      false ->
+        Time = timediff(New, Old),
+        Diff = TracesExplored - Prev,
+        CurrentRate = Diff / (Time + 0.0001),
+        case Average =:= init of
+          true ->
+            NA = concuerror_window_average:init(CurrentRate, 50),
+            {round(CurrentRate), NA};
+          false ->
+            {R, NA} =
+              concuerror_window_average:update(CurrentRate, Average),
+            {round(R), NA}
+        end
+    end,
   NewRateInfo =
     RateInfo#rate_info{
       average   = NewAverage,
-      prev      = Useful,
+      prev      = TracesExplored,
       timestamp = New
      },
-  {round(Rate), NewRateInfo}.
+  {Rate, NewRateInfo}.
 
 %%------------------------------------------------------------------------------
 
@@ -759,6 +800,207 @@ final_interleavings_message(State) ->
   ExploreTotal = min(TracesTotal, InterleavingBound),
   io_lib:format("~p errors, ~p/~p interleavings explored~s~s~n",
                 [Errors, TracesExplored, ExploreTotal, SSB, BR]).
+
+%%------------------------------------------------------------------------------
+
+estimate_completion(Estimated, Explored, Rate)
+  when not is_number(Estimated);
+       not is_number(Explored);
+       not is_number(Rate) ->
+  "...";
+estimate_completion(Estimated, Explored, Rate) ->
+  Remaining = Estimated - Explored,
+  Completion = round(Remaining/(Rate + 0.001)),
+  " " ++ approximate_time_string(Completion).
+
+%%------------------------------------------------------------------------------
+
+-type posint() :: pos_integer().
+-type split_fun() :: fun((posint()) -> posint() | {posint(), posint()}).
+
+-record(time_formatter, {
+          threshold  = 1       :: pos_integer() | 'infinity',
+          rounding   = 1       :: pos_integer(),
+          split_fun            :: split_fun(),
+          one_format = "~w"    :: string(),
+          two_format = "~w ~w" :: string()
+         }).
+
+approximate_time_string(Seconds) ->
+  time_string(approximate_time_formatters(), Seconds).
+
+time_string(Seconds) ->
+  time_string(time_formatters(), Seconds).
+
+time_string([ATF|Rest], Value) ->
+  #time_formatter{
+     threshold  = Threshold,
+     rounding   = Rounding,
+     split_fun  = SplitFun,
+     one_format = OneFormat,
+     two_format = TwoFormat
+    } = ATF,
+  case Value > Threshold of
+    true -> time_string(Rest, round(Value/Rounding));
+    false ->
+      case SplitFun(Value) of
+        {High, Low} -> io_lib:format(TwoFormat, [High, Low]);
+        Single -> io_lib:format(OneFormat, [Single])
+      end
+  end.
+
+time_formatters() ->
+  SecondsSplitFun = fun(S) -> S end,
+  SecondsATF =
+    #time_formatter{
+       threshold  = 1 * 60,
+       rounding   = 1,
+       split_fun  = SecondsSplitFun,
+       one_format = "   ~2ws"
+      },
+  MinutesSplitFun =
+    fun(Seconds) -> {Seconds div 60, Seconds rem 60} end,
+  MinutesATF =
+    #time_formatter{
+       threshold  = 60 * 60,
+       rounding   = 60,
+       split_fun  = MinutesSplitFun,
+       two_format = "~2wm~2..0ws"
+      },
+  HoursSplitFun =
+    fun(Minutes) -> {Minutes div 60, Minutes rem 60} end,
+  HoursATF =
+    #time_formatter{
+       threshold  = 48 * 60,
+       rounding   = 60,
+       split_fun  = HoursSplitFun,
+       two_format = "~2wh~2..0wm"
+      },
+  DaysSplitFun =
+    fun(Hours) -> {Hours div 24, Hours rem 24} end,
+  DaysATF =
+    #time_formatter{
+       threshold  = infinity,
+       split_fun  = DaysSplitFun,
+       two_format = "~2wd~2..0wh"
+      },
+  [ SecondsATF
+  , MinutesATF
+  , HoursATF
+  , DaysATF
+  ].
+
+approximate_time_formatters() ->
+  SecondsSplitFun = fun(_) -> 1 end,
+  SecondsATF =
+    #time_formatter{
+       threshold  = 1 * 60,
+       rounding   = 60,
+       split_fun  = SecondsSplitFun,
+       one_format = "   <~pm"
+      },
+  MinutesSplitFun =
+    fun(Minutes) ->
+        case Minutes < 60 of
+          true -> Minutes;
+          false -> {Minutes div 60, Minutes rem 60}
+        end
+    end,
+  MinutesATF =
+    #time_formatter{
+       threshold  = 60,
+       rounding   = 15,
+       split_fun  = MinutesSplitFun,
+       one_format = "   ~2wm",
+       two_format = "~2wh~2..0wm"
+      },
+  QuartersSplitFun =
+    fun(Quarters) -> {Quarters div 4, (Quarters rem 4) * 15} end,
+  QuartersATF =
+    #time_formatter{
+       threshold  = 4 * 3,
+       rounding   = 4,
+       split_fun  = QuartersSplitFun,
+       two_format = "~2wh~2..0wm"
+      },
+  HoursSplitFun =
+    fun(Hours) ->
+        case Hours < 60 of
+          true -> Hours;
+          false -> {Hours div 24, Hours rem 24}
+        end
+    end,
+  HoursATF =
+    #time_formatter{
+       threshold  = 3 * 24,
+       rounding   = 6,
+       split_fun  = HoursSplitFun,
+       one_format = "   ~2wh",
+       two_format = "~2wd~2..0wh"
+      },
+  DayQuartersSplitFun =
+    fun(Quarters) -> {Quarters div 4, (Quarters rem 4) * 6} end,
+  DayQuartersATF =
+    #time_formatter{
+       threshold  = 4 * 15,
+       rounding   = 4,
+       split_fun  = DayQuartersSplitFun,
+       one_format = "   ~2wh",
+       two_format = "~2wd~2..0wh"
+      },
+  DaysSplitFun = fun(Days) -> Days end,
+  DaysATF =
+    #time_formatter{
+       threshold  = 12*30,
+       rounding   = 30,
+       split_fun  = DaysSplitFun,
+       one_format = "~5wd"
+      },
+  MonthsSplitFun =
+    fun(Months) -> {Months div 12, Months rem 12} end,
+  MonthsATF =
+    #time_formatter{
+       threshold  = 12*50,
+       rounding   = 12,
+       split_fun  = MonthsSplitFun,
+       two_format = "~2wy~2..0wm"
+      },
+  YearsSplitFun =
+    fun(Years) -> Years end,
+  YearsATF =
+    #time_formatter{
+       threshold  = 10000,
+       rounding = 1,
+       split_fun  = YearsSplitFun,
+       one_format = "~5wy"
+      },
+  TooMuchSplitFun =
+    fun(_) -> 10000 end,
+  TooMuchATF =
+    #time_formatter{
+       threshold  = infinity,
+       split_fun  = TooMuchSplitFun,
+       one_format = "> ~wy"
+      },
+  [ SecondsATF
+  , MinutesATF
+  , QuartersATF
+  , HoursATF
+  , DayQuartersATF
+  , DaysATF
+  , MonthsATF
+  , YearsATF
+  , TooMuchATF
+  ].
+
+%%------------------------------------------------------------------------------
+
+add_seps_to_int(Integer) when Integer < 1000 -> integer_to_list(Integer);
+add_seps_to_int(Integer) when is_integer(Integer) ->
+  Rem = Integer rem 1000,
+  DivS = add_seps_to_int(Integer div 1000),
+  io_lib:format("~s ~3..0w", [DivS, Rem]);
+add_seps_to_int(Other) -> io_lib:format("~w", [Other]).
 
 %%------------------------------------------------------------------------------
 
