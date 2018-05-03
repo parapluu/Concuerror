@@ -1,5 +1,4 @@
 #!/usr/bin/env escript
-%% -*- erlang-indent-level: 2 -*-
 %%! +S1 -nostick -noshell -pa ../ebin
 
 main([CoverDir]) ->

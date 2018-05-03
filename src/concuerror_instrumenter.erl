@@ -1,5 +1,3 @@
-%% -*- erlang-indent-level: 2 -*-
-
 -module(concuerror_instrumenter).
 
 -export([instrument/3, is_unsafe/1]).

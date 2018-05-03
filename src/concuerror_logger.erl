@@ -1,5 +1,3 @@
-%% -*- erlang-indent-level: 2 -*-
-
 -module(concuerror_logger).
 
 -export([start/1, complete/2, plan/1, log/5, race/3, finish/2, print/3, time/2]).

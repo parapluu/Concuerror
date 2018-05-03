@@ -1,5 +1,3 @@
-%% -*- erlang-indent-level: 2 -*-
-
 %%% @doc Concuerror's scheduler component
 %%%
 %%% concuerror_scheduler is the main driver of interleaving
