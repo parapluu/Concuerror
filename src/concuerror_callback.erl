@@ -1,5 +1,3 @@
-%% -*- erlang-indent-level: 2 -*-
-
 %% @doc This module contains code for:
 %%      - managing and interfacing with processes under Concuerror
 %%      - simulating built-in operations in instrumented processes

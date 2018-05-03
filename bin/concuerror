@@ -1,5 +1,4 @@
 #!/usr/bin/env escript
-%% -*- erlang-indent-level: 2 -*-
 %%! +S1 -boot start_clean -noshell -pa . -pa ebin
 
 %% This script's purpose is to do the absolute minimum work required

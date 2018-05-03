@@ -1,5 +1,3 @@
-%% -*- erlang-indent-level: 2 -*-
-
 %% @doc The instrumenter replaces interesting operations with calls to inspect/3
 -module(concuerror_inspect).
 

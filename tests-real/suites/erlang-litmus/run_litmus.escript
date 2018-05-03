@@ -1,5 +1,4 @@
 #!/usr/bin/env escript
-%% -*- erlang-indent-level: 2 -*-
 %%! +S1 -noshell
 
 %%% This script can be used to run Concuerror on specified tests.

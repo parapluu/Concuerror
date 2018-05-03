@@ -1,5 +1,3 @@
-%% -*- erlang-indent-level: 2 -*-
-
 -module(concuerror).
 
 %% Main entry point.

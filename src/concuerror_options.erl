@@ -1,5 +1,3 @@
-%% -*- erlang-indent-level: 2 -*-
-
 -module(concuerror_options).
 
 -export([parse_cl/1, finalize/1, version/0]).

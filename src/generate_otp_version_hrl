@@ -1,5 +1,4 @@
 #!/usr/bin/env escript
-%% -*- erlang-indent-level: 2 -*-
 %%! -noshell
 
 %% The expected argument is the string returned from

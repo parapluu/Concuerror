@@ -1,5 +1,3 @@
-%% -*- erlang-indent-level: 2 -*-
-
 -module(concuerror_loader).
 
 -export([initialize/1, load/1, load_initially/1, is_instrumenting/0]).

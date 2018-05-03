@@ -4,6 +4,7 @@
 
 NAME := concuerror
 VERSION := $(shell git describe --abbrev=6 --always --tags)
+LATEST_MAJOR_OTP_VERSION := 20
 
 .PHONY: default
 default: all
@@ -74,7 +75,7 @@ ebin/%.beam: src/%.erl | ebin
 
 $(OTP_VERSION_HRL):
 	@printf " GEN   $@\n"
-	@src/generate_otp_version_hrl $$(./.travis/get_latest_travis ./.travis.yml) > $@
+	@src/generate_otp_version_hrl $(LATEST_MAJOR_OTP_VERSION) > $@
 
 ###-----------------------------------------------------------------------------
 

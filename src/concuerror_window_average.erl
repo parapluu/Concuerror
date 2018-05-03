@@ -1,5 +1,3 @@
-%% -*- erlang-indent-level: 2 -*-
-
 %% @doc This module provides functions for calculating a running
 %%      window average of numerical values.
 
