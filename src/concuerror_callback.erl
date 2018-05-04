@@ -1854,6 +1854,8 @@ system_wrapper_loop(Name, Wrapped, Info) ->
                   receive
                     Msg -> {From, Msg}
                   end;
+                logger ->
+                  throw(no_reply);
                 standard_error ->
                   #concuerror_info{logger = Logger} = Info,
                   {From, Reply, _} = handle_io(Data, {standard_error, Logger}),
