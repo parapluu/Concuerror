@@ -658,7 +658,8 @@ ets_is_mutating(#builtin_event{mfargs = {_,Op,[_|Rest] = Args}} = Event) ->
     {next          ,_} -> false;
     {select        ,_} -> false;
     {select_delete ,_} -> from_delete(hd(Rest));
-    {update_counter,3} -> with_key(hd(Rest))
+    {update_counter,3} -> with_key(hd(Rest));
+    {whereis       ,1} -> false
   end.
 
 with_key(Key) ->
@@ -672,6 +673,7 @@ with_key(Key) ->
 ets_reads_keys(Event) ->
   case keys_or_tuples(Event) of
     any -> any;
+    none -> [];
     {matchspec, _MS} -> any; % can't test the matchspec against a single key
     {keys, Keys} -> Keys;
     {tuples, Tuples} ->
@@ -698,7 +700,8 @@ keys_or_tuples(#builtin_event{mfargs = {_,Op,[_|Rest] = Args}}) ->
     {next          ,_} -> any;
     {select        ,_} -> {matchspec, hd(Rest)};
     {select_delete ,_} -> {matchspec, hd(Rest)};
-    {update_counter,3} -> {keys, [hd(Rest)]}
+    {update_counter,3} -> {keys, [hd(Rest)]};
+    {whereis       ,1} -> none
   end.
 
 from_insert(undefined, _, _) ->
@@ -710,6 +713,7 @@ from_insert(Table, Insert, InsertNewOrDelete) ->
   fun(Event) ->
       case keys_or_tuples(Event) of
         any -> true;
+        none -> false;
         {keys, Keys} ->
           InsertKeys =
             ordsets:from_list([element(KeyPos, T) || T <- InsertList]),
@@ -739,6 +743,7 @@ from_delete(MatchSpec) ->
   fun (Event) ->
       case keys_or_tuples(Event) of
         any -> true;
+        none -> false;
         {keys, _Keys} -> true;
         {matchspec, _MS} -> true;
         {tuples, Tuples} ->
