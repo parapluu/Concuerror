@@ -1,6 +1,6 @@
 -module(concuerror_logger).
 
--export([start/1, complete/2, plan/1, log/5, race/3, finish/2, print/3, time/2]).
+-export([start/1, complete/2, plan/1, log/5, race/3, stop/2, print/3, time/2]).
 -export([bound_reached/1, set_verbosity/2]).
 -export([graph_set_node/3, graph_new_node/4, graph_race/3]).
 -export([print_log_message/3]).
@@ -196,12 +196,12 @@ log(Logger, Level, Tag, Format, Data) ->
   Logger ! {log, Level, Tag, Format, Data},
   ok.
 
--spec finish(logger(), term()) -> concuerror:exit_status().
+-spec stop(logger(), term()) -> concuerror:exit_status().
 
-finish(Logger, Status) ->
-  Logger ! {finish, Status, self()},
+stop(Logger, Status) ->
+  Logger ! {stop, Status, self()},
   receive
-    {finished, ExitStatus} -> ExitStatus
+    {stopped, ExitStatus} -> ExitStatus
   end.
 
 -spec print(logger(), stream(), string()) -> ok.
@@ -245,11 +245,11 @@ showing_progress(Verbosity) ->
 loop(State) ->
   Message =
     receive
-      {finish, _, _} = Finish ->
+      {stop, _, _} = Stop ->
         receive
-          M -> self() ! Finish, M
+          M -> self() ! Stop, M
         after
-          0 -> Finish
+          0 -> Stop
         end;
       M -> M
     end,
@@ -344,7 +344,7 @@ loop(Message, State) ->
              log_msgs = NewLogMsgs});
     {graph, Command} ->
       loop(graph_command(Command, State));
-    {finish, SchedulerStatus, Scheduler} ->
+    {stop, SchedulerStatus, Scheduler} ->
       NewState = stop_ticker(State),
       separator(Output, $#),
       to_file(Output, "Exploration completed!~n",[]),
@@ -381,7 +381,7 @@ loop(Message, State) ->
           FinalFormat = Format ++ IntMsg,
           printout(NewState, FinalFormat, Args)
       end,
-      Scheduler ! {finished, ExitStatus},
+      Scheduler ! {stopped, ExitStatus},
       ok;
     plan ->
       NewState = State#logger_state{traces_total = TracesTotal + 1},
