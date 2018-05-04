@@ -13,6 +13,8 @@ diff \
 
 if [ "$?" -ne 0 ]; then
     echo echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" >> $DIFFPRINTER
+    echo echo "New result:" >> $DIFFPRINTER
+    echo "cat $2" >> $DIFFPRINTER
     echo echo "Diff from $1:" >> $DIFFPRINTER
     echo "cat $DIFF" >> $DIFFPRINTER
     exit 1

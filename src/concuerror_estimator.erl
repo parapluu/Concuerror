@@ -8,7 +8,7 @@
 -behaviour(gen_server).
 
 %% API
--export([start_link/1, finish/1, restart/2, plan/2, get_estimation/1]).
+-export([start_link/1, stop/1, restart/2, plan/2, get_estimation/1]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
@@ -115,10 +115,10 @@ estimation_style(Options) ->
 
 %%------------------------------------------------------------------------------
 
--spec finish(estimator()) -> 'ok'.
+-spec stop(estimator()) -> 'ok'.
 
-finish(none) -> ok;
-finish(Estimator) ->
+stop(none) -> ok;
+stop(Estimator) ->
   gen_server_stop(Estimator).
 
 -ifdef(BEFORE_OTP_18).
