@@ -45,7 +45,7 @@ dependent(#event{event_info = Info1, special = Special1},
           ?unique(Logger, ?lwarning, Msg, []),
           true;
         {false, _} ->
-          ?crash({undefined_dependency, Info1, Info2, erlang:get_stacktrace()})
+          ?crash({undefined_dependency, Info1, Info2, []})
       end
   end.
 

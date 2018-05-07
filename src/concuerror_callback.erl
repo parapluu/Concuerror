@@ -1413,7 +1413,7 @@ wrapper(InfoIn, Module, Name, Args) ->
               exit  -> Reason
             end,
           exiting(NewReason, Stacktrace, EndInfo);
-        false -> erlang:raise(Class, Reason, erlang:get_stacktrace())
+        false -> erlang:raise(Class, Reason, [])
       end
   end.
 
@@ -1885,7 +1885,7 @@ system_wrapper_loop(Name, Wrapped, Info) ->
             no_reply -> send_message_ack(Report, false, false, false);
             Reason -> ?crash(Reason);
             Class:Reason ->
-              Stacktrace = erlang:get_stacktrace(),
+              Stacktrace = [],
               ?crash({system_wrapper_error, Name, Class, Reason, Stacktrace})
           end;
         {get_info, To} ->
