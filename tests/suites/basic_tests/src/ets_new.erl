@@ -9,7 +9,6 @@
 %%%----------------------------------------------------------------------
 %%% Authors     : Ilias Tsitsimpis <iliastsi@hotmail.com>
 %%% Description : Test the `ets:new' instrumentation
-%%%                 (This test should currenty fail)
 %%%----------------------------------------------------------------------
 
 -module(ets_new).
