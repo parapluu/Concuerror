@@ -127,19 +127,28 @@
 %%------------------------------------------------------------------------------
 -type ets_tables() :: ets:tid().
 
--define(ets_name_none, 0).
+-ifdef(BEFORE_OTP_21).
+-define(maybe_ets_whereis(X), X).
+-else.
+-define(maybe_ets_whereis(X), ets:whereis(X)).
+-endif.
+
 -define(new_ets_table(Tid, Protection),
         {Tid, unknown, unknown, Protection, unknown, true}).
--define(new_system_ets_table(Tid, Protect),
-        {Tid, Tid, self(), Protect, unknown, true}).
+-define(new_system_ets_table(Name, Protect),
+        {?maybe_ets_whereis(Name), Name, self(), Protect, unknown, true}).
+
 -define(ets_name, 2).
 -define(ets_owner, 3).
 -define(ets_protection, 4).
 -define(ets_heir, 5).
 -define(ets_alive, 6).
+
 -define(ets_match_owner_to_name_heir(Owner), {'_', '$1', Owner, '_', '$2', true}).
 -define(ets_match_name(Name), {'$1', Name, '$2', '$3', '_', true}).
 -define(ets_match_mine(), {'_', '_', self(), '_', '_', '_'}).
+-define(ets_match_tid_to_name(Tid), {Tid, '$1', '_', '_', '_', true}).
+
 %%------------------------------------------------------------------------------
 -type processes() :: ets:tid().
 -type symbolic_name() :: string().
