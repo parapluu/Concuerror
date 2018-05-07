@@ -2,6 +2,11 @@ sudo: false
 
 language: erlang
 
+branches:
+  only:
+  - master
+  - /^\d+\..*/ # version tags
+
 # Two stages, so that basic tests are run first
 stages:
   - basic
