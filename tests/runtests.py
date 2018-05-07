@@ -14,6 +14,7 @@ from multiprocessing import Process, Lock, Value, BoundedSemaphore, cpu_count
 def runTest(test):
     global dirname
     global results
+    global sema1
     # test has the format of '.*/suites/<suite_name>/src/<test_name>(.erl)?'
     # Split the test in suite and name components using pattern matching
     rest1, name = os.path.split(test)
@@ -34,14 +35,12 @@ def runTest(test):
         os.makedirs(results + "/" + suite + "/results")
     except OSError:
         pass
-    sema.acquire()
     # Compile it
     os.system("erlc -W0 -o %s %s/%s.erl" % (dirn, dirn, modn))
     # And extract scenarios from it
     pout = subprocess.check_output(
         ["erl -boot start_clean -noinput -pa %s -pa %s -s scenarios extract %s -s init stop"
          % (dirname, dirn, modn)], shell=True).splitlines()
-    sema.release()
     procS = []
     for scenario in pout:
         # scenario has the format of {<mod_name>,<func_name>,<preb>}\n
@@ -50,6 +49,7 @@ def runTest(test):
         p = Process(
             target=runScenario,
             args=(suite, name, modn, scen[1], scen[2], scen[3:], files))
+        sema.acquire()
         p.start()
         procS.append(p)
     # Wait
@@ -57,6 +57,7 @@ def runTest(test):
         p.join()
     # Must happen late, in case the test has/needs exceptional
     os.remove("%s/%s.beam" % (dirn,modn))
+    sema1.release()
         
 #---------------------------------------------------------------------
 # Run the specified scenario and print the results
@@ -101,7 +102,6 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
         else:
             bound_type = "-c delay"
             preb_output=("%s/delay") % (preb)
-    sema.acquire()
     txtname = "%s-%s-%s%s.txt" % (name, funn, preb, file_ext)
     rslt = "%s/%s/results/%s" % (results, suite, txtname)
     try:
@@ -127,7 +127,6 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
         finished = True
     else:
         finished = False
-    sema.release()
     # Print the results
     lock.acquire()
     total_tests.value += 1
@@ -147,6 +146,7 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
         total_failed.value += 1
         print "%s  \033[01;31mfailed\033[00m" % (logline)
     lock.release()
+    sema.release()
 
 def equalResults(suite, name, orig, rslt):
     global dirname
@@ -200,12 +200,14 @@ total_tests = Value(c_int, 0, lock=False)
 total_failed = Value(c_int, 0, lock=False)
 
 sema = BoundedSemaphore(int(threads))
+sema1 = BoundedSemaphore(int(threads))
 
 # For every test do
 procT = []
 for test in tests:
     p = Process(target=runTest, args=(test,))
     procT.append(p)
+    sema1.acquire()
     p.start()
 # Wait
 for p in procT:
