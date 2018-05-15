@@ -15,7 +15,7 @@ updated: 2017-10-16
 ## How do I report a bug?
 
 The preferred way is to use the repository's [Issues
-page](https://github.com/parapluu/Concuerror/issues/new), but you can also [contact the developers](./contact) in other ways.
+page](https://github.com/parapluu/Concuerror/issues/new), but you can also [contact the developers]({% link contact.md %}) in other ways.
 
 ## How can I tell Concuerror where to find the code used by my test?
 
@@ -101,7 +101,7 @@ Use a higher `--print_depth`.
 
 ## Is there a mailing list?
 
-[Yes](/contact)!
+[Yes]({% link contact.md %})!
 
 ## Is there a changelog?
 
