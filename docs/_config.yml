@@ -67,4 +67,4 @@ plugins:
   - jekyll-seo-tag
 
 include: [".htaccess"]
-exclude: ["CNAME", "Gemfile", "LICENSE", "post.thor", "README.md"]
+exclude: ["CNAME", "Gemfile", "post.thor", "README.md"]
