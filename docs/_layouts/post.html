@@ -52,7 +52,7 @@
         {% if page.modified %}<span class="entry-date date modified"><time datetime="{{ page.modified | date_to_xmlschema }}" itemprop="dateModified"><i class="fas fa-pencil-alt"></i> {{ page.modified | date: "%B %d, %Y" }}</time></span>
         {% elsif page.updated %}<span class="entry-date date updated"><time datetime="{{ page.updated | date_to_xmlschema }}" itemprop="dateModified"><i class="fas fa-pencil-alt"></i> {{ page.updated | date: "%B %d, %Y" }}</time></span>
         {% else %}<span class="entry-date date updated"><time datetime="{{ page.date | date_to_xmlschema }}" itemprop="dateModified">{% endif %}
-            <span><a href="{{ site.url }}{{ page.url }}" rel="bookmark" title="{{ page.title }}" itemprop="url"><i class="fas fa-link"></i></i> Permalink</a></span>
+            <span><a href="{{ site.url }}{{ page.url }}" rel="bookmark" title="{{ page.title }}" itemprop="url"><i class="fas fa-link"></i> Permalink</a></span>
         {% if page.categories[0] == "tutorials" %}
             <span><a href="{{ site.url }}/tutorials" title="All tutorials"><i class="fas fa-info-circle"></i> All tutorials</a></span>
         {% endif %}
