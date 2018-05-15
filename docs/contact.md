@@ -26,7 +26,7 @@ with 'Subscribe' in the Subject field
 
 OR
 
-Visit the list's page at <http://www.freelists.org/list/concuerror>.
+Visit the list's page at <https://www.freelists.org/list/concuerror>.
 
 ### FAQ
 
