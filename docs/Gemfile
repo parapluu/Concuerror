@@ -9,3 +9,4 @@ gem 'rake'
 gem 'thor'
 gem 'activesupport'
 gem 'kramdown'
+gem "html-proofer"
