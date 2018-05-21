@@ -22,6 +22,7 @@
 -spec main([string()]) -> no_return().
 
 main(Args) ->
+  _ = application:load(concuerror),
   maybe_cover_compile(),
   Status =
     case concuerror_options:parse_cl(Args) of
@@ -40,6 +41,7 @@ main(Args) ->
 -spec run(concuerror_options:options()) -> exit_status().
 
 run(RawOptions) ->
+  _ = application:load(concuerror),
   maybe_cover_compile(),
   Status =
     case concuerror_options:finalize(RawOptions) of
@@ -82,8 +84,8 @@ maybe_cover_compile() ->
   if Cover =/= false ->
       case cover:is_compiled(?MODULE) of
         false ->
-          EbinDir = filename:dirname(code:which(?MODULE)),
-          _ = cover:compile_beam_directory(EbinDir),
+          {ok, Modules} = application:get_key(concuerror, modules),
+          [_|_] = cover:compile_beam(Modules),
           ok;
         _ -> ok
       end;

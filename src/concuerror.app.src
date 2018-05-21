@@ -1,0 +1,16 @@
+{application, concuerror,
+ [ {description,
+    "Concuerror: Stateless Model Checking tool for Erlang programs"
+   }
+ , {vsn, "git"}
+ , {applications, [kernel, stdlib]}
+ , {maintainers,
+    [ "Stavros Aronis"
+    , "Kostis Sagonas"
+    ]}
+ , {licenses, ["BSD-2-Clause"]}
+ , {links,
+    [ {"Github", "https://github.com/parapluu/Concuerror"}
+    , {"Website", "http://parapluu.github.io/Concuerror"}
+    ]}
+ ]}.

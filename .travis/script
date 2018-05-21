@@ -6,6 +6,8 @@ THISDIR=$(dirname $0)
 REPO_LATEST=`$THISDIR/get_latest_travis $THISDIR/../.travis.yml`
 
 if [ "$REPO_LATEST" = "$TRAVIS_OTP_RELEASE" ]; then
+  ## Use non escriptized version for coverage report
+  export CONCUERROR=$(pwd)/priv/concuerror
   export CONCUERROR_COVER=$(pwd)/cover/data
 fi
 

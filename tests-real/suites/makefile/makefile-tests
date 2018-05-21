@@ -4,29 +4,30 @@
 
 print_blue "$0"
 
-> /dev/null make -sj -C $(dirname $CONCUERROR)/..
+> /dev/null make -sj -C $TOP_DIR
 testing "Can clean"
-make -sj -C $(dirname $CONCUERROR)/.. clean
+make -sj -C $TOP_DIR clean
 good
 
-> /dev/null make -sj -C $(dirname $CONCUERROR)/..
+> /dev/null make -sj -C $TOP_DIR
 testing "Can distclean"
-make -sj -C $(dirname $CONCUERROR)/.. distclean
+make -sj -C $TOP_DIR distclean
 good
 
-> /dev/null make -sj -C $(dirname $CONCUERROR)/.. distclean
+> /dev/null make -sj -C $TOP_DIR distclean
 testing "Can compile and run with dev"
-make -sj -C $(dirname $CONCUERROR)/.. dev
+make -sj -C $TOP_DIR dev
 concuerror_console -f ../options/src/six.erl -v9
-outputhas "\-dev"
+good
 
-> /dev/null make -sj -C $(dirname $CONCUERROR)/.. distclean
+> /dev/null make -sj -C $TOP_DIR distclean
 testing "Can compile and run with pedantic"
-make -sj -C $(dirname $CONCUERROR)/.. pedantic
+make -sj -C $TOP_DIR pedantic
+good
 
 testing "Restore normal Concuerror"
-> /dev/null make -sj -C $(dirname $CONCUERROR)/.. distclean
-> /dev/null make -sj -C $(dirname $CONCUERROR)/..
+> /dev/null make -sj -C $TOP_DIR distclean
+> /dev/null make -sj -C $TOP_DIR
 good
 
 . footer

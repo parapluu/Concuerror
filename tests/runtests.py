@@ -164,11 +164,12 @@ def equalResults(suite, name, orig, rslt):
 
 # Get the directory of Concuerror's testsuite
 dirname = os.path.abspath(os.path.dirname(sys.argv[0]))
-concuerror = os.path.abspath(dirname + "/../bin/concuerror")
+concuerror = os.getenv("CONCUERROR", dirname + "/../bin/concuerror")
 results = os.path.abspath(dirname + "/results")
 
 # Ensure made
-assert 0 == os.system("make -j -C %s/.. default tests/scenarios.beam" % dirname)
+assert 0 == os.system("%s --version" % (concuerror))
+assert 0 == os.system("erlc scenarios.erl")
 
 # If we have arguments we should use them as tests,
 # otherwise check them all

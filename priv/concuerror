@@ -1,0 +1,26 @@
+#!/usr/bin/env escript
+%%! +S1 -boot start_clean -noshell -pa . -pa ebin
+
+%% This script is used instead of the 'escriptized' version of the
+%% tool to collect code coverage data, as it was not obvious how to
+%% use cover with escript's embedded zip archive.
+
+main(Args) ->
+  ScriptName = read_link(escript:script_name()),
+  ScriptDir = filename:dirname(ScriptName),
+  TopDir = filename:dirname(ScriptDir),
+  ExtraDirs =
+    [filename:join([TopDir, "_build", Profile, "lib", App, "ebin"]) ||
+      Profile <- ["default", "dev"],
+      App <- ["concuerror", "getopt"]
+    ],
+  ok = code:add_pathsa(ExtraDirs),
+  concuerror:main(Args).
+
+-spec read_link(file:filename()) -> file:filename().
+
+read_link(Filename) ->
+  case file:read_link_all(Filename) of
+    {ok, Follow} -> read_link(Follow);
+    _Other -> Filename
+  end.

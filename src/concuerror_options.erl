@@ -632,7 +632,8 @@ check_otp_version() ->
 -spec version() -> string().
 
 version() ->
-  io_lib:format("Concuerror v~s", [?VSN]).
+  {ok, Vsn} = application:get_key(concuerror, vsn),
+  io_lib:format("Concuerror v~s", [Vsn]).
 
 %%%-----------------------------------------------------------------------------
 

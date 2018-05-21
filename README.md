@@ -12,7 +12,7 @@ To find out more [visit the website!][website]
 
 * Compile             : `make`
 * Run the testsuites  : `make tests tests-real`
-* Run Dialyzer        : `make dialyze`
+* Run Dialyzer        : `make dialyzer`
 * Check code coverage : `make cover`
 * Cleanup             : `make clean`
 

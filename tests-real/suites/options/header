@@ -1,4 +1,6 @@
-CONCUERROR=${CONCUERROR:-$(which concuerror)}
+TOP_DIR=${TOP_DIR:-../../..}
+CONCUERROR=${CONCUERROR:-$TOP_DIR/bin/concuerror}
+CONCUERROR_BEAM=${CONCUERROR_BEAM:-$TOP_DIR/_build/default/lib/concuerror/ebin}
 
 Out=concuerror_report.txt
 Console=console
