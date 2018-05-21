@@ -1,12 +1,10 @@
 -module(concuerror).
 
-%% Main entry point.
+%% CLI entry point.
+-export([main/1]).
+
+%% Erlang entry point.
 -export([run/1]).
-
-%%------------------------------------------------------------------------------
-
-%% Internal export
--export([maybe_cover_compile/0, maybe_cover_export/1]).
 
 %%------------------------------------------------------------------------------
 
@@ -17,6 +15,27 @@
 -include("concuerror.hrl").
 
 %%------------------------------------------------------------------------------
+
+%% @doc Concuerror's entry point when invoked by the command-line with
+%% a list of strings as arguments.
+
+-spec main([string()]) -> no_return().
+
+main(Args) ->
+  maybe_cover_compile(),
+  Status =
+    case concuerror_options:parse_cl(Args) of
+      {ok, Options} -> run(Options);
+      {exit, ExitStatus} ->
+        maybe_cover_export(Args),
+        ExitStatus
+    end,
+  cl_exit(Status).
+
+%%------------------------------------------------------------------------------
+
+%% @doc Concuerror's entry point when invoked by an Erlang shell, with
+%% a proplist as argument.
 
 -spec run(concuerror_options:options()) -> exit_status().
 
@@ -58,8 +77,6 @@ start(Options, LogMsgs) ->
 
 %%------------------------------------------------------------------------------
 
--spec maybe_cover_compile() -> 'ok'.
-
 maybe_cover_compile() ->
   Cover = os:getenv("CONCUERROR_COVER"),
   if Cover =/= false ->
@@ -75,8 +92,6 @@ maybe_cover_compile() ->
 
 %%------------------------------------------------------------------------------
 
--spec maybe_cover_export(term()) -> 'ok'.
-
 maybe_cover_export(Args) ->
   Cover = os:getenv("CONCUERROR_COVER"),
   if Cover =/= false ->
@@ -86,6 +101,15 @@ maybe_cover_export(Args) ->
       ok;
      true -> ok
   end.
+
+%%------------------------------------------------------------------------------
+
+cl_exit(ok) ->
+  erlang:halt(0);
+cl_exit(error) ->
+  erlang:halt(1);
+cl_exit(fail) ->
+  erlang:halt(2).
 
 %%------------------------------------------------------------------------------
 
