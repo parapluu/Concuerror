@@ -32,7 +32,7 @@ MAKEFLAGS += --no-builtin-rules
 .SUFFIXES:
 
 .PHONY: all dev native pedantic
-all dev native pedantic: $(DEPS_BEAMS) $(BEAMS) $(NAME)
+all dev native pedantic: $(DEPS_BEAMS) $(BEAMS)
 
 dev: VERSION := $(VERSION)-dev
 dev: ERL_COMPILE_FLAGS += -DDEV=true
@@ -49,15 +49,6 @@ ERL_COMPILE_FLAGS += \
 	+warn_unused_import \
 	+warn_missing_spec \
 	+warn_untyped_record
-
-$(NAME): Makefile
-	@$(RM) $@
-	@printf " GEN   $@\n"
-	@printf -- "#!/usr/bin/env sh\n" >> $@
-	@printf -- "SCRIPTPATH=\"\$$( cd \"\$$(dirname \"\$$0\")\" ; pwd -P )\"\n" >> $@
-	@printf -- "printf \"\nWARNING! Concuerror/concuerror will be removed in next version. Use Concuerror/bin/concuerror instead!\n\"\n" >> $@
-	@printf -- "\$$SCRIPTPATH/bin/concuerror \$$@" >> $@
-	@chmod u+x $@
 
 ###-----------------------------------------------------------------------------
 
