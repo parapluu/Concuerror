@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased](https://github.com/parapluu/Concuerror/tree/master)
 
 ### Added
+
+### Removed
+
+### Changed
+
+### Fixed
+
+
+## [0.19](https://github.com/parapluu/Concuerror/releases/tag/0.19) - 2018-05-21
+
+### Added
 - Total state space size and time to completion estimation
 - `--first_process_errors_only` option
 - Parts of [aronisstav/erlang-concurrency-litmus-tests](https://github.com/aronisstav/erlang-concurrency-litmus-tests) as a testsuite
