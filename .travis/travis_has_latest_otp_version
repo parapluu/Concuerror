@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-curl -sO https://raw.githubusercontent.com/yrashk/kerl/master/kerl
+curl -sO https://raw.githubusercontent.com/kerl/kerl/master/kerl
 chmod a+x kerl
 LATEST=`./kerl update releases | tr ' ' '\n' | tail -n1`
 rm ./kerl
