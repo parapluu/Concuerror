@@ -112,7 +112,7 @@ tests: all
 	@$(RM) $@/thediff
 	@(cd $@; ./runtests.py)
 
-## the -j 1 below is so that the outputs of tests are not shown interleaved
+## -j 1: ensure that the outputs of different suites are not interleaved
 .PHONY: tests-real
 tests-real: all
 	@$(RM) $@/thediff
