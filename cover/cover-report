@@ -10,8 +10,8 @@ main([CoverDir]) ->
     false ->
       Foreach2 = fun(M) -> cover:analyse_to_file(M, [html]) end,
       lists:foreach(Foreach2, cover:imported_modules());
-    {true, Combine} ->
-      cover:export(Combine)
+    {true, OutputFile} ->
+      cover:export(OutputFile)
   end,
   {result, Result, _} = cover:analyse(coverage, module),
   print(Result).
@@ -77,5 +77,5 @@ to_stderr(Format, Args) ->
 is_run_to_combine() ->
   case os:getenv("COVER_COMBINE") of
     false -> false;
-    Else -> {true, Else}
+    OutputFile -> {true, OutputFile}
   end.
