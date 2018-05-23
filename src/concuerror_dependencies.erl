@@ -8,14 +8,14 @@
 
 %%------------------------------------------------------------------------------
 
--spec dependent_safe(event(), event()) ->
-                        boolean() | 'irreversible' | {'true', message_id()}.
+-type dep_ret() :: boolean() | 'irreversible' | {'true', message_id()}.
+
+-spec dependent_safe(event(), event()) -> dep_ret().
 
 dependent_safe(E1, E2) ->
   dependent(E1, E2, {true, ignore}).
 
--spec dependent(event(), event(), assume_racing_opt()) ->
-                   boolean() | 'irreversible' | {'true', message_id()}.
+-spec dependent(event(), event(), assume_racing_opt()) -> dep_ret().
 
 dependent(#event{actor = A}, #event{actor = A}, _) ->
   irreversible;
@@ -657,7 +657,9 @@ ets_is_mutating(#builtin_event{mfargs = {_,Op,[_|Rest] = Args}} = Event) ->
     {member        ,_} -> false;
     {next          ,_} -> false;
     {select        ,_} -> false;
-    {select_delete ,_} -> from_delete(hd(Rest));
+    {SelDelete     ,_} when SelDelete =:= select_delete;
+                            SelDelete =:= internal_select_delete ->
+      from_delete(hd(Rest));
     {update_counter,3} -> with_key(hd(Rest))
   end.
 
@@ -697,7 +699,8 @@ keys_or_tuples(#builtin_event{mfargs = {_,Op,[_|Rest] = Args}}) ->
     {member        ,_} -> {keys, [hd(Rest)]};
     {next          ,_} -> any;
     {select        ,_} -> {matchspec, hd(Rest)};
-    {select_delete ,_} -> {matchspec, hd(Rest)};
+    {SelDelete     ,_} when SelDelete =:= select_delete; SelDelete =:= internal_select_delete ->
+      {matchspec, hd(Rest)};
     {update_counter,3} -> {keys, [hd(Rest)]}
   end.
 
