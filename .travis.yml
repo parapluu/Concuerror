@@ -59,7 +59,7 @@ addons:
 env:
 
   ## - TEST=".travis/script tests"
-  - TEST=".travis/script tests-real"
+  - TEST=".travis/script tests-real" FLAG="testsreal"
 
 otp_release:
 
