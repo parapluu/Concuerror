@@ -65,7 +65,7 @@ tests-real: bin/$(NAME)
 .PHONY: cover
 cover: cover/data bin/$(NAME)
 	$(RM) $</*
-	$(MAKE) tests tests-real \
+	$(MAKE) tests-real \
 		CONCUERROR=$(abspath priv/concuerror) \
 		CONCUERROR_COVER=$(abspath cover/data)
 	cd cover; ./cover-report data

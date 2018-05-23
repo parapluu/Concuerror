@@ -1,4 +1,4 @@
-SUBDIRS=$(patsubst %Makefile,%,$(wildcard suites/*/Makefile))
+SUBDIRS=$(patsubst %Makefile,%,$(wildcard suites/output/Makefile))
 
 .PHONY: all $(SUBDIRS)
 
