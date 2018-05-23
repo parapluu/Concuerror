@@ -58,8 +58,9 @@ matrix:
 
 env:
 
-  - TEST=".travis/script tests"
-  - TEST=".travis/script tests-real"
+  # FLAG is used by Codecov reporter (.travis/after_success)
+  - TEST=".travis/script tests" FLAG="tests"
+  - TEST=".travis/script tests-real" FLAG="tests_real"
 
 otp_release:
 
@@ -82,9 +83,6 @@ otp_release:
 cache:
   directories:
   - "$HOME/.cache/rebar3"
-
-before_install:
-  - .travis/before_install
 
 before_script:
   - .travis/before_script
