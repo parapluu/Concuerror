@@ -1,8 +1,8 @@
 #!/usr/bin/env escript
 %%! -noshell
 
-%% The expected argument is the string returned from
-%% `/.travis/get_latest_travis /.travis.yml` e.g. "20.2"
+%% The expected argument for _LatestTravisOTP is the string returned
+%% from `/.travis/get_latest_travis /.travis.yml` e.g. "20.2"
 main([[LD,LU|_] = _LatestTravisOTP]) ->
   %% The major version in the master branch is the corresponding major
   %% version part of the latest version known to travis, plus one

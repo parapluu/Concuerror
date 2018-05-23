@@ -5,7 +5,7 @@
 -concuerror_options([{ignore_error, deadlock}]).
 
 -ifndef(P).
--define(P, 11).
+-define(P, 7).
 -endif.
 
 test() ->

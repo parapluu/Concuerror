@@ -9,7 +9,7 @@
 
 %%------------------------------------------------------------------------------
 
--include("concuerror_otp_version.hrl").
+-include("concuerror.hrl").
 
 -ifdef(BEFORE_OTP_17).
 %% defined as builtin

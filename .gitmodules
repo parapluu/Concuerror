@@ -1,3 +1,0 @@
-[submodule "deps/getopt"]
-	path = deps/getopt
-	url = https://github.com/jcomellas/getopt.git

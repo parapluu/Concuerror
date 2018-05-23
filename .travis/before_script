@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# Recover plt
-cp plts/plt-$TRAVIS_OTP_RELEASE .concuerror_plt || true
-
 set -e
 
 THISDIR=$(dirname $0)

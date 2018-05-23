@@ -3,168 +3,95 @@
 ###-----------------------------------------------------------------------------
 
 NAME := concuerror
-VERSION := $(shell git describe --abbrev=6 --always --tags)
-LATEST_MAJOR_OTP_VERSION := 20
+
+REBAR=$(shell which rebar3 || echo "./rebar3")
 
 .PHONY: default
-default: all
+default bin/$(NAME): $(REBAR)
+	$(REBAR) escriptize
+
+MAKEFLAGS += --no-builtin-rules
+.SUFFIXES:
 
 ###-----------------------------------------------------------------------------
-### Files
+### Rebar
 ###-----------------------------------------------------------------------------
 
-DEPS = getopt/ebin/getopt
-DEPS_BEAMS=$(DEPS:%=deps/%.beam)
+REBAR_URL="https://s3.amazonaws.com/rebar3/rebar3"
 
-SOURCES = $(wildcard src/*.erl)
-MODULES = $(SOURCES:src/%.erl=%)
-BEAMS = $(MODULES:%=ebin/%.beam)
-
-OTP_VERSION_HRL = src/concuerror_otp_version.hrl
-
-GENERATED_HRLS = $(OTP_VERSION_HRL)
+./$(REBAR):
+	wget $(REBAR_URL) && chmod +x rebar3
 
 ###-----------------------------------------------------------------------------
 ### Compile
 ###-----------------------------------------------------------------------------
 
-MAKEFLAGS += --no-builtin-rules
-.SUFFIXES:
-
-.PHONY: all dev native pedantic
-all dev native pedantic: $(DEPS_BEAMS) $(BEAMS) $(NAME)
-
-dev: VERSION := $(VERSION)-dev
-dev: ERL_COMPILE_FLAGS += -DDEV=true
-
-native: VERSION := $(VERSION)-native
-native: ERL_COMPILE_FLAGS += +native
-
-pedantic: ERL_COMPILE_FLAGS += +warnings_as_errors
-
-ERL_COMPILE_FLAGS += \
-	-DVSN="\"$(VERSION)\"" \
-	+debug_info \
-	+warn_export_vars \
-	+warn_unused_import \
-	+warn_missing_spec \
-	+warn_untyped_record
-
-$(NAME): Makefile
-	@$(RM) $@
-	@printf " GEN   $@\n"
-	@printf -- "#!/usr/bin/env sh\n" >> $@
-	@printf -- "SCRIPTPATH=\"\$$( cd \"\$$(dirname \"\$$0\")\" ; pwd -P )\"\n" >> $@
-	@printf -- "printf \"\nWARNING! Concuerror/concuerror will be removed in next version. Use Concuerror/bin/concuerror instead!\n\"\n" >> $@
-	@printf -- "\$$SCRIPTPATH/bin/concuerror \$$@" >> $@
-	@chmod u+x $@
-
-###-----------------------------------------------------------------------------
-
--include $(MODULES:%=ebin/%.Pbeam)
-
-ebin/%.Pbeam: src/%.erl | ebin $(GENERATED_HRLS)
-	@printf " DEPS  $<\n"
-	@erlc -o ebin -MD -MG $<
-
-ebin/%.beam: src/%.erl | ebin
-	@printf " ERLC  $<\n"
-	@erlc -o ebin $(ERL_COMPILE_FLAGS) $<
-
-###-----------------------------------------------------------------------------
-
-$(OTP_VERSION_HRL):
-	@printf " GEN   $@\n"
-	@src/generate_otp_version_hrl $(LATEST_MAJOR_OTP_VERSION) > $@
-
-###-----------------------------------------------------------------------------
-
-ebin cover/data:
-	@printf " MKDIR $@\n"
-	@mkdir -p $@
-
-###-----------------------------------------------------------------------------
-### Dependencies
-###-----------------------------------------------------------------------------
-
-%/ebin/getopt.beam: %/.git
-	$(MAKE) -C $(dir $<)
-	$(RM) -r $(dir $<).rebar
-
-deps/%/.git:
-	@printf " CO    $(@D)\n"
-	@git submodule update --init
+.PHONY: dev native pedantic
+dev native pedantic: $(REBAR)
+	$(REBAR) as $@ escriptize
 
 ###-----------------------------------------------------------------------------
 ### Dialyzer
 ###-----------------------------------------------------------------------------
 
-PLT=.$(NAME)_plt
-
-DIALYZER_APPS = erts kernel stdlib compiler crypto tools
-DIALYZER_FLAGS = -Wunmatched_returns -Wunderspecs
-
-.PHONY: dialyze
-dialyze: all $(PLT)
-	dialyzer --add_to_plt --plt $(PLT) $(DEPS_BEAMS)
-	dialyzer --plt $(PLT) $(DIALYZER_FLAGS) ebin/*.beam
-
-$(PLT):
-	dialyzer --build_plt --output_plt $@ --apps $(DIALYZER_APPS) $^
+dialyzer: $(REBAR)
+	$(REBAR) dialyzer
 
 ###-----------------------------------------------------------------------------
-### Testing
+### Test
 ###-----------------------------------------------------------------------------
+
+CONCUERROR?=$(abspath bin/$(NAME))
 
 .PHONY: tests
-tests: all
+tests: bin/$(NAME)
 	@$(RM) $@/thediff
 	@(cd $@; ./runtests.py)
 
-## the -j 1 below is so that the outputs of tests are not shown interleaved
+## -j 1: ensure that the outputs of different suites are not interleaved
 .PHONY: tests-real
-tests-real: all
+tests-real: bin/$(NAME)
 	@$(RM) $@/thediff
 	$(MAKE) -j 1 -C $@ \
-		CONCUERROR=$(abspath bin/concuerror) \
+		TOP_DIR=$(abspath .) \
+		CONCUERROR=$(CONCUERROR) \
 		DIFFER=$(abspath tests/differ) \
 		DIFFPRINTER=$(abspath $@/thediff)
-
-%/scenarios.beam: %/scenarios.erl
-	erlc -o $(@D) $<
 
 ###-----------------------------------------------------------------------------
 ### Cover
 ###-----------------------------------------------------------------------------
 
 .PHONY: cover
-cover: cover/data
+cover: cover/data bin/$(NAME)
 	$(RM) $</*
-	export CONCUERROR_COVER=$(abspath cover/data); $(MAKE) tests tests-real
+	$(MAKE) tests tests-real \
+		CONCUERROR=$(abspath priv/concuerror) \
+		CONCUERROR_COVER=$(abspath cover/data)
 	cd cover; ./cover-report data
+
+cover/data:
+	@printf " MKDIR $@\n"
+	@mkdir -p $@
 
 ###-----------------------------------------------------------------------------
 ### Clean
 ###-----------------------------------------------------------------------------
 
 .PHONY: clean
-clean:
-	$(RM) $(NAME)
-	$(RM) -r ebin
+clean: $(REBAR)
+	$(REBAR) clean --all
 
 .PHONY: distclean
-distclean: clean
-	$(RM) $(GENERATED_HRLS)
-	$(RM) -r deps/*
-	git checkout -- deps
+distclean:
+	$(RM) bin/$(NAME)
+	$(RM) -r _build
+	$(RM) ./$(REBAR)
 
-.PHONE: dialyzer-clean
-dialyzer-clean:
-	$(RM) $(PLT)
-
+.PHONY: cover-clean
 cover-clean:
 	$(RM) -r cover/data
 	$(RM) cover/*.COVER.html
 
 .PHONY: maintainer-clean
-maintainer-clean: distclean dialyzer-clean cover-clean
+maintainer-clean: distclean cover-clean

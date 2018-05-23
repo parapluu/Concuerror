@@ -2,11 +2,9 @@
 # command after changing this file, to see if there are
 # any tracked files which get ignored after the change.
 
-*.Pbeam
+_build
 *.beam
-.concuerror_plt
-/concuerror
-*concuerror_report.txt
+concuerror_report.txt
 erl_crash.dump
-tests/test_one
 thediff
+rebar3

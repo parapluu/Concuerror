@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-mkdir -p plts
-cp .concuerror_plt plts/plt-$TRAVIS_OTP_RELEASE || true
