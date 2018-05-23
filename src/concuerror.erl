@@ -6,6 +6,9 @@
 %% Erlang entry point.
 -export([run/1]).
 
+%% Internal functions for reloading
+-export([main_internal/1, run_internal/1]).
+
 %%------------------------------------------------------------------------------
 
 -export_type([exit_status/0]).
@@ -24,6 +27,11 @@
 main(Args) ->
   _ = application:load(concuerror),
   maybe_cover_compile(),
+  ?MODULE:main_internal(Args).
+
+-spec main_internal([string()]) -> no_return().
+
+main_internal(Args) ->
   Status =
     case concuerror_options:parse_cl(Args) of
       {ok, Options} -> run(Options);
@@ -40,15 +48,20 @@ main(Args) ->
 
 -spec run(concuerror_options:options()) -> exit_status().
 
-run(RawOptions) ->
+run(Options) ->
   _ = application:load(concuerror),
   maybe_cover_compile(),
+  ?MODULE:run_internal(Options).
+
+-spec run_internal(concuerror_options:options()) -> exit_status().
+
+run_internal(Options) ->
   Status =
-    case concuerror_options:finalize(RawOptions) of
-      {ok, Options, LogMsgs} -> start(Options, LogMsgs);
+    case concuerror_options:finalize(Options) of
+      {ok, FinalOptions, LogMsgs} -> start(FinalOptions, LogMsgs);
       {exit, ExitStatus} -> ExitStatus
     end,
-  maybe_cover_export(RawOptions),
+  maybe_cover_export(Options),
   Status.
 
 %%------------------------------------------------------------------------------
