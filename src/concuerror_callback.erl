@@ -1773,7 +1773,7 @@ ets_ops_access_rights_map(Op) ->
     {next          ,_} -> read;
     {select        ,_} -> read;
     {select_delete ,_} -> write;
-    {internal_select_delete ,_} -> write;
+    {internal_select_delete,_} -> write;
     {update_counter,3} -> write;
     {whereis       ,1} -> none
   end.
