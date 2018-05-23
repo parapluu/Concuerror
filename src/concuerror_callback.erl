@@ -1008,6 +1008,7 @@ run_built_in(ets, F, N, [Name|Args], Info)
     ;{F,N} =:= {select, 3}
     ;{F,N} =:= {select_delete, 2}
     ;{F,N} =:= {update_counter, 3}
+    ;{F,N} =:= {whereis, 1}
     ->
   {Tid, System} = check_ets_access_rights(Name, {F,N}, Info),
   case System of
@@ -1411,7 +1412,7 @@ wrapper(InfoIn, Module, Name, Args) ->
               exit  -> Reason
             end,
           exiting(NewReason, Stacktrace, EndInfo);
-        false -> erlang:raise(Class, Reason, erlang:get_stacktrace())
+        false -> erlang:raise(Class, Reason, [])
       end
   end.
 
@@ -1728,7 +1729,32 @@ link_monitor_handlers(Handler, LinksOrMonitors) ->
 
 %%------------------------------------------------------------------------------
 
-check_ets_access_rights(Name, Op, Info) ->
+-ifdef(BEFORE_OTP_21).
+check_ets_access_rights(NameOrTid, Op, Info) ->
+  %% Before OTP 21 exactly one of either the name OR the Tid is ALWAYS
+  %% used, so concuerror considers that as the 'Name'.
+  check_ets_access_rights_from_name(NameOrTid, Op, Info).
+-else.
+check_ets_access_rights(NameOrTid, Op, Info) ->
+  %% After 21 named tables can be referred to also via Tid. Since the
+  %% code below was written with the assumption that if a name exists
+  %% it will be the only way to access the table, retrieve the name
+  %% from a tid and check access rights using that name instead.
+  #concuerror_info{ets_tables = EtsTables} = Info,
+  case is_atom(NameOrTid) of
+    true -> check_ets_access_rights_from_name(NameOrTid, Op, Info);
+    false ->
+      case ets:match(EtsTables, ?ets_match_tid_to_name(NameOrTid)) of
+        [[Name]] ->
+          check_ets_access_rights_from_name(Name, Op, Info);
+        _ -> error(badarg)
+      end
+  end.
+-endif.
+
+%% Expects a 'Concuerror ETS table name' which is the name if the table is
+%% named otherwise the Tid.
+check_ets_access_rights_from_name(Name, Op, Info) ->
   #concuerror_info{ets_tables = EtsTables, scheduler = Scheduler} = Info,
   case ets:match(EtsTables, ?ets_match_name(Name)) of
     [] -> error(badarg);
@@ -1771,7 +1797,8 @@ ets_ops_access_rights_map(Op) ->
     {next          ,_} -> read;
     {select        ,_} -> read;
     {select_delete ,_} -> write;
-    {update_counter,3} -> write
+    {update_counter,3} -> write;
+    {whereis       ,1} -> none
   end.
 
 %%------------------------------------------------------------------------------
@@ -1850,6 +1877,8 @@ system_wrapper_loop(Name, Wrapped, Info) ->
                   receive
                     Msg -> {From, Msg}
                   end;
+                logger ->
+                  throw(no_reply);
                 standard_error ->
                   #concuerror_info{logger = Logger} = Info,
                   {From, Reply, _} = handle_io(Data, {standard_error, Logger}),
@@ -1879,7 +1908,7 @@ system_wrapper_loop(Name, Wrapped, Info) ->
             no_reply -> send_message_ack(Report, false, false, false);
             Reason -> ?crash(Reason);
             Class:Reason ->
-              Stacktrace = erlang:get_stacktrace(),
+              Stacktrace = [],
               ?crash({system_wrapper_error, Name, Class, Reason, Stacktrace})
           end;
         {get_info, To} ->

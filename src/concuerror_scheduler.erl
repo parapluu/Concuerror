@@ -243,7 +243,7 @@ explore(State) ->
       get_next_event(State)
     catch
       C:R ->
-        S = erlang:get_stacktrace(),
+        S = [],
         {{crash, C, R, S}, State}
     end,
   case Status of
