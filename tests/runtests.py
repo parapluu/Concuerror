@@ -188,7 +188,7 @@ if threads == "":
         threads = "1"
 
 # Print header
-print "Concuerror's Testsuite (%d threads)\n" % int(threads)
+print "Concuerror's Testsuite (THREADS=%d)\n" % int(threads)
 print "%-10s %-20s %-50s  %s" % \
       ("Suite", "Module", "(Test,  Bound,  DPOR)", "Result")
 print "---------------------------------------------" + \
