@@ -1,5 +1,5 @@
 #!/usr/bin/env escript
-%%! +S1 -noshell
+%%! -noshell
 
 %%% This script can be used to run Concuerror on specified tests.
 
@@ -41,13 +41,24 @@ main(Tests) ->
    , failed = 0
    , files  = 0
    , finish = false
-   , limit  = 4
+   , limit  = parallelism()
    , tests  = 0
    }).
 
 initialize() ->
-  print_header(),
-  spawn_link(fun() -> loop(#state{}) end).
+  After17 =
+    case erlang:system_info(otp_release) of
+      "R" ++ _ -> false; %% ... 16 or earlier
+      [D,U|_] -> list_to_integer([D,U]) > 17
+    end,
+  case After17 of
+    false ->
+      to_stderr("Skipping because OTP version < 18", []),
+      halt(0);
+    true ->
+      print_header(),
+      spawn_link(fun() -> loop(#state{}) end)
+  end.
 
 loop(#state{done = All, finish = {true, Report}, tests = All} = State) ->
   #state{failed = Failed, files = Files, tests = Tests} = State,
@@ -103,7 +114,7 @@ run_test(File, Test, Server) ->
   Server ! {test, File, Test, Status}.
 
 run_and_get_exit_status(Command) ->
-  Port = open_port({spawn, Command}, [stream, in, eof, hide, exit_status]),
+  Port = open_port({spawn, Command}, [exit_status]),
   get_exit(Port, infinity).
 
 get_exit(Port, Timeout) ->
@@ -139,19 +150,9 @@ extract_tests(File, Server) ->
     true ->
       case compile:file(File, [binary]) of
         error ->
-          After17 =
-            case erlang:system_info(otp_release) of
-              "R" ++ _ -> false; %% ... 16 or earlier
-              [D,U|_] -> list_to_integer([D,U]) > 17
-            end,
-          case After17 of
-            false -> print_test(File, 'n/a', skip);
-            true ->
-              print_test(File, 'compile', error),
-              compile:file(File, [binary, report_errors]),
-              halt(1)
-          end,
-          ok;
+          print_test(File, 'compile', error),
+          compile:file(File, [binary, report_errors]),
+          halt(1);
         {ok, Module, Binary} ->
           {module, Module} = code:load_binary(Module, File, Binary),
           Exports = Module:module_info(exports),
@@ -183,6 +184,7 @@ finish(Server) ->
 %%%-----------------------------------------------------------------------------
 
 print_header() ->
+  to_stderr("Concurrent jobs: ~w", [parallelism()]),
   to_stderr("~-61s~-12s~-7s",["File", "Test", "Result"]),
   print_line().
 
@@ -194,7 +196,6 @@ print_test(File, Test, Status) ->
   Color =
     case Status of
       ok -> "\033[92m";
-      skip -> "\033[94m";
       _ -> "\033[91m"
     end,
   EndC = "\033[0m",
@@ -227,3 +228,6 @@ print_line() ->
 
 to_stderr(Format, Data) ->
   io:format(standard_error, Format ++ "~n", Data).
+
+parallelism() ->
+  erlang:system_info(schedulers).
