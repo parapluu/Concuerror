@@ -58,8 +58,8 @@ tests-real: bin/$(NAME)
 		DIFFER=$(abspath tests/differ) \
 		DIFFPRINTER=$(abspath $@/thediff)
 
-.PHONY: unit-tests
-unit-tests: bin/$(NAME)
+.PHONY: tests-unit
+tests-unit: bin/$(NAME)
 	$(REBAR) eunit
 
 ###-----------------------------------------------------------------------------

@@ -7,6 +7,7 @@ if [ "$REPO_LATEST" = "$TRAVIS_OTP_RELEASE" ]; then
   echo "Generate coverage report..."
   cd cover
   export COVER_COMBINE=all.coverdata
+  mv *.coverdata data
   ./cover-report data
   covertool/covertool -cover $COVER_COMBINE -src ../src -appname concuerror
   bash <(curl -s https://codecov.io/bash) -c -F "$FLAG"

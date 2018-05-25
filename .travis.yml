@@ -61,6 +61,7 @@ env:
   # FLAG is used by Codecov reporter (.travis/after_success)
   - TEST=".travis/script tests" FLAG="tests"
   - TEST=".travis/script tests-real" FLAG="tests_real"
+  - TEST=".travis/script tests-unit" FLAG="unit_tests"
 
 otp_release:
 
