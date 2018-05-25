@@ -2,10 +2,9 @@
 
 set -e
 
-THISDIR=$(dirname $0)
-REPO_LATEST=`$THISDIR/get_latest_travis $THISDIR/../.travis.yml`
+. $(dirname $0)/header
 
-if [ "$REPO_LATEST" = "$TRAVIS_OTP_RELEASE" ]; then
+if [ "$COLLECT_COVERAGE" = "true" ]; then
   ## Use non escriptized version for coverage report
   export CONCUERROR=$(pwd)/priv/concuerror
   export CONCUERROR_COVER=$(pwd)/cover/data
