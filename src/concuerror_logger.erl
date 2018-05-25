@@ -8,6 +8,10 @@
 
 -include("concuerror.hrl").
 
+-ifdef(TEST).
+-include_lib("eunit/include/eunit.hrl").
+-endif.
+
 -type log_level() :: ?lquiet..?MAX_VERBOSITY.
 
 -define(TICKER_TIMEOUT, 500).
@@ -825,10 +829,10 @@ estimate_completion(Estimated, Explored, Rate) ->
          }).
 
 approximate_time_string(Seconds) ->
-  time_string(approximate_time_formatters(), Seconds).
+  lists:flatten(time_string(approximate_time_formatters(), Seconds)).
 
 time_string(Seconds) ->
-  time_string(time_formatters(), Seconds).
+  lists:flatten(time_string(time_formatters(), Seconds)).
 
 time_string([ATF|Rest], Value) ->
   #time_formatter{
@@ -838,8 +842,8 @@ time_string([ATF|Rest], Value) ->
      one_format = OneFormat,
      two_format = TwoFormat
     } = ATF,
-  case Value > Threshold of
-    true -> time_string(Rest, round(Value/Rounding));
+  case Value >= Threshold of
+    true -> time_string(Rest, Value div Rounding);
     false ->
       case SplitFun(Value) of
         {High, Low} -> io_lib:format(TwoFormat, [High, Low]);
@@ -854,7 +858,7 @@ time_formatters() ->
        threshold  = 1 * 60,
        rounding   = 1,
        split_fun  = SecondsSplitFun,
-       one_format = "   ~2ws"
+       one_format = "~ws"
       },
   MinutesSplitFun =
     fun(Seconds) -> {Seconds div 60, Seconds rem 60} end,
@@ -863,7 +867,7 @@ time_formatters() ->
        threshold  = 60 * 60,
        rounding   = 60,
        split_fun  = MinutesSplitFun,
-       two_format = "~2wm~2..0ws"
+       two_format = "~wm~2..0ws"
       },
   HoursSplitFun =
     fun(Minutes) -> {Minutes div 60, Minutes rem 60} end,
@@ -872,7 +876,7 @@ time_formatters() ->
        threshold  = 48 * 60,
        rounding   = 60,
        split_fun  = HoursSplitFun,
-       two_format = "~2wh~2..0wm"
+       two_format = "~wh~2..0wm"
       },
   DaysSplitFun =
     fun(Hours) -> {Hours div 24, Hours rem 24} end,
@@ -880,7 +884,7 @@ time_formatters() ->
     #time_formatter{
        threshold  = infinity,
        split_fun  = DaysSplitFun,
-       two_format = "~2wd~2..0wh"
+       two_format = "~wd~2..0wh"
       },
   [ SecondsATF
   , MinutesATF
@@ -895,7 +899,7 @@ approximate_time_formatters() ->
        threshold  = 1 * 60,
        rounding   = 60,
        split_fun  = SecondsSplitFun,
-       one_format = "   <~pm"
+       one_format = "<~wm"
       },
   MinutesSplitFun =
     fun(Minutes) ->
@@ -909,8 +913,8 @@ approximate_time_formatters() ->
        threshold  = 60,
        rounding   = 15,
        split_fun  = MinutesSplitFun,
-       one_format = "   ~2wm",
-       two_format = "~2wh~2..0wm"
+       one_format = "~wm",
+       two_format = "~wh~2..0wm"
       },
   QuartersSplitFun =
     fun(Quarters) -> {Quarters div 4, (Quarters rem 4) * 15} end,
@@ -919,7 +923,7 @@ approximate_time_formatters() ->
        threshold  = 4 * 3,
        rounding   = 4,
        split_fun  = QuartersSplitFun,
-       two_format = "~2wh~2..0wm"
+       two_format = "~wh~2..0wm"
       },
   HoursSplitFun =
     fun(Hours) ->
@@ -933,8 +937,8 @@ approximate_time_formatters() ->
        threshold  = 3 * 24,
        rounding   = 6,
        split_fun  = HoursSplitFun,
-       one_format = "   ~2wh",
-       two_format = "~2wd~2..0wh"
+       one_format = "~wh",
+       two_format = "~wd~2..0wh"
       },
   DayQuartersSplitFun =
     fun(Quarters) -> {Quarters div 4, (Quarters rem 4) * 6} end,
@@ -943,8 +947,8 @@ approximate_time_formatters() ->
        threshold  = 4 * 15,
        rounding   = 4,
        split_fun  = DayQuartersSplitFun,
-       one_format = "   ~2wh",
-       two_format = "~2wd~2..0wh"
+       one_format = "~wh",
+       two_format = "~wd~2..0wh"
       },
   DaysSplitFun = fun(Days) -> Days end,
   DaysATF =
@@ -952,7 +956,7 @@ approximate_time_formatters() ->
        threshold  = 12*30,
        rounding   = 30,
        split_fun  = DaysSplitFun,
-       one_format = "~5wd"
+       one_format = "~wd"
       },
   MonthsSplitFun =
     fun(Months) -> {Months div 12, Months rem 12} end,
@@ -961,7 +965,7 @@ approximate_time_formatters() ->
        threshold  = 12*50,
        rounding   = 12,
        split_fun  = MonthsSplitFun,
-       two_format = "~2wy~2..0wm"
+       two_format = "~wy~2..0wm"
       },
   YearsSplitFun =
     fun(Years) -> Years end,
@@ -970,7 +974,7 @@ approximate_time_formatters() ->
        threshold  = 10000,
        rounding = 1,
        split_fun  = YearsSplitFun,
-       one_format = "~5wy"
+       one_format = "~wy"
       },
   TooMuchSplitFun =
     fun(_) -> 10000 end,
@@ -1134,3 +1138,46 @@ print_symbolic_info() ->
     "Showing PIDs as \"<symbolic name(/last registered name)>\""
     " ('-h symbolic_names').~n",
   ?unique(self(), ?linfo, Tip, []).
+
+%%==============================================================================
+
+-ifdef(TEST).
+
+time_format_test() ->
+
+  ?assertEqual("0s", time_string(0)),
+  ?assertEqual("1s", time_string(1)),
+  ?assertEqual("42s", time_string(42)),
+  ?assertEqual("59s", time_string(59)),
+
+  ?assertEqual("1m00s", time_string(1*60)),
+  ?assertEqual("1m05s", time_string(1*60 + 5)),
+  ?assertEqual("1m59s", time_string(1*60 + 59)),
+  ?assertEqual("4m29s", time_string(4*60 + 29)),
+  ?assertEqual("9m59s", time_string(9*60 + 59)),
+  ?assertEqual("10m00s", time_string(10*60 + 0)),
+  ?assertEqual("10m01s", time_string(10*60 + 1)),
+  ?assertEqual("42m42s", time_string(42*60 + 42)),
+  ?assertEqual("59m59s", time_string(59*60 + 59)),
+
+  ?assertEqual("1h00m", time_string(60*60)),
+  ?assertEqual("1h00m", time_string(60*60 + 29)),
+  ?assertEqual("1h00m", time_string(60*60 + 30)),
+  ?assertEqual("1h00m", time_string(60*60 + 59)),
+  ?assertEqual("1h01m", time_string(60*60 + 60)),
+
+  ?assertEqual("9h59m", time_string(9*60*60 + 59*60 + 59)),
+  ?assertEqual("10h00m", time_string(9*60*60 + 59*60 + 59 + 1)),
+  ?assertEqual("23h59m", time_string(23*60*60 + 59*60 + 59)),
+  ?assertEqual("24h00m", time_string(24*60*60)),
+  ?assertEqual("24h00m", time_string(24*60*60 + 59)),
+  ?assertEqual("24h01m", time_string(24*60*60 + 60)),
+  ?assertEqual("47h59m", time_string(47*60*60 + 59*60)),
+  ?assertEqual("47h59m", time_string(47*60*60 + 59*60 + 59)),
+
+  ?assertEqual("2d00h", time_string(48*60*60)),
+  ?assertEqual("2d00h", time_string(48*60*60 + 59*60)),
+  ?assertEqual("2d01h", time_string(48*60*60 + 60*60)),
+  ok.
+
+-endif.
