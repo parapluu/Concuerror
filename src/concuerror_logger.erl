@@ -1,3 +1,6 @@
+%% @doc The logger is a process responsible for collecting information
+%%      and sending output to the user in reports and stderr.
+
 -module(concuerror_logger).
 
 -export([start/1, complete/2, plan/1, log/5, race/3, stop/2, print/3, time/2]).
@@ -5,6 +8,8 @@
 -export([graph_set_node/3, graph_new_node/4, graph_race/3]).
 -export([print_log_message/3]).
 -export([showing_progress/1, progress_help/0]).
+
+%%------------------------------------------------------------------------------
 
 -include("concuerror.hrl").
 
@@ -15,6 +20,7 @@
 -type log_level() :: ?lquiet..?MAX_VERBOSITY.
 
 -define(TICKER_TIMEOUT, 500).
+
 %%------------------------------------------------------------------------------
 
 -type unique_id() :: concuerror_scheduler:unique_id().
