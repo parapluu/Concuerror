@@ -861,7 +861,7 @@ time_formatters() ->
   SecondsSplitFun = fun(S) -> S end,
   SecondsATF =
     #time_formatter{
-       threshold  = 1 * 60,
+       threshold  = 60 * 1,
        rounding   = 1,
        split_fun  = SecondsSplitFun,
        one_format = "~ws"
@@ -879,7 +879,7 @@ time_formatters() ->
     fun(Minutes) -> {Minutes div 60, Minutes rem 60} end,
   HoursATF =
     #time_formatter{
-       threshold  = 48 * 60,
+       threshold  = 2 * 24 * 60,
        rounding   = 60,
        split_fun  = HoursSplitFun,
        two_format = "~wh~2..0wm"
@@ -902,33 +902,32 @@ approximate_time_formatters() ->
   SecondsSplitFun = fun(_) -> 1 end,
   SecondsATF =
     #time_formatter{
-       threshold  = 1 * 60,
+       threshold  = 60 * 1,
        rounding   = 60,
        split_fun  = SecondsSplitFun,
        one_format = "<~wm"
       },
-  MinutesSplitFun =
-    fun(Minutes) ->
-        case Minutes < 60 of
-          true -> Minutes;
-          false -> {Minutes div 60, Minutes rem 60}
-        end
-    end,
+  MinutesSplitFun = fun(Minutes) -> Minutes end,
   MinutesATF =
     #time_formatter{
-       threshold  = 60,
-       rounding   = 15,
+       threshold  = 30 * 1,
+       rounding   = 10,
        split_fun  = MinutesSplitFun,
-       one_format = "~wm",
-       two_format = "~wh~2..0wm"
+       one_format = "~wm"
       },
-  QuartersSplitFun =
-    fun(Quarters) -> {Quarters div 4, (Quarters rem 4) * 15} end,
-  QuartersATF =
+  TensSplitFun =
+    fun(Tens) ->
+        case Tens < 6 of
+          true -> Tens * 10;
+          false -> {Tens div 6, (Tens rem 6) * 10}
+        end
+    end,
+  TensATF =
     #time_formatter{
-       threshold  = 4 * 3,
-       rounding   = 4,
-       split_fun  = QuartersSplitFun,
+       threshold  = 2 * 6,
+       rounding   = 6,
+       split_fun  = TensSplitFun,
+       one_format = "~wm",
        two_format = "~wh~2..0wm"
       },
   HoursSplitFun =
@@ -940,26 +939,16 @@ approximate_time_formatters() ->
     end,
   HoursATF =
     #time_formatter{
-       threshold  = 3 * 24,
-       rounding   = 6,
+       threshold  = 2 * 24,
+       rounding   = 24,
        split_fun  = HoursSplitFun,
-       one_format = "~wh",
-       two_format = "~wd~2..0wh"
-      },
-  DayQuartersSplitFun =
-    fun(Quarters) -> {Quarters div 4, (Quarters rem 4) * 6} end,
-  DayQuartersATF =
-    #time_formatter{
-       threshold  = 4 * 15,
-       rounding   = 4,
-       split_fun  = DayQuartersSplitFun,
        one_format = "~wh",
        two_format = "~wd~2..0wh"
       },
   DaysSplitFun = fun(Days) -> Days end,
   DaysATF =
     #time_formatter{
-       threshold  = 12*30,
+       threshold  = 12 * 30,
        rounding   = 30,
        split_fun  = DaysSplitFun,
        one_format = "~wd"
@@ -968,7 +957,7 @@ approximate_time_formatters() ->
     fun(Months) -> {Months div 12, Months rem 12} end,
   MonthsATF =
     #time_formatter{
-       threshold  = 12*50,
+       threshold  = 50 * 12,
        rounding   = 12,
        split_fun  = MonthsSplitFun,
        two_format = "~wy~2..0wm"
@@ -992,9 +981,8 @@ approximate_time_formatters() ->
       },
   [ SecondsATF
   , MinutesATF
-  , QuartersATF
+  , TensATF
   , HoursATF
-  , DayQuartersATF
   , DaysATF
   , MonthsATF
   , YearsATF
@@ -1181,9 +1169,69 @@ time_format_test() ->
   ?assertEqual("47h59m", time_string(47*60*60 + 59*60)),
   ?assertEqual("47h59m", time_string(47*60*60 + 59*60 + 59)),
 
-  ?assertEqual("2d00h", time_string(48*60*60)),
-  ?assertEqual("2d00h", time_string(48*60*60 + 59*60)),
-  ?assertEqual("2d01h", time_string(48*60*60 + 60*60)),
+  ?assertEqual("2d00h", time_string(2*24*60*60)),
+  ?assertEqual("2d00h", time_string(2*24*60*60 + 59*60)),
+  ?assertEqual("2d01h", time_string(2*24*60*60 + 60*60)),
+
+  ?assertEqual("17d03h", time_string(17*24*60*60 + 3*60*60)),
+  ok.
+
+approximate_time_format_test() ->
+
+  ?assertEqual("<1m", approximate_time_string(0)),
+  ?assertEqual("<1m", approximate_time_string(1)),
+  ?assertEqual("<1m", approximate_time_string(42)),
+  ?assertEqual("<1m", approximate_time_string(59)),
+
+  ?assertEqual("1m", approximate_time_string(1*60)),
+  ?assertEqual("1m", approximate_time_string(1*60 + 5)),
+  ?assertEqual("1m", approximate_time_string(1*60 + 59)),
+  ?assertEqual("4m", approximate_time_string(4*60 + 29)),
+  ?assertEqual("9m", approximate_time_string(9*60 + 59)),
+  ?assertEqual("10m", approximate_time_string(10*60 + 0)),
+  ?assertEqual("17m", approximate_time_string(17*60 + 1)),
+  ?assertEqual("29m", approximate_time_string(29*60 + 1)),
+
+  ?assertEqual("30m", approximate_time_string(30*60 + 1)),
+  ?assertEqual("30m", approximate_time_string(36*60 + 1)),
+  ?assertEqual("40m", approximate_time_string(42*60 + 42)),
+  ?assertEqual("50m", approximate_time_string(59*60 + 59)),
+
+  ?assertEqual("1h00m", approximate_time_string(60*60)),
+  ?assertEqual("1h00m", approximate_time_string(60*60 + 29)),
+  ?assertEqual("1h00m", approximate_time_string(60*60 + 30)),
+  ?assertEqual("1h00m", approximate_time_string(60*60 + 60)),
+  ?assertEqual("1h10m", approximate_time_string(60*60 + 10*60)),
+  ?assertEqual("1h40m", approximate_time_string(60*60 + 42*60)),
+  ?assertEqual("2h", approximate_time_string(2*60*60 + 60)),
+
+  ?assertEqual("9h", approximate_time_string(9*60*60 + 59*60 + 59)),
+  ?assertEqual("10h", approximate_time_string(9*60*60 + 59*60 + 59 + 1)),
+  ?assertEqual("23h", approximate_time_string(23*60*60 + 59*60 + 59)),
+  ?assertEqual("24h", approximate_time_string(24*60*60)),
+  ?assertEqual("24h", approximate_time_string(24*60*60 + 59)),
+  ?assertEqual("47h", approximate_time_string(47*60*60 + 59*60)),
+  ?assertEqual("47h", approximate_time_string(47*60*60 + 59*60 + 59)),
+
+  ?assertEqual("2d", approximate_time_string(48*60*60)),
+  ?assertEqual("2d", approximate_time_string(48*60*60 + 59*60)),
+  ?assertEqual("2d", approximate_time_string(48*60*60 + 60*60)),
+
+  ?assertEqual("6d", approximate_time_string(6*24*60*60)),
+  ?assertEqual("7d", approximate_time_string(7*24*60*60)),
+  ?assertEqual("8d", approximate_time_string(8*24*60*60)),
+  ?assertEqual("58d", approximate_time_string(58*24*60*60)),
+  ?assertEqual("320d", approximate_time_string(320*24*60*60)),
+
+  ?assertEqual("1y03m", approximate_time_string((12+3)*30*24*60*60)),
+  ?assertEqual("7y03m", approximate_time_string((7*12+3)*30*24*60*60)),
+  ?assertEqual("40y06m", approximate_time_string((40*12+6)*30*24*60*60)),
+
+  ?assertEqual("70y", approximate_time_string((70*12+6)*30*24*60*60)),
+  ?assertEqual("90y", approximate_time_string((90*12+6)*30*24*60*60)),
+  ?assertEqual("100y", approximate_time_string((100*12+6)*30*24*60*60)),
+
+  ?assertEqual("> 10000y", approximate_time_string((10001*12+6)*30*24*60*60)),
   ok.
 
 -endif.
