@@ -819,7 +819,7 @@ estimate_completion(Estimated, Explored, Rate)
 estimate_completion(Estimated, Explored, Rate) ->
   Remaining = Estimated - Explored,
   Completion = round(Remaining/(Rate + 0.001)),
-  " " ++ approximate_time_string(Completion).
+  approximate_time_string(Completion).
 
 %%------------------------------------------------------------------------------
 
