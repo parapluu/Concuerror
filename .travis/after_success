@@ -8,7 +8,7 @@ if [ "$COLLECT_COVERAGE" = "true" ]; then
   echo "Generate coverage report..."
   cd cover
   export COVER_COMBINE=all.coverdata
-  mv *.coverdata data
+  mv *.coverdata data || true
   ./cover-report data
   covertool/covertool -cover $COVER_COMBINE -src ../src -appname concuerror
   bash <(curl -s https://codecov.io/bash) -c -F "$FLAG"
