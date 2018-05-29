@@ -7,7 +7,7 @@ if [ "$COLLECT_COVERAGE" = "true" ]; then
   cd cover
   export COVER_COMBINE=all.coverdata
   mv *.coverdata data || true
-  ./cover-report data
+  ./cover-report data || true
   covertool/covertool -cover $COVER_COMBINE -src ../src -appname concuerror
   bash <(curl -s https://codecov.io/bash) -c -F "$FLAG"
   echo "Report sent!"
