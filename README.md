@@ -11,7 +11,7 @@ To find out more [visit the website!][website]
 ## How to build
 
 * Compile             : `make`
-* Run the testsuites  : `make tests tests-real`
+* Run the testsuites  : `make tests tests-real tests-unit`
 * Run Dialyzer        : `make dialyzer`
 * Check code coverage : `make cover`
 * Cleanup             : `make clean`
