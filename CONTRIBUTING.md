@@ -25,7 +25,7 @@ Use the [mailing list][mailing list] and take a look at the [FAQ][faq] if you ha
 
 * Fork Concuerror's repository and push a new branch for your patch, using a suitably descriptive name.
 
-* Make sure to also commit the tests that need the patch. You can find out how test suites are organized in the README files of the [tests][tests] and [tests-real][tests-real] directories.
+* Make sure to also commit the tests that need the patch. You can find out how test suites are organized in the README files of the [test][test], [tests][tests] and [tests-real][tests-real] directories.
 
 * Make a [Pull Request][pull request].
 
@@ -60,5 +60,6 @@ Thanks! :heart:
 [open a new bug Issue]: https://github.com/parapluu/Concuerror/issues/new?template=issue_template_bug.md&labels=bug
 [open a new feature Issue]: https://github.com/parapluu/Concuerror/issues/new?template=issue_template_feature.md&labels=feature
 [pull request]: https://github.com/parapluu/Concuerror/compare
+[test]: ./test
 [tests]: ./tests
 [tests-real]: ./tests-real

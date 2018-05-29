@@ -38,11 +38,11 @@ fi
 good
 
 testing "Progress bar sample with hard bound"
-$CONCUERROR -f src/many_scheds.erl -v1 --dpor source -i 300 2>&1 | tr '\033' '#' | cat > $Console
+$CONCUERROR -f src/fig3.1-ext.erl -t test_large -v1 --dpor source -i 1000 2>&1 | tr '\033' '#' | cat > $Console
 has_basic_progress
 
 testing "Progress bar sample with delay bound"
-$CONCUERROR -f src/many_scheds.erl -v1 -b 7 2>&1 | tr '\033' '#' | cat > $Console
+$CONCUERROR -f src/many_scheds.erl -t test_large -v1 -b 6 2>&1 | tr '\033' '#' | cat > $Console
 has_basic_progress
 
 testing "No tip for harmless exit signals"

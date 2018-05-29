@@ -1,6 +1,6 @@
 -module('fig3.1-ext').
 
--export([test/0]).
+-export([test/0, test_large/0]).
 
 -concuerror_options([{ignore_error, deadlock}]).
 
@@ -10,6 +10,9 @@
 
 test() ->
   test(?P).
+
+test_large() ->
+  test(10).
 
 test(P) ->
   ets:new(table, [public, named_table]),

@@ -1,12 +1,9 @@
 #!/usr/bin/env bash
 
-set -e
+. $(dirname $0)/header
 
-THISDIR=$(dirname $0)
-REPO_LATEST=`$THISDIR/get_latest_travis $THISDIR/../.travis.yml`
-
-if [ "$REPO_LATEST" = "$TRAVIS_OTP_RELEASE" ]; then
-  echo "Testing latest release. Prepare to collect coverage data."
+if [ "$COLLECT_COVERAGE" = "true" ]; then
+  echo "Prepare to collect coverage data."
   make cover/data
   cd cover
   git clone https://github.com/idubrov/covertool.git

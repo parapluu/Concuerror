@@ -1,3 +1,6 @@
+%% @doc The logger is a process responsible for collecting information
+%%      and sending output to the user in reports and stderr.
+
 -module(concuerror_logger).
 
 -export([start/1, complete/2, plan/1, log/5, race/3, stop/2, print/3, time/2]).
@@ -6,11 +9,14 @@
 -export([print_log_message/3]).
 -export([showing_progress/1, progress_help/0]).
 
+%%------------------------------------------------------------------------------
+
 -include("concuerror.hrl").
 
 -type log_level() :: ?lquiet..?MAX_VERBOSITY.
 
 -define(TICKER_TIMEOUT, 500).
+
 %%------------------------------------------------------------------------------
 
 -type unique_id() :: concuerror_scheduler:unique_id().
@@ -809,7 +815,7 @@ estimate_completion(Estimated, Explored, Rate)
 estimate_completion(Estimated, Explored, Rate) ->
   Remaining = Estimated - Explored,
   Completion = round(Remaining/(Rate + 0.001)),
-  " " ++ approximate_time_string(Completion).
+  approximate_time_string(Completion).
 
 %%------------------------------------------------------------------------------
 
@@ -825,10 +831,10 @@ estimate_completion(Estimated, Explored, Rate) ->
          }).
 
 approximate_time_string(Seconds) ->
-  time_string(approximate_time_formatters(), Seconds).
+  lists:flatten(time_string(approximate_time_formatters(), Seconds)).
 
 time_string(Seconds) ->
-  time_string(time_formatters(), Seconds).
+  lists:flatten(time_string(time_formatters(), Seconds)).
 
 time_string([ATF|Rest], Value) ->
   #time_formatter{
@@ -838,8 +844,8 @@ time_string([ATF|Rest], Value) ->
      one_format = OneFormat,
      two_format = TwoFormat
     } = ATF,
-  case Value > Threshold of
-    true -> time_string(Rest, round(Value/Rounding));
+  case Value >= Threshold of
+    true -> time_string(Rest, Value div Rounding);
     false ->
       case SplitFun(Value) of
         {High, Low} -> io_lib:format(TwoFormat, [High, Low]);
@@ -851,10 +857,10 @@ time_formatters() ->
   SecondsSplitFun = fun(S) -> S end,
   SecondsATF =
     #time_formatter{
-       threshold  = 1 * 60,
+       threshold  = 60 * 1,
        rounding   = 1,
        split_fun  = SecondsSplitFun,
-       one_format = "   ~2ws"
+       one_format = "~ws"
       },
   MinutesSplitFun =
     fun(Seconds) -> {Seconds div 60, Seconds rem 60} end,
@@ -863,16 +869,16 @@ time_formatters() ->
        threshold  = 60 * 60,
        rounding   = 60,
        split_fun  = MinutesSplitFun,
-       two_format = "~2wm~2..0ws"
+       two_format = "~wm~2..0ws"
       },
   HoursSplitFun =
     fun(Minutes) -> {Minutes div 60, Minutes rem 60} end,
   HoursATF =
     #time_formatter{
-       threshold  = 48 * 60,
+       threshold  = 2 * 24 * 60,
        rounding   = 60,
        split_fun  = HoursSplitFun,
-       two_format = "~2wh~2..0wm"
+       two_format = "~wh~2..0wm"
       },
   DaysSplitFun =
     fun(Hours) -> {Hours div 24, Hours rem 24} end,
@@ -880,7 +886,7 @@ time_formatters() ->
     #time_formatter{
        threshold  = infinity,
        split_fun  = DaysSplitFun,
-       two_format = "~2wd~2..0wh"
+       two_format = "~wd~2..0wh"
       },
   [ SecondsATF
   , MinutesATF
@@ -892,34 +898,33 @@ approximate_time_formatters() ->
   SecondsSplitFun = fun(_) -> 1 end,
   SecondsATF =
     #time_formatter{
-       threshold  = 1 * 60,
+       threshold  = 60 * 1,
        rounding   = 60,
        split_fun  = SecondsSplitFun,
-       one_format = "   <~pm"
+       one_format = "<~wm"
       },
-  MinutesSplitFun =
-    fun(Minutes) ->
-        case Minutes < 60 of
-          true -> Minutes;
-          false -> {Minutes div 60, Minutes rem 60}
-        end
-    end,
+  MinutesSplitFun = fun(Minutes) -> Minutes end,
   MinutesATF =
     #time_formatter{
-       threshold  = 60,
-       rounding   = 15,
+       threshold  = 30 * 1,
+       rounding   = 10,
        split_fun  = MinutesSplitFun,
-       one_format = "   ~2wm",
-       two_format = "~2wh~2..0wm"
+       one_format = "~wm"
       },
-  QuartersSplitFun =
-    fun(Quarters) -> {Quarters div 4, (Quarters rem 4) * 15} end,
-  QuartersATF =
+  TensSplitFun =
+    fun(Tens) ->
+        case Tens < 6 of
+          true -> Tens * 10;
+          false -> {Tens div 6, (Tens rem 6) * 10}
+        end
+    end,
+  TensATF =
     #time_formatter{
-       threshold  = 4 * 3,
-       rounding   = 4,
-       split_fun  = QuartersSplitFun,
-       two_format = "~2wh~2..0wm"
+       threshold  = 2 * 6,
+       rounding   = 6,
+       split_fun  = TensSplitFun,
+       one_format = "~wm",
+       two_format = "~wh~2..0wm"
       },
   HoursSplitFun =
     fun(Hours) ->
@@ -930,38 +935,28 @@ approximate_time_formatters() ->
     end,
   HoursATF =
     #time_formatter{
-       threshold  = 3 * 24,
-       rounding   = 6,
+       threshold  = 2 * 24,
+       rounding   = 24,
        split_fun  = HoursSplitFun,
-       one_format = "   ~2wh",
-       two_format = "~2wd~2..0wh"
-      },
-  DayQuartersSplitFun =
-    fun(Quarters) -> {Quarters div 4, (Quarters rem 4) * 6} end,
-  DayQuartersATF =
-    #time_formatter{
-       threshold  = 4 * 15,
-       rounding   = 4,
-       split_fun  = DayQuartersSplitFun,
-       one_format = "   ~2wh",
-       two_format = "~2wd~2..0wh"
+       one_format = "~wh",
+       two_format = "~wd~2..0wh"
       },
   DaysSplitFun = fun(Days) -> Days end,
   DaysATF =
     #time_formatter{
-       threshold  = 12*30,
+       threshold  = 12 * 30,
        rounding   = 30,
        split_fun  = DaysSplitFun,
-       one_format = "~5wd"
+       one_format = "~wd"
       },
   MonthsSplitFun =
     fun(Months) -> {Months div 12, Months rem 12} end,
   MonthsATF =
     #time_formatter{
-       threshold  = 12*50,
+       threshold  = 50 * 12,
        rounding   = 12,
        split_fun  = MonthsSplitFun,
-       two_format = "~2wy~2..0wm"
+       two_format = "~wy~2..0wm"
       },
   YearsSplitFun =
     fun(Years) -> Years end,
@@ -970,7 +965,7 @@ approximate_time_formatters() ->
        threshold  = 10000,
        rounding = 1,
        split_fun  = YearsSplitFun,
-       one_format = "~5wy"
+       one_format = "~wy"
       },
   TooMuchSplitFun =
     fun(_) -> 10000 end,
@@ -982,9 +977,8 @@ approximate_time_formatters() ->
       },
   [ SecondsATF
   , MinutesATF
-  , QuartersATF
+  , TensATF
   , HoursATF
-  , DayQuartersATF
   , DaysATF
   , MonthsATF
   , YearsATF
