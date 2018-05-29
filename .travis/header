@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -xe
 
 THISDIR=$(dirname $0)
 REPO_LATEST=`$THISDIR/get_latest_travis $THISDIR/../.travis.yml`
