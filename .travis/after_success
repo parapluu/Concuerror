@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -e
-
 . $(dirname $0)/header
 
 if [ "$COLLECT_COVERAGE" = "true" ]; then
