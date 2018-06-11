@@ -3,7 +3,7 @@ description:      Concuerror is a model checking tool for testing and verifying 
 logo:             site-logo.png
 disqus_shortname: 
 #Comment out url when working locally to resolve base urls correctly
-url:             http://concuerror.com
+url:             https://concuerror.com
 author: Vahnatai
 
 # Owner/author information
