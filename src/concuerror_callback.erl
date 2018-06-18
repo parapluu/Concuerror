@@ -1050,19 +1050,19 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData], Info) ->
 
 run_built_in(erlang = Module, Name, Arity, Args, Info)
   when
-    {Name, Arity} =:= {date, 0};
-    {Name, Arity} =:= {monotonic_time, 0};
-    {Name, Arity} =:= {monotonic_time, 1};
-    {Name, Arity} =:= {now, 0};
-    {Name, Arity} =:= {system_time, 0};
-    {Name, Arity} =:= {system_time, 1};
-    {Name, Arity} =:= {time, 0};
-    {Name, Arity} =:= {time_offset, 0};
-    {Name, Arity} =:= {time_offset, 0};
-    {Name, Arity} =:= {time_offset, 1};
-    {Name, Arity} =:= {timestamp, 0};
-    {Name, Arity} =:= {unique_integer, 0};
-    {Name, Arity} =:= {unique_integer, 1}
+    false
+    ;{Name, Arity} =:= {date, 0}
+    ;{Name, Arity} =:= {monotonic_time, 0}
+    ;{Name, Arity} =:= {monotonic_time, 1}
+    ;{Name, Arity} =:= {now, 0}
+    ;{Name, Arity} =:= {system_time, 0}
+    ;{Name, Arity} =:= {system_time, 1}
+    ;{Name, Arity} =:= {time, 0}
+    ;{Name, Arity} =:= {time_offset, 0}
+    ;{Name, Arity} =:= {time_offset, 1}
+    ;{Name, Arity} =:= {timestamp, 0}
+    ;{Name, Arity} =:= {unique_integer, 0}
+    ;{Name, Arity} =:= {unique_integer, 1}
     ->
   maybe_reuse_old(Module, Name, Arity, Args, Info);
 
