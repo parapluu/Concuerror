@@ -1,10 +1,16 @@
 #!/bin/bash
 
 CONCUERROR=${CONCUERROR:-$(which concuerror)}
+DIFFER=${DIFFER:-$(pwd)/../../../tests/differ}
+ORIG=$(pwd)
+
+export DIFFPRINTER=${DIFFPRINTER:-$(pwd)/thediff}
 
 . ../print_colors
 
 function abort {
+    cd $ORIG
+    . $DIFFPRINTER
     print_red "FAILED"
 }
 
