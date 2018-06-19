@@ -23,13 +23,30 @@ extract(Files) ->
 extractOne(File) ->
   Module = list_to_atom(filename:basename(File, ".erl")),
   %% Get the scenarios for one module
-  Scenarios = Module:scenarios(),
-  %% Put module name to it
-  FunMap =
-    fun(Scenario) ->
-        list_to_tuple([Module | tuple_to_list(Scenario)])
-    end,
-  lists:map(FunMap, Scenarios).
+  try
+    Scenarios = Module:scenarios(),
+    %% Put module name to it
+    FunMap =
+      fun(Scenario) ->
+          list_to_tuple([Module | tuple_to_list(normalize(Scenario))])
+      end,
+    lists:map(FunMap, Scenarios)
+  catch
+    {bad_scenario, S} ->
+      io:format(standard_error, "Bad scenario in ~s: ~w~n", [File, S]),
+      []
+  end.
+
+normalize(Atom) when is_atom(Atom) ->
+  normalize({Atom});
+normalize({Fun}) ->
+  normalize({Fun, inf});
+normalize({Fun, Bound}) ->
+  normalize({Fun, Bound, optimal});
+normalize(Tuple) when is_tuple(Tuple) ->
+  Tuple;
+normalize(Other) ->
+  throw({bad_scenario, Other}).
 
 -spec exceptional([filename:filename()]) -> no_return().
 

@@ -16,12 +16,22 @@
 
 %%------------------------------------------------------------------------------
 
-%% The `scenarios/0` function returns a list of tuples each containing
-%% the scenario's function name and preemption bound (typically inf).
-%% Tuples may optionally contain a third term, specifying what dynamic
-%% partial order reduction algorithm should be used.
-%% Tuples may also contain the atom `crash` as the fourth term, if Concuerror is
-%% supposed to fail (crash) when executing the test.
+%% The `scenarios/0` function returns a list of tests.
+%%
+%% - The list contains atoms or tuples.
+%% - A test is specified by a three-element tuple.
+%% - Atoms are converted to single-element tuples.
+%% - Missing mandatory elements are substituted by a default value.
+%% - More, optional test specification, can be added as additional tuple
+%%   elements.
+%% - Tuple element meanings:
+%%   - first element is test function's name (0-arity)
+%%   - second element is preemption bound (default is 'inf')
+%%   - third element is DPOR algorithm (default is 'optimal')
+%%   - additional elements are:
+%%     - the atom `crash`, if Concuerror should crash when executing the test
+%%     - a specialization for the bounding algorithm (bpor)
+
 scenarios() -> [{test, inf, optimal}].
 
 %% A test may have a different pass condition. The `exceptional/0`
