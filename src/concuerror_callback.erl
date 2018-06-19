@@ -949,16 +949,17 @@ run_built_in(ets, new, 2, [Name, Options], Info) ->
         end
     end,
   Protection = lists:foldl(ProtectFold, protected, NoNameOptions),
-  Ret =
+  {Ret, NewInfo} =
     case Named of
-      true -> Name;
+      true -> {Name, Info};
       false ->
         case EventInfo of
           %% Replaying...
-          #builtin_event{result = R} -> R;
+          #builtin_event{result = R} ->
+            replayed_ets_tid(R, Info);
           %% New event...
           undefined ->
-            ets:update_counter(EtsTables, tid, 1)
+            fresh_ets_tid(Info)
         end
     end,
   Heir =
@@ -969,13 +970,17 @@ run_built_in(ets, new, 2, [Name, Options], Info) ->
   Entry = ?ets_table_entry(Tid, Ret, self(), Protection, Heir),
   true = ets:insert(EtsTables, Entry),
   ets:delete_all_objects(Tid),
-  {Ret, Info#concuerror_info{extra = Tid}};
+  {Ret, NewInfo#concuerror_info{extra = Tid}};
 run_built_in(ets, info, _, [Name|Rest] = Args, Info) ->
   try
     {Tid, _} = check_ets_access_rights(Name, {info, length(Args)}, Info),
     {erlang:apply(ets, info, [Tid|Rest]), Info#concuerror_info{extra = Tid}}
   catch
-    error:badarg -> {undefined, Info}
+    error:badarg ->
+      case is_valid_ets_tid(Name) of
+        true -> {undefined, Info};
+        false -> error(badarg)
+      end
   end;
 run_built_in(ets, F, N, [Name|Args], Info)
   when
@@ -1713,6 +1718,32 @@ link_monitor_handlers(Handler, LinksOrMonitors) ->
   end.
 
 %%------------------------------------------------------------------------------
+
+-ifdef(BEFORE_OTP_20).
+
+is_valid_ets_tid(Tid) ->
+  is_atom(Tid) orelse is_integer(Tid).
+
+fresh_ets_tid(Info) ->
+  #concuerror_info{ets_tables = EtsTables} = Info,
+  Fresh = ets:update_counter(EtsTables, tid, 1),
+  {Fresh, Info}.
+
+replayed_ets_tid(R, Info) ->
+  {R, Info}.
+
+-else.
+
+is_valid_ets_tid(Tid) ->
+  is_atom(Tid) orelse is_reference(Tid).
+
+fresh_ets_tid(Info) ->
+  get_ref(Info).
+
+replayed_ets_tid(R, Info) ->
+  {R, _NewInfo} = get_ref(Info).
+
+-endif.
 
 check_ets_access_rights(Name, Op, Info) ->
   #concuerror_info{ets_tables = EtsTables, scheduler = Scheduler} = Info,
