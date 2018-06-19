@@ -187,7 +187,7 @@ else:
 threads = os.getenv("THREADS", "")
 if threads == "":
     try:
-        threads = str(cpu_count())
+        threads = str(max(1, cpu_count() - 1))
     except:
         threads = "1"
 
