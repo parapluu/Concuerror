@@ -74,7 +74,7 @@ otp_release:
 
   - 19.3
   - 18.3
-  - 17.4
+  - 17.5
   # R16B03-1 is minimally supported (see matrix section)
 
 
