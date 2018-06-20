@@ -666,6 +666,7 @@ run_built_in(erlang, ReadorCancelTimer, 1, [Ref], Info)
     ReadorCancelTimer =:= read_timer;
     ReadorCancelTimer =:= cancel_timer
     ->
+  ?badarg_if_not(is_reference(Ref)),
   #concuerror_info{timers = Timers} = Info,
   case ets:lookup(Timers, Ref) of
     [] -> {false, Info};
