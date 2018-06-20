@@ -34,7 +34,7 @@ matrix:
   # At that point, update otp_release in the corresponding list below
 
   - env: TEST=".travis/travis_has_latest_otp_version"
-    otp_release: 20.3
+    otp_release: 21.0
     stage: basic
 
   # Check dialyzer
