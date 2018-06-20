@@ -72,11 +72,11 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
     if "dpor" in flags:
         dpor_flag = "--dpor=optimal"
         file_ext = "-dpor"
-        dpor_output = "optimal"
+        dpor_output = ""
     elif "optimal" in flags:
         dpor_flag = "--dpor=optimal"
         file_ext = "-optimal"
-        dpor_output = "optimal"
+        dpor_output = ""
     elif "source" in flags:
         dpor_flag = "--dpor=source"
         file_ext = "-source"
@@ -92,7 +92,7 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
     if preb == "inf":
         bound = ""
         bound_type = ""
-        preb_output = "none"
+        preb_output = ""
     else:
         bound = ("-b %s") % (preb)
         if "bpor" in flags:
@@ -102,6 +102,10 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
         else:
             bound_type = "-c delay"
             preb_output=("%s/delay") % (preb)
+    if funn == modn:
+        funn_output = ""
+    else:
+        funn_output = funn
     txtname = "%s-%s-%s%s.txt" % (name, funn, preb, file_ext)
     rslt = "%s/%s/results/%s" % (results, suite, txtname)
     try:
@@ -131,20 +135,20 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
     lock.acquire()
     total_tests.value += 1
     suitename = re.sub('\_tests$', '', suite)
-    logline = ("%-10s %-20s %-50s"
-               % (suitename, name,
-                  "("+funn+",  "+preb_output+",  "+dpor_output+")"))
+    logline = ("%-8s %-63s"
+               % (suitename,
+                  name+", "+funn_output+", "+preb_output+", "+dpor_output))
     if equalRes and finished:
         # We don't need to keep the results file
         try:
             os.remove(rslt)
         except:
             pass
-        print "%s  \033[01;32m    ok\033[00m" % (logline)
+        print "%s \033[01;32m    ok\033[00m" % (logline)
               
     else:
         total_failed.value += 1
-        print "%s  \033[01;31mfailed\033[00m" % (logline)
+        print "%s \033[01;31mfailed\033[00m" % (logline)
     lock.release()
     sema.release()
 
@@ -183,16 +187,15 @@ else:
 threads = os.getenv("THREADS", "")
 if threads == "":
     try:
-        threads = str(cpu_count())
+        threads = str(max(1, cpu_count() - 1))
     except:
         threads = "1"
 
 # Print header
 print "Concuerror's Testsuite (THREADS=%d)\n" % int(threads)
-print "%-10s %-20s %-50s  %s" % \
-      ("Suite", "Module", "(Test,  Bound,  DPOR)", "Result")
-print "---------------------------------------------" + \
-      "---------------------------------------------"
+print "%-8s %-63s %s" % \
+      ("Suite", "Module, Test (' '=Module), Bound (' '=inf), DPOR (' '=optimal)", "Result")
+print "-------------------------------------------------------------------------------"
 
 # Create share integers to count tests and
 # a lock to protect printings

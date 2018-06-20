@@ -1,10 +1,16 @@
 #!/bin/bash
 
 CONCUERROR=${CONCUERROR:-$(which concuerror)}
+DIFFER=${DIFFER:-$(pwd)/../../../tests/differ}
+ORIG=$(pwd)
+
+export DIFFPRINTER=${DIFFPRINTER:-$(pwd)/thediff}
 
 . ../print_colors
 
 function abort {
+    cd $ORIG
+    . $DIFFPRINTER
     print_red "FAILED"
 }
 
@@ -25,7 +31,7 @@ for i in t_simple_reg t_simple_reg_or_locate t_reg_or_locate2 test1 test2 test3 
     RES=$i.out
     REF=$(readlink -m ../ref/$RES)
     RUN=$(readlink -m ../run/$RES)
-    $CONCUERROR --assume_racing=false -q -k --pa ebin -f ../test.erl -m test -t $i -o $RUN || true
+    $CONCUERROR -i 100 --assume_racing=false -q -k --pa ebin -f ../test.erl -m test -t $i -o $RUN || true
     (bash $DIFFER $REF $RUN && rm $RUN && good) || false
 done
 

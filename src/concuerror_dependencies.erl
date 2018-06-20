@@ -288,15 +288,25 @@ dependent_exit(Exit, MFArgs, _Extra) ->
 
 dependent_exit(_Exit, {erlang, A, _})
   when
-    A =:= exit;
-    A =:= get_stacktrace;
-    A =:= make_ref;
-    A =:= process_flag;
-    A =:= send_after;
-    A =:= spawn;
-    A =:= spawn_opt;
-    A =:= spawn_link;
-    A =:= start_timer ->
+    false
+    ;A =:= date
+    ;A =:= exit
+    ;A =:= get_stacktrace
+    ;A =:= make_ref
+    ;A =:= monotonic_time
+    ;A =:= now
+    ;A =:= process_flag
+    ;A =:= send_after
+    ;A =:= spawn
+    ;A =:= spawn_link
+    ;A =:= spawn_opt
+    ;A =:= start_timer
+    ;A =:= system_time
+    ;A =:= time
+    ;A =:= time_offset
+    ;A =:= timestamp
+    ;A =:= unique_integer
+    ->
   false;
 dependent_exit(#exit_event{},
                {_, group_leader, []}) ->
@@ -547,6 +557,10 @@ dependent_built_in(#builtin_event{},
        ReadorCancelTimer =:= cancel_timer ->
   false;
 
+dependent_built_in(#builtin_event{mfargs = {erlang, monotonic_time, _}},
+                   #builtin_event{mfargs = {erlang, monotonic_time, _}}) ->
+  true;
+
 dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
                    #builtin_event{mfargs = {erlang, B, _}})
   when
@@ -558,6 +572,7 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
     ;A =:= is_process_alive %% Depends only with an exit event
     ;A =:= make_ref         %% Depends with nothing
     ;A =:= monitor          %% Depends only with an exit event or proc_info
+    ;A =:= monotonic_time
     ;A =:= now
     ;A =:= process_flag     %% Depends only with delivery of a signal
     ;A =:= processes        %% Depends only with spawn and exit
@@ -566,7 +581,11 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
     ;A =:= spawn_link       %% Depends only with processes/0
     ;A =:= spawn_opt        %% Depends only with processes/0
     ;A =:= start_timer
+    ;A =:= system_time
     ;A =:= time
+    ;A =:= time_offset
+    ;A =:= timestamp
+    ;A =:= unique_integer
 
     ;B =:= date
     ;B =:= demonitor
@@ -575,6 +594,7 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
     ;B =:= is_process_alive
     ;B =:= make_ref
     ;B =:= monitor
+    ;B =:= monotonic_time
     ;B =:= now
     ;B =:= process_flag
     ;B =:= processes
@@ -583,7 +603,11 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
     ;B =:= spawn_link
     ;B =:= spawn_opt
     ;B =:= start_timer
+    ;B =:= system_time
     ;B =:= time
+    ;B =:= time_offset
+    ;B =:= timestamp
+    ;B =:= unique_integer
     ->
   false;
 

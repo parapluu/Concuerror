@@ -2,7 +2,7 @@
 
 set -o pipefail
 
-DIFFPRINTER=${DIFFPRINTER-thediff}
+DIFFPRINTER=${DIFFPRINTER:-thediff}
 
 DIFF=$(mktemp)
 

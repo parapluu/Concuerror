@@ -1,0 +1,80 @@
+Concuerror v0.19+build.2041.refbf14d73 started at 18 Jun 2018 11:54:09
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{monotonic_time,test,[]}},
+   {exclude_module,[]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/monotonic_time.erl"]},
+   {first_process_errors_only,false},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,5000},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
+################################################################################
+Interleaving #2
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process <P> exited abnormally
+    Reason:
+      {{badmatch,false},[]}
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<monotonic_time.0.103548731>,[]])
+    in erlang.erl line 2782
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<monotonic_time.1.103548731>,[]])
+    in erlang.erl line 2782
+   3: <P.2>: -576460750800557000 = erlang:monotonic_time()
+    in monotonic_time.erl line 19
+   4: <P.2>: {<P.2>,-576460750800557000} = <P> ! {<P.2>,-576460750800557000}
+    in monotonic_time.erl line 19
+   5: <P.2>: exits normally
+   6: <P.1>: -576460750800446000 = erlang:monotonic_time()
+    in monotonic_time.erl line 18
+   7: <P.1>: {<P.1>,-576460750800446000} = <P> ! {<P.1>,-576460750800446000}
+    in monotonic_time.erl line 18
+   8: <P.1>: exits normally
+   9: <P>: receives message ({<P.1>,-576460750800446000})
+    in monotonic_time.erl line 21
+  10: <P>: receives message ({<P.2>,-576460750800557000})
+    in monotonic_time.erl line 25
+  11: <P>: exits abnormally ({{badmatch,false},[]})
+################################################################################
+Exploration completed!
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+* Check '--help attributes' for info on how to pass options via module attributes.
+* Running without a scheduling_bound corresponds to verification and may take a long time.
+* Increase '--print_depth' if output/graph contains "...".
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+* Writing results in /Users/stavros.aronis/git/Concuerror/tests/results/basic_tests/results/monotonic_time-test-inf-optimal.txt
+* Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
+* Instrumented & loaded module monotonic_time
+* Automatically instrumented module erlang
+* You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+* Continuing after error (-k)
+
+################################################################################
+Done at 18 Jun 2018 11:54:09 (Exit status: error)
+  Summary: 1 errors, 2/2 interleavings explored

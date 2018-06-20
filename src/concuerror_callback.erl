@@ -470,14 +470,14 @@ run_built_in(erlang, link, 1, [Pid], Info) ->
 
 run_built_in(erlang, make_ref, 0, [], Info) ->
   #concuerror_info{event = #event{event_info = EventInfo}} = Info,
-  {MaybeRef, NewInfo} = get_ref(Info),
+  {Ref, NewInfo} = get_ref(Info),
   case EventInfo of
     %% Replaying...
-    #builtin_event{result = MaybeRef} -> ok;
+    #builtin_event{result = Ref} -> ok;
     %% New event...
     undefined -> ok
   end,
-  {MaybeRef, NewInfo};
+  {Ref, NewInfo};
 run_built_in(erlang, monitor, 2, [Type, InTarget], Info) ->
   #concuerror_info{
      monitors = Monitors,
@@ -666,6 +666,7 @@ run_built_in(erlang, ReadorCancelTimer, 1, [Ref], Info)
     ReadorCancelTimer =:= read_timer;
     ReadorCancelTimer =:= cancel_timer
     ->
+  ?badarg_if_not(is_reference(Ref)),
   #concuerror_info{timers = Timers} = Info,
   case ets:lookup(Timers, Ref) of
     [] -> {false, Info};
@@ -1050,19 +1051,19 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData], Info) ->
 
 run_built_in(erlang = Module, Name, Arity, Args, Info)
   when
-    {Name, Arity} =:= {date, 0};
-    {Name, Arity} =:= {monotonic_time, 0};
-    {Name, Arity} =:= {monotonic_time, 1};
-    {Name, Arity} =:= {now, 0};
-    {Name, Arity} =:= {system_time, 0};
-    {Name, Arity} =:= {system_time, 1};
-    {Name, Arity} =:= {time, 0};
-    {Name, Arity} =:= {time_offset, 0};
-    {Name, Arity} =:= {time_offset, 0};
-    {Name, Arity} =:= {time_offset, 1};
-    {Name, Arity} =:= {timestamp, 0};
-    {Name, Arity} =:= {unique_integer, 0};
-    {Name, Arity} =:= {unique_integer, 1}
+    false
+    ;{Name, Arity} =:= {date, 0}
+    ;{Name, Arity} =:= {monotonic_time, 0}
+    ;{Name, Arity} =:= {monotonic_time, 1}
+    ;{Name, Arity} =:= {now, 0}
+    ;{Name, Arity} =:= {system_time, 0}
+    ;{Name, Arity} =:= {system_time, 1}
+    ;{Name, Arity} =:= {time, 0}
+    ;{Name, Arity} =:= {time_offset, 0}
+    ;{Name, Arity} =:= {time_offset, 1}
+    ;{Name, Arity} =:= {timestamp, 0}
+    ;{Name, Arity} =:= {unique_integer, 0}
+    ;{Name, Arity} =:= {unique_integer, 1}
     ->
   maybe_reuse_old(Module, Name, Arity, Args, Info);
 
