@@ -470,14 +470,14 @@ run_built_in(erlang, link, 1, [Pid], Info) ->
 
 run_built_in(erlang, make_ref, 0, [], Info) ->
   #concuerror_info{event = #event{event_info = EventInfo}} = Info,
-  {MaybeRef, NewInfo} = get_ref(Info),
+  {Ref, NewInfo} = get_ref(Info),
   case EventInfo of
     %% Replaying...
-    #builtin_event{result = MaybeRef} -> ok;
+    #builtin_event{result = Ref} -> ok;
     %% New event...
     undefined -> ok
   end,
-  {MaybeRef, NewInfo};
+  {Ref, NewInfo};
 run_built_in(erlang, monitor, 2, [Type, InTarget], Info) ->
   #concuerror_info{
      monitors = Monitors,
