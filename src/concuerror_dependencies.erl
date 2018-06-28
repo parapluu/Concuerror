@@ -182,8 +182,9 @@ dependent(#message_event{
               not_received -> true;
               undefined -> false
             end,
-          if ObsDep -> {true, Id};
-             true -> false
+          case ObsDep of
+            true -> {true, Id};
+            false -> false
           end
       end;
     {_, _} -> Killing1 orelse Killing2 %% This is an ugly hack, see blame.
@@ -691,8 +692,9 @@ ets_is_mutating(#builtin_event{mfargs = {_,Op,[_|Rest] = Args}} = Event) ->
 with_key(Key) ->
   fun(Event) ->
       Keys = ets_reads_keys(Event),
-      if Keys =:= any -> true;
-         true -> lists:any(fun(K) -> K =:= Key end, Keys)
+      case Keys =:= any of
+        true -> true;
+        false -> lists:any(fun(K) -> K =:= Key end, Keys)
       end
   end.
 

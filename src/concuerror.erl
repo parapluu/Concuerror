@@ -109,12 +109,13 @@ maybe_cover_compile() ->
 
 maybe_cover_export(Args) ->
   Cover = os:getenv("CONCUERROR_COVER"),
-  if Cover =/= false ->
+  case Cover =/= false of
+    true ->
       Hash = binary:decode_unsigned(erlang:md5(term_to_binary(Args))),
       Out = filename:join([Cover, io_lib:format("~.16b",[Hash])]),
       cover:export(Out),
       ok;
-     true -> ok
+    false -> ok
   end.
 
 %%------------------------------------------------------------------------------
