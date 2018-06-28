@@ -41,6 +41,10 @@ matrix:
   - env: TEST="make dialyzer"
     stage: basic
 
+  # Check lint
+  - env: TEST="make lint"
+    stage: basic
+
   # Minimal support for R16B03-1
   - env: TEST=".travis/script tests-real"
     otp_release: R16B03-1
