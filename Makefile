@@ -34,6 +34,7 @@ dev native pedantic: $(REBAR)
 ### Dialyzer
 ###-----------------------------------------------------------------------------
 
+.PHONY: dialyzer
 dialyzer: $(REBAR)
 	$(REBAR) dialyzer
 
