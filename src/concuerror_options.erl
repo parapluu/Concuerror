@@ -14,12 +14,6 @@
 
 -include("concuerror.hrl").
 
--ifdef(BEFORE_OTP_20).
--define(lowercase, to_lower).
--else.
--define(lowercase, lowercase).
--endif.
-
 %%%-----------------------------------------------------------------------------
 
 -type options() :: proplists:proplist().
@@ -385,7 +379,7 @@ fix_common_error("--" ++ [C] = Option) ->
   opt_info("\"~s\" converted to \"-~c\"", [Option, C]),
   "-" ++ [C];
 fix_common_error("--" ++ Text = Option) ->
-  Underscored = lists:map(fun dash_to_underscore/1, string:?lowercase(Text)),
+  Underscored = lists:map(fun dash_to_underscore/1, lowercase(Text)),
   case Text =:= Underscored of
     true -> Option;
     false ->
@@ -1275,6 +1269,18 @@ get_logs() ->
     undefined -> [];
     Whats -> lists:reverse(Whats)
   end.
+
+-ifdef(BEFORE_OTP_20).
+
+lowercase(String) ->
+  string:to_lower(String).
+
+-else.
+
+lowercase(String) ->
+  string:lowercase(String).
+
+-endif.
 
 to_stderr(Format) ->
   to_stderr(Format, []).
