@@ -469,7 +469,7 @@ schedule_sort(Actors, State) ->
       oldest -> Actors;
       newest -> lists:reverse(Actors);
       round_robin ->
-        Split = fun(E) -> E =/= LastScheduled end,    
+        Split = fun(E) -> E =/= LastScheduled end,
         {Pre, Post} = lists:splitwith(Split, Actors),
         Post ++ Pre
     end,
@@ -561,7 +561,7 @@ maybe_prepare_channel_event(Actor, Event) ->
       {Channel, Queue} = Actor,
       MessageEvent = queue:get(Queue),
       Event#event{actor = Channel, event_info = MessageEvent}
-  end.      
+  end.
 
 reset_event(#event{actor = Actor, event_info = EventInfo}) ->
   ResetEventInfo =
@@ -653,7 +653,7 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
      receive_timeout_total = ReceiveTimeoutTotal,
      treat_as_normal = Normal
     } = State0,
-  State = 
+  State =
     case is_pid(P) of
       true -> State0#scheduler_state{last_scheduled = P};
       false -> State0
@@ -1444,7 +1444,7 @@ get_initials([Event|Rest], Initials, All) ->
       true -> [Event|Initials];
       false -> Initials
     end,
-  get_initials(Rest, NewInitials, [Event|All]).            
+  get_initials(Rest, NewInitials, [Event|All]).
 
 existing([], _) -> false;
 existing([#event{actor = A}|Rest], Initials) ->
