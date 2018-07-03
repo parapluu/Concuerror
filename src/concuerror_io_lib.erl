@@ -111,12 +111,12 @@ pretty_info(#builtin_event{mfargs = {erlang, '!', [To, Msg]},
   io_lib:format("Exception ~W raised by: ~W ! ~W",
                 [Reason, Depth, To, Depth, Msg, Depth]);
 pretty_info(#builtin_event{mfargs = {M, F, Args},
-			   status = {crashed, Reason}}, Depth) ->
+                           status = {crashed, Reason}}, Depth) ->
   ArgString = pretty_arg(Args, Depth),
   io_lib:format("Exception ~W raised by: ~p:~p(~s)",
                 [Reason, Depth, M, F, ArgString]);
 pretty_info(#builtin_event{mfargs = {erlang, '!', [To, Msg]},
-			   result = Result}, Depth) ->
+                           result = Result}, Depth) ->
   io_lib:format("~W = ~w ! ~W", [Result, Depth, To, Msg, Depth]);
 pretty_info(#builtin_event{mfargs = {M, F, Args}, result = Result}, Depth) ->
   ArgString = pretty_arg(Args, Depth),

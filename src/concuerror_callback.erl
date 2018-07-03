@@ -1825,28 +1825,28 @@ system_wrapper_loop(Name, Wrapped, Info) ->
                 application_controller ->
                   throw(comm_application_controller);
                 code_server ->
-		  {Call, From, Request} = Data,
-		  check_request(Name, Request),
-		  erlang:send(Wrapped, {Call, self(), Request}),
-		  receive
-		    Msg -> {From, Msg}
-		  end;
+                  {Call, From, Request} = Data,
+                  check_request(Name, Request),
+                  erlang:send(Wrapped, {Call, self(), Request}),
+                  receive
+                    Msg -> {From, Msg}
+                  end;
                 erl_prim_loader ->
-		  {From, Request} = Data,
-		  check_request(Name, Request),
-		  erlang:send(Wrapped, {self(), Request}),
-		  receive
-		    {_, Msg} -> {From, {self(), Msg}}
+                  {From, Request} = Data,
+                  check_request(Name, Request),
+                  erlang:send(Wrapped, {self(), Request}),
+                  receive
+                    {_, Msg} -> {From, {self(), Msg}}
                   end;
                 error_logger ->
                   %% erlang:send(Wrapped, Data),
                   throw(no_reply);
                 file_server_2 ->
-		  {Call, {From, Ref}, Request} = Data,
-		  check_request(Name, Request),
-		  erlang:send(Wrapped, {Call, {self(), Ref}, Request}),
-		  receive
-		    Msg -> {From, Msg}
+                  {Call, {From, Ref}, Request} = Data,
+                  check_request(Name, Request),
+                  erlang:send(Wrapped, {Call, {self(), Ref}, Request}),
+                  receive
+                    Msg -> {From, Msg}
                   end;
                 init ->
                   {From, Request} = Data,
