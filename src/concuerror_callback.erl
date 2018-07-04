@@ -695,11 +695,7 @@ run_built_in(erlang, SendAfter, 3, [0, Dest, Msg], Info)
     %% New event...
     undefined -> ok
   end,
-  ActualMessage =
-    case SendAfter of
-      send_after -> Msg;
-      start_timer -> {timeout, Ref, Msg}
-    end,
+  ActualMessage = format_timer_message(SendAfter, Msg, Ref),
   {_, FinalInfo} = run_built_in(erlang, send, 2, [Dest, ActualMessage], NewInfo),
   {Ref, FinalInfo};
 
@@ -743,11 +739,7 @@ run_built_in(erlang, SendAfter, 3, [Timeout, Dest, Msg], Info)
         NewEvent = Event#event{special = [{new, P}]},
         {P, NewInfo#concuerror_info{event = NewEvent, extra = P}}
     end,
-  ActualMessage =
-    case SendAfter of
-      send_after -> Msg;
-      start_timer -> {timeout, Ref, Msg}
-    end,
+  ActualMessage = format_timer_message(SendAfter, Msg, Ref),
   ets:insert(Timers, {Ref, Pid, Dest}),
   TimerFun =
     fun() ->
@@ -1159,16 +1151,10 @@ deliver_message(Event, MessageEvent, Timeout, Instant) ->
              {system_communication, System},
              {message, SystemReply}],
           NewEvent = Event#event{special = Special ++ SystemSpecials},
-          case Instant =:= false of
-            true -> NewEvent;
-            false -> deliver_message(NewEvent, SystemReply, Timeout, Instant)
-          end;
+          deliver_if_instant(Instant, NewEvent, SystemReply, Timeout);
         false ->
           SystemReply = find_system_reply(Recipient, Special),
-          case Instant =:= false of
-            true -> Event;
-            false -> deliver_message(Event, SystemReply, Timeout, Instant)
-          end
+          deliver_if_instant(Instant, Event, SystemReply, Timeout)
       end;
     {'EXIT', _, What} ->
       exit(What)
@@ -1184,6 +1170,12 @@ already_known_delivery(Message, [{message_delivered, Event}|Special]) ->
   Id =:= Del orelse already_known_delivery(Message, Special);
 already_known_delivery(Message, [_|Special]) ->
   already_known_delivery(Message, Special).
+
+deliver_if_instant(Instant, NewEvent, SystemReply, Timeout) ->
+  case Instant =:= false of
+    true -> NewEvent;
+    false -> deliver_message(NewEvent, SystemReply, Timeout, Instant)
+  end.
 
 find_system_reply(System, [{message, #message_event{sender = System} = Message}|_]) ->
   Message;
@@ -1949,6 +1941,12 @@ make_exit_signal(Reason) ->
 
 make_exit_signal(From, Reason) ->
   {'EXIT', From, Reason}.
+
+format_timer_message(SendAfter, Msg, Ref) ->
+  case SendAfter of
+    send_after -> Msg;
+    start_timer -> {timeout, Ref, Msg}
+  end.
 
 make_message(Info, Type, Data, Recipient) ->
   #concuerror_info{event = #event{label = Label} = Event} = Info,
