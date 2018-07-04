@@ -33,7 +33,9 @@ initialize(Excluded) ->
     ok
   catch
     _:_ ->
-      {error, "Excluded modules have already been instrumented. Restart the shell."}
+      Error =
+        "Excluded modules have already been instrumented. Restart the shell.",
+      {error, Error}
   end.
 
 setup_sticky_directories() ->

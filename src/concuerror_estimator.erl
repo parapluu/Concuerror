@@ -329,8 +329,6 @@ estimate(State) ->
       Length = length(Marks),
       {Races, NewRacesAvg} = update_average(Length, RacesAvg),
       Est = bounded_estimation(Races, Bound),
-      %% io:format("~w~n~w~n", [lists:sort(dict:to_list(Explored)), lists:sort(dict:to_list(Planned))]),
-      %% io:format("~w, ~.2f, ~.2f~n", [Length, Races, Est]),
       NewStyle = Style#delay_bounded{races_avg = NewRacesAvg},
       {round(Est), NewState#state{style = NewStyle}}
   end.

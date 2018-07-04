@@ -698,7 +698,8 @@ progress_content(State) ->
   SSBStr =
     case TracesSSB of
       0 -> "";
-      _ when TracesSSB < 100000 -> io_lib:format("~8s |", [add_seps_to_int(TracesSSB)]);
+      _ when TracesSSB < 100000 ->
+        io_lib:format("~8s |", [add_seps_to_int(TracesSSB)]);
       _ -> io_lib:format("~8s |", ["> 100k"])
     end,
   RateStr =
@@ -1070,7 +1071,8 @@ graph_command(Command, State) ->
       {race, EarlyRef, Ref} ->
         to_file(
           GraphFile,
-          "~s [constraint=false, color=red, dir=back, penwidth=3, style=dashed];~n",
+          "~s [constraint=false, color=red, dir=back, penwidth=3,"
+          " style=dashed];~n",
           [dref_edge(EarlyRef, Ref)]),
         Graph;
       {set_node, {I, _} = NewParent, NewSibling} ->

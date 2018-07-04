@@ -4,7 +4,8 @@
 
 -include("concuerror.hrl").
 
--spec error_s(concuerror_scheduler:interleaving_error(), pos_integer()) -> string().
+-spec error_s(concuerror_scheduler:interleaving_error(), pos_integer()) ->
+                 string().
 
 error_s(fatal, _Depth) ->
   io_lib:format("* Concuerror crashed~n", []);
@@ -23,7 +24,9 @@ error_s({Type, Info}, Depth) ->
       [S1, S2];
     abnormal_exit ->
       {Step, P, Reason, Stacktrace} = Info,
-      S1 = io_lib:format("* At step ~w process ~p exited abnormally~n", [Step, P]),
+      S1 =
+        io_lib:format(
+          "* At step ~w process ~p exited abnormally~n", [Step, P]),
       S2 =
         io_lib:format(
           "    Reason:~n"
@@ -40,7 +43,8 @@ error_s({Type, Info}, Depth) ->
            "     Mailbox contents: ~p~n", [P, location(F, L), Msgs]) ||
           {P, [L, {file, F}], Msgs} <- Info],
       Format =
-        "* Blocked at a 'receive' (\"deadlocked\"; other processes have exited):~n~s",
+        "* Blocked at a 'receive' (\"deadlocked\";"
+        " other processes have exited):~n~s",
       io_lib:format(Format, [InfoStr]);
     depth_bound ->
       io_lib:format("* Reached the depth bound of ~p events~n", [Info])

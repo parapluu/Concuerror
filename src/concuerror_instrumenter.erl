@@ -147,7 +147,8 @@ warn_to_string(Module, Tags) ->
 
 tag_to_warn(has_load_nif) ->
   "contains a call to erlang:load_nif/2."
-    " Concuerror cannot reliably execute operations that are implemented as NIFs."
+    " Concuerror cannot reliably execute operations that are implemented as"
+    " NIFs."
     " Moreover, Concuerror cannot even detect if a NIF is used by the test."
     " If your test uses NIFs, you may see error messages of the form"
     " 'replaying a built-in returned a different result than expected'."
