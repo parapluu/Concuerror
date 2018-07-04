@@ -128,14 +128,17 @@ initialize(Options) ->
         Self = self(),
         spawn_link(fun() -> ticker(Self) end)
     end,
-  if Output =:= disable ->
+  case Output =:= disable of
+    true ->
       Msg = "No output report will be generated~n",
       ?log(self(), ?lwarning, Msg, []);
-     true ->
+    false ->
       ?log(self(), ?linfo, "Writing results in ~s~n", [OutputName])
   end,
-  if GraphData =:= disable -> ok;
-     true ->
+  case GraphData =:= disable of
+    true ->
+      ok;
+    false ->
       {_, GraphName} = Graph,
       ?log(self(), ?linfo, "Writing graph in ~s~n", [GraphName])
   end,
@@ -685,16 +688,18 @@ progress_content(State) ->
   EstimatedTotal =
     max(concuerror_estimator:get_estimation(Estimator), TracesTotal),
   ErrorsStr =
-    if Errors =:= 0 -> "none";
-       Errors < 10000 -> add_seps_to_int(Errors);
-       true -> "> 10k"
+    case Errors of
+      0 -> "none";
+      _ when Errors < 10000 -> add_seps_to_int(Errors);
+      _ -> "> 10k"
     end,
   [TracesExploredStr, PlannedStr] =
     [add_seps_to_int(S) || S <- [TracesExplored, Planned]],
   SSBStr =
-    if TracesSSB =:= 0 -> "";
-       TracesSSB < 100000 -> io_lib:format("~8s |", [add_seps_to_int(TracesSSB)]);
-       true -> io_lib:format("~8s |", ["> 100k"])
+    case TracesSSB of
+      0 -> "";
+      _ when TracesSSB < 100000 -> io_lib:format("~8s |", [add_seps_to_int(TracesSSB)]);
+      _ -> io_lib:format("~8s |", ["> 100k"])
     end,
   RateStr =
     case Rate of
@@ -703,9 +708,10 @@ progress_content(State) ->
       _    -> io_lib:format("~w/s", [Rate])
     end,
   EstimatedTotalStr =
-    if EstimatedTotal =:= unknown -> "...";
-       EstimatedTotal < 10000000 -> add_seps_to_int(EstimatedTotal);
-       true ->
+    case EstimatedTotal of
+      unknown -> "...";
+      _ when EstimatedTotal < 10000000 -> add_seps_to_int(EstimatedTotal);
+      _ ->
         Low = trunc(math:log10(EstimatedTotal)),
         io_lib:format("< 10e~w", [Low + 1])
     end,

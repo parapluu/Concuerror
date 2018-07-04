@@ -94,7 +94,8 @@ start(Options, LogMsgs) ->
 
 maybe_cover_compile() ->
   Cover = os:getenv("CONCUERROR_COVER"),
-  if Cover =/= false ->
+  case Cover =/= false of
+    true ->
       case cover:is_compiled(?MODULE) of
         false ->
           {ok, Modules} = application:get_key(concuerror, modules),
@@ -102,7 +103,7 @@ maybe_cover_compile() ->
           ok;
         _ -> ok
       end;
-     true -> ok
+    false -> ok
   end.
 
 %%------------------------------------------------------------------------------

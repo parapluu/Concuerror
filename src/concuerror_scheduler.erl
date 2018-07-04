@@ -665,19 +665,21 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
       add_error({abnormal_halt, {Index, Actor, Status}}, State);
     #exit_event{reason = Reason} = Exit when Reason =/= normal ->
       {Tag, WasTimeout} =
-        if tuple_size(Reason) > 0 ->
+        case is_tuple(Reason) andalso (tuple_size(Reason) > 0) of
+          true ->
             T = element(1, Reason),
             {T, T =:= timeout};
-           true -> {Reason, false}
+          false -> {Reason, false}
         end,
       case is_atom(Tag) andalso lists:member(Tag, Normal) of
         true ->
           ?unique(Logger, ?lwarning, msg(treat_as_normal), []),
           State;
         false ->
-          if WasTimeout -> ?unique(Logger, ?ltip, msg(timeout), []);
-             Tag =:= shutdown -> ?unique(Logger, ?ltip, msg(shutdown), []);
-             true -> ok
+          case {WasTimeout, Tag} of
+            {true, _} -> ?unique(Logger, ?ltip, msg(timeout), []);
+            {_, shutdown} -> ?unique(Logger, ?ltip, msg(shutdown), []);
+            _ -> ok
           end,
           IsAssertLike =
             case Tag of
@@ -698,11 +700,12 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
                 true;
               _ -> true
             end,
-          if Report ->
+          case Report of
+            true ->
               #event{actor = Actor} = Event,
               Stacktrace = Exit#exit_event.stacktrace,
               add_error({abnormal_exit, {Index, Actor, Reason, Stacktrace}}, State);
-             true -> State
+            false -> State
           end
       end;
     #receive_event{message = 'after'} ->
@@ -1299,7 +1302,8 @@ show_plan(_Type, _Logger, _Index, _NotDep) ->
 
 maybe_log_race(EarlyTraceState, TraceState, State) ->
   #scheduler_state{logger = Logger} = State,
-  if State#scheduler_state.show_races ->
+  case State#scheduler_state.show_races of
+    true ->
       #trace_state{
          done = [EarlyEvent|_],
          index = EarlyIndex,
@@ -1314,7 +1318,7 @@ maybe_log_race(EarlyTraceState, TraceState, State) ->
       IndexedEarly = {EarlyIndex, EarlyEvent#event{location = []}},
       IndexedLate = {Index, Event#event{location = []}},
       concuerror_logger:race(Logger, IndexedEarly, IndexedLate);
-     true ->
+    false ->
       ?unique(Logger, ?linfo, msg(show_races), [])
   end.
 

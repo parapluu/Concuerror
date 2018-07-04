@@ -539,10 +539,9 @@ run_built_in(erlang, process_info, 2, [Pid, Items], Info) when is_list(Items) ->
     fun (Item) ->
         ?badarg_if_not(is_atom(Item)),
         {ItemRes, _} = run_built_in(erlang, process_info, 2, [Pid, Item], Info),
-        if Item =:= registered_name, ItemRes =:= [] ->
-            {registered_name, []};
-           is_tuple(ItemRes) ->
-            ItemRes
+        case (Item =:= registered_name) andalso (ItemRes =:= []) of
+          true -> {registered_name, []};
+          false -> ItemRes
         end
     end,
   {lists:map(ItemFun, Items), Info};

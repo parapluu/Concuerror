@@ -732,8 +732,9 @@ set_verbosity(Options) ->
       {N, false} -> lists:sum(N)
     end,
   Verbosity = min(SpecifiedVerbosity, ?MAX_VERBOSITY),
-  if Verbosity < ?ldebug; ?has_dev -> ok;
-     true ->
+  case ?has_dev orelse (Verbosity < ?ldebug) of
+    true -> ok;
+    false ->
       Error =
         "To use verbosity > ~w, rebuild Concuerror with"
         " 'make distclean; make dev'.",
