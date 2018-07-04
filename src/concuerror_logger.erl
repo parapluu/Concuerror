@@ -319,7 +319,7 @@ loop(Message, State) ->
         io_lib:format(
           "~n* ~s~n  ~s~n",
           [concuerror_io_lib:pretty_s(E, PrintDepth)
-           || E <- [EarlyEvent,Event]]),
+           || E <- [EarlyEvent, Event]]),
       loop({print, race, Msg}, State);
     {log, Level, Tag, Format, Data} ->
       {NewLogMsgs, NewAlreadyEmitted} =
@@ -335,7 +335,7 @@ loop(Message, State) ->
             end,
             NLM =
               case Level < ?ltiming of
-                true  -> orddict:append(Level, {Format,Data}, LogMsgs);
+                true  -> orddict:append(Level, {Format, Data}, LogMsgs);
                 false -> LogMsgs
               end,
             NAE =
@@ -1044,14 +1044,15 @@ graph_command(Command, State) ->
             _ -> ""
           end,
         print_depth_tip(),
-        Label = concuerror_io_lib:pretty_s({I,Event#event{location=[]}}, PrintDepth - 19),
+        NoLocEvent = Event#event{location = []},
+        Label = concuerror_io_lib:pretty_s({I, NoLocEvent}, PrintDepth - 19),
         to_file(
           GraphFile,
           "    \"~p\" [label=\"~s\\l\"~s];~n",
           [Ref, Label, ErrorS]),
         case Sibling =:= none of
           true ->
-            to_file(GraphFile,"~s [weight=1000];~n",[ref_edge(Parent, Ref)]);
+            to_file(GraphFile,"~s [weight=1000];~n", [ref_edge(Parent, Ref)]);
           false ->
             to_file(
               GraphFile,

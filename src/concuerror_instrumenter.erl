@@ -207,7 +207,7 @@ is_data_type_conversion_op(Name) ->
   StringName = atom_to_list(Name),
   case re:split(StringName, "_to_") of
     [_] -> false;
-    [_,_] -> true
+    [_, _] -> true
   end.
 
 erl_safe("adler32"               ++ _) -> true;

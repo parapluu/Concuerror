@@ -20,7 +20,7 @@ error_s({Type, Info}, Depth) ->
         io_lib:format(
           "    Status:~n"
           "      ~P~n", [Status, Depth]),
-      [S1,S2];
+      [S1, S2];
     abnormal_exit ->
       {Step, P, Reason, Stacktrace} = Info,
       S1 = io_lib:format("* At step ~w process ~p exited abnormally~n", [Step, P]),
@@ -32,7 +32,7 @@ error_s({Type, Info}, Depth) ->
         io_lib:format(
           "    Stacktrace:~n"
           "      ~p~n", [Stacktrace]),
-      [S1,S2,S3];
+      [S1, S2, S3];
     deadlock ->
       InfoStr =
         [io_lib:format(
