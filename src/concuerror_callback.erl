@@ -445,7 +445,7 @@ run_built_in(erlang, link, 1, [Pid], Info) ->
      event = #event{event_info = EventInfo}
     } = Info,
   case run_built_in(erlang, is_process_alive, 1, [Pid], Info) of
-    {true, Info}->
+    {true, Info} ->
       Self = self(),
       true = ets:insert(Links, ?links(Self, Pid)),
       {true, Info};

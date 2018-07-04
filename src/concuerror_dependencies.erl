@@ -361,7 +361,7 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, group_leader]}},
                        Other) ->
   case Other of
     #builtin_event{mfargs = {_,group_leader,[_, Pid]}} -> true;
-    _-> false
+    _ -> false
   end;
 dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, links]}},
                        Other) ->
@@ -372,7 +372,7 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, links]}},
       } when UnLink =:= link; UnLink =:= unlink -> true;
     #builtin_event{mfargs = {erlang, UnLink, Pid}}
       when UnLink =:= link; UnLink =:= unlink -> true;
-    _-> false
+    _ -> false
   end;
 dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, Msg]}},
                        Other)
@@ -404,7 +404,7 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, trap_exit]}},
     #builtin_event{
        actor = Pid,
        mfargs = {erlang, process_flag, [trap_exit, _]}} -> true;
-    _-> false
+    _ -> false
   end;
 dependent_process_info(#builtin_event{mfargs = {_,_,[_, Safe]}},
                        _) when

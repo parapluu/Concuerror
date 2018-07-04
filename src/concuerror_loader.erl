@@ -126,7 +126,7 @@ is_instrumenting() ->
 
 -spec set_is_instrumenting( {'true', module()} | 'false') -> 'ok'.
 
-set_is_instrumenting(Value)->
+set_is_instrumenting(Value) ->
   Instrumented = get_instrumented_table(),
   ets:insert(Instrumented, {{is_instrumenting}, Value}),
   ok.
