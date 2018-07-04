@@ -53,6 +53,8 @@
           style                       :: estimation_style()
          }).
 
+-type state() :: #state{}.
+
 %%%=============================================================================
 %%% API
 %%%=============================================================================
@@ -167,21 +169,21 @@ get_estimation(Estimator) ->
 %%% gen_server callbacks
 %%%=============================================================================
 
--spec init(estimation_style()) -> {'ok', #state{}}.
+-spec init(estimation_style()) -> {'ok', state()}.
 
 init(Style) ->
   {ok, #state{style = Style}}.
 
 %%------------------------------------------------------------------------------
 
--spec handle_call(call(), _From, #state{}) -> {'reply', term(), #state{}}.
+-spec handle_call(call(), _From, state()) -> {'reply', term(), state()}.
 
 handle_call(get_estimation, _From, #state{estimation = Estimation} = State) ->
   {reply, Estimation, State}.
 
 %%------------------------------------------------------------------------------
 
--spec handle_cast(cast(), #state{}) -> {'noreply', #state{}}.
+-spec handle_cast(cast(), state()) -> {'noreply', state()}.
 
 handle_cast(stop, State) ->
   {stop, normal, State};
@@ -220,21 +222,21 @@ handle_cast({restart, I}, State) ->
 
 %%------------------------------------------------------------------------------
 
--spec handle_info(term(), #state{}) -> {noreply, #state{}}.
+-spec handle_info(term(), state()) -> {noreply, state()}.
 
 handle_info(_Info, State) ->
   {noreply, State}.
 
 %%------------------------------------------------------------------------------
 
--spec terminate('normal', #state{}) -> 'ok'.
+-spec terminate('normal', state()) -> 'ok'.
 
 terminate(normal, _State) ->
   ok.
 
 %%------------------------------------------------------------------------------
 
--spec code_change(term(), #state{}, term()) -> {'ok', #state{}}.
+-spec code_change(term(), state(), term()) -> {'ok', state()}.
 
 code_change(_OldVsn, State, _Extra) ->
   {ok, State}.
