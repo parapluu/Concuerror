@@ -84,7 +84,7 @@ start(Options, LogMsgs) ->
         ?error(Logger, "~s~n", [explain(Reason)]),
         failed
     end,
-  ?trace(Logger, "Reached the end!~n",[]),
+  ?trace(Logger, "Reached the end!~n", []),
   ExitStatus = concuerror_logger:stop(Logger, SchedulerStatus),
   concuerror_estimator:stop(Estimator),
   ets:delete(Processes),
@@ -113,7 +113,7 @@ maybe_cover_export(Args) ->
   case Cover =/= false of
     true ->
       Hash = binary:decode_unsigned(erlang:md5(term_to_binary(Args))),
-      Out = filename:join([Cover, io_lib:format("~.16b",[Hash])]),
+      Out = filename:join([Cover, io_lib:format("~.16b", [Hash])]),
       cover:export(Out),
       ok;
     false -> ok

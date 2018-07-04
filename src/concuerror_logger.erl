@@ -356,7 +356,7 @@ loop(Message, State) ->
     {stop, SchedulerStatus, Scheduler} ->
       NewState = stop_ticker(State),
       separator(Output, $#),
-      to_file(Output, "Exploration completed!~n",[]),
+      to_file(Output, "Exploration completed!~n", []),
       ExitStatus =
         case SchedulerStatus =:= normal of
           true ->
@@ -370,7 +370,7 @@ loop(Message, State) ->
                 end,
                 error;
               false ->
-                to_file(Output, "  No errors found!~n",[]),
+                to_file(Output, "  No errors found!~n", []),
                 ok
             end;
           false -> fail
@@ -607,7 +607,7 @@ progress_initial_padding() ->
   to_stderr("~s~n", [Line]),
   to_stderr("~s~n", [progress_header(0)]),
   to_stderr("~s~n", [Line]),
-  to_stderr("~n",[]).
+  to_stderr("~n", []).
 
 progress_clear() ->
   delete_lines(4).
@@ -800,7 +800,7 @@ final_interleavings_message(State) ->
   SSB =
     case TracesSSB =:= 0 of
       true -> "";
-      false -> io_lib:format(" (~p sleep-set blocked)",[TracesSSB])
+      false -> io_lib:format(" (~p sleep-set blocked)", [TracesSSB])
     end,
   BR =
     case BoundReached of
@@ -1058,7 +1058,7 @@ graph_command(Command, State) ->
           [Ref, Label, ErrorS]),
         case Sibling =:= none of
           true ->
-            to_file(GraphFile,"~s [weight=1000];~n", [ref_edge(Parent, Ref)]);
+            to_file(GraphFile, "~s [weight=1000];~n", [ref_edge(Parent, Ref)]);
           false ->
             to_file(
               GraphFile,
@@ -1092,10 +1092,10 @@ graph_command(Command, State) ->
   State#logger_state{graph_data = NewGraph}.
 
 ref_edge(RefA, RefB) ->
-  io_lib:format("    \"~p\" -> \"~p\"",[RefA,RefB]).
+  io_lib:format("    \"~p\" -> \"~p\"", [RefA, RefB]).
 
 dref_edge(RefA, RefB) ->
-  io_lib:format("    \"~p\":e -> \"~p\":e",[RefA,RefB]).
+  io_lib:format("    \"~p\":e -> \"~p\":e", [RefA, RefB]).
 
 close_files(State) ->
   graph_close(State),
