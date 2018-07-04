@@ -1461,34 +1461,31 @@ process_loop(Info) ->
       end;
     {exit_signal, #message{data = Data} = Message, Notify} ->
       Trapping = Info#concuerror_info.flags#process_flags.trap_exit,
-      case is_active(Info) of
-        true ->
-          case Data =:= kill of
+      case {is_active(Info), Data =:= kill} of
+        {true, true} ->
+          ?debug_flag(?loop, kill_signal),
+          send_message_ack(Notify, Trapping, true, false),
+          exiting(killed, [], Info#concuerror_info{exit_by_signal = true});
+        {true, false} ->
+          case Trapping of
             true ->
-              ?debug_flag(?loop, kill_signal),
-              send_message_ack(Notify, Trapping, true, false),
-              exiting(killed, [], Info#concuerror_info{exit_by_signal = true});
+              ?debug_flag(?loop, signal_trapped),
+              self() ! {message, Message, Notify},
+              process_loop(Info);
             false ->
-              case Trapping of
+              {'EXIT', From, Reason} = Data,
+              send_message_ack(Notify, Trapping, Reason =/= normal, false),
+              case Reason =:= normal andalso From =/= self() of
                 true ->
-                  ?debug_flag(?loop, signal_trapped),
-                  self() ! {message, Message, Notify},
+                  ?debug_flag(?loop, ignore_normal_signal),
                   process_loop(Info);
                 false ->
-                  {'EXIT', From, Reason} = Data,
-                  send_message_ack(Notify, Trapping, Reason =/= normal, false),
-                  case Reason =:= normal andalso From =/= self() of
-                    true ->
-                      ?debug_flag(?loop, ignore_normal_signal),
-                      process_loop(Info);
-                    false ->
-                      ?debug_flag(?loop, error_signal),
-                      NewInfo = Info#concuerror_info{exit_by_signal = true},
-                      exiting(Reason, [], NewInfo)
-                  end
+                  ?debug_flag(?loop, error_signal),
+                  NewInfo = Info#concuerror_info{exit_by_signal = true},
+                  exiting(Reason, [], NewInfo)
               end
           end;
-        false ->
+        {false, _} ->
           ?debug_flag(?loop, ignoring_signal),
           send_message_ack(Notify, Trapping, false, false),
           process_loop(Info)

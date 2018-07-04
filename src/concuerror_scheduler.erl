@@ -1483,35 +1483,31 @@ add_conservative([TraceState|Rest], Actor, Clock, Candidates, State, Acc) ->
   ?debug(_Logger,
          "   conservative check with ~s~n",
          [?pretty_s(EarlyIndex, _EarlyEvent)]),
-  case EarlyActor =:= Actor of
-    false -> abort;
-    true ->
-      case EarlyIndex < Clock of
-        true -> abort;
+  case (EarlyActor =/= Actor) orelse (EarlyIndex < Clock) of
+    true -> abort;
+    false ->
+      case PreviousActor =:= Actor of
+        true ->
+          NewAcc = [TraceState|Acc],
+          add_conservative(Rest, Actor, Clock, Candidates, State, NewAcc);
         false ->
-          case PreviousActor =:= Actor of
-            true ->
-              NewAcc = [TraceState|Acc],
-              add_conservative(Rest, Actor, Clock, Candidates, State, NewAcc);
+          EnabledCandidates =
+            [C ||
+              #event{actor = A} = C <- Candidates,
+              lists:member(A, Enabled)],
+          case EnabledCandidates =:= [] of
+            true -> abort;
             false ->
-              EnabledCandidates =
-                [C ||
-                  #event{actor = A} = C <- Candidates,
-                  lists:member(A, Enabled)],
-              case EnabledCandidates =:= [] of
-                true -> abort;
-                false ->
-                  SleepSet = BaseSleepSet ++ Done,
-                  case
-                    insert_wakeup_non_optimal(
-                      SleepSet, Wakeup, EnabledCandidates, true, Origin
-                     )
-                  of
-                    skip -> abort;
-                    NewWakeup ->
-                      NS = TraceState#trace_state{wakeup_tree = NewWakeup},
-                      lists:reverse(Acc, [NS|Rest])
-                  end
+              SleepSet = BaseSleepSet ++ Done,
+              case
+                insert_wakeup_non_optimal(
+                  SleepSet, Wakeup, EnabledCandidates, true, Origin
+                 )
+              of
+                skip -> abort;
+                NewWakeup ->
+                  NS = TraceState#trace_state{wakeup_tree = NewWakeup},
+                  lists:reverse(Acc, [NS|Rest])
               end
           end
       end
