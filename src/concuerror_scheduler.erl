@@ -683,7 +683,7 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
             case Tag of
               {MaybeAssert, _} when is_atom(MaybeAssert) ->
                 case atom_to_list(MaybeAssert) of
-                  "assert"++_ -> true;
+                  "assert" ++ _ -> true;
                   _ -> false
                 end;
               _ -> false
