@@ -33,7 +33,9 @@ initialize(Excluded) ->
     ok
   catch
     _:_ ->
-      {error, "Excluded modules have already been instrumented. Restart the shell."}
+      Error =
+        "Excluded modules have already been instrumented. Restart the shell.",
+      {error, Error}
   end.
 
 setup_sticky_directories() ->
@@ -126,7 +128,7 @@ is_instrumenting() ->
 
 -spec set_is_instrumenting( {'true', module()} | 'false') -> 'ok'.
 
-set_is_instrumenting(Value)->
+set_is_instrumenting(Value) ->
   Instrumented = get_instrumented_table(),
   ets:insert(Instrumented, {{is_instrumenting}, Value}),
   ok.

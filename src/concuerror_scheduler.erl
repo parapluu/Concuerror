@@ -469,7 +469,7 @@ schedule_sort(Actors, State) ->
       oldest -> Actors;
       newest -> lists:reverse(Actors);
       round_robin ->
-        Split = fun(E) -> E =/= LastScheduled end,    
+        Split = fun(E) -> E =/= LastScheduled end,
         {Pre, Post} = lists:splitwith(Split, Actors),
         Post ++ Pre
     end,
@@ -561,7 +561,7 @@ maybe_prepare_channel_event(Actor, Event) ->
       {Channel, Queue} = Actor,
       MessageEvent = queue:get(Queue),
       Event#event{actor = Channel, event_info = MessageEvent}
-  end.      
+  end.
 
 reset_event(#event{actor = Actor, event_info = EventInfo}) ->
   ResetEventInfo =
@@ -653,7 +653,7 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
      receive_timeout_total = ReceiveTimeoutTotal,
      treat_as_normal = Normal
     } = State0,
-  State = 
+  State =
     case is_pid(P) of
       true -> State0#scheduler_state{last_scheduled = P};
       false -> State0
@@ -665,25 +665,27 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
       add_error({abnormal_halt, {Index, Actor, Status}}, State);
     #exit_event{reason = Reason} = Exit when Reason =/= normal ->
       {Tag, WasTimeout} =
-        if tuple_size(Reason) > 0 ->
+        case is_tuple(Reason) andalso (tuple_size(Reason) > 0) of
+          true ->
             T = element(1, Reason),
             {T, T =:= timeout};
-           true -> {Reason, false}
+          false -> {Reason, false}
         end,
       case is_atom(Tag) andalso lists:member(Tag, Normal) of
         true ->
           ?unique(Logger, ?lwarning, msg(treat_as_normal), []),
           State;
         false ->
-          if WasTimeout -> ?unique(Logger, ?ltip, msg(timeout), []);
-             Tag =:= shutdown -> ?unique(Logger, ?ltip, msg(shutdown), []);
-             true -> ok
+          case {WasTimeout, Tag} of
+            {true, _} -> ?unique(Logger, ?ltip, msg(timeout), []);
+            {_, shutdown} -> ?unique(Logger, ?ltip, msg(shutdown), []);
+            _ -> ok
           end,
           IsAssertLike =
             case Tag of
               {MaybeAssert, _} when is_atom(MaybeAssert) ->
                 case atom_to_list(MaybeAssert) of
-                  "assert"++_ -> true;
+                  "assert" ++ _ -> true;
                   _ -> false
                 end;
               _ -> false
@@ -698,11 +700,12 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
                 true;
               _ -> true
             end,
-          if Report ->
+          case Report of
+            true ->
               #event{actor = Actor} = Event,
               Stacktrace = Exit#exit_event.stacktrace,
               add_error({abnormal_exit, {Index, Actor, Reason, Stacktrace}}, State);
-             true -> State
+            false -> State
           end
       end;
     #receive_event{message = 'after'} ->
@@ -1299,7 +1302,8 @@ show_plan(_Type, _Logger, _Index, _NotDep) ->
 
 maybe_log_race(EarlyTraceState, TraceState, State) ->
   #scheduler_state{logger = Logger} = State,
-  if State#scheduler_state.show_races ->
+  case State#scheduler_state.show_races of
+    true ->
       #trace_state{
          done = [EarlyEvent|_],
          index = EarlyIndex,
@@ -1314,7 +1318,7 @@ maybe_log_race(EarlyTraceState, TraceState, State) ->
       IndexedEarly = {EarlyIndex, EarlyEvent#event{location = []}},
       IndexedLate = {Index, Event#event{location = []}},
       concuerror_logger:race(Logger, IndexedEarly, IndexedLate);
-     true ->
+    false ->
       ?unique(Logger, ?linfo, msg(show_races), [])
   end.
 
@@ -1444,7 +1448,7 @@ get_initials([Event|Rest], Initials, All) ->
       true -> [Event|Initials];
       false -> Initials
     end,
-  get_initials(Rest, NewInitials, [Event|All]).            
+  get_initials(Rest, NewInitials, [Event|All]).
 
 existing([], _) -> false;
 existing([#event{actor = A}|Rest], Initials) ->
@@ -1479,35 +1483,31 @@ add_conservative([TraceState|Rest], Actor, Clock, Candidates, State, Acc) ->
   ?debug(_Logger,
          "   conservative check with ~s~n",
          [?pretty_s(EarlyIndex, _EarlyEvent)]),
-  case EarlyActor =:= Actor of
-    false -> abort;
-    true ->
-      case EarlyIndex < Clock of
-        true -> abort;
+  case (EarlyActor =/= Actor) orelse (EarlyIndex < Clock) of
+    true -> abort;
+    false ->
+      case PreviousActor =:= Actor of
+        true ->
+          NewAcc = [TraceState|Acc],
+          add_conservative(Rest, Actor, Clock, Candidates, State, NewAcc);
         false ->
-          case PreviousActor =:= Actor of
-            true ->
-              NewAcc = [TraceState|Acc],
-              add_conservative(Rest, Actor, Clock, Candidates, State, NewAcc);
+          EnabledCandidates =
+            [C ||
+              #event{actor = A} = C <- Candidates,
+              lists:member(A, Enabled)],
+          case EnabledCandidates =:= [] of
+            true -> abort;
             false ->
-              EnabledCandidates =
-                [C ||
-                  #event{actor = A} = C <- Candidates,
-                  lists:member(A, Enabled)],
-              case EnabledCandidates =:= [] of
-                true -> abort;
-                false ->
-                  SleepSet = BaseSleepSet ++ Done,
-                  case
-                    insert_wakeup_non_optimal(
-                      SleepSet, Wakeup, EnabledCandidates, true, Origin
-                     )
-                  of
-                    skip -> abort;
-                    NewWakeup ->
-                      NS = TraceState#trace_state{wakeup_tree = NewWakeup},
-                      lists:reverse(Acc, [NS|Rest])
-                  end
+              SleepSet = BaseSleepSet ++ Done,
+              case
+                insert_wakeup_non_optimal(
+                  SleepSet, Wakeup, EnabledCandidates, true, Origin
+                 )
+              of
+                skip -> abort;
+                NewWakeup ->
+                  NS = TraceState#trace_state{wakeup_tree = NewWakeup},
+                  lists:reverse(Acc, [NS|Rest])
               end
           end
       end

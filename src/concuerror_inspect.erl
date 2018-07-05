@@ -29,7 +29,7 @@ stop_inspection() ->
   case get(concuerror_info) of
     {under_concuerror, Info, Dict} ->
       erase(concuerror_info),
-      _ = [put(K,V) || {K,V} <- Dict],
+      _ = [put(K, V) || {K, V} <- Dict],
       {true, Info};
     _ -> false
   end.

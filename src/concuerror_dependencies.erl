@@ -182,8 +182,9 @@ dependent(#message_event{
               not_received -> true;
               undefined -> false
             end,
-          if ObsDep -> {true, Id};
-             true -> false
+          case ObsDep of
+            true -> {true, Id};
+            false -> false
           end
       end;
     {_, _} -> Killing1 orelse Killing2 %% This is an ugly hack, see blame.
@@ -360,7 +361,7 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, group_leader]}},
                        Other) ->
   case Other of
     #builtin_event{mfargs = {_,group_leader,[_, Pid]}} -> true;
-    _-> false
+    _ -> false
   end;
 dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, links]}},
                        Other) ->
@@ -371,7 +372,7 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, links]}},
       } when UnLink =:= link; UnLink =:= unlink -> true;
     #builtin_event{mfargs = {erlang, UnLink, Pid}}
       when UnLink =:= link; UnLink =:= unlink -> true;
-    _-> false
+    _ -> false
   end;
 dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, Msg]}},
                        Other)
@@ -403,7 +404,7 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, trap_exit]}},
     #builtin_event{
        actor = Pid,
        mfargs = {erlang, process_flag, [trap_exit, _]}} -> true;
-    _-> false
+    _ -> false
   end;
 dependent_process_info(#builtin_event{mfargs = {_,_,[_, Safe]}},
                        _) when
@@ -691,8 +692,9 @@ ets_is_mutating(#builtin_event{mfargs = {_,Op,[_|Rest] = Args}} = Event) ->
 with_key(Key) ->
   fun(Event) ->
       Keys = ets_reads_keys(Event),
-      if Keys =:= any -> true;
-         true -> lists:any(fun(K) -> K =:= Key end, Keys)
+      case Keys =:= any of
+        true -> true;
+        false -> lists:any(fun(K) -> K =:= Key end, Keys)
       end
   end.
 

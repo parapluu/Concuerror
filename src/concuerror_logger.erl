@@ -128,14 +128,17 @@ initialize(Options) ->
         Self = self(),
         spawn_link(fun() -> ticker(Self) end)
     end,
-  if Output =:= disable ->
+  case Output =:= disable of
+    true ->
       Msg = "No output report will be generated~n",
       ?log(self(), ?lwarning, Msg, []);
-     true ->
+    false ->
       ?log(self(), ?linfo, "Writing results in ~s~n", [OutputName])
   end,
-  if GraphData =:= disable -> ok;
-     true ->
+  case GraphData =:= disable of
+    true ->
+      ok;
+    false ->
       {_, GraphName} = Graph,
       ?log(self(), ?linfo, "Writing graph in ~s~n", [GraphName])
   end,
@@ -319,7 +322,7 @@ loop(Message, State) ->
         io_lib:format(
           "~n* ~s~n  ~s~n",
           [concuerror_io_lib:pretty_s(E, PrintDepth)
-           || E <- [EarlyEvent,Event]]),
+           || E <- [EarlyEvent, Event]]),
       loop({print, race, Msg}, State);
     {log, Level, Tag, Format, Data} ->
       {NewLogMsgs, NewAlreadyEmitted} =
@@ -335,7 +338,7 @@ loop(Message, State) ->
             end,
             NLM =
               case Level < ?ltiming of
-                true  -> orddict:append(Level, {Format,Data}, LogMsgs);
+                true  -> orddict:append(Level, {Format, Data}, LogMsgs);
                 false -> LogMsgs
               end,
             NAE =
@@ -353,7 +356,7 @@ loop(Message, State) ->
     {stop, SchedulerStatus, Scheduler} ->
       NewState = stop_ticker(State),
       separator(Output, $#),
-      to_file(Output, "Exploration completed!~n",[]),
+      to_file(Output, "Exploration completed!~n", []),
       ExitStatus =
         case SchedulerStatus =:= normal of
           true ->
@@ -367,7 +370,7 @@ loop(Message, State) ->
                 end,
                 error;
               false ->
-                to_file(Output, "  No errors found!~n",[]),
+                to_file(Output, "  No errors found!~n", []),
                 ok
             end;
           false -> fail
@@ -604,7 +607,7 @@ progress_initial_padding() ->
   to_stderr("~s~n", [Line]),
   to_stderr("~s~n", [progress_header(0)]),
   to_stderr("~s~n", [Line]),
-  to_stderr("~n",[]).
+  to_stderr("~n", []).
 
 progress_clear() ->
   delete_lines(4).
@@ -685,16 +688,19 @@ progress_content(State) ->
   EstimatedTotal =
     max(concuerror_estimator:get_estimation(Estimator), TracesTotal),
   ErrorsStr =
-    if Errors =:= 0 -> "none";
-       Errors < 10000 -> add_seps_to_int(Errors);
-       true -> "> 10k"
+    case Errors of
+      0 -> "none";
+      _ when Errors < 10000 -> add_seps_to_int(Errors);
+      _ -> "> 10k"
     end,
   [TracesExploredStr, PlannedStr] =
     [add_seps_to_int(S) || S <- [TracesExplored, Planned]],
   SSBStr =
-    if TracesSSB =:= 0 -> "";
-       TracesSSB < 100000 -> io_lib:format("~8s |", [add_seps_to_int(TracesSSB)]);
-       true -> io_lib:format("~8s |", ["> 100k"])
+    case TracesSSB of
+      0 -> "";
+      _ when TracesSSB < 100000 ->
+        io_lib:format("~8s |", [add_seps_to_int(TracesSSB)]);
+      _ -> io_lib:format("~8s |", ["> 100k"])
     end,
   RateStr =
     case Rate of
@@ -703,9 +709,10 @@ progress_content(State) ->
       _    -> io_lib:format("~w/s", [Rate])
     end,
   EstimatedTotalStr =
-    if EstimatedTotal =:= unknown -> "...";
-       EstimatedTotal < 10000000 -> add_seps_to_int(EstimatedTotal);
-       true ->
+    case EstimatedTotal of
+      unknown -> "...";
+      _ when EstimatedTotal < 10000000 -> add_seps_to_int(EstimatedTotal);
+      _ ->
         Low = trunc(math:log10(EstimatedTotal)),
         io_lib:format("< 10e~w", [Low + 1])
     end,
@@ -794,7 +801,7 @@ final_interleavings_message(State) ->
   SSB =
     case TracesSSB =:= 0 of
       true -> "";
-      false -> io_lib:format(" (~p sleep-set blocked)",[TracesSSB])
+      false -> io_lib:format(" (~p sleep-set blocked)", [TracesSSB])
     end,
   BR =
     case BoundReached of
@@ -1044,14 +1051,15 @@ graph_command(Command, State) ->
             _ -> ""
           end,
         print_depth_tip(),
-        Label = concuerror_io_lib:pretty_s({I,Event#event{location=[]}}, PrintDepth - 19),
+        NoLocEvent = Event#event{location = []},
+        Label = concuerror_io_lib:pretty_s({I, NoLocEvent}, PrintDepth - 19),
         to_file(
           GraphFile,
           "    \"~p\" [label=\"~s\\l\"~s];~n",
           [Ref, Label, ErrorS]),
         case Sibling =:= none of
           true ->
-            to_file(GraphFile,"~s [weight=1000];~n",[ref_edge(Parent, Ref)]);
+            to_file(GraphFile, "~s [weight=1000];~n", [ref_edge(Parent, Ref)]);
           false ->
             to_file(
               GraphFile,
@@ -1063,7 +1071,8 @@ graph_command(Command, State) ->
       {race, EarlyRef, Ref} ->
         to_file(
           GraphFile,
-          "~s [constraint=false, color=red, dir=back, penwidth=3, style=dashed];~n",
+          "~s [constraint=false, color=red, dir=back, penwidth=3,"
+          " style=dashed];~n",
           [dref_edge(EarlyRef, Ref)]),
         Graph;
       {set_node, {I, _} = NewParent, NewSibling} ->
@@ -1085,10 +1094,10 @@ graph_command(Command, State) ->
   State#logger_state{graph_data = NewGraph}.
 
 ref_edge(RefA, RefB) ->
-  io_lib:format("    \"~p\" -> \"~p\"",[RefA,RefB]).
+  io_lib:format("    \"~p\" -> \"~p\"", [RefA, RefB]).
 
 dref_edge(RefA, RefB) ->
-  io_lib:format("    \"~p\":e -> \"~p\":e",[RefA,RefB]).
+  io_lib:format("    \"~p\":e -> \"~p\":e", [RefA, RefB]).
 
 close_files(State) ->
   graph_close(State),
