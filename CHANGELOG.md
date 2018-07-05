@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased](https://github.com/parapluu/Concuerror/tree/master)
 
 ### Added
+- style checking by Elvis (#266)
 - base infrastructure for EUnit tests (and CT eventually) (#263)
 
 ### Removed
