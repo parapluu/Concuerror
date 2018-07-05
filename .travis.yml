@@ -51,8 +51,7 @@ matrix:
     stage: test
 
   # Test website
-  - otp_release: R16B03-1
-    stage: test
+  - stage: test
     env: TEST="make -C docs test"
     addons:
       apt:
