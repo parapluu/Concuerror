@@ -4,7 +4,8 @@ default: build
 HTML_PROOOFER_OPTS = \
 	--check-favicon \
 	--check-html \
-	--check-opengraph
+	--check-opengraph \
+	--disable-external
 
 Gemfile.lock: Gemfile
 	bundle install
@@ -21,3 +22,7 @@ serve: Gemfile.lock
 .PHONY: test
 test: build
 	htmlproofer ./_site $(HTML_PROOOFER_OPTS)
+
+.PHONY: test-external
+test-external: build
+	htmlproofer ./_site --external-only
