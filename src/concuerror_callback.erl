@@ -949,7 +949,6 @@ run_built_in(ets, new, 2, [Name, Options], Info) ->
         end
     end,
   Protection = lists:foldl(ProtectFold, protected, NoNameOptions),
-  true = ets:insert(EtsTables, ?new_ets_table(Tid, Protection)),
   Ret =
     case Named of
       true -> Name;
@@ -967,12 +966,8 @@ run_built_in(ets, new, 2, [Name, Options], Info) ->
       none -> {heir, none};
       Other -> Other
     end,
-  Update =
-    [{?ets_alive, true},
-     {?ets_heir, Heir},
-     {?ets_owner, self()},
-     {?ets_name, Ret}],
-  ets:update_element(EtsTables, Tid, Update),
+  Entry = ?ets_table_entry(Tid, Ret, self(), Protection, Heir),
+  true = ets:insert(EtsTables, Entry),
   ets:delete_all_objects(Tid),
   {Ret, Info#concuerror_info{extra = Tid}};
 run_built_in(ets, info, _, [Name|Rest] = Args, Info) ->
@@ -1783,7 +1778,7 @@ cleanup_processes(ProcessesTable) ->
 %%------------------------------------------------------------------------------
 
 system_ets_entries(#concuerror_info{ets_tables = EtsTables}) ->
-  Map = fun(Tid) -> ?new_system_ets_table(Tid, ets:info(Tid, protection)) end,
+  Map = fun(Tid) -> ?system_ets_table_entry(Tid, ets:info(Tid, protection)) end,
   ets:insert(EtsTables, [Map(Tid) || Tid <- ets:all(), is_atom(Tid)]).
 
 system_processes_wrappers(Info) ->

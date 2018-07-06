@@ -128,10 +128,10 @@
 -type ets_tables() :: ets:tid().
 
 -define(ets_name_none, 0).
--define(new_ets_table(Tid, Protection),
-        {Tid, unknown, unknown, Protection, unknown, true}).
--define(new_system_ets_table(Tid, Protect),
-        {Tid, Tid, self(), Protect, unknown, true}).
+-define(ets_table_entry(Tid, Name, Owner, Protection, Heir),
+        {Tid, Name, Owner, Protection, Heir, true}).
+-define(system_ets_table_entry(Tid, Protection),
+        ?ets_table_entry(Tid, Tid, self(), Protection, unknown)).
 -define(ets_name, 2).
 -define(ets_owner, 3).
 -define(ets_protection, 4).
