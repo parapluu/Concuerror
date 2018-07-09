@@ -1,0 +1,81 @@
+Concuerror v0.19+build.2102.ref073532b started at 09 Jul 2018 16:31:19
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{ets_update_counter,test1,[]}},
+   {exclude_module,[]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/ets_update_counter.erl"]},
+   {first_process_errors_only,false},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,5000},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
+################################################################################
+Interleaving #1
+--------------------------------------------------------------------------------
+Errors found:
+* At step 7 process <P.2> exited abnormally
+    Reason:
+      {badarg,[{ets,update_counter,
+                    [table,a,1],
+                    [24,
+                     {file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/ets_update_counter.erl"}]}]}
+    Stacktrace:
+      [{ets,update_counter,
+            [table,a,1],
+            [24,
+             {file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/ets_update_counter.erl"}]}]
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_update_counter.erl line 30
+     Mailbox contents: []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: table = ets:new(table, [named_table,public])
+    in ets_update_counter.erl line 27
+   2: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_update_counter.1.123157199>,[]])
+    in erlang.erl line 2687
+   3: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_update_counter.3.123157199>,[]])
+    in erlang.erl line 2687
+   4: <P.1>: [] = ets:lookup(table, a)
+    in ets_update_counter.erl line 18
+   5: <P.1>: exits normally
+   6: <P.2>: Exception badarg raised by: ets:update_counter(table, a, 1)
+    in ets_update_counter.erl line 24
+   7: <P.2>: exits abnormally ({badarg,[{ets,update_counter,[table,a,1],[24,{file,[47,85,115,101,114,115,47,115|...]}]}]})
+################################################################################
+Exploration completed!
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+* Check '--help attributes' for info on how to pass options via module attributes.
+* Running without a scheduling_bound corresponds to verification and may take a long time.
+* Increase '--print_depth' if output/graph contains "...".
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+* Writing results in /Users/stavros.aronis/git/Concuerror/tests/results/basic_tests/results/ets_update_counter-test1-inf-dpor.txt
+* Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
+* Instrumented & loaded module ets_update_counter
+* Automatically instrumented module erlang
+* Continuing after error (-k)
+
+################################################################################
+Done at 09 Jul 2018 16:31:19 (Exit status: error)
+  Summary: 1 errors, 1/1 interleavings explored

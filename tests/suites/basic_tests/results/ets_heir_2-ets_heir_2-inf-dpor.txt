@@ -1,317 +1,264 @@
-################################################################################
-Concuerror started with options:
-  [{'after-timeout',infinite},
+Concuerror v0.19+build.2105.ref019b964 started at 09 Jul 2018 17:59:28
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
    {assume_racing,false},
-   {files,["/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"]},
-   {normal_exit,[normal]},
-   {symbolic,true},
-   {target,{ets_heir_2,ets_heir_2,[]}},
-   {verbose,0},
-   {wait,2000}]
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{ets_heir_2,ets_heir_2,[]}},
+   {exclude_module,[]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/ets_heir_2.erl"]},
+   {first_process_errors_only,false},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,5000},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
 ################################################################################
-Erroneous interleaving 1:
-* At step 8 process P.1 exited abnormally
-    Reason:
-      {{nocatch,too_bad},
-       [{ets_heir_2,'-ets_heir_2/0-fun-0-',0,
-                    [{file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"},
-                     {line,11}]}]}
-    Stacktrace:
-      [{ets_heir_2,'-ets_heir_2/0-fun-0-',0,
-                   [{file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"},
-                    {line,11}]}]
+Interleaving #1
 --------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.0.108727845>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.1.108727845>,[]])
-    in erlang.erl line 2329
-   3: P: table = ets:new(table, [named_table,{heir,P.2,heir}])
-    in ets_heir_2.erl line 14
-   4: P: exits normally
-   5: P: true = ets:give_away(table, P.2, heir)
-    (while exiting)
-   6: Message ({'ETS-TRANSFER',57365,P,heir}) from P reaches P.2
-   7: P.1: [] = ets:lookup(table, x)
-    in ets_heir_2.erl line 10
-   8: P.1: exits abnormally ({{nocatch,too_bad},[{ets_heir_2,'-ets_heir_2/0-fun-0-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,47,115,114,99,47,101,116,115,95,104,101,105,114,95,50,46,101,114,108]},{line,11}]}]})
-   9: P.2: exits normally
-  10: P.2: Exception badarg raised by: ets:give_away(table, P.2, heir)
-    (while exiting)
-  11: P.2: true = ets:delete(table)
-    (while exiting)
-################################################################################
-Erroneous interleaving 2:
-* At step 10 process P.1 exited abnormally
+Errors found:
+* At step 7 process <P.1> exited abnormally
     Reason:
-      {{nocatch,too_bad},
-       [{ets_heir_2,'-ets_heir_2/0-fun-0-',0,
-                    [{file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"},
-                     {line,11}]}]}
+      {{nocatch,too_bad},[]}
     Stacktrace:
-      [{ets_heir_2,'-ets_heir_2/0-fun-0-',0,
-                   [{file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"},
-                    {line,11}]}]
+      []
 --------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.0.108727845>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.1.108727845>,[]])
-    in erlang.erl line 2329
-   3: P: table = ets:new(table, [named_table,{heir,P.2,heir}])
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.0.91038585>,[]])
+    in erlang.erl line 2782
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.1.91038585>,[]])
+    in erlang.erl line 2782
+   3: <P>: table = ets:new(table, [named_table,{heir,<P.2>,heir}])
     in ets_heir_2.erl line 14
-   4: P: exits normally
-   5: P: true = ets:give_away(table, P.2, heir)
+   4: <P>: exits normally
+   5: <P>: true = ets:give_away(table, <P.2>, heir)
     (while exiting)
-   6: Message ({'ETS-TRANSFER',57365,P,heir}) from P reaches P.2
-   7: P.2: exits normally
-   8: P.2: Exception badarg raised by: ets:give_away(table, P.2, heir)
-    (while exiting)
-   9: P.1: [] = ets:lookup(table, x)
+   6: <P.1>: [] = ets:lookup(table, x)
     in ets_heir_2.erl line 10
-  10: P.1: exits abnormally ({{nocatch,too_bad},[{ets_heir_2,'-ets_heir_2/0-fun-0-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,47,115,114,99,47,101,116,115,95,104,101,105,114,95,50,46,101,114,108]},{line,11}]}]})
-  11: P.2: true = ets:delete(table)
+   7: <P.1>: exits abnormally ({{nocatch,too_bad},[]})
+   8: <P.2>: exits normally
+   9: <P.2>: Exception badarg raised by: ets:give_away(table, <P.2>, heir)
+    (while exiting)
+  10: <P.2>: true = ets:delete(table)
     (while exiting)
 ################################################################################
-Erroneous interleaving 3:
-* At step 11 process P.1 exited abnormally
+Interleaving #2
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process <P.1> exited abnormally
     Reason:
       {badarg,[{ets,lookup,
                     [table,x],
                     [10,
-                     {file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"}]},
-               {ets_heir_2,'-ets_heir_2/0-fun-0-',0,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"},
-                            {line,10}]}]}
+                     {file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/ets_heir_2.erl"}]}]}
     Stacktrace:
       [{ets,lookup,
             [table,x],
             [10,
-             {file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"}]},
-       {ets_heir_2,'-ets_heir_2/0-fun-0-',0,
-                   [{file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"},
-                    {line,10}]}]
+             {file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/ets_heir_2.erl"}]}]
 --------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.0.108727845>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.1.108727845>,[]])
-    in erlang.erl line 2329
-   3: P: table = ets:new(table, [named_table,{heir,P.2,heir}])
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.0.91038585>,[]])
+    in erlang.erl line 2782
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.1.91038585>,[]])
+    in erlang.erl line 2782
+   3: <P>: table = ets:new(table, [named_table,{heir,<P.2>,heir}])
     in ets_heir_2.erl line 14
-   4: P: exits normally
-   5: P: true = ets:give_away(table, P.2, heir)
+   4: <P>: exits normally
+   5: <P>: true = ets:give_away(table, <P.2>, heir)
     (while exiting)
-   6: Message ({'ETS-TRANSFER',57365,P,heir}) from P reaches P.2
-   7: P.2: exits normally
-   8: P.2: Exception badarg raised by: ets:give_away(table, P.2, heir)
+   6: <P.2>: exits normally
+   7: <P.2>: Exception badarg raised by: ets:give_away(table, <P.2>, heir)
     (while exiting)
-   9: P.2: true = ets:delete(table)
+   8: <P.2>: true = ets:delete(table)
     (while exiting)
-  10: P.1: Exception badarg raised by: ets:lookup(table, x)
+   9: <P.1>: Exception badarg raised by: ets:lookup(table, x)
     in ets_heir_2.erl line 10
-  11: P.1: exits abnormally ({badarg,[{ets,lookup,[table,x],[10,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,47,115,114,99,47,101,116,115,95,104,101,105,114,95,50,46,101,114,108]}]},{ets_heir_2,'-ets_heir_2/0-fun-0-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,47,115,114,99,47,101,116,115,95,104,101,105,114,95,50,46,101,114,108]},{line,10}]}]})
+  10: <P.1>: exits abnormally ({badarg,[{ets,lookup,[table,x],[10,{file,[47,85,115,101,114,115,47,115|...]}]}]})
 ################################################################################
-Erroneous interleaving 4:
-* At step 8 process P.1 exited abnormally
+Interleaving #3
+--------------------------------------------------------------------------------
+Errors found:
+* At step 6 process <P.1> exited abnormally
     Reason:
-      {{nocatch,too_bad},
-       [{ets_heir_2,'-ets_heir_2/0-fun-0-',0,
-                    [{file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"},
-                     {line,11}]}]}
+      {{nocatch,too_bad},[]}
     Stacktrace:
-      [{ets_heir_2,'-ets_heir_2/0-fun-0-',0,
-                   [{file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"},
-                    {line,11}]}]
+      []
 --------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.0.108727845>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.1.108727845>,[]])
-    in erlang.erl line 2329
-   3: P: table = ets:new(table, [named_table,{heir,P.2,heir}])
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.0.91038585>,[]])
+    in erlang.erl line 2782
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.1.91038585>,[]])
+    in erlang.erl line 2782
+   3: <P>: table = ets:new(table, [named_table,{heir,<P.2>,heir}])
     in ets_heir_2.erl line 14
-   4: P: exits normally
-   5: P.1: [] = ets:lookup(table, x)
+   4: <P>: exits normally
+   5: <P.1>: [] = ets:lookup(table, x)
     in ets_heir_2.erl line 10
-   6: P: true = ets:give_away(table, P.2, heir)
+   6: <P.1>: exits abnormally ({{nocatch,too_bad},[]})
+   7: <P.2>: exits normally
+   8: <P>: Exception badarg raised by: ets:give_away(table, <P.2>, heir)
     (while exiting)
-   7: Message ({'ETS-TRANSFER',57365,P,heir}) from P reaches P.2
-   8: P.1: exits abnormally ({{nocatch,too_bad},[{ets_heir_2,'-ets_heir_2/0-fun-0-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,47,115,114,99,47,101,116,115,95,104,101,105,114,95,50,46,101,114,108]},{line,11}]}]})
-   9: P.2: exits normally
-  10: P.2: Exception badarg raised by: ets:give_away(table, P.2, heir)
-    (while exiting)
-  11: P.2: true = ets:delete(table)
+   9: <P>: true = ets:delete(table)
     (while exiting)
 ################################################################################
-Erroneous interleaving 5:
-* At step 6 process P.1 exited abnormally
+Interleaving #4
+--------------------------------------------------------------------------------
+Errors found:
+* At step 6 process <P.1> exited abnormally
     Reason:
-      {{nocatch,too_bad},
-       [{ets_heir_2,'-ets_heir_2/0-fun-0-',0,
-                    [{file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"},
-                     {line,11}]}]}
+      {{nocatch,too_bad},[]}
     Stacktrace:
-      [{ets_heir_2,'-ets_heir_2/0-fun-0-',0,
-                   [{file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"},
-                    {line,11}]}]
+      []
 --------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.0.108727845>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.1.108727845>,[]])
-    in erlang.erl line 2329
-   3: P: table = ets:new(table, [named_table,{heir,P.2,heir}])
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.0.91038585>,[]])
+    in erlang.erl line 2782
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.1.91038585>,[]])
+    in erlang.erl line 2782
+   3: <P>: table = ets:new(table, [named_table,{heir,<P.2>,heir}])
     in ets_heir_2.erl line 14
-   4: P: exits normally
-   5: P.1: [] = ets:lookup(table, x)
+   4: <P>: exits normally
+   5: <P.1>: [] = ets:lookup(table, x)
     in ets_heir_2.erl line 10
-   6: P.1: exits abnormally ({{nocatch,too_bad},[{ets_heir_2,'-ets_heir_2/0-fun-0-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,47,115,114,99,47,101,116,115,95,104,101,105,114,95,50,46,101,114,108]},{line,11}]}]})
-   7: P.2: exits normally
-   8: P: Exception badarg raised by: ets:give_away(table, P.2, heir)
+   6: <P.1>: exits abnormally ({{nocatch,too_bad},[]})
+   7: <P>: true = ets:give_away(table, <P.2>, heir)
     (while exiting)
-   9: P: true = ets:delete(table)
+   8: <P.2>: exits normally
+   9: <P.2>: Exception badarg raised by: ets:give_away(table, <P.2>, heir)
+    (while exiting)
+  10: <P.2>: true = ets:delete(table)
     (while exiting)
 ################################################################################
-Erroneous interleaving 6:
-* At step 9 process P.1 exited abnormally
+Interleaving #5
+--------------------------------------------------------------------------------
+Errors found:
+* At step 9 process <P.1> exited abnormally
     Reason:
       {badarg,[{ets,lookup,
                     [table,x],
                     [10,
-                     {file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"}]},
-               {ets_heir_2,'-ets_heir_2/0-fun-0-',0,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"},
-                            {line,10}]}]}
+                     {file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/ets_heir_2.erl"}]}]}
     Stacktrace:
       [{ets,lookup,
             [table,x],
             [10,
-             {file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"}]},
-       {ets_heir_2,'-ets_heir_2/0-fun-0-',0,
-                   [{file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"},
-                    {line,10}]}]
+             {file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/ets_heir_2.erl"}]}]
 --------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.0.108727845>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.1.108727845>,[]])
-    in erlang.erl line 2329
-   3: P: table = ets:new(table, [named_table,{heir,P.2,heir}])
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.0.91038585>,[]])
+    in erlang.erl line 2782
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.1.91038585>,[]])
+    in erlang.erl line 2782
+   3: <P>: table = ets:new(table, [named_table,{heir,<P.2>,heir}])
     in ets_heir_2.erl line 14
-   4: P: exits normally
-   5: P.2: exits normally
-   6: P: Exception badarg raised by: ets:give_away(table, P.2, heir)
+   4: <P>: exits normally
+   5: <P.2>: exits normally
+   6: <P>: Exception badarg raised by: ets:give_away(table, <P.2>, heir)
     (while exiting)
-   7: P: true = ets:delete(table)
+   7: <P>: true = ets:delete(table)
     (while exiting)
-   8: P.1: Exception badarg raised by: ets:lookup(table, x)
+   8: <P.1>: Exception badarg raised by: ets:lookup(table, x)
     in ets_heir_2.erl line 10
-   9: P.1: exits abnormally ({badarg,[{ets,lookup,[table,x],[10,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,47,115,114,99,47,101,116,115,95,104,101,105,114,95,50,46,101,114,108]}]},{ets_heir_2,'-ets_heir_2/0-fun-0-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,47,115,114,99,47,101,116,115,95,104,101,105,114,95,50,46,101,114,108]},{line,10}]}]})
+   9: <P.1>: exits abnormally ({badarg,[{ets,lookup,[table,x],[10,{file,[47,85,115,101,114,115,47,115|...]}]}]})
 ################################################################################
-Erroneous interleaving 7:
-* At step 9 process P.1 exited abnormally
-    Reason:
-      {{nocatch,too_bad},
-       [{ets_heir_2,'-ets_heir_2/0-fun-0-',0,
-                    [{file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"},
-                     {line,11}]}]}
-    Stacktrace:
-      [{ets_heir_2,'-ets_heir_2/0-fun-0-',0,
-                   [{file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"},
-                    {line,11}]}]
+Interleaving #6
 --------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.0.108727845>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.1.108727845>,[]])
-    in erlang.erl line 2329
-   3: P: table = ets:new(table, [named_table,{heir,P.2,heir}])
-    in ets_heir_2.erl line 14
-   4: P: exits normally
-   5: P.2: exits normally
-   6: P: Exception badarg raised by: ets:give_away(table, P.2, heir)
-    (while exiting)
-   7: P.1: [] = ets:lookup(table, x)
-    in ets_heir_2.erl line 10
-   8: P: true = ets:delete(table)
-    (while exiting)
-   9: P.1: exits abnormally ({{nocatch,too_bad},[{ets_heir_2,'-ets_heir_2/0-fun-0-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,47,115,114,99,47,101,116,115,95,104,101,105,114,95,50,46,101,114,108]},{line,11}]}]})
-################################################################################
-Erroneous interleaving 8:
-* At step 8 process P.1 exited abnormally
+Errors found:
+* At step 5 process <P.1> exited abnormally
     Reason:
       {badarg,[{ets,lookup,
                     [table,x],
                     [10,
-                     {file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"}]},
-               {ets_heir_2,'-ets_heir_2/0-fun-0-',0,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"},
-                            {line,10}]}]}
+                     {file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/ets_heir_2.erl"}]}]}
     Stacktrace:
       [{ets,lookup,
             [table,x],
             [10,
-             {file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"}]},
-       {ets_heir_2,'-ets_heir_2/0-fun-0-',0,
-                   [{file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"},
-                    {line,10}]}]
+             {file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/ets_heir_2.erl"}]}]
 --------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.0.108727845>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.1.108727845>,[]])
-    in erlang.erl line 2329
-   3: P.1: Exception badarg raised by: ets:lookup(table, x)
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.0.91038585>,[]])
+    in erlang.erl line 2782
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.1.91038585>,[]])
+    in erlang.erl line 2782
+   3: <P.2>: exits normally
+   4: <P.1>: Exception badarg raised by: ets:lookup(table, x)
     in ets_heir_2.erl line 10
-   4: P: table = ets:new(table, [named_table,{heir,P.2,heir}])
+   5: <P.1>: exits abnormally ({badarg,[{ets,lookup,[table,x],[10,{file,[47,85,115,101,114,115,47,115|...]}]}]})
+   6: <P>: table = ets:new(table, [named_table,{heir,<P.2>,heir}])
     in ets_heir_2.erl line 14
-   5: P: exits normally
-   6: P: true = ets:give_away(table, P.2, heir)
+   7: <P>: exits normally
+   8: <P>: Exception badarg raised by: ets:give_away(table, <P.2>, heir)
     (while exiting)
-   7: Message ({'ETS-TRANSFER',94230,P,heir}) from P reaches P.2
-   8: P.1: exits abnormally ({badarg,[{ets,lookup,[table,x],[10,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,47,115,114,99,47,101,116,115,95,104,101,105,114,95,50,46,101,114,108]}]},{ets_heir_2,'-ets_heir_2/0-fun-0-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,47,115,114,99,47,101,116,115,95,104,101,105,114,95,50,46,101,114,108]},{line,10}]}]})
-   9: P.2: exits normally
-  10: P.2: Exception badarg raised by: ets:give_away(table, P.2, heir)
-    (while exiting)
-  11: P.2: true = ets:delete(table)
+   9: <P>: true = ets:delete(table)
     (while exiting)
 ################################################################################
-Erroneous interleaving 9:
-* At step 6 process P.1 exited abnormally
+Interleaving #7
+--------------------------------------------------------------------------------
+Errors found:
+* At step 4 process <P.1> exited abnormally
     Reason:
       {badarg,[{ets,lookup,
                     [table,x],
                     [10,
-                     {file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"}]},
-               {ets_heir_2,'-ets_heir_2/0-fun-0-',0,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"},
-                            {line,10}]}]}
+                     {file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/ets_heir_2.erl"}]}]}
     Stacktrace:
       [{ets,lookup,
             [table,x],
             [10,
-             {file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"}]},
-       {ets_heir_2,'-ets_heir_2/0-fun-0-',0,
-                   [{file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_heir_2.erl"},
-                    {line,10}]}]
+             {file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/ets_heir_2.erl"}]}]
 --------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.0.108727845>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.1.108727845>,[]])
-    in erlang.erl line 2329
-   3: P.1: Exception badarg raised by: ets:lookup(table, x)
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.0.91038585>,[]])
+    in erlang.erl line 2782
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_heir_2.1.91038585>,[]])
+    in erlang.erl line 2782
+   3: <P.1>: Exception badarg raised by: ets:lookup(table, x)
     in ets_heir_2.erl line 10
-   4: P: table = ets:new(table, [named_table,{heir,P.2,heir}])
+   4: <P.1>: exits abnormally ({badarg,[{ets,lookup,[table,x],[10,{file,[47,85,115,101,114,115,47,115|...]}]}]})
+   5: <P>: table = ets:new(table, [named_table,{heir,<P.2>,heir}])
     in ets_heir_2.erl line 14
-   5: P: exits normally
-   6: P.1: exits abnormally ({badarg,[{ets,lookup,[table,x],[10,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,47,115,114,99,47,101,116,115,95,104,101,105,114,95,50,46,101,114,108]}]},{ets_heir_2,'-ets_heir_2/0-fun-0-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,47,115,114,99,47,101,116,115,95,104,101,105,114,95,50,46,101,114,108]},{line,10}]}]})
-   7: P.2: exits normally
-   8: P: Exception badarg raised by: ets:give_away(table, P.2, heir)
+   6: <P>: exits normally
+   7: <P>: true = ets:give_away(table, <P.2>, heir)
     (while exiting)
-   9: P: true = ets:delete(table)
+   8: <P.2>: exits normally
+   9: <P.2>: Exception badarg raised by: ets:give_away(table, <P.2>, heir)
+    (while exiting)
+  10: <P.2>: true = ets:delete(table)
     (while exiting)
 ################################################################################
-Done! (Exit status: completed)
-  Summary: 9 errors, 9/9 interleavings explored
+Exploration completed!
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+* Check '--help attributes' for info on how to pass options via module attributes.
+* Running without a scheduling_bound corresponds to verification and may take a long time.
+* Increase '--print_depth' if output/graph contains "...".
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+* Writing results in /Users/stavros.aronis/git/Concuerror/tests/results/basic_tests/results/ets_heir_2-ets_heir_2-inf-dpor.txt
+* Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
+* Instrumented & loaded module ets_heir_2
+* Automatically instrumented module erlang
+* Continuing after error (-k)
+* You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+
+################################################################################
+Done at 09 Jul 2018 17:59:29 (Exit status: error)
+  Summary: 7 errors, 7/7 interleavings explored

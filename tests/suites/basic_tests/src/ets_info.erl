@@ -2,6 +2,8 @@
 
 -compile(export_all).
 
+-include_lib("eunit/include/eunit.hrl").
+
 scenarios() ->
   [ info_good
   , info_bad
@@ -19,13 +21,14 @@ info_badarg() ->
   end.
 
 info_system() ->
-  true = undefined =/= ets:info(global_names).
+  ?assertNotEqual(undefined, ets:info(global_names)).
 
 info_bad() ->
   T = ets:new(foo, []),
   ets:delete(T),
-  true = undefined =:= ets:info(T).
+  ?assertEqual(undefined, ets:info(T)),
+  ?assertEqual(undefined, ets:info(T, owner)).
 
 info_good() ->
   T = ets:new(foo, []),
-  true = undefined =/= ets:info(T).
+  ?assertNotEqual(undefined, ets:info(T)).

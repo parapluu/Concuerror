@@ -1,10 +1,9 @@
 -module(ets_update_counter).
 
--export([scenarios/0]).
--export([test/0]).
+-compile(export_all).
 
 scenarios() ->
-    [{test, inf, dpor}].
+    [{T, inf, dpor} || T <- [test, test1]].
 
 test() ->
     ets:new(table, [named_table, public]),
@@ -23,3 +22,9 @@ write(Key) ->
             
 count(Key) ->
     fun() -> ets:update_counter(table, Key, 1) end.
+
+test1() ->
+    ets:new(table, [named_table, public]),
+    spawn(read(a)),
+    spawn(count(a)),
+    receive after infinity -> ok end.

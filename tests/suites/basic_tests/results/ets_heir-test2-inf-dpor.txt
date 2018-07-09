@@ -1,0 +1,79 @@
+Concuerror v0.19+build.2105.ref019b964 started at 09 Jul 2018 18:11:29
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{ets_heir,test2,[]}},
+   {exclude_module,[]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/ets_heir.erl"]},
+   {first_process_errors_only,false},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,5000},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
+################################################################################
+Interleaving #1
+--------------------------------------------------------------------------------
+Errors found:
+* At step 7 process <P.1> exited abnormally
+    Reason:
+      {badarg,[{ets,lookup,
+                    [table,x],
+                    [38,
+                     {file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/ets_heir.erl"}]}]}
+    Stacktrace:
+      [{ets,lookup,
+            [table,x],
+            [38,
+             {file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/ets_heir.erl"}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: table = ets:new(table, [named_table,{heir,<P>,bad}])
+    in ets_heir.erl line 36
+   2: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_heir.6.63182629>,[]])
+    in erlang.erl line 2782
+   3: <P>: exits normally
+   4: <P>: Exception badarg raised by: ets:give_away(table, <P>, bad)
+    (while exiting)
+   5: <P>: true = ets:delete(table)
+    (while exiting)
+   6: <P.1>: Exception badarg raised by: ets:lookup(table, x)
+    in ets_heir.erl line 38
+   7: <P.1>: exits abnormally ({badarg,[{ets,lookup,[table,x],[38,{file,[47,85,115,101,114,115,47,115|...]}]}]})
+################################################################################
+Exploration completed!
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+* Check '--help attributes' for info on how to pass options via module attributes.
+* Running without a scheduling_bound corresponds to verification and may take a long time.
+* Increase '--print_depth' if output/graph contains "...".
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+* Writing results in /Users/stavros.aronis/git/Concuerror/tests/results/basic_tests/results/ets_heir-test2-inf-dpor.txt
+* Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
+* Instrumented & loaded module ets_heir
+* Automatically instrumented module erlang
+* Continuing after error (-k)
+* You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+
+################################################################################
+Done at 09 Jul 2018 18:11:30 (Exit status: error)
+  Summary: 1 errors, 2/2 interleavings explored

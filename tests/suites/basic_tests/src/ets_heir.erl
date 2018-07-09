@@ -2,7 +2,7 @@
 
 -compile(export_all).
 
-scenarios() -> [{T, inf, dpor} || T <- [?MODULE, test, test1]].
+scenarios() -> [{T, inf, dpor} || T <- [?MODULE, test, test1, test2]].
 
 ets_heir() ->
     Heir = spawn(fun() -> ok end),
@@ -30,3 +30,10 @@ test1() ->
     {'ETS-TRANSFER', foo, Q, fan} ->
       ok
   end.
+
+test2() ->
+  P = self(),
+  ets:new(table, [named_table, {heir, P, bad}]),
+  spawn(fun() ->
+            ets:lookup(table, x)
+        end).

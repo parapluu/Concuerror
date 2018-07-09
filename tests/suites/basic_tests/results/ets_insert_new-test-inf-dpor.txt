@@ -1,4 +1,4 @@
-Concuerror 0.17 (d20441c) started at 24 Nov 2016 14:18:14.
+Concuerror v0.19+build.2102.ref073532b started at 09 Jul 2018 16:14:20
  Options:
   [{after_timeout,infinity},
    {assertions_only,false},
@@ -7,640 +7,609 @@ Concuerror 0.17 (d20441c) started at 24 Nov 2016 14:18:14.
    {disable_sleep_sets,false},
    {dpor,optimal},
    {entry_point,{ets_insert_new,test,[]}},
-   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_insert_new.erl"]},
+   {exclude_module,[]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/ets_insert_new.erl"]},
+   {first_process_errors_only,false},
    {ignore_error,[]},
    {instant_delivery,true},
    {interleaving_bound,infinity},
    {keep_going,true},
    {non_racing_system,[]},
    {print_depth,20},
+   {quiet,true},
    {scheduling,round_robin},
    {scheduling_bound_type,none},
    {show_races,false},
    {strict_scheduling,false},
    {symbolic_names,true},
-   {timeout,infinity},
-   {treat_as_normal,[]}]
+   {timeout,5000},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
 ################################################################################
 Interleaving #1
 --------------------------------------------------------------------------------
 Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in ets_insert_new.erl line 14
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_insert_new.erl line 14
+     Mailbox contents: []
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: table = ets:new(table, [named_table,public])
+   1: <P>: table = ets:new(table, [named_table,public])
     in ets_insert_new.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+   2: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   3: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   4: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   5: <P.1>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   6: P.1: true = ets:insert_new(table, {c,1})
+   6: <P.1>: true = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-   7: P.1: exits normally
-   8: P.2: 2 = ets:update_counter(table, c, 1)
+   7: <P.1>: exits normally
+   8: <P.2>: 2 = ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   9: P.2: exits normally
-  10: P.3: 3 = ets:update_counter(table, c, 1)
+   9: <P.2>: exits normally
+  10: <P.3>: 3 = ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-  11: P.3: exits normally
+  11: <P.3>: exits normally
 ################################################################################
 Interleaving #2
 --------------------------------------------------------------------------------
 Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in ets_insert_new.erl line 14
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_insert_new.erl line 14
+     Mailbox contents: []
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: table = ets:new(table, [named_table,public])
+   1: <P>: table = ets:new(table, [named_table,public])
     in ets_insert_new.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+   2: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   3: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   4: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   5: <P.1>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   6: P.1: true = ets:insert_new(table, {c,1})
+   6: <P.1>: true = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-   7: P.1: exits normally
-   8: P.3: 2 = ets:update_counter(table, c, 1)
+   7: <P.1>: exits normally
+   8: <P.3>: 2 = ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   9: P.3: exits normally
-  10: P.2: 3 = ets:update_counter(table, c, 1)
+   9: <P.3>: exits normally
+  10: <P.2>: 3 = ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-  11: P.2: exits normally
+  11: <P.2>: exits normally
 ################################################################################
 Interleaving #3
 --------------------------------------------------------------------------------
 Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in ets_insert_new.erl line 14
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_insert_new.erl line 14
+     Mailbox contents: []
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: table = ets:new(table, [named_table,public])
+   1: <P>: table = ets:new(table, [named_table,public])
     in ets_insert_new.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+   2: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   3: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   4: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   5: <P.1>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   6: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+   6: <P.2>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   7: P.2: true = ets:insert_new(table, {c,1})
+   7: <P.2>: true = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-   8: P.2: exits normally
-   9: P.3: 2 = ets:update_counter(table, c, 1)
+   8: <P.2>: exits normally
+   9: <P.3>: 2 = ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-  10: P.3: exits normally
-  11: P.1: false = ets:insert_new(table, {c,1})
+  10: <P.3>: exits normally
+  11: <P.1>: false = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-  12: P.1: exits normally
+  12: <P.1>: exits normally
 ################################################################################
 Interleaving #4
 --------------------------------------------------------------------------------
 Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in ets_insert_new.erl line 14
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_insert_new.erl line 14
+     Mailbox contents: []
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: table = ets:new(table, [named_table,public])
+   1: <P>: table = ets:new(table, [named_table,public])
     in ets_insert_new.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+   2: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   3: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   4: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   5: <P.1>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   6: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+   6: <P.2>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   7: P.2: true = ets:insert_new(table, {c,1})
+   7: <P.2>: true = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-   8: P.2: exits normally
-   9: P.1: false = ets:insert_new(table, {c,1})
+   8: <P.2>: exits normally
+   9: <P.1>: false = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-  10: P.1: exits normally
-  11: P.3: 2 = ets:update_counter(table, c, 1)
+  10: <P.1>: exits normally
+  11: <P.3>: 2 = ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-  12: P.3: exits normally
+  12: <P.3>: exits normally
 ################################################################################
 Interleaving #5
 --------------------------------------------------------------------------------
 Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in ets_insert_new.erl line 14
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_insert_new.erl line 14
+     Mailbox contents: []
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: table = ets:new(table, [named_table,public])
+   1: <P>: table = ets:new(table, [named_table,public])
     in ets_insert_new.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+   2: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   3: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   4: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   5: <P.1>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   6: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+   6: <P.2>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   7: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+   7: <P.3>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   8: P.3: true = ets:insert_new(table, {c,1})
+   8: <P.3>: true = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-   9: P.3: exits normally
-  10: P.1: false = ets:insert_new(table, {c,1})
+   9: <P.3>: exits normally
+  10: <P.1>: false = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-  11: P.1: exits normally
-  12: P.2: false = ets:insert_new(table, {c,1})
+  11: <P.1>: exits normally
+  12: <P.2>: false = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-  13: P.2: exits normally
+  13: <P.2>: exits normally
 ################################################################################
 Interleaving #6
 --------------------------------------------------------------------------------
 Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in ets_insert_new.erl line 14
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_insert_new.erl line 14
+     Mailbox contents: []
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: table = ets:new(table, [named_table,public])
+   1: <P>: table = ets:new(table, [named_table,public])
     in ets_insert_new.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+   2: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   3: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   4: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   5: <P.1>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   6: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+   6: <P.2>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   7: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+   7: <P.3>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   8: P.1: true = ets:insert_new(table, {c,1})
+   8: <P.1>: true = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-   9: P.1: exits normally
-  10: P.2: false = ets:insert_new(table, {c,1})
+   9: <P.1>: exits normally
+  10: <P.2>: false = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-  11: P.2: exits normally
-  12: P.3: false = ets:insert_new(table, {c,1})
+  11: <P.2>: exits normally
+  12: <P.3>: false = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-  13: P.3: exits normally
+  13: <P.3>: exits normally
 ################################################################################
 Interleaving #7
 --------------------------------------------------------------------------------
 Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in ets_insert_new.erl line 14
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_insert_new.erl line 14
+     Mailbox contents: []
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: table = ets:new(table, [named_table,public])
+   1: <P>: table = ets:new(table, [named_table,public])
     in ets_insert_new.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+   2: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   3: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   4: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   5: <P.1>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   6: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+   6: <P.2>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   7: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+   7: <P.3>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   8: P.2: true = ets:insert_new(table, {c,1})
+   8: <P.2>: true = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-   9: P.2: exits normally
-  10: P.3: false = ets:insert_new(table, {c,1})
+   9: <P.2>: exits normally
+  10: <P.3>: false = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-  11: P.3: exits normally
-  12: P.1: false = ets:insert_new(table, {c,1})
+  11: <P.3>: exits normally
+  12: <P.1>: false = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-  13: P.1: exits normally
+  13: <P.1>: exits normally
 ################################################################################
 Interleaving #8
 --------------------------------------------------------------------------------
 Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in ets_insert_new.erl line 14
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_insert_new.erl line 14
+     Mailbox contents: []
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: table = ets:new(table, [named_table,public])
+   1: <P>: table = ets:new(table, [named_table,public])
     in ets_insert_new.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+   2: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   3: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   4: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   5: <P.1>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   6: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+   6: <P.2>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   7: P.1: true = ets:insert_new(table, {c,1})
+   7: <P.1>: true = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-   8: P.1: exits normally
-   9: P.2: false = ets:insert_new(table, {c,1})
+   8: <P.1>: exits normally
+   9: <P.2>: false = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-  10: P.2: exits normally
-  11: P.3: 2 = ets:update_counter(table, c, 1)
+  10: <P.2>: exits normally
+  11: <P.3>: 2 = ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-  12: P.3: exits normally
+  12: <P.3>: exits normally
 ################################################################################
 Interleaving #9
 --------------------------------------------------------------------------------
 Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in ets_insert_new.erl line 14
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_insert_new.erl line 14
+     Mailbox contents: []
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: table = ets:new(table, [named_table,public])
+   1: <P>: table = ets:new(table, [named_table,public])
     in ets_insert_new.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+   2: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   3: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   4: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   5: <P.1>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   6: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+   6: <P.2>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   7: P.1: true = ets:insert_new(table, {c,1})
+   7: <P.1>: true = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-   8: P.1: exits normally
-   9: P.3: 2 = ets:update_counter(table, c, 1)
+   8: <P.1>: exits normally
+   9: <P.3>: 2 = ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-  10: P.3: exits normally
-  11: P.2: false = ets:insert_new(table, {c,1})
+  10: <P.3>: exits normally
+  11: <P.2>: false = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-  12: P.2: exits normally
+  12: <P.2>: exits normally
 ################################################################################
 Interleaving #10
 --------------------------------------------------------------------------------
 Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in ets_insert_new.erl line 14
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_insert_new.erl line 14
+     Mailbox contents: []
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: table = ets:new(table, [named_table,public])
+   1: <P>: table = ets:new(table, [named_table,public])
     in ets_insert_new.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+   2: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   3: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   4: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   5: <P.1>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+   6: <P.3>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   7: P.3: true = ets:insert_new(table, {c,1})
+   7: <P.3>: true = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-   8: P.3: exits normally
-   9: P.1: false = ets:insert_new(table, {c,1})
+   8: <P.3>: exits normally
+   9: <P.1>: false = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-  10: P.1: exits normally
-  11: P.2: 2 = ets:update_counter(table, c, 1)
+  10: <P.1>: exits normally
+  11: <P.2>: 2 = ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-  12: P.2: exits normally
+  12: <P.2>: exits normally
 ################################################################################
 Interleaving #11
 --------------------------------------------------------------------------------
 Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in ets_insert_new.erl line 14
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_insert_new.erl line 14
+     Mailbox contents: []
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: table = ets:new(table, [named_table,public])
+   1: <P>: table = ets:new(table, [named_table,public])
     in ets_insert_new.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+   2: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   3: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   4: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   5: <P.1>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+   6: <P.3>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   7: P.3: true = ets:insert_new(table, {c,1})
+   7: <P.3>: true = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-   8: P.3: exits normally
-   9: P.2: 2 = ets:update_counter(table, c, 1)
+   8: <P.3>: exits normally
+   9: <P.2>: 2 = ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-  10: P.2: exits normally
-  11: P.1: false = ets:insert_new(table, {c,1})
+  10: <P.2>: exits normally
+  11: <P.1>: false = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-  12: P.1: exits normally
+  12: <P.1>: exits normally
 ################################################################################
 Interleaving #12
 --------------------------------------------------------------------------------
 Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in ets_insert_new.erl line 14
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_insert_new.erl line 14
+     Mailbox contents: []
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: table = ets:new(table, [named_table,public])
+   1: <P>: table = ets:new(table, [named_table,public])
     in ets_insert_new.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+   2: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   3: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   4: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   5: <P.2>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
-    in ets_insert_new.erl line 19
-   7: P.1: true = ets:insert_new(table, {c,1})
+   6: <P.2>: true = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-   8: P.1: exits normally
-   9: P.2: 2 = ets:update_counter(table, c, 1)
+   7: <P.2>: exits normally
+   8: <P.3>: 2 = ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-  10: P.2: exits normally
-  11: P.3: false = ets:insert_new(table, {c,1})
-    in ets_insert_new.erl line 22
-  12: P.3: exits normally
+   9: <P.3>: exits normally
+  10: <P.1>: 3 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  11: <P.1>: exits normally
 ################################################################################
 Interleaving #13
 --------------------------------------------------------------------------------
 Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in ets_insert_new.erl line 14
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_insert_new.erl line 14
+     Mailbox contents: []
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: table = ets:new(table, [named_table,public])
+   1: <P>: table = ets:new(table, [named_table,public])
     in ets_insert_new.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+   2: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   3: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   4: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   5: <P.2>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
-    in ets_insert_new.erl line 19
-   7: P.1: true = ets:insert_new(table, {c,1})
+   6: <P.2>: true = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-   8: P.1: exits normally
-   9: P.3: false = ets:insert_new(table, {c,1})
-    in ets_insert_new.erl line 22
-  10: P.3: exits normally
-  11: P.2: 2 = ets:update_counter(table, c, 1)
+   7: <P.2>: exits normally
+   8: <P.1>: 2 = ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-  12: P.2: exits normally
+   9: <P.1>: exits normally
+  10: <P.3>: 3 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  11: <P.3>: exits normally
 ################################################################################
 Interleaving #14
 --------------------------------------------------------------------------------
 Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in ets_insert_new.erl line 14
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_insert_new.erl line 14
+     Mailbox contents: []
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: table = ets:new(table, [named_table,public])
+   1: <P>: table = ets:new(table, [named_table,public])
     in ets_insert_new.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+   2: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   3: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   4: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   5: <P.2>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   6: P.2: true = ets:insert_new(table, {c,1})
+   6: <P.3>: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: <P.3>: true = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-   7: P.2: exits normally
-   8: P.3: 2 = ets:update_counter(table, c, 1)
+   8: <P.3>: exits normally
+   9: <P.1>: 2 = ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   9: P.3: exits normally
-  10: P.1: 3 = ets:update_counter(table, c, 1)
-    in ets_insert_new.erl line 19
-  11: P.1: exits normally
+  10: <P.1>: exits normally
+  11: <P.2>: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  12: <P.2>: exits normally
 ################################################################################
 Interleaving #15
 --------------------------------------------------------------------------------
 Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in ets_insert_new.erl line 14
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_insert_new.erl line 14
+     Mailbox contents: []
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: table = ets:new(table, [named_table,public])
+   1: <P>: table = ets:new(table, [named_table,public])
     in ets_insert_new.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+   2: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   3: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   4: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   5: <P.2>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   6: P.2: true = ets:insert_new(table, {c,1})
+   6: <P.3>: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: <P.3>: true = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-   7: P.2: exits normally
-   8: P.1: 2 = ets:update_counter(table, c, 1)
+   8: <P.3>: exits normally
+   9: <P.2>: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  10: <P.2>: exits normally
+  11: <P.1>: 2 = ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   9: P.1: exits normally
-  10: P.3: 3 = ets:update_counter(table, c, 1)
-    in ets_insert_new.erl line 19
-  11: P.3: exits normally
+  12: <P.1>: exits normally
 ################################################################################
 Interleaving #16
 --------------------------------------------------------------------------------
 Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in ets_insert_new.erl line 14
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_insert_new.erl line 14
+     Mailbox contents: []
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: table = ets:new(table, [named_table,public])
+   1: <P>: table = ets:new(table, [named_table,public])
     in ets_insert_new.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+   2: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   3: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   4: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   5: <P.2>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+   6: <P.3>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   7: P.3: true = ets:insert_new(table, {c,1})
+   7: <P.2>: true = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-   8: P.3: exits normally
-   9: P.1: 2 = ets:update_counter(table, c, 1)
-    in ets_insert_new.erl line 19
-  10: P.1: exits normally
-  11: P.2: false = ets:insert_new(table, {c,1})
+   8: <P.2>: exits normally
+   9: <P.3>: false = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-  12: P.2: exits normally
+  10: <P.3>: exits normally
+  11: <P.1>: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  12: <P.1>: exits normally
 ################################################################################
 Interleaving #17
 --------------------------------------------------------------------------------
 Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in ets_insert_new.erl line 14
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_insert_new.erl line 14
+     Mailbox contents: []
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: table = ets:new(table, [named_table,public])
+   1: <P>: table = ets:new(table, [named_table,public])
     in ets_insert_new.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+   2: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   3: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   4: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   5: <P.2>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+   6: <P.3>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   7: P.3: true = ets:insert_new(table, {c,1})
+   7: <P.2>: true = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-   8: P.3: exits normally
-   9: P.2: false = ets:insert_new(table, {c,1})
-    in ets_insert_new.erl line 22
-  10: P.2: exits normally
-  11: P.1: 2 = ets:update_counter(table, c, 1)
+   8: <P.2>: exits normally
+   9: <P.1>: 2 = ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-  12: P.1: exits normally
+  10: <P.1>: exits normally
+  11: <P.3>: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  12: <P.3>: exits normally
 ################################################################################
 Interleaving #18
 --------------------------------------------------------------------------------
 Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in ets_insert_new.erl line 14
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_insert_new.erl line 14
+     Mailbox contents: []
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: table = ets:new(table, [named_table,public])
+   1: <P>: table = ets:new(table, [named_table,public])
     in ets_insert_new.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+   2: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   3: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   4: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   5: <P.3>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
-    in ets_insert_new.erl line 19
-   7: P.2: true = ets:insert_new(table, {c,1})
+   6: <P.3>: true = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-   8: P.2: exits normally
-   9: P.3: false = ets:insert_new(table, {c,1})
-    in ets_insert_new.erl line 22
-  10: P.3: exits normally
-  11: P.1: 2 = ets:update_counter(table, c, 1)
+   7: <P.3>: exits normally
+   8: <P.1>: 2 = ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-  12: P.1: exits normally
+   9: <P.1>: exits normally
+  10: <P.2>: 3 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  11: <P.2>: exits normally
 ################################################################################
 Interleaving #19
 --------------------------------------------------------------------------------
 Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in ets_insert_new.erl line 14
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in ets_insert_new.erl line 14
+     Mailbox contents: []
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: table = ets:new(table, [named_table,public])
+   1: <P>: table = ets:new(table, [named_table,public])
     in ets_insert_new.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+   2: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   3: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   4: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.50925711>,[]])
+    in erlang.erl line 2782
+   5: <P.3>: Exception badarg raised by: ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
-    in ets_insert_new.erl line 19
-   7: P.2: true = ets:insert_new(table, {c,1})
+   6: <P.3>: true = ets:insert_new(table, {c,1})
     in ets_insert_new.erl line 22
-   8: P.2: exits normally
-   9: P.1: 2 = ets:update_counter(table, c, 1)
+   7: <P.3>: exits normally
+   8: <P.2>: 2 = ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-  10: P.1: exits normally
-  11: P.3: false = ets:insert_new(table, {c,1})
-    in ets_insert_new.erl line 22
-  12: P.3: exits normally
-################################################################################
-Interleaving #20
---------------------------------------------------------------------------------
-Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in ets_insert_new.erl line 14
---------------------------------------------------------------------------------
-Event trace:
-   1: P: table = ets:new(table, [named_table,public])
-    in ets_insert_new.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   5: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+   9: <P.2>: exits normally
+  10: <P.1>: 3 = ets:update_counter(table, c, 1)
     in ets_insert_new.erl line 19
-   6: P.3: true = ets:insert_new(table, {c,1})
-    in ets_insert_new.erl line 22
-   7: P.3: exits normally
-   8: P.1: 2 = ets:update_counter(table, c, 1)
-    in ets_insert_new.erl line 19
-   9: P.1: exits normally
-  10: P.2: 3 = ets:update_counter(table, c, 1)
-    in ets_insert_new.erl line 19
-  11: P.2: exits normally
-################################################################################
-Interleaving #21
---------------------------------------------------------------------------------
-Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in ets_insert_new.erl line 14
---------------------------------------------------------------------------------
-Event trace:
-   1: P: table = ets:new(table, [named_table,public])
-    in ets_insert_new.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.'-child/0-fun-0-'.0>,[]])
-    in erlang.erl line 2603
-   5: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
-    in ets_insert_new.erl line 19
-   6: P.3: true = ets:insert_new(table, {c,1})
-    in ets_insert_new.erl line 22
-   7: P.3: exits normally
-   8: P.2: 2 = ets:update_counter(table, c, 1)
-    in ets_insert_new.erl line 19
-   9: P.2: exits normally
-  10: P.1: 3 = ets:update_counter(table, c, 1)
-    in ets_insert_new.erl line 19
-  11: P.1: exits normally
+  11: <P.1>: exits normally
 ################################################################################
 Exploration completed!
 ################################################################################
 Tips:
 --------------------------------------------------------------------------------
-Each of the first 10 interleavings explored so far had some error. This can make later debugging difficult, as the generated report will include too much info. Consider refactoring your code, or using the appropriate options to filter out irrelevant errors.
+* Check '--help attributes' for info on how to pass options via module attributes.
+* Running without a scheduling_bound corresponds to verification and may take a long time.
+* Increase '--print_depth' if output/graph contains "...".
+* Each of the first 10 interleavings explored so far had some error. This can make later debugging difficult, as the generated report will include too much info. Consider refactoring your code, or using the appropriate options to filter out irrelevant errors.
 
 ################################################################################
 Info:
 --------------------------------------------------------------------------------
-Instrumented ets_insert_new
-Instrumented io_lib
-Instrumented gen_server
-Instrumented erlang
-You can see pairs of racing instructions (in the report and --graph) with '--show_races true'
-Continuing after error (-k)
+* Writing results in /Users/stavros.aronis/git/Concuerror/tests/results/basic_tests/results/ets_insert_new-test-inf-dpor.txt
+* Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
+* Instrumented & loaded module ets_insert_new
+* Automatically instrumented module erlang
+* Continuing after error (-k)
+* You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
 
 ################################################################################
-Done at 24 Nov 2016 14:18:15 (Exit status: error)
-  Summary: 21 errors, 21/21 interleavings explored
+Done at 09 Jul 2018 16:14:21 (Exit status: error)
+  Summary: 19 errors, 19/19 interleavings explored

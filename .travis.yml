@@ -76,13 +76,14 @@ env:
 otp_release:
 
   # Two latest minor versions of the most recent OTP release
-  # Remember to also update the badge in README.md
+  # Remember to also update the badge in README.md and the used
+  # as argument to generate_version_hrl in rebar.config
 
-  - 20.3
-  - 20.2
+  - 21.0
 
   # Last minor version of older OTP releases
 
+  - 20.3
   - 19.3
   - 18.3
   - 17.5
