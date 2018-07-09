@@ -15,7 +15,7 @@ function has_basic_progress {
     Target="  none |          0 |       0 |   ... |      1s |       ... |     ..."
     testing "... and console has \"$Target\" or 2s"
     if ! grep -q "$Target" $Console; then
-        "  none |          0 |       0 |   ... |      2s |       ... |     ..."
+        Target="  none |          0 |       0 |   ... |      2s |       ... |     ..."
         if ! grep -q "$Target" $Console; then
             exit 1
         fi

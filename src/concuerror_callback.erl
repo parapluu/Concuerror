@@ -884,7 +884,8 @@ run_built_in(erlang, process_flag, 2, [Flag, Value],
 
 run_built_in(erlang, processes, 0, [], Info) ->
   #concuerror_info{processes = Processes} = Info,
-  {?active_processes(Processes), Info};
+  Active = lists:sort(ets:select(Processes, [?process_match_active()])),
+  {Active, Info};
 
 run_built_in(erlang, unlink, 1, [Pid], #concuerror_info{links = Links} = Info) ->
   Self = self(),
@@ -1526,9 +1527,9 @@ process_loop(Info) ->
       ets:insert(Processes, ?new_process(self(), Symbol)),
       {DefLeader, _} = run_built_in(erlang,whereis,1,[user],Info),
       true = ets:update_element(Processes, self(), {?process_leader, DefLeader}),
-      ets:match_delete(EtsTables, ?ets_match_mine()),
-      ets:match_delete(Links, ?links_match_mine()),
-      ets:match_delete(Monitors, ?monitors_match_mine()),
+      ets:match_delete(EtsTables, ?ets_pattern_mine()),
+      ets:match_delete(Links, ?links_pattern_mine()),
+      ets:match_delete(Monitors, ?monitors_pattern_mine()),
       FinalInfo = NewInfo#concuerror_info{ref_queue = reset_ref_queue(Info)},
       _ = notify(reset_done, FinalInfo),
       erlang:hibernate(concuerror_callback, process_top_loop, [FinalInfo]);
