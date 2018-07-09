@@ -884,7 +884,8 @@ run_built_in(erlang, process_flag, 2, [Flag, Value],
 
 run_built_in(erlang, processes, 0, [], Info) ->
   #concuerror_info{processes = Processes} = Info,
-  {?active_processes(Processes), Info};
+  Active = lists:sort(ets:select(Processes, [?process_match_active()])),
+  {Active, Info};
 
 run_built_in(erlang, unlink, 1, [Pid], #concuerror_info{links = Links} = Info) ->
   Self = self(),

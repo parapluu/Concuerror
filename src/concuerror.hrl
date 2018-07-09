@@ -165,15 +165,13 @@
 -define(process_match_symbol_to_pid(Symbol),
         {'$1',   '_', '_', '_', '_', Symbol, '_', '_'}).
 
--define(active_processes(P),
-        lists:sort(
-          ets:select(
-            P,
-            [{{'$1', '$2', '_', '_', '_', '_', '_', '_'},
-              [{'=/=', '$2', exited}
-              ,{'=/=', '$2', exiting}
-              ],
-              ['$1']}]))).
+-define(process_match_active(),
+        { {'$1', '$2', '_', '_', '_', '_', '_', '_'}
+        , [ {'=/=', '$2', exited}
+          , {'=/=', '$2', exiting}
+          ]
+        , ['$1']
+        }).
 %%------------------------------------------------------------------------------
 -type links() :: ets:tid().
 
