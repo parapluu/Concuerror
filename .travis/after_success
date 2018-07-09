@@ -4,11 +4,12 @@
 
 if [ "$COLLECT_COVERAGE" = "true" ]; then
   echo "Generate coverage report..."
+  EBIN=$(rebar3 path --ebin --app concuerror)
   cd cover
   export COVER_COMBINE=all.coverdata
   mv *.coverdata data || true
   ./cover-report data || true
-  covertool/covertool -cover $COVER_COMBINE -src ../src -appname concuerror
+  covertool/covertool -cover $COVER_COMBINE -ebin $EBIN -appname concuerror
   bash <(curl -s https://codecov.io/bash) -c -F "$FLAG"
   echo "Report sent!"
 fi
