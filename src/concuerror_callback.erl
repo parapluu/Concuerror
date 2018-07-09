@@ -1034,7 +1034,7 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData], Info) ->
         MsgInfo;
       %% New event...
       undefined ->
-        Data = {'ETS-TRANSFER', Tid, Self, GiftData},
+        Data = {'ETS-TRANSFER', Name, Self, GiftData},
         make_message(Info, message, Data, Pid)
     end,
   Update = [{?ets_owner, Pid}],

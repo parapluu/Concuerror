@@ -1,4 +1,4 @@
-Concuerror v0.18 ('50b5ebf') started at 19 Oct 2017 14:15:32
+Concuerror v0.19+build.2090.refb510413 started at 09 Jul 2018 17:50:41
  Options:
   [{after_timeout,1000},
    {assertions_only,false},
@@ -9,9 +9,10 @@ Concuerror v0.18 ('50b5ebf') started at 19 Oct 2017 14:15:32
    {entry_point,{test,test4,[]}},
    {exclude_module,[]},
    {files,["../test.erl"]},
+   {first_process_errors_only,false},
    {ignore_error,[deadlock]},
    {instant_delivery,true},
-   {interleaving_bound,infinity},
+   {interleaving_bound,200},
    {keep_going,true},
    {non_racing_system,[]},
    {pa,"ebin"},
@@ -22,7 +23,7 @@ Concuerror v0.18 ('50b5ebf') started at 19 Oct 2017 14:15:32
    {show_races,false},
    {strict_scheduling,false},
    {symbolic_names,true},
-   {timeout,infinity},
+   {timeout,5000},
    {treat_as_normal,[shutdown]},
    {use_receive_patterns,true}]
 ################################################################################
@@ -31,22 +32,24 @@ Exploration completed!
 ################################################################################
 Warnings:
 --------------------------------------------------------------------------------
-* Multiple instances of '--timeout' defined. Using last value: -1.
-* Concuerror does not fully support erlang:get_stacktrace/0, returning an empty list instead. If you need proper support, notify the developers to add this feature.
 * Some abnormal exit reasons were treated as normal ('--treat_as_normal').
 
 ################################################################################
 Tips:
 --------------------------------------------------------------------------------
-* An abnormal exit signal was sent to a process. This is probably the worst thing that can happen race-wise, as any other side-effecting operation races with the arrival of the signal. If the test produces too many interleavings consider refactoring your code.
+* Running without a scheduling_bound corresponds to verification and may take a long time.
+* An abnormal exit signal killed a process. This is probably the worst thing that can happen race-wise, as any other side-effecting operation races with the arrival of the signal. If the test produces too many interleavings consider refactoring your code.
 
 ################################################################################
 Info:
 --------------------------------------------------------------------------------
+* Writing results in /Users/stavros.aronis/git/Concuerror/tests-real/suites/gproc/run/test4.out
 * Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
 * Instrumented & loaded module test
 * Automatically instrumented module gproc_sup
 * Automatically instrumented module supervisor
+* Automatically instrumented module gen_server
 * Automatically instrumented module gen
 * Automatically instrumented module proc_lib
 * Automatically instrumented module erlang
@@ -63,5 +66,5 @@ Info:
 * You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
 
 ################################################################################
-Done at 19 Oct 2017 14:15:34 (Exit status: ok)
-  Summary: 0 errors, 54/54 interleavings explored
+Done at 09 Jul 2018 17:50:43 (Exit status: ok)
+  Summary: 0 errors, 162/162 interleavings explored
