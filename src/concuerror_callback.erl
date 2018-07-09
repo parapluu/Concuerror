@@ -1526,9 +1526,9 @@ process_loop(Info) ->
       ets:insert(Processes, ?new_process(self(), Symbol)),
       {DefLeader, _} = run_built_in(erlang,whereis,1,[user],Info),
       true = ets:update_element(Processes, self(), {?process_leader, DefLeader}),
-      ets:match_delete(EtsTables, ?ets_match_mine()),
-      ets:match_delete(Links, ?links_match_mine()),
-      ets:match_delete(Monitors, ?monitors_match_mine()),
+      ets:match_delete(EtsTables, ?ets_pattern_mine()),
+      ets:match_delete(Links, ?links_pattern_mine()),
+      ets:match_delete(Monitors, ?monitors_pattern_mine()),
       FinalInfo = NewInfo#concuerror_info{ref_queue = reset_ref_queue(Info)},
       _ = notify(reset_done, FinalInfo),
       erlang:hibernate(concuerror_callback, process_top_loop, [FinalInfo]);

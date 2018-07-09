@@ -139,7 +139,7 @@
 -define(ets_alive, 6).
 -define(ets_match_owner_to_name_heir(Owner), {'_', '$1', Owner, '_', '$2', true}).
 -define(ets_match_name(Name), {'$1', Name, '$2', '$3', '_', true}).
--define(ets_match_mine(), {'_', '_', self(), '_', '_', '_'}).
+-define(ets_pattern_mine(), {'_', '_', self(), '_', '_', '_'}).
 %%------------------------------------------------------------------------------
 -type processes() :: ets:tid().
 -type symbolic_name() :: string().
@@ -178,12 +178,12 @@
 -type links() :: ets:tid().
 
 -define(links(Pid1, Pid2), [{Pid1, Pid2, active}, {Pid2, Pid1, active}]).
--define(links_match_mine(), {self(), '_', '_'}).
+-define(links_pattern_mine(), {self(), '_', '_'}).
 %%------------------------------------------------------------------------------
 -type monitors() :: ets:tid().
 
 -define(monitor(Ref, Target, As, Status),{Target, {Ref, self(), As}, Status}).
--define(monitors_match_mine(), {self(), '_', '_'}).
+-define(monitors_pattern_mine(), {self(), '_', '_'}).
 -define(monitor_match_to_target_source_as(Ref), {'$1', {Ref, '$2', '$3'}, active}).
 %%------------------------------------------------------------------------------
 -type modules() :: ets:tid().
