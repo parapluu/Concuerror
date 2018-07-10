@@ -81,6 +81,10 @@ testing "Deadlock shows messages"
 ! concuerror_console -f src/deadlock.erl
 outputhas "Mailbox contents: \[foo\]"
 
+testing "Funs are pretty"
+! concuerror_console -f src/a_fun.erl
+outputhas "#Fun<a_fun.0"
+
 testing "Symbolic registered names Info"
 ! concuerror_console -f src/register.erl
 consolehas "Showing PIDs as \"<symbolic name(/last registered name)>\" ('-h symbolic_names')."
