@@ -1080,10 +1080,13 @@ run_built_in(ets, F, N, [NameOrTid|Args], Info)
   when
     false
     ; {F, N} =:= {delete, 2}
+    ; {F, N} =:= {delete_all_objects, 1}
     ; {F, N} =:= {delete_object, 2}
     ; {F, N} =:= {first, 1}
     ; {F, N} =:= {insert, 2}
     ; {F, N} =:= {insert_new, 2}
+    ; {F, N} =:= {internal_delete_all, 2}
+    ; {F, N} =:= {internal_select_delete, 2}
     ; {F, N} =:= {lookup, 2}
     ; {F, N} =:= {lookup_element, 3}
     ; {F, N} =:= {match, 2}
@@ -1093,7 +1096,6 @@ run_built_in(ets, F, N, [NameOrTid|Args], Info)
     ; {F, N} =:= {select, 2}
     ; {F, N} =:= {select, 3}
     ; {F, N} =:= {select_delete, 2}
-    ; {F, N} =:= {internal_select_delete, 2}
     ; {F, N} =:= {update_counter, 3}
     ->
   {Tid, Id, IsSystem} = ets_access_table_info(NameOrTid, {F, N}, Info),
@@ -1877,12 +1879,15 @@ ets_ops_access_rights_map(Op) ->
   case Op of
     {delete, 1} -> own;
     {delete, 2} -> write;
+    {delete_all_objects, 1} -> write;
     {delete_object, 2} -> write;
     {first, _} -> read;
     {give_away, _} -> own;
     {info, _} -> none;
     {insert, _} -> write;
     {insert_new, _} -> write;
+    {internal_delete_all, 2} -> write;
+    {internal_select_delete, 2} -> write;
     {lookup, _} -> read;
     {lookup_element, _} -> read;
     {match, _} -> read;
@@ -1890,8 +1895,7 @@ ets_ops_access_rights_map(Op) ->
     {member, _} -> read;
     {next, _} -> read;
     {select, _} -> read;
-    {select_delete, _} -> write;
-    {internal_select_delete, _} -> write;
+    {select_delete, 2} -> write;
     {update_counter, 3} -> write;
     {whereis, 1} -> none
   end.

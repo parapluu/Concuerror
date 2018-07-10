@@ -679,6 +679,11 @@ ets_is_mutating(#builtin_event{ mfargs = {_, Op, [_|Rest] = Args}
   case {Op, length(Args)} of
     {delete, 2} -> with_key(hd(Rest));
     {delete_object, 2} -> from_insert(Tid, hd(Rest), true);
+    {DelAll, N}
+      when
+        {DelAll, N} =:= {delete_all_objects, 1};
+        {DelAll, N} =:= {internal_delete_all, 2} ->
+      ?deps_with_any;
     {first, _} -> false;
     {give_away, _} -> ?deps_with_any;
     {info, _} -> false;
@@ -693,7 +698,7 @@ ets_is_mutating(#builtin_event{ mfargs = {_, Op, [_|Rest] = Args}
     {member, _} -> false;
     {next, _} -> false;
     {select, _} -> false;
-    {SelDelete, _}
+    {SelDelete, 2}
       when
         SelDelete =:= select_delete;
         SelDelete =:= internal_select_delete ->
@@ -723,28 +728,42 @@ ets_reads_keys(Event) ->
       [element(KeyPos, Tuple) || Tuple <- Tuples]
   end.
 
-keys_or_tuples(#builtin_event{mfargs = {_,Op,[_|Rest] = Args}}) ->
+keys_or_tuples(#builtin_event{mfargs = {_, Op, [_|Rest] = Args}}) ->
   case {Op, length(Args)} of
-    {delete        ,2} -> {keys, [hd(Rest)]};
-    {delete_object ,2} -> {tuples, [hd(Rest)]};
-    {first         ,_} -> any;
-    {give_away     ,_} -> any;
-    {info          ,_} -> any;
-    {Insert        ,_} when Insert =:= insert; Insert =:= insert_new ->
+    {delete, 2} -> {keys, [hd(Rest)]};
+    {DelAll, N}
+      when
+        {DelAll, N} =:= {delete_all_objects, 1};
+        {DelAll, N} =:= {internal_delete_all, 2} ->
+      any;
+    {delete_object, 2} -> {tuples, [hd(Rest)]};
+    {first, _} -> any;
+    {give_away, _} -> any;
+    {info, _} -> any;
+    {Insert, _}
+      when
+        Insert =:= insert;
+        Insert =:= insert_new ->
       Inserted = hd(Rest),
       {tuples,
-       case is_list(Inserted) of true -> Inserted; false -> [Inserted] end};
-    {lookup        ,_} -> {keys, [hd(Rest)]};
-    {lookup_element,_} -> {keys, [hd(Rest)]};
-    {match         ,_} -> {matchspec, [{hd(Rest), [], ['$$']}]};
-    {match_object  ,_} -> {matchspec, [{hd(Rest), [], ['$_']}]};
-    {member        ,_} -> {keys, [hd(Rest)]};
-    {next          ,_} -> any;
-    {select        ,_} -> {matchspec, hd(Rest)};
-    {SelDelete     ,_} when SelDelete =:= select_delete; SelDelete =:= internal_select_delete ->
+       case is_list(Inserted) of
+         true -> Inserted;
+         false -> [Inserted]
+       end};
+    {lookup, _} -> {keys, [hd(Rest)]};
+    {lookup_element, _} -> {keys, [hd(Rest)]};
+    {match, _} -> {matchspec, [{hd(Rest), [], ['$$']}]};
+    {match_object, _} -> {matchspec, [{hd(Rest), [], ['$_']}]};
+    {member, _} -> {keys, [hd(Rest)]};
+    {next, _} -> any;
+    {select, _} -> {matchspec, hd(Rest)};
+    {SelDelete, 2}
+      when
+        SelDelete =:= select_delete;
+        SelDelete =:= internal_select_delete ->
       {matchspec, hd(Rest)};
-    {update_counter,3} -> {keys, [hd(Rest)]};
-    {whereis       ,1} -> none
+    {update_counter, 3} -> {keys, [hd(Rest)]};
+    {whereis, 1} -> none
   end.
 
 from_insert(undefined, _, _) ->
