@@ -9,11 +9,21 @@ scenarios() ->
   , info_bad
   , info_system
   , info_badarg
+  , info_2_badarg
   ].
 
 info_badarg() ->
   try
     ets:info(1.0),
+    exit(fail)
+  catch
+    error:badarg ->
+      ok
+  end.
+
+info_2_badarg() ->
+  try
+    ets:info([om,nom], owner),
     exit(fail)
   catch
     error:badarg ->
