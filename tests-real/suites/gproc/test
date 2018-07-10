@@ -22,6 +22,8 @@ function good {
     print_green "ok"
 }
 
+./check_version.escript 18 || echo print_blue "SKIPPING" && exit 0
+
 set -e
 trap 'abort' 0
 
