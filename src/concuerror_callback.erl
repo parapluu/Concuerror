@@ -43,7 +43,13 @@
 -define(heir, ?flag(15)).
 -define(notify, ?flag(16)).
 
--define(ACTIVE_FLAGS, [?undefined,?short_builtin,?loop,?notify, ?non_builtin]).
+-define(ACTIVE_FLAGS,
+        [ ?undefined
+        , ?short_builtin
+        , ?loop
+        , ?notify
+        , ?non_builtin
+        ]).
 
 %%-define(DEBUG, true).
 %%-define(DEBUG_FLAGS, lists:foldl(fun erlang:'bor'/2, 0, ?ACTIVE_FLAGS)).
@@ -282,7 +288,7 @@ built_in(erlang, Display, 1, [Term], _Location, Info)
   ?debug_flag(?builtin, {'built-in', erlang, Display, 1, [Term], _Location}),
   Chars =
     case Display of
-      display -> io_lib:format("~w~n",[Term]);
+      display -> io_lib:format("~w~n", [Term]);
       display_string ->
         _ = erlang:list_to_atom(Term), % Will throw badarg if not string.
         Term
@@ -319,7 +325,7 @@ built_in(Module, Name, Arity, Args, Location, InfoIn) ->
   Info = process_loop(InfoIn),
   ?debug_flag(?short_builtin, {'built-in', Module, Name, Arity, Location}),
   #concuerror_info{flags = #process_flags{trap_exit = Trapping}} = LocatedInfo =
-    add_location_info(Location, Info#concuerror_info{extra = undefined}),%ResetInfo),
+    add_location_info(Location, Info#concuerror_info{extra = undefined}),
   try
     {Value, UpdatedInfo} = run_built_in(Module, Name, Arity, Args, LocatedInfo),
     #concuerror_info{extra = Extra, event = MaybeMessageEvent} = UpdatedInfo,
@@ -385,7 +391,7 @@ run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
         case lists:member(flush, Options) of
           true ->
             {Match, FlushInfo} =
-              has_matching_or_after(PatternFun, infinity, foo, Info, non_blocking),
+              has_matching_or_after(PatternFun, infinity, Info),
             {Match =/= false, FlushInfo};
           false ->
             {false, Info}
@@ -401,10 +407,11 @@ run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
     true -> {Result, FinalInfo};
     false -> {true, FinalInfo}
   end;
-run_built_in(erlang, exit, 2, [Pid, Reason],
-             #concuerror_info{
-                event = #event{event_info = EventInfo} = Event
-               } = Info) ->
+run_built_in(erlang, exit, 2, [Pid, Reason], Info) ->
+  #concuerror_info{
+     event = #event{event_info = EventInfo} = Event,
+     flags = #process_flags{trap_exit = Trapping}
+    } = Info,
   ?badarg_if_not(is_pid(Pid)),
   case EventInfo of
     %% Replaying...
@@ -417,7 +424,6 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
         case Event#event.location =/= exit andalso Reason =:= kill of
           true -> kill;
           false ->
-            #concuerror_info{flags = #process_flags{trap_exit = Trapping}} = Info,
             case Pid =/= self() orelse Reason =/= normal orelse Trapping of
               true -> ok;
               false ->
@@ -439,8 +445,10 @@ run_built_in(M, group_leader, 2, [GroupLeader, Pid],
              #concuerror_info{processes = Processes} = Info)
   when M =:= erlang; M =:= erts_internal ->
   try
-    {true, Info} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
-    {true, Info} = run_built_in(erlang, is_process_alive, 1, [GroupLeader], Info),
+    {true, Info} =
+      run_built_in(erlang, is_process_alive, 1, [Pid], Info),
+    {true, Info} =
+      run_built_in(erlang, is_process_alive, 1, [GroupLeader], Info),
     ok
   catch
     _:_ -> error(badarg)
@@ -598,8 +606,9 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
               false ->
                 #concuerror_info{logger = Logger} = TheirInfo,
                 Msg =
-                  "Concuerror does not properly support erlang:process_info(Other,"
-                  " current_function), returning the initial call instead.~n",
+                  "Concuerror does not properly support"
+                  " erlang:process_info(Other, current_function),"
+                  " returning the initial call instead.~n",
                 ?unique(Logger, ?lwarning, Msg, []),
                 TheirInfo#concuerror_info.initial_call
             end;
@@ -609,8 +618,9 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
               false ->
                 #concuerror_info{logger = Logger} = TheirInfo,
                 Msg =
-                  "Concuerror does not properly support erlang:process_info(Other,"
-                  " current_stacktrace), returning an empty list instead.~n",
+                  "Concuerror does not properly support"
+                  " erlang:process_info(Other, current_stacktrace),"
+                  " returning an empty list instead.~n",
                 ?unique(Logger, ?lwarning, Msg, []),
                 []
             end;
@@ -700,7 +710,7 @@ run_built_in(erlang, ReadorCancelTimer, 1, [Ref], Info)
   #concuerror_info{timers = Timers} = Info,
   case ets:lookup(Timers, Ref) of
     [] -> {false, Info};
-    [{Ref,Pid,_Dest}] ->
+    [{Ref, Pid, _Dest}] ->
       case ReadorCancelTimer of
         read_timer -> ok;
         cancel_timer ->
@@ -727,7 +737,8 @@ run_built_in(erlang, SendAfter, 3, [0, Dest, Msg], Info)
     undefined -> ok
   end,
   ActualMessage = format_timer_message(SendAfter, Msg, Ref),
-  {_, FinalInfo} = run_built_in(erlang, send, 2, [Dest, ActualMessage], NewInfo),
+  {_, FinalInfo} =
+    run_built_in(erlang, send, 2, [Dest, ActualMessage], NewInfo),
   {Ref, FinalInfo};
 
 run_built_in(erlang, SendAfter, 3, [Timeout, Dest, Msg], Info)
@@ -774,7 +785,8 @@ run_built_in(erlang, SendAfter, 3, [Timeout, Dest, Msg], Info)
   ets:insert(Timers, {Ref, Pid, Dest}),
   TimerFun =
     fun() ->
-        catch concuerror_inspect:inspect(call, [erlang, send, [Dest, ActualMessage]], foo)
+        MFArgs = [erlang, send, [Dest, ActualMessage]],
+        catch concuerror_inspect:inspect(call, MFArgs, ignored)
     end,
   Pid ! {start, erlang, apply, [TimerFun, []]},
   ok = wait_process(Pid, Wait),
@@ -819,7 +831,7 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
       undefined ->
         PassedInfo = reset_concuerror_info(NewInfo),
         ?debug_flag(?spawn, {Parent, spawning_new, PassedInfo}),
-        ChildSymbol = io_lib:format("~s.~w",[ParentSymbol, ChildId]),
+        ChildSymbol = io_lib:format("~s.~w", [ParentSymbol, ChildId]),
         P =
           case
             ets:match(Processes, ?process_match_symbol_to_pid(ChildSymbol))
@@ -906,7 +918,7 @@ run_built_in(erlang, process_flag, 2, [Flag, Value],
       {Flags#process_flags.trap_exit,
        Info#concuerror_info{flags = Flags#process_flags{trap_exit = Value}}};
     priority ->
-      ?badarg_if_not(lists:member(Value, [low,normal,high,max])),
+      ?badarg_if_not(lists:member(Value, [low, normal, high, max])),
       {Flags#process_flags.priority,
        Info#concuerror_info{flags = Flags#process_flags{priority = Value}}};
     _ ->
@@ -918,9 +930,10 @@ run_built_in(erlang, processes, 0, [], Info) ->
   Active = lists:sort(ets:select(Processes, [?process_match_active()])),
   {Active, Info};
 
-run_built_in(erlang, unlink, 1, [Pid], #concuerror_info{links = Links} = Info) ->
+run_built_in(erlang, unlink, 1, [Pid], Info) ->
+  #concuerror_info{links = Links} = Info,
   Self = self(),
-  [true,true] = [ets:delete_object(Links, L) || L <- ?links(Self, Pid)],
+  [true, true] = [ets:delete_object(Links, L) || L <- ?links(Self, Pid)],
   {true, Info};
 run_built_in(erlang, unregister, 1, [Name],
              #concuerror_info{processes = Processes} = Info) ->
@@ -1260,8 +1273,8 @@ deliver_if_instant(Instant, NewEvent, SystemReply, Timeout) ->
     false -> deliver_message(NewEvent, SystemReply, Timeout, Instant)
   end.
 
-find_system_reply(System, [{message, #message_event{sender = System} = Message}|_]) ->
-  Message;
+find_system_reply(System, [{message, #message_event{sender = System} = M}|_]) ->
+  M;
 find_system_reply(System, [_|Special]) ->
   find_system_reply(System, Special).
 
@@ -1343,36 +1356,32 @@ handle_receive(PatternFun, Timeout, Location, Info) ->
   %% No distinction between replaying/new as we have to clear the message from
   %% the queue anyway...
   {MessageOrAfter, NewInfo} =
-    has_matching_or_after(PatternFun, Timeout, Location, Info, blocking),
+    has_matching_or_after(PatternFun, Timeout, Location, Info),
   notify_receive(MessageOrAfter, PatternFun, Timeout, Location, NewInfo).
 
-has_matching_or_after(PatternFun, Timeout, Location, InfoIn, Mode) ->
-  case Mode of
-    non_blocking ->
-      has_matching_or_after(PatternFun, Timeout, InfoIn);
-    blocking ->
-      {Result, Info} = has_matching_or_after(PatternFun, Timeout, InfoIn),
-      case Result =:= false of
-        true ->
-          ?debug_flag(?loop, blocked),
-          NewInfo =
-            case Info#concuerror_info.status =:= waiting of
-              true ->
-                Messages = Info#concuerror_info.message_queue,
-                MessageList = [D || #message{data = D} <- queue:to_list(Messages)],
-                Notification = {blocked, {self(), Location, MessageList}},
-                process_loop(notify(Notification, Info));
-              false ->
-                process_loop(set_status(Info, waiting))
-            end,
-          has_matching_or_after(PatternFun, Timeout, Location, NewInfo, Mode);
-        false ->
-          ?debug_flag(?loop, ready_to_receive),
-          NewInfo = process_loop(InfoIn),
-          {FinalResult, FinalInfo} =
-            has_matching_or_after(PatternFun, Timeout, NewInfo),
-          {FinalResult, FinalInfo}
-      end
+has_matching_or_after(PatternFun, Timeout, Location, InfoIn) ->
+  {Result, Info} = has_matching_or_after(PatternFun, Timeout, InfoIn),
+  case Result =:= false of
+    true ->
+      ?debug_flag(?loop, blocked),
+      NewInfo =
+        case Info#concuerror_info.status =:= waiting of
+          true ->
+            Messages = Info#concuerror_info.message_queue,
+            MessageList =
+              [D || #message{data = D} <- queue:to_list(Messages)],
+            Notification = {blocked, {self(), Location, MessageList}},
+            process_loop(notify(Notification, Info));
+          false ->
+            process_loop(set_status(Info, waiting))
+        end,
+      has_matching_or_after(PatternFun, Timeout, Location, NewInfo);
+    false ->
+      ?debug_flag(?loop, ready_to_receive),
+      NewInfo = process_loop(InfoIn),
+      {FinalResult, FinalInfo} =
+        has_matching_or_after(PatternFun, Timeout, NewInfo),
+      {FinalResult, FinalInfo}
   end.
 
 has_matching_or_after(PatternFun, Timeout, Info) ->
@@ -1607,8 +1616,9 @@ process_loop(Info) ->
       _ = erase(),
       Symbol = ets:lookup_element(Processes, self(), ?process_symbolic),
       ets:insert(Processes, ?new_process(self(), Symbol)),
-      {DefLeader, _} = run_built_in(erlang,whereis,1,[user],Info),
-      true = ets:update_element(Processes, self(), {?process_leader, DefLeader}),
+      {DefLeader, _} = run_built_in(erlang, whereis, 1, [user], Info),
+      true =
+        ets:update_element(Processes, self(), {?process_leader, DefLeader}),
       ets:match_delete(EtsTables, ?ets_pattern_mine()),
       ets:match_delete(Links, ?links_pattern_mine()),
       ets:match_delete(Monitors, ?monitors_pattern_mine()),
@@ -1738,8 +1748,8 @@ exiting(Reason, Stacktrace, InfoIn) ->
     [fun ets_ownership_exiting_events/1,
      link_monitor_handlers(fun handle_link/3, Links),
      link_monitor_handlers(fun handle_monitor/3, Monitors)],
-  FinalInfo =
-    lists:foldl(FunFold, ExitInfo#concuerror_info{exit_reason = Reason}, FunList),
+  NewInfo = ExitInfo#concuerror_info{exit_reason = Reason},
+  FinalInfo = lists:foldl(FunFold, NewInfo, FunList),
   ?debug_flag(?loop, exited),
   process_loop(set_status(FinalInfo, exited)).
 
@@ -1980,10 +1990,11 @@ system_wrapper_loop(Name, Wrapped, Info) ->
                   #concuerror_info{logger = Logger} = Info,
                   {From, Reply, _} = handle_io(Data, {standard_error, Logger}),
                   Msg =
-                    "Your test sends messages to the 'standard_error' process to"
-                    " write output. Such messages from different processes may"
-                    " race, producing spurious interleavings. Consider using"
-                    " '--non_racing_system standard_error' to avoid them.~n",
+                    "Your test sends messages to the 'standard_error' process"
+                    " to write output. Such messages from different processes"
+                    " may race, producing spurious interleavings. Consider"
+                    " using '--non_racing_system standard_error' to avoid"
+                    " them.~n",
                   ?unique(Logger, ?ltip, Msg, []),
                   {From, Reply};
                 user ->
@@ -2287,7 +2298,7 @@ explain_error({unknown_protocol_for_system, {System, Data}}) ->
     " not currently support communication with this process. Please contact the"
     " developers for more information.~n"
     "Message:~n"
-    " ~p~n",[System, Data]);
+    " ~p~n", [System, Data]);
 explain_error({unknown_built_in, {Module, Name, Arity, Location, Stack}}) ->
   LocationString =
     case Location of
@@ -2300,8 +2311,8 @@ explain_error({unknown_built_in, {Module, Name, Arity, Location, Stack}}) ->
     [Module, Name, Arity, LocationString, Stack]);
 explain_error({unsupported_request, Name, Type}) ->
   io_lib:format(
-    "A process sent a request of type '~w' to ~p. Concuerror does not yet support"
-    " this type of request to this process.",
+    "A process sent a request of type '~w' to ~p. Concuerror does not yet"
+    " support this type of request to this process.",
     [Type, Name]).
 
 location(F, L) ->
