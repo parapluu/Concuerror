@@ -1118,60 +1118,66 @@ update_trace(
        false -> {EarlyActor, EarlyIndex}
      end},
   RevEvent = update_context(Event, EarlyEvent),
-  {MaybeNewWakeup, ConservativeInfo} =
+  FastSkip =
     case Bound < 0 of
       true ->
-        {over_bound,
-         case SchedulingBoundType =:= bpor of
-           true ->
-             NotDep = not_dep(NewOldTrace, Later, DPORInfo, RevEvent),
-             get_initials(NotDep);
-           false ->
-             false
-         end};
+        CI =
+          case SchedulingBoundType =:= bpor of
+            true ->
+              ND = not_dep(NewOldTrace, Later, DPORInfo, RevEvent),
+              get_initials(ND);
+            false ->
+              false
+          end,
+        {true, {over_bound, [], CI}};
+      false -> false
+    end,
+  {MaybeNewWakeup, VSeq, ConservativeInfo} =
+    case FastSkip of
+      {true, FastSkipReason} -> FastSkipReason;
       false ->
         SleepSet = BaseSleepSet ++ Done,
         NotDep = not_dep(NewOldTrace, Later, DPORInfo, RevEvent),
-        {Plan, _} = NW =
-          case DPOR =:= optimal of
-            true ->
-              case UseReceivePatterns of
-                false ->
-                  {insert_wakeup_optimal(SleepSet, Wakeup, NotDep, Bound, Origin), false};
-                true ->
-                  V =
-                    case ObserverInfo =:= no_observer of
-                      true -> NotDep;
-                      false ->
-                        NotObsRaw =
-                          not_obs_raw(NewOldTrace, Later, ObserverInfo, Event),
-                        NotObs = NotObsRaw -- NotDep,
-                        NotDep ++ [EarlyEvent#event{label = undefined}] ++ NotObs
-                    end,
-                  RevV = lists:reverse(V),
-                  {FixedV, ReceiveInfoDict} = fix_receive_info(RevV),
-                  {FixedRest, _} = fix_receive_info(Rest, ReceiveInfoDict),
-                  debug_show_sequence("v sequence", Logger, 1, FixedV),
-                  case has_weak_initial_before(lists:reverse(FixedRest), FixedV, Logger) of
-                    true -> {skip, false};
+        case DPOR =:= optimal of
+          true ->
+            case UseReceivePatterns of
+              false ->
+                V = NotDep,
+                NW = insert_wakeup_optimal(SleepSet, Wakeup, V, Bound, Origin),
+                {NW, V, false};
+              true ->
+                ExtV =
+                  case ObserverInfo =:= no_observer of
+                    true -> NotDep;
                     false ->
-                      {insert_wakeup_optimal(Done, Wakeup, FixedV, Bound, Origin), false}
-                  end
-              end;
-            false ->
-              Initials = get_initials(NotDep),
-              AddCons =
-                case SchedulingBoundType =:= bpor of
-                  true -> Initials;
-                  false -> false
-                end,
-              {insert_wakeup_non_optimal(SleepSet, Wakeup, Initials, false, Origin), AddCons}
-          end,
-        case is_atom(Plan) of
-          true -> NW;
+                      NotObsRaw =
+                        not_obs_raw(NewOldTrace, Later, ObserverInfo, Event),
+                      NotObs = NotObsRaw -- NotDep,
+                      ResetEvent = EarlyEvent#event{label = undefined},
+                      NotDep ++ [ResetEvent] ++ NotObs
+                  end,
+                RevExtV = lists:reverse(ExtV),
+                {V, ReceiveInfoDict} = fix_receive_info(RevExtV),
+                {FixedRest, _} = fix_receive_info(Rest, ReceiveInfoDict),
+                debug_show_sequence("v sequence", Logger, 1, V),
+                RevFixedRest = lists:reverse(FixedRest),
+                case has_weak_initial_before(RevFixedRest, V, Logger) of
+                  true -> {skip, V, false};
+                  false ->
+                    NW = insert_wakeup_optimal(Done, Wakeup, V, Bound, Origin),
+                    {NW, V, false}
+                end
+            end;
           false ->
-            debug_show_sequence("PLAN", Logger, EarlyIndex, NotDep),
-            NW
+            Initials = get_initials(NotDep),
+            V = Initials,
+            AddCons =
+              case SchedulingBoundType =:= bpor of
+                true -> Initials;
+                false -> false
+              end,
+            NW = insert_wakeup_non_optimal(SleepSet, Wakeup, V, false, Origin),
+            {NW, V, AddCons}
         end
     end,
   case MaybeNewWakeup of
@@ -1186,6 +1192,7 @@ update_trace(
       end,
       {[TraceState|NewOldTrace], ConservativeInfo};
     NewWakeup ->
+      debug_show_sequence("PLAN", Logger, EarlyIndex, VSeq),
       NS = TraceState#trace_state{wakeup_tree = NewWakeup},
       concuerror_logger:plan(Logger),
       concuerror_estimator:plan(Estimator, EarlyIndex),
