@@ -1,9 +1,8 @@
 -module(ets_delete).
 
--export([ets_delete/0]).
--export([scenarios/0]).
+-compile(export_all).
 
-scenarios() -> [{?MODULE, inf, dpor}].
+scenarios() -> [{T, inf, dpor} || T <- [?MODULE, ets_delete_plain, ets_delete_bad]].
 
 ets_delete() ->
     ets:new(table, [public, named_table]),
@@ -14,3 +13,22 @@ ets_delete() ->
     receive
         deadlock -> ok
     end.
+
+ets_delete_plain() ->
+  ets:new(table, [public, named_table]),
+  ets:delete(table).
+
+ets_delete_bad() ->
+  ets:new(table, [public, named_table]),
+  spawn_monitor(
+    fun() ->
+        try
+          ets:delete(table),
+          exit(wrong)
+        catch
+          error:_ -> ok
+        end
+    end),
+  receive
+    {'DOWN', _, _, _, normal} -> ok
+  end.

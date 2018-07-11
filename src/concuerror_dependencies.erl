@@ -614,40 +614,40 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
 
 %%------------------------------------------------------------------------------
 
-dependent_built_in(#builtin_event{mfargs = {ets,delete,[Table1]}},
-                   #builtin_event{mfargs = {ets,_Any,[Table2|_]}}) ->
-  Table1 =:= Table2;
-dependent_built_in(#builtin_event{mfargs = {ets,_Any,_}} = EtsAny,
-                   #builtin_event{mfargs = {ets,delete,[_]}} = EtsDelete) ->
-  dependent_built_in(EtsDelete, EtsAny);
+dependent_built_in(#builtin_event{mfargs = {ets, delete, [TableA]}, extra = IdA},
+                   #builtin_event{mfargs = {ets, _Any, [TableB|_]}, extra = IdB}) ->
+  ets_same_table(TableA, IdA, TableB, IdB);
+dependent_built_in(#builtin_event{mfargs = {ets, _Any, _}} = EventA,
+                   #builtin_event{mfargs = {ets, delete, _}} = EventB) ->
+  dependent_built_in(EventB, EventA);
 
-dependent_built_in(#builtin_event{mfargs = {ets,new,_}, result = Table1},
-                   #builtin_event{mfargs = {ets,_Any,[Table2|_]}}) ->
-  Table1 =:= Table2;
-dependent_built_in(#builtin_event{mfargs = {ets,_Any,_}} = EtsAny,
-                   #builtin_event{mfargs = {ets,new,_}} = EtsNew) ->
-  dependent_built_in(EtsNew, EtsAny);
+dependent_built_in(#builtin_event{mfargs = {ets, new, [TableA|_]}, extra = IdA},
+                   #builtin_event{mfargs = {ets, _Any, [TableB|_]}, extra = IdB}) ->
+  ets_same_table(TableA, IdA, TableB, IdB);
+dependent_built_in(#builtin_event{mfargs = {ets, _Any, _}} = EventA,
+                   #builtin_event{mfargs = {ets, new, _}} = EventB) ->
+  dependent_built_in(EventB, EventA);
 
-dependent_built_in(#builtin_event{mfargs = {ets,_,[Table|_]}} = EventA,
-                   #builtin_event{mfargs = {ets,_,[Table|_]}} = EventB) ->
-  case ets_is_mutating(EventA) of
-    false ->
-      case ets_is_mutating(EventB) of
-        false -> false;
-        Pred -> Pred(EventA)
-      end;
-    Pred -> Pred(EventB)
-  end;
+dependent_built_in(#builtin_event{ mfargs = {ets, _, [TableA|_]}
+                                 , extra = IdA} = EventA,
+                   #builtin_event{ mfargs = {ets, _, [TableB|_]}
+                                 , extra = IdB} = EventB) ->
+  ets_same_table(TableA, IdA, TableB, IdB)
+    andalso
+    case ets_is_mutating(EventA) of
+      false ->
+        case ets_is_mutating(EventB) of
+          false -> false;
+          Pred -> Pred(EventA)
+        end;
+      Pred -> Pred(EventB)
+    end;
 
-dependent_built_in(#builtin_event{mfargs = {ets,_,_}},
-                   #builtin_event{mfargs = {ets,_,_}}) ->
+dependent_built_in(#builtin_event{mfargs = {erlang, _, _}},
+                   #builtin_event{mfargs = {ets, _, _}}) ->
   false;
-
-dependent_built_in(#builtin_event{mfargs = {erlang,_,_}},
-                   #builtin_event{mfargs = {ets,_,_}}) ->
-  false;
-dependent_built_in(#builtin_event{mfargs = {ets,_,_}} = Ets,
-                   #builtin_event{mfargs = {erlang,_,_}} = Erlang) ->
+dependent_built_in(#builtin_event{mfargs = {ets, _, _}} = Ets,
+                   #builtin_event{mfargs = {erlang, _, _}} = Erlang) ->
   dependent_built_in(Erlang, Ets).
 
 %%------------------------------------------------------------------------------
@@ -659,34 +659,52 @@ message_could_match(Patterns, Data, Trapping, Type) ->
 
 %%------------------------------------------------------------------------------
 
+ets_same_table(TableA, IdA, TableB, IdB) ->
+  ets_same_table(IdA, TableB) orelse ets_same_table(IdB, TableA).
+
+ets_same_table(undefined, _Arg) ->
+  false;
+ets_same_table({Tid, Name}, Arg) ->
+  case is_atom(Arg) of
+    true -> Name =:= Arg;
+    false -> Tid =:= Arg
+  end.
+
 -define(deps_with_any,fun(_) -> true end).
 
-ets_is_mutating(#builtin_event{mfargs = {_,Op,[_|Rest] = Args}} = Event) ->
+ets_is_mutating(#builtin_event{ status = {crashed, _}}) ->
+  false;
+ets_is_mutating(#builtin_event{ mfargs = {_, Op, [_|Rest] = Args}
+                              , extra = {Tid, _}} = Event) ->
   case {Op, length(Args)} of
-    {delete        ,2} -> with_key(hd(Rest));
-    {delete_object ,2} ->
-      from_insert(Event#builtin_event.extra, hd(Rest), true);
-    {first         ,_} -> false;
-    {give_away     ,_} -> ?deps_with_any;
-    {info          ,_} -> false;
-    {insert        ,_} ->
-      from_insert(Event#builtin_event.extra, hd(Rest), false);
-    {insert_new    ,_}
-      when Event#builtin_event.result ->
-      from_insert(Event#builtin_event.extra, hd(Rest), true);
-    {insert_new    ,_} -> false;
-    {lookup        ,_} -> false;
-    {lookup_element,_} -> false;
-    {match         ,_} -> false;
-    {match_object  ,_} -> false;
-    {member        ,_} -> false;
-    {next          ,_} -> false;
-    {select        ,_} -> false;
-    {SelDelete     ,_} when SelDelete =:= select_delete;
-                            SelDelete =:= internal_select_delete ->
+    {delete, 2} -> with_key(hd(Rest));
+    {delete_object, 2} -> from_insert(Tid, hd(Rest), true);
+    {DelAll, N}
+      when
+        {DelAll, N} =:= {delete_all_objects, 1};
+        {DelAll, N} =:= {internal_delete_all, 2} ->
+      ?deps_with_any;
+    {first, _} -> false;
+    {give_away, _} -> ?deps_with_any;
+    {info, _} -> false;
+    {insert, _} -> from_insert(Tid, hd(Rest), false);
+    {insert_new, _} when Event#builtin_event.result ->
+      from_insert(Tid, hd(Rest), true);
+    {insert_new, _} -> false;
+    {lookup, _} -> false;
+    {lookup_element, _} -> false;
+    {match, _} -> false;
+    {match_object, _} -> false;
+    {member, _} -> false;
+    {next, _} -> false;
+    {select, _} -> false;
+    {SelDelete, 2}
+      when
+        SelDelete =:= select_delete;
+        SelDelete =:= internal_select_delete ->
       from_delete(hd(Rest));
-    {update_counter,3} -> with_key(hd(Rest));
-    {whereis       ,1} -> false
+    {update_counter, 3} -> with_key(hd(Rest));
+    {whereis, 1} -> false
   end.
 
 with_key(Key) ->
@@ -705,32 +723,47 @@ ets_reads_keys(Event) ->
     {matchspec, _MS} -> any; % can't test the matchspec against a single key
     {keys, Keys} -> Keys;
     {tuples, Tuples} ->
-      KeyPos = ets:info(Event#builtin_event.extra, keypos),
+      #builtin_event{extra = {Tid, _}} = Event,
+      KeyPos = ets:info(Tid, keypos),
       [element(KeyPos, Tuple) || Tuple <- Tuples]
   end.
 
-keys_or_tuples(#builtin_event{mfargs = {_,Op,[_|Rest] = Args}}) ->
+keys_or_tuples(#builtin_event{mfargs = {_, Op, [_|Rest] = Args}}) ->
   case {Op, length(Args)} of
-    {delete        ,2} -> {keys, [hd(Rest)]};
-    {delete_object ,2} -> {tuples, [hd(Rest)]};
-    {first         ,_} -> any;
-    {give_away     ,_} -> any;
-    {info          ,_} -> any;
-    {Insert        ,_} when Insert =:= insert; Insert =:= insert_new ->
+    {delete, 2} -> {keys, [hd(Rest)]};
+    {DelAll, N}
+      when
+        {DelAll, N} =:= {delete_all_objects, 1};
+        {DelAll, N} =:= {internal_delete_all, 2} ->
+      any;
+    {delete_object, 2} -> {tuples, [hd(Rest)]};
+    {first, _} -> any;
+    {give_away, _} -> any;
+    {info, _} -> any;
+    {Insert, _}
+      when
+        Insert =:= insert;
+        Insert =:= insert_new ->
       Inserted = hd(Rest),
       {tuples,
-       case is_list(Inserted) of true -> Inserted; false -> [Inserted] end};
-    {lookup        ,_} -> {keys, [hd(Rest)]};
-    {lookup_element,_} -> {keys, [hd(Rest)]};
-    {match         ,_} -> {matchspec, [{hd(Rest), [], ['$$']}]};
-    {match_object  ,_} -> {matchspec, [{hd(Rest), [], ['$_']}]};
-    {member        ,_} -> {keys, [hd(Rest)]};
-    {next          ,_} -> any;
-    {select        ,_} -> {matchspec, hd(Rest)};
-    {SelDelete     ,_} when SelDelete =:= select_delete; SelDelete =:= internal_select_delete ->
+       case is_list(Inserted) of
+         true -> Inserted;
+         false -> [Inserted]
+       end};
+    {lookup, _} -> {keys, [hd(Rest)]};
+    {lookup_element, _} -> {keys, [hd(Rest)]};
+    {match, _} -> {matchspec, [{hd(Rest), [], ['$$']}]};
+    {match_object, _} -> {matchspec, [{hd(Rest), [], ['$_']}]};
+    {member, _} -> {keys, [hd(Rest)]};
+    {next, _} -> any;
+    {select, _} -> {matchspec, hd(Rest)};
+    {SelDelete, 2}
+      when
+        SelDelete =:= select_delete;
+        SelDelete =:= internal_select_delete ->
       {matchspec, hd(Rest)};
-    {update_counter,3} -> {keys, [hd(Rest)]};
-    {whereis       ,1} -> none
+    {update_counter, 3} -> {keys, [hd(Rest)]};
+    {whereis, 1} -> none
   end.
 
 from_insert(undefined, _, _) ->

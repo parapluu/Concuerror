@@ -11,6 +11,11 @@ function abort {
     print_red "FAILED"
 }
 
+if ! ../check_version.escript 18; then
+    print_blue "SKIPPING"
+    exit 0
+fi
+
 set -e
 trap 'abort' 0
 

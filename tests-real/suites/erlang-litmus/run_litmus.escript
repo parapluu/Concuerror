@@ -46,19 +46,8 @@ main(Tests) ->
    }).
 
 initialize() ->
-  After17 =
-    case erlang:system_info(otp_release) of
-      "R" ++ _ -> false; %% ... 16 or earlier
-      [D,U|_] -> list_to_integer([D,U]) > 17
-    end,
-  case After17 of
-    false ->
-      to_stderr("Skipping because OTP version < 18", []),
-      halt(0);
-    true ->
-      print_header(),
-      spawn_link(fun() -> loop(#state{}) end)
-  end.
+  print_header(),
+  spawn_link(fun() -> loop(#state{}) end).
 
 loop(#state{done = All, finish = {true, Report}, tests = All} = State) ->
   #state{failed = Failed, files = Files, tests = Tests} = State,

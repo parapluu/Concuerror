@@ -125,22 +125,6 @@
 
 -define(notify_none, 1).
 %%------------------------------------------------------------------------------
--type ets_tables() :: ets:tid().
-
--define(ets_name_none, 0).
--define(ets_table_entry(Tid, Name, Owner, Protection, Heir),
-        {Tid, Name, Owner, Protection, Heir, true}).
--define(system_ets_table_entry(Tid, Protection),
-        ?ets_table_entry(Tid, Tid, self(), Protection, unknown)).
--define(ets_name, 2).
--define(ets_owner, 3).
--define(ets_protection, 4).
--define(ets_heir, 5).
--define(ets_alive, 6).
--define(ets_match_owner_to_name_heir(Owner), {'_', '$1', Owner, '_', '$2', true}).
--define(ets_match_name(Name), {'$1', Name, '$2', '$3', '_', true}).
--define(ets_pattern_mine(), {'_', '_', self(), '_', '_', '_'}).
-%%------------------------------------------------------------------------------
 -type processes() :: ets:tid().
 -type symbolic_name() :: string().
 

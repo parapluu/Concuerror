@@ -43,7 +43,13 @@
 -define(heir, ?flag(15)).
 -define(notify, ?flag(16)).
 
--define(ACTIVE_FLAGS, [?undefined,?short_builtin,?loop,?notify, ?non_builtin]).
+-define(ACTIVE_FLAGS,
+        [ ?undefined
+        , ?short_builtin
+        , ?loop
+        , ?notify
+        , ?non_builtin
+        ]).
 
 %%-define(DEBUG, true).
 %%-define(DEBUG_FLAGS, lists:foldl(fun erlang:'bor'/2, 0, ?ACTIVE_FLAGS)).
@@ -52,6 +58,39 @@
 %%------------------------------------------------------------------------------
 
 -include("concuerror.hrl").
+
+%%------------------------------------------------------------------------------
+
+%% In order to be able to keep TIDs constant and reset the system
+%% properly, Concuerror covertly hands all ETS tables to its scheduler
+%% and maintains extra info to determine operation access-rights.
+
+-type ets_tables() :: ets:tid().
+
+-define(ets_name_none, 0).
+
+-define(ets_table_entry(Tid, Name, Owner, Protection, Heir),
+        {Tid, Name, Owner, Protection, Heir, true}).
+-define(ets_table_entry_system(Tid, Name, Protection, Owner),
+        ?ets_table_entry(Tid, Name, Owner, Protection, {heir, none})).
+
+-define(ets_tid, 1).
+-define(ets_name, 2).
+-define(ets_owner, 3).
+-define(ets_protection, 4).
+-define(ets_heir, 5).
+-define(ets_alive, 6).
+
+-define(ets_match_owner_to_heir_info(Owner),
+        {'$2', '$3', Owner, '_', '$1', true}).
+-define(ets_match_tid_to_permission_info(Tid),
+        {Tid, '$3', '$1', '$2', '_', true}).
+-define(ets_match_name_to_tid(Name),
+        {'$1', Name, '_', '_', '_', true}).
+-define(ets_pattern_mine(),
+        {'_', '_', self(), '_', '_', '_'}).
+
+%%------------------------------------------------------------------------------
 
 -define(crash_instr(Reason), exit(self(), {?MODULE, Reason})).
 
@@ -109,12 +148,10 @@
 -spec spawn_first_process(concuerror_options:options()) -> pid().
 
 spawn_first_process(Options) ->
-  EtsTables = ets:new(ets_tables, [public]),
-  ets:insert(EtsTables, {tid, 1}),
   Info =
     #concuerror_info{
        after_timeout  = ?opt(after_timeout, Options),
-       ets_tables     = EtsTables,
+       ets_tables     = ets:new(ets_tables, [public]),
        instant_delivery = ?opt(instant_delivery, Options),
        links          = ets:new(links, [bag, public]),
        logger         = ?opt(logger, Options),
@@ -251,7 +288,7 @@ built_in(erlang, Display, 1, [Term], _Location, Info)
   ?debug_flag(?builtin, {'built-in', erlang, Display, 1, [Term], _Location}),
   Chars =
     case Display of
-      display -> io_lib:format("~w~n",[Term]);
+      display -> io_lib:format("~w~n", [Term]);
       display_string ->
         _ = erlang:list_to_atom(Term), % Will throw badarg if not string.
         Term
@@ -288,7 +325,7 @@ built_in(Module, Name, Arity, Args, Location, InfoIn) ->
   Info = process_loop(InfoIn),
   ?debug_flag(?short_builtin, {'built-in', Module, Name, Arity, Location}),
   #concuerror_info{flags = #process_flags{trap_exit = Trapping}} = LocatedInfo =
-    add_location_info(Location, Info#concuerror_info{extra = undefined}),%ResetInfo),
+    add_location_info(Location, Info#concuerror_info{extra = undefined}),
   try
     {Value, UpdatedInfo} = run_built_in(Module, Name, Arity, Args, LocatedInfo),
     #concuerror_info{extra = Extra, event = MaybeMessageEvent} = UpdatedInfo,
@@ -354,7 +391,7 @@ run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
         case lists:member(flush, Options) of
           true ->
             {Match, FlushInfo} =
-              has_matching_or_after(PatternFun, infinity, foo, Info, non_blocking),
+              has_matching_or_after(PatternFun, infinity, Info),
             {Match =/= false, FlushInfo};
           false ->
             {false, Info}
@@ -370,10 +407,11 @@ run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
     true -> {Result, FinalInfo};
     false -> {true, FinalInfo}
   end;
-run_built_in(erlang, exit, 2, [Pid, Reason],
-             #concuerror_info{
-                event = #event{event_info = EventInfo} = Event
-               } = Info) ->
+run_built_in(erlang, exit, 2, [Pid, Reason], Info) ->
+  #concuerror_info{
+     event = #event{event_info = EventInfo} = Event,
+     flags = #process_flags{trap_exit = Trapping}
+    } = Info,
   ?badarg_if_not(is_pid(Pid)),
   case EventInfo of
     %% Replaying...
@@ -386,7 +424,6 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
         case Event#event.location =/= exit andalso Reason =:= kill of
           true -> kill;
           false ->
-            #concuerror_info{flags = #process_flags{trap_exit = Trapping}} = Info,
             case Pid =/= self() orelse Reason =/= normal orelse Trapping of
               true -> ok;
               false ->
@@ -408,8 +445,10 @@ run_built_in(M, group_leader, 2, [GroupLeader, Pid],
              #concuerror_info{processes = Processes} = Info)
   when M =:= erlang; M =:= erts_internal ->
   try
-    {true, Info} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
-    {true, Info} = run_built_in(erlang, is_process_alive, 1, [GroupLeader], Info),
+    {true, Info} =
+      run_built_in(erlang, is_process_alive, 1, [Pid], Info),
+    {true, Info} =
+      run_built_in(erlang, is_process_alive, 1, [GroupLeader], Info),
     ok
   catch
     _:_ -> error(badarg)
@@ -567,8 +606,9 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
               false ->
                 #concuerror_info{logger = Logger} = TheirInfo,
                 Msg =
-                  "Concuerror does not properly support erlang:process_info(Other,"
-                  " current_function), returning the initial call instead.~n",
+                  "Concuerror does not properly support"
+                  " erlang:process_info(Other, current_function),"
+                  " returning the initial call instead.~n",
                 ?unique(Logger, ?lwarning, Msg, []),
                 TheirInfo#concuerror_info.initial_call
             end;
@@ -578,8 +618,9 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
               false ->
                 #concuerror_info{logger = Logger} = TheirInfo,
                 Msg =
-                  "Concuerror does not properly support erlang:process_info(Other,"
-                  " current_stacktrace), returning an empty list instead.~n",
+                  "Concuerror does not properly support"
+                  " erlang:process_info(Other, current_stacktrace),"
+                  " returning an empty list instead.~n",
                 ?unique(Logger, ?lwarning, Msg, []),
                 []
             end;
@@ -669,7 +710,7 @@ run_built_in(erlang, ReadorCancelTimer, 1, [Ref], Info)
   #concuerror_info{timers = Timers} = Info,
   case ets:lookup(Timers, Ref) of
     [] -> {false, Info};
-    [{Ref,Pid,_Dest}] ->
+    [{Ref, Pid, _Dest}] ->
       case ReadorCancelTimer of
         read_timer -> ok;
         cancel_timer ->
@@ -696,7 +737,8 @@ run_built_in(erlang, SendAfter, 3, [0, Dest, Msg], Info)
     undefined -> ok
   end,
   ActualMessage = format_timer_message(SendAfter, Msg, Ref),
-  {_, FinalInfo} = run_built_in(erlang, send, 2, [Dest, ActualMessage], NewInfo),
+  {_, FinalInfo} =
+    run_built_in(erlang, send, 2, [Dest, ActualMessage], NewInfo),
   {Ref, FinalInfo};
 
 run_built_in(erlang, SendAfter, 3, [Timeout, Dest, Msg], Info)
@@ -743,7 +785,8 @@ run_built_in(erlang, SendAfter, 3, [Timeout, Dest, Msg], Info)
   ets:insert(Timers, {Ref, Pid, Dest}),
   TimerFun =
     fun() ->
-        catch concuerror_inspect:inspect(call, [erlang, send, [Dest, ActualMessage]], foo)
+        MFArgs = [erlang, send, [Dest, ActualMessage]],
+        catch concuerror_inspect:inspect(call, MFArgs, ignored)
     end,
   Pid ! {start, erlang, apply, [TimerFun, []]},
   ok = wait_process(Pid, Wait),
@@ -788,7 +831,7 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
       undefined ->
         PassedInfo = reset_concuerror_info(NewInfo),
         ?debug_flag(?spawn, {Parent, spawning_new, PassedInfo}),
-        ChildSymbol = io_lib:format("~s.~w",[ParentSymbol, ChildId]),
+        ChildSymbol = io_lib:format("~s.~w", [ParentSymbol, ChildId]),
         P =
           case
             ets:match(Processes, ?process_match_symbol_to_pid(ChildSymbol))
@@ -875,7 +918,7 @@ run_built_in(erlang, process_flag, 2, [Flag, Value],
       {Flags#process_flags.trap_exit,
        Info#concuerror_info{flags = Flags#process_flags{trap_exit = Value}}};
     priority ->
-      ?badarg_if_not(lists:member(Value, [low,normal,high,max])),
+      ?badarg_if_not(lists:member(Value, [low, normal, high, max])),
       {Flags#process_flags.priority,
        Info#concuerror_info{flags = Flags#process_flags{priority = Value}}};
     _ ->
@@ -887,9 +930,10 @@ run_built_in(erlang, processes, 0, [], Info) ->
   Active = lists:sort(ets:select(Processes, [?process_match_active()])),
   {Active, Info};
 
-run_built_in(erlang, unlink, 1, [Pid], #concuerror_info{links = Links} = Info) ->
+run_built_in(erlang, unlink, 1, [Pid], Info) ->
+  #concuerror_info{links = Links} = Info,
   Self = self(),
-  [true,true] = [ets:delete_object(Links, L) || L <- ?links(Self, Pid)],
+  [true, true] = [ets:delete_object(Links, L) || L <- ?links(Self, Pid)],
   {true, Info};
 run_built_in(erlang, unregister, 1, [Name],
              #concuerror_info{processes = Processes} = Info) ->
@@ -914,29 +958,32 @@ run_built_in(erlang, whereis, 1, [Name], Info) ->
       end;
     [[Pid]] -> {Pid, Info}
   end;
-run_built_in(ets, new, 2, [Name, Options], Info) ->
-  ?badarg_if_not(is_atom(Name)),
-  NoNameOptions = [O || O <- Options, O =/= named_table],
+run_built_in(ets, new, 2, [NameArg, Options], Info) ->
   #concuerror_info{
      ets_tables = EtsTables,
      event = #event{event_info = EventInfo},
      scheduler = Scheduler
     } = Info,
-  Named =
+  NoNameOptions = [O || O <- Options, O =/= named_table],
+  Name =
     case Options =/= NoNameOptions of
       true ->
-        ?badarg_if_not(ets:match(EtsTables, ?ets_match_name(Name)) =:= []),
-        true;
-      false -> false
+        MatchExistingName =
+          ets:match(EtsTables, ?ets_match_name_to_tid(NameArg)),
+        ?badarg_if_not(MatchExistingName =:= []),
+        NameArg;
+      false -> ?ets_name_none
     end,
   Tid =
     case EventInfo of
       %% Replaying...
-      #builtin_event{extra = Extra} -> Extra;
+      #builtin_event{extra = {T, Name}} ->
+        T;
       %% New event...
       undefined ->
-        %% Looks like the last option is the one actually used.
-        T = ets:new(Name, NoNameOptions ++ [public]),
+        %% The last protection option is the one actually used.
+        %% Use that to make the actual table public.
+        T = ets:new(NameArg, NoNameOptions ++ [public]),
         true = ets:give_away(T, Scheduler, given_to_scheduler),
         T
     end,
@@ -950,81 +997,131 @@ run_built_in(ets, new, 2, [Name, Options], Info) ->
         end
     end,
   Protection = lists:foldl(ProtectFold, protected, NoNameOptions),
-  {Ret, NewInfo} =
-    case Named of
-      true -> {Name, Info};
-      false ->
-        case EventInfo of
-          %% Replaying...
-          #builtin_event{result = R} ->
-            replayed_ets_tid(R, Info);
-          %% New event...
-          undefined ->
-            fresh_ets_tid(Info)
-        end
+  Ret =
+    case Name =/= ?ets_name_none of
+      true -> Name;
+      false -> Tid
     end,
   Heir =
     case proplists:lookup(heir, Options) of
       none -> {heir, none};
       Other -> Other
     end,
-  Entry = ?ets_table_entry(Tid, Ret, self(), Protection, Heir),
+  Entry = ?ets_table_entry(Tid, Name, self(), Protection, Heir),
   true = ets:insert(EtsTables, Entry),
   ets:delete_all_objects(Tid),
-  {Ret, NewInfo#concuerror_info{extra = Tid}};
-run_built_in(ets, info, _, [Name|Rest] = Args, Info) ->
+  {Ret, Info#concuerror_info{extra = {Tid, Name}}};
+run_built_in(ets, info, 2, [NameOrTid, Field], Info) ->
+  #concuerror_info{ets_tables = EtsTables} = Info,
+  ?badarg_if_not(is_atom(Field)),
   try
-    {Tid, _} = check_ets_access_rights(Name, {info, length(Args)}, Info),
-    {erlang:apply(ets, info, [Tid|Rest]), Info#concuerror_info{extra = Tid}}
+    {Tid, Id, _} = ets_access_table_info(NameOrTid, {info, 2}, Info),
+    [TableInfo] = ets:lookup(EtsTables, Tid),
+    Ret =
+      case Field of
+        heir ->
+          case element(?ets_heir, TableInfo) of
+            {heir, none} -> none;
+            {heir, Q, _} -> Q
+          end;
+        protection ->
+          element(?ets_protection, TableInfo);
+        owner ->
+          element(?ets_owner, TableInfo);
+        named_table ->
+          element(?ets_name, TableInfo) =/= ?ets_name_none;
+        _ ->
+          ets:info(Tid, Field)
+      end,
+    {Ret, Info#concuerror_info{extra = Id}}
   catch
     error:badarg ->
-      case is_valid_ets_tid(Name) of
+      case is_valid_ets_id(NameOrTid) of
         true -> {undefined, Info};
         false -> error(badarg)
       end
   end;
-run_built_in(ets, F, N, [Name|Args], Info)
+run_built_in(ets, info, 1, [NameOrTid], Info) ->
+  try
+    {_, Id, _} = ets_access_table_info(NameOrTid, {info, 1}, Info),
+    Fun =
+      fun(Field) ->
+          {FieldRes, _} = run_built_in(ets, info, 2, [NameOrTid, Field], Info),
+          {Field, FieldRes}
+      end,
+    Ret =
+      [Fun(F) ||
+        F <-
+          [ owner
+          , heir
+          , name
+          , named_table
+          , type
+          , keypos
+          , protection
+          ]],
+    {Ret, Info#concuerror_info{extra = Id}}
+  catch
+    error:badarg ->
+      case is_valid_ets_id(NameOrTid) of
+        true -> {undefined, Info};
+        false -> error(badarg)
+      end
+  end;
+run_built_in(ets, whereis, _, [Name], Info) ->
+  ?badarg_if_not(is_atom(Name)),
+  try
+    {Tid, Id, _} = ets_access_table_info(Name, {whereis, 1}, Info),
+    {Tid, Info#concuerror_info{extra = Id}}
+  catch
+    error:badarg -> {undefined, Info}
+  end;
+run_built_in(ets, F, N, [NameOrTid|Args], Info)
   when
     false
-    ;{F,N} =:= {delete, 2}
-    ;{F,N} =:= {delete_object,2}
-    ;{F,N} =:= {first, 1}
-    ;{F,N} =:= {insert, 2}
-    ;{F,N} =:= {insert_new, 2}
-    ;{F,N} =:= {lookup, 2}
-    ;{F,N} =:= {lookup_element, 3}
-    ;{F,N} =:= {match, 2}
-    ;{F,N} =:= {match_object, 2}
-    ;{F,N} =:= {member, 2}
-    ;{F,N} =:= {next,   2}
-    ;{F,N} =:= {select, 2}
-    ;{F,N} =:= {select, 3}
-    ;{F,N} =:= {select_delete, 2}
-    ;{F,N} =:= {internal_select_delete, 2}
-    ;{F,N} =:= {update_counter, 3}
-    ;{F,N} =:= {whereis, 1}
+    ; {F, N} =:= {delete, 2}
+    ; {F, N} =:= {delete_all_objects, 1}
+    ; {F, N} =:= {delete_object, 2}
+    ; {F, N} =:= {first, 1}
+    ; {F, N} =:= {insert, 2}
+    ; {F, N} =:= {insert_new, 2}
+    ; {F, N} =:= {internal_delete_all, 2}
+    ; {F, N} =:= {internal_select_delete, 2}
+    ; {F, N} =:= {lookup, 2}
+    ; {F, N} =:= {lookup_element, 3}
+    ; {F, N} =:= {match, 2}
+    ; {F, N} =:= {match_object, 2}
+    ; {F, N} =:= {member, 2}
+    ; {F, N} =:= {next, 2}
+    ; {F, N} =:= {select, 2}
+    ; {F, N} =:= {select, 3}
+    ; {F, N} =:= {select_delete, 2}
+    ; {F, N} =:= {update_counter, 3}
     ->
-  {Tid, System} = check_ets_access_rights(Name, {F,N}, Info),
-  case System of
+  {Tid, Id, IsSystem} = ets_access_table_info(NameOrTid, {F, N}, Info),
+  case IsSystem of
     true ->
       #concuerror_info{system_ets_entries = SystemEtsEntries} = Info,
       ets:insert(SystemEtsEntries, {Tid, Args});
     false ->
       true
   end,
-  {erlang:apply(ets, F, [Tid|Args]), Info#concuerror_info{extra = Tid}};
-run_built_in(ets, delete, 1, [Name], Info) ->
-  {Tid, _} = check_ets_access_rights(Name, {delete,1}, Info),
+  {erlang:apply(ets, F, [Tid|Args]), Info#concuerror_info{extra = Id}};
+run_built_in(ets, delete, 1, [NameOrTid], Info) ->
   #concuerror_info{ets_tables = EtsTables} = Info,
+  {Tid, Id, _} = ets_access_table_info(NameOrTid, {delete, 1}, Info),
   ets:update_element(EtsTables, Tid, [{?ets_alive, false}]),
   ets:delete_all_objects(Tid),
-  {true, Info#concuerror_info{extra = Tid}};
-run_built_in(ets, give_away, 3, [Name, Pid, GiftData], Info) ->
-  #concuerror_info{event = #event{event_info = EventInfo}} = Info,
-  {Tid, _} = check_ets_access_rights(Name, {give_away,3}, Info),
-  #concuerror_info{ets_tables = EtsTables} = Info,
+  {true, Info#concuerror_info{extra = Id}};
+run_built_in(ets, give_away, 3, [NameOrTid, Pid, GiftData], Info) ->
+  #concuerror_info{
+     ets_tables = EtsTables,
+     event = #event{event_info = EventInfo}
+    } = Info,
+  {Tid, Id, _} = ets_access_table_info(NameOrTid, {give_away, 3}, Info),
   {Alive, Info} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
   Self = self(),
+  NameForMsg = ets_get_name_or_tid(Id),
   ?badarg_if_not(is_pid(Pid) andalso Pid =/= Self andalso Alive),
   NewInfo =
     case EventInfo of
@@ -1034,12 +1131,12 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData], Info) ->
         MsgInfo;
       %% New event...
       undefined ->
-        Data = {'ETS-TRANSFER', Tid, Self, GiftData},
+        Data = {'ETS-TRANSFER', NameForMsg, Self, GiftData},
         make_message(Info, message, Data, Pid)
     end,
   Update = [{?ets_owner, Pid}],
   true = ets:update_element(EtsTables, Tid, Update),
-  {true, NewInfo#concuerror_info{extra = Tid}};
+  {true, NewInfo#concuerror_info{extra = Id}};
 
 run_built_in(erlang = Module, Name, Arity, Args, Info)
   when
@@ -1178,8 +1275,8 @@ deliver_if_instant(Instant, NewEvent, SystemReply, Timeout) ->
     false -> deliver_message(NewEvent, SystemReply, Timeout, Instant)
   end.
 
-find_system_reply(System, [{message, #message_event{sender = System} = Message}|_]) ->
-  Message;
+find_system_reply(System, [{message, #message_event{sender = System} = M}|_]) ->
+  M;
 find_system_reply(System, [_|Special]) ->
   find_system_reply(System, Special).
 
@@ -1261,36 +1358,32 @@ handle_receive(PatternFun, Timeout, Location, Info) ->
   %% No distinction between replaying/new as we have to clear the message from
   %% the queue anyway...
   {MessageOrAfter, NewInfo} =
-    has_matching_or_after(PatternFun, Timeout, Location, Info, blocking),
+    has_matching_or_after(PatternFun, Timeout, Location, Info),
   notify_receive(MessageOrAfter, PatternFun, Timeout, Location, NewInfo).
 
-has_matching_or_after(PatternFun, Timeout, Location, InfoIn, Mode) ->
-  case Mode of
-    non_blocking ->
-      has_matching_or_after(PatternFun, Timeout, InfoIn);
-    blocking ->
-      {Result, Info} = has_matching_or_after(PatternFun, Timeout, InfoIn),
-      case Result =:= false of
-        true ->
-          ?debug_flag(?loop, blocked),
-          NewInfo =
-            case Info#concuerror_info.status =:= waiting of
-              true ->
-                Messages = Info#concuerror_info.message_queue,
-                MessageList = [D || #message{data = D} <- queue:to_list(Messages)],
-                Notification = {blocked, {self(), Location, MessageList}},
-                process_loop(notify(Notification, Info));
-              false ->
-                process_loop(set_status(Info, waiting))
-            end,
-          has_matching_or_after(PatternFun, Timeout, Location, NewInfo, Mode);
-        false ->
-          ?debug_flag(?loop, ready_to_receive),
-          NewInfo = process_loop(InfoIn),
-          {FinalResult, FinalInfo} =
-            has_matching_or_after(PatternFun, Timeout, NewInfo),
-          {FinalResult, FinalInfo}
-      end
+has_matching_or_after(PatternFun, Timeout, Location, InfoIn) ->
+  {Result, Info} = has_matching_or_after(PatternFun, Timeout, InfoIn),
+  case Result =:= false of
+    true ->
+      ?debug_flag(?loop, blocked),
+      NewInfo =
+        case Info#concuerror_info.status =:= waiting of
+          true ->
+            Messages = Info#concuerror_info.message_queue,
+            MessageList =
+              [D || #message{data = D} <- queue:to_list(Messages)],
+            Notification = {blocked, {self(), Location, MessageList}},
+            process_loop(notify(Notification, Info));
+          false ->
+            process_loop(set_status(Info, waiting))
+        end,
+      has_matching_or_after(PatternFun, Timeout, Location, NewInfo);
+    false ->
+      ?debug_flag(?loop, ready_to_receive),
+      NewInfo = process_loop(InfoIn),
+      {FinalResult, FinalInfo} =
+        has_matching_or_after(PatternFun, Timeout, NewInfo),
+      {FinalResult, FinalInfo}
   end.
 
 has_matching_or_after(PatternFun, Timeout, Info) ->
@@ -1525,8 +1618,9 @@ process_loop(Info) ->
       _ = erase(),
       Symbol = ets:lookup_element(Processes, self(), ?process_symbolic),
       ets:insert(Processes, ?new_process(self(), Symbol)),
-      {DefLeader, _} = run_built_in(erlang,whereis,1,[user],Info),
-      true = ets:update_element(Processes, self(), {?process_leader, DefLeader}),
+      {DefLeader, _} = run_built_in(erlang, whereis, 1, [user], Info),
+      true =
+        ets:update_element(Processes, self(), {?process_leader, DefLeader}),
       ets:match_delete(EtsTables, ?ets_pattern_mine()),
       ets:match_delete(Links, ?links_pattern_mine()),
       ets:match_delete(Monitors, ?monitors_pattern_mine()),
@@ -1656,8 +1750,8 @@ exiting(Reason, Stacktrace, InfoIn) ->
     [fun ets_ownership_exiting_events/1,
      link_monitor_handlers(fun handle_link/3, Links),
      link_monitor_handlers(fun handle_monitor/3, Monitors)],
-  FinalInfo =
-    lists:foldl(FunFold, ExitInfo#concuerror_info{exit_reason = Reason}, FunList),
+  NewInfo = ExitInfo#concuerror_info{exit_reason = Reason},
+  FinalInfo = lists:foldl(FunFold, NewInfo, FunList),
   ?debug_flag(?loop, exited),
   process_loop(set_status(FinalInfo, exited)).
 
@@ -1665,27 +1759,29 @@ ets_ownership_exiting_events(Info) ->
   %% XXX:  - transfer ets ownership and send message or delete table
   %% XXX: Mention that order of deallocation/transfer is not monitored.
   #concuerror_info{ets_tables = EtsTables} = Info,
-  case ets:match(EtsTables, ?ets_match_owner_to_name_heir(self())) of
+  case ets:match(EtsTables, ?ets_match_owner_to_heir_info(self())) of
     [] -> Info;
     UnsortedTables ->
       Tables = lists:sort(UnsortedTables),
       Fold =
-        fun([Tid, HeirSpec], InfoIn) ->
+        fun([HeirSpec, Tid, Name], InfoIn) ->
+            NameOrTid = ets_get_name_or_tid({Tid, Name}),
             MFArgs =
               case HeirSpec of
                 {heir, none} ->
                   ?debug_flag(?heir, no_heir),
-                  [ets, delete, [Tid]];
+                  [ets, delete, [NameOrTid]];
                 {heir, Pid, Data} ->
                   ?debug_flag(?heir, {using_heir, Tid, HeirSpec}),
-                  [ets, give_away, [Tid, Pid, Data]]
+                  [ets, give_away, [NameOrTid, Pid, Data]]
               end,
             case instrumented(call, MFArgs, exit, InfoIn) of
               {{didit, true}, NewInfo} -> NewInfo;
               {_, OtherInfo} ->
-                ?debug_flag(?heir, {problematic_heir, Tid, HeirSpec}),
+                ?debug_flag(?heir, {problematic_heir, NameOrTid, HeirSpec}),
+                DelMFArgs = [ets, delete, [NameOrTid]],
                 {{didit, true}, NewInfo} =
-                  instrumented(call, [ets, delete, [Tid]], exit, OtherInfo),
+                  instrumented(call, DelMFArgs, exit, OtherInfo),
                 NewInfo
             end
         end,
@@ -1722,35 +1818,43 @@ link_monitor_handlers(Handler, LinksOrMonitors) ->
 
 -ifdef(BEFORE_OTP_20).
 
-is_valid_ets_tid(Tid) ->
-  is_atom(Tid) orelse is_integer(Tid).
-
-fresh_ets_tid(Info) ->
-  #concuerror_info{ets_tables = EtsTables} = Info,
-  Fresh = ets:update_counter(EtsTables, tid, 1),
-  {Fresh, Info}.
-
-replayed_ets_tid(R, Info) ->
-  {R, Info}.
+is_valid_ets_id(NameOrTid) ->
+  is_atom(NameOrTid) orelse is_integer(NameOrTid).
 
 -else.
 
-is_valid_ets_tid(Tid) ->
-  is_atom(Tid) orelse is_reference(Tid).
-
-fresh_ets_tid(Info) ->
-  get_ref(Info).
-
-replayed_ets_tid(R, Info) ->
-  {R, _NewInfo} = get_ref(Info).
+is_valid_ets_id(NameOrTid) ->
+  is_atom(NameOrTid) orelse is_reference(NameOrTid).
 
 -endif.
 
-check_ets_access_rights(Name, Op, Info) ->
+-ifdef(BEFORE_OTP_21).
+
+ets_system_name_to_tid(Name) ->
+  Name.
+
+-else.
+
+ets_system_name_to_tid(Name) ->
+  ets:whereis(Name).
+
+-endif.
+
+ets_access_table_info(NameOrTid, Op, Info) ->
   #concuerror_info{ets_tables = EtsTables, scheduler = Scheduler} = Info,
-  case ets:match(EtsTables, ?ets_match_name(Name)) of
+  ?badarg_if_not(is_valid_ets_id(NameOrTid)),
+  Tid =
+    case is_atom(NameOrTid) of
+      true ->
+        case ets:match(EtsTables, ?ets_match_name_to_tid(NameOrTid)) of
+          [] -> error(badarg);
+          [[RT]] -> RT
+        end;
+      false -> NameOrTid
+    end,
+  case ets:match(EtsTables, ?ets_match_tid_to_permission_info(Tid)) of
     [] -> error(badarg);
-    [[Tid,Owner,Protection]] ->
+    [[Owner, Protection, Name]] ->
       Test =
         (Owner =:= self()
          orelse
@@ -1761,37 +1865,45 @@ check_ets_access_rights(Name, Op, Info) ->
            write -> Protection =:= public
          end),
       ?badarg_if_not(Test),
-      System =
+      IsSystem =
         (Owner =:= Scheduler) andalso
         case element(1, Op) of
           insert -> true;
           insert_new -> true;
           _ -> false
         end,
-      {Tid, System}
+      {Tid, {Tid, Name}, IsSystem}
   end.
 
 ets_ops_access_rights_map(Op) ->
   case Op of
-    {delete        ,1} -> own;
-    {delete        ,2} -> write;
-    {delete_object ,2} -> write;
-    {first         ,_} -> read;
-    {give_away     ,_} -> own;
-    {info          ,_} -> none;
-    {insert        ,_} -> write;
-    {insert_new    ,_} -> write;
-    {lookup        ,_} -> read;
-    {lookup_element,_} -> read;
-    {match         ,_} -> read;
-    {match_object  ,_} -> read;
-    {member        ,_} -> read;
-    {next          ,_} -> read;
-    {select        ,_} -> read;
-    {select_delete ,_} -> write;
-    {internal_select_delete,_} -> write;
-    {update_counter,3} -> write;
-    {whereis       ,1} -> none
+    {delete, 1} -> own;
+    {delete, 2} -> write;
+    {delete_all_objects, 1} -> write;
+    {delete_object, 2} -> write;
+    {first, _} -> read;
+    {give_away, _} -> own;
+    {info, _} -> none;
+    {insert, _} -> write;
+    {insert_new, _} -> write;
+    {internal_delete_all, 2} -> write;
+    {internal_select_delete, 2} -> write;
+    {lookup, _} -> read;
+    {lookup_element, _} -> read;
+    {match, _} -> read;
+    {match_object, _} -> read;
+    {member, _} -> read;
+    {next, _} -> read;
+    {select, _} -> read;
+    {select_delete, 2} -> write;
+    {update_counter, 3} -> write;
+    {whereis, 1} -> none
+  end.
+
+ets_get_name_or_tid(Id) ->
+  case Id of
+    {Tid, ?ets_name_none} -> Tid;
+    {_, Name} -> Name
   end.
 
 %%------------------------------------------------------------------------------
@@ -1810,8 +1922,14 @@ cleanup_processes(ProcessesTable) ->
 %%------------------------------------------------------------------------------
 
 system_ets_entries(#concuerror_info{ets_tables = EtsTables}) ->
-  Map = fun(Tid) -> ?system_ets_table_entry(Tid, ets:info(Tid, protection)) end,
-  ets:insert(EtsTables, [Map(Tid) || Tid <- ets:all(), is_atom(Tid)]).
+  Map =
+    fun(Name) ->
+        Tid = ets_system_name_to_tid(Name),
+        [Owner, Protection] = [ets:info(Tid, F) || F <- [owner, protection]],
+        ?ets_table_entry_system(Tid, Name, Protection, Owner)
+    end,
+  SystemEtsEntries = [Map(Name) || Name <- ets:all(), is_atom(Name)],
+  ets:insert(EtsTables, SystemEtsEntries).
 
 system_processes_wrappers(Info) ->
   [wrap_system(Name, Info) || Name <- registered()],
@@ -1876,10 +1994,11 @@ system_wrapper_loop(Name, Wrapped, Info) ->
                   #concuerror_info{logger = Logger} = Info,
                   {From, Reply, _} = handle_io(Data, {standard_error, Logger}),
                   Msg =
-                    "Your test sends messages to the 'standard_error' process to"
-                    " write output. Such messages from different processes may"
-                    " race, producing spurious interleavings. Consider using"
-                    " '--non_racing_system standard_error' to avoid them.~n",
+                    "Your test sends messages to the 'standard_error' process"
+                    " to write output. Such messages from different processes"
+                    " may race, producing spurious interleavings. Consider"
+                    " using '--non_racing_system standard_error' to avoid"
+                    " them.~n",
                   ?unique(Logger, ?ltip, Msg, []),
                   {From, Reply};
                 user ->
@@ -2183,7 +2302,7 @@ explain_error({unknown_protocol_for_system, {System, Data}}) ->
     " not currently support communication with this process. Please contact the"
     " developers for more information.~n"
     "Message:~n"
-    " ~p~n",[System, Data]);
+    " ~p~n", [System, Data]);
 explain_error({unknown_built_in, {Module, Name, Arity, Location, Stack}}) ->
   LocationString =
     case Location of
@@ -2196,8 +2315,8 @@ explain_error({unknown_built_in, {Module, Name, Arity, Location, Stack}}) ->
     [Module, Name, Arity, LocationString, Stack]);
 explain_error({unsupported_request, Name, Type}) ->
   io_lib:format(
-    "A process sent a request of type '~w' to ~p. Concuerror does not yet support"
-    " this type of request to this process.",
+    "A process sent a request of type '~w' to ~p. Concuerror does not yet"
+    " support this type of request to this process.",
     [Type, Name]).
 
 location(F, L) ->

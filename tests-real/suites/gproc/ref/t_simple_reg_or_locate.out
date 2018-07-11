@@ -1,70 +1,70 @@
-################################################################################
-
-Concuerror started with options:
+Concuerror v0.19+build.2090.refb510413 started at 09 Jul 2018 17:46:41
+ Options:
   [{after_timeout,1000},
    {assertions_only,false},
    {assume_racing,false},
-   {depth_bound,5000},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
    {entry_point,{test,t_simple_reg_or_locate,[]}},
+   {exclude_module,[]},
    {files,["../test.erl"]},
+   {first_process_errors_only,false},
    {ignore_error,[deadlock]},
-   {instant_delivery,false},
-   {interleaving_bound,infinity},
+   {instant_delivery,true},
+   {interleaving_bound,100},
    {keep_going,true},
    {non_racing_system,[]},
-   {optimal,true},
+   {pa,"ebin"},
    {print_depth,20},
+   {quiet,true},
    {scheduling,round_robin},
-   {scheduling_bound,infinity},
    {scheduling_bound_type,none},
    {show_races,false},
    {strict_scheduling,false},
    {symbolic_names,true},
-   {timeout,infinity},
-   {treat_as_normal,[shutdown]}]
+   {timeout,5000},
+   {treat_as_normal,[shutdown]},
+   {use_receive_patterns,true}]
 ################################################################################
-
+Exploration completed!
   No errors found!
 ################################################################################
-
 Warnings:
 --------------------------------------------------------------------------------
-
-Some abnormal exit reasons were treated as normal (--treat_as_normal).
+* Some abnormal exit reasons were treated as normal ('--treat_as_normal').
 
 ################################################################################
-
 Tips:
 --------------------------------------------------------------------------------
-
-An abnormal exit signal was sent to a process. This is probably the worst thing that can happen race-wise, as any other side-effecting operation races with the arrival of the signal. If the test produces too many interleavings consider refactoring your code.
+* Running without a scheduling_bound corresponds to verification and may take a long time.
+* An abnormal exit signal killed a process. This is probably the worst thing that can happen race-wise, as any other side-effecting operation races with the arrival of the signal. If the test produces too many interleavings consider refactoring your code.
 
 ################################################################################
-
 Info:
 --------------------------------------------------------------------------------
-
-Instrumented test
-Instrumented io_lib
-Instrumented gproc_sup
-Instrumented supervisor
-Instrumented gen_server
-Instrumented gen
-Instrumented proc_lib
-Instrumented erlang
-Instrumented application
-Instrumented application_controller
-Instrumented lists
-Instrumented gproc
-Instrumented gproc_lib
-Instrumented error_logger
-Instrumented gen_event
-Instrumented gproc_monitor
-Instrumented gproc_bcast
-Instrumented gproc_pool
-You can see pairs of racing instructions (in the report and --graph) with '--show_races true'
+* Writing results in /Users/stavros.aronis/git/Concuerror/tests-real/suites/gproc/run/t_simple_reg_or_locate.out
+* Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
+* Instrumented & loaded module test
+* Automatically instrumented module gproc_sup
+* Automatically instrumented module supervisor
+* Automatically instrumented module gen_server
+* Automatically instrumented module gen
+* Automatically instrumented module proc_lib
+* Automatically instrumented module erlang
+* Automatically instrumented module application
+* Automatically instrumented module application_controller
+* Automatically instrumented module lists
+* Automatically instrumented module gproc
+* Automatically instrumented module gproc_lib
+* Automatically instrumented module error_logger
+* Automatically instrumented module gen_event
+* Automatically instrumented module gproc_monitor
+* Automatically instrumented module gproc_bcast
+* Automatically instrumented module gproc_pool
+* You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
 
 ################################################################################
-
-Done! (Exit status: completed)
-  Summary: 0 errors, 11/11 interleavings explored
+Done at 09 Jul 2018 17:46:42 (Exit status: ok)
+  Summary: 0 errors, 33/33 interleavings explored

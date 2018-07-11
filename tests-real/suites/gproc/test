@@ -22,16 +22,21 @@ function good {
     print_green "ok"
 }
 
+if ! ../check_version.escript 18; then
+    print_blue "SKIPPING"
+    exit 0
+fi
+
 set -e
 trap 'abort' 0
 
 cd gproc
-for i in t_simple_reg t_simple_reg_or_locate t_reg_or_locate2 test1 test2 test3 test4; do
+for i in t_simple_reg t_simple_reg_or_locate t_reg_or_locate2 test3 test4; do
     testing "Test $i"
     RES=$i.out
     REF=$(readlink -m ../ref/$RES)
     RUN=$(readlink -m ../run/$RES)
-    $CONCUERROR -i 100 --assume_racing=false -q -k --pa ebin -f ../test.erl -m test -t $i -o $RUN || true
+    $CONCUERROR -i 200 --assume_racing=false -q -k --pa ebin -f ../test.erl -m test -t $i -o $RUN || true
     (bash $DIFFER $REF $RUN && rm $RUN && good) || false
 done
 
