@@ -258,8 +258,10 @@ instrumented_call(Module, Name, Arity, Args, _Location,
   end;
 instrumented_call(erlang, apply, 3, [Module, Name, Args], Location, Info) ->
   instrumented_call(Module, Name, length(Args), Args, Location, Info);
-instrumented_call(Module, Name, Arity, Args, Location, Info)
+instrumented_call(Module, Name, Arity, Args, Location, InfoIn)
   when is_atom(Module) ->
+  Info =
+    InfoIn#concuerror_info{stacktop = [{Module, Name, Args, Location}]},
   case
     erlang:is_builtin(Module, Name, Arity) andalso
     concuerror_instrumenter:is_unsafe({Module, Name, Arity})
@@ -343,7 +345,7 @@ built_in(Module, Name, Arity, Args, Location, InfoIn) ->
         },
     Notification = Event#event{event_info = EventInfo},
     NewInfo = notify(Notification, UpdatedInfo),
-    {{didit, Value}, NewInfo#concuerror_info{stacktop = []}}
+    {{didit, Value}, NewInfo}
   catch
     throw:Reason ->
       #concuerror_info{scheduler = Scheduler} = Info,
@@ -359,9 +361,7 @@ built_in(Module, Name, Arity, Args, Location, InfoIn) ->
            trapping = Trapping
           },
       FNotification = FEvent#event{event_info = FEventInfo},
-      FNewInfo = notify(FNotification, LocatedInfo),
-      FinalInfo =
-        FNewInfo#concuerror_info{stacktop = [{Module, Name, Args, Location}]},
+      FinalInfo = notify(FNotification, LocatedInfo),
       {{error, Reason}, FinalInfo}
   end.
 
