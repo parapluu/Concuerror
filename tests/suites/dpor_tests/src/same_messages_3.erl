@@ -8,9 +8,9 @@ scenarios() -> [{?MODULE, inf, dpor}].
 same_messages_3() ->
     P = self(),
     Fun =
-        fun(A) ->
+        fun(X) ->
                 fun() ->
-                        P ! A,
+                        P ! X,
                         P ! unlock
                 end
         end,
@@ -19,7 +19,6 @@ same_messages_3() ->
     receive
         unlock ->
             receive
-                Msg when Msg =:= a;    
-                         Msg =:= b -> throw(Msg)
+                X when X =/= unlock -> exit(X)
             end
     end.

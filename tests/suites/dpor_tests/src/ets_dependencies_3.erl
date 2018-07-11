@@ -29,7 +29,7 @@ ets_dependencies_3() ->
                     receive
                         ok ->
                             receive
-                                dead -> ok
+                            after infinity -> ok
                             end
                     end
             end
