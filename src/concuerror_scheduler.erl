@@ -1112,7 +1112,6 @@ update_trace(
        true -> Clock;
        false -> {EarlyActor, EarlyIndex}
      end},
-  SleepSet = BaseSleepSet ++ Done,
   RevEvent = update_context(Event, EarlyEvent),
   {MaybeNewWakeup, ConservativeInfo} =
     case Bound < 0 of
@@ -1126,6 +1125,7 @@ update_trace(
              false
          end};
       false ->
+        SleepSet = BaseSleepSet ++ Done,
         NotDep = not_dep(NewOldTrace, Later, DPORInfo, RevEvent),
         {Plan, _} = NW =
           case DPOR =:= optimal of
