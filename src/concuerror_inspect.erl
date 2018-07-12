@@ -1,4 +1,7 @@
-%% @doc The instrumenter replaces interesting operations with calls to inspect/3
+%%% @private
+%%% @doc
+%%% The instrumenter replaces interesting operations with calls
+%%% to inspect/3
 -module(concuerror_inspect).
 
 %% Interface to instrumented code:

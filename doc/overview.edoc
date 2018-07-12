@@ -1,0 +1,63 @@
+@title Concuerror's API specification
+@doc
+
+== Welcome! ==
+
+This documentation contains Concuerror's API specification.  It is
+complementary to the user guides and tutorials available at
+[https://parapluu.github.io/Concuerror].  Please start there if you
+are looking for general information about what the tool can do and how
+it works.
+
+== Table of Contents ==
+
+<ul>
+<li>{@section Invoking Concuerror}</li>
+<li>{@section Help}</li>
+<li>{@section Options}</li>
+<li>{@section Standard Error Printout}</li>
+<li>{@section Report File}</li>
+<li>{@section Graph Output}</li>
+</ul>
+
+== Invoking Concuerror ==
+
+The recommended method to invoke Concuerror is via the `bin/concuerror'
+escript (available after running `make').
+
+See the documentation of the {@link concuerror} module for more
+information about the entry points and return values.
+
+== Options ==
+
+Concuerror is configured using a number of options.
+
+See the documentation of the {@link concuerror_options} module.
+
+== Help ==
+
+The {@link concuerror_options:help_option/0. `help'} option can be
+used to access help.
+
+== Standard Error Printout ==
+
+By default, Concuerror prints diagnostic messages in the standard
+error stream.
+
+See the documentation of the {@link
+concuerror_options:verbosity_option/0. `verbosity'} option.
+
+== Report File ==
+
+By default, Concuerror prints analysis findings in a report file.
+
+See the documentation of the {@link
+concuerror_options:output_option/0. `output'} option.
+
+== Graph Output ==
+
+Optionally, Concuerror can produce a graphical representation of the
+exploration tree, by combining the explored interleavings.
+
+See the documentation of the {@link
+concuerror_options:graph_option/0. `graph'} option.

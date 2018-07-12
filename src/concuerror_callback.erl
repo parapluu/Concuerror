@@ -1,6 +1,8 @@
-%% @doc This module contains code for:
-%%      - managing and interfacing with processes under Concuerror
-%%      - simulating built-in operations in instrumented processes
+%%% @private
+%%% @doc
+%%% This module contains code for:
+%%% - managing and interfacing with processes under Concuerror
+%%% - simulating built-in operations in instrumented processes
 -module(concuerror_callback).
 
 %% Interface to concuerror_inspect:

@@ -1,14 +1,169 @@
+%%% @doc
+%%% Concuerror's options module
+%%%
+%%% Contains the handling of all of Concuerror's options.
+%%%
+%%% For general documentation go to the Overview page.
+%%%
+%%% == Table of Contents ==
+%%%
+%%% <ul>
+%%% <li>{@section Help}</li>
+%%% <li>{@section Options}</li>
+%%% <li>{@section Standard Error Printout}</li>
+%%% <li>{@section Report File}</li>
+%%% </ul>
+%%%
+%%% == Help ==
+%%%
+%%% You can access documentation about options using the {@link
+%%% help_option/0. `help'} option.  You can get more help with {@link
+%%% help_option/0. `concuerror --help help'}.  In the future even more
+%%% help might be added.
+%%%
+%%% == Options ==
+%%% <ol>
+%%% <li>All options have a long name.</li>
+%%% <li>Some options also have a short name.</li>
+%%% <li>Arguments: TODO</li>
+%%% <li>Options marked with an asterisk <em>*</em> are considered
+%%% experimental and may be brittle and disappear in future versions.</li>
+%%% </ol>
+%%%
+%%% === Module attributes ===
+%%%
+%%%  `concuerror --help attributes'
+%%%
+%%% === Keywords ===
+%%%
+%%% Each option is associated with one or more
+%%% <em>keywords</em>. These can be used with {@link help_option/0. `help'}
+%%% to find related options.
+%%%
+%%% === Multiple arguments ===
+%%%
+%%% TODO
+%%%
+%%% == Standard Error Printout ==
+%%%
+%%% By default, Concuerror prints diagnostic messages in the standard
+%%% error stream.  Such messages are also printed at the bottom of the
+%%% {@section Report File} after the analysis is completed.  You can
+%%% find explanation of the classification of these messages in the
+%%% {@link verbosity_option/0. `verbosity'} option.
+%%%
+%%% By default, Concuerror also prints progress information in the
+%%% standard error stream.  You can find what is the meaning of each field
+%%% by running `concuerror --help progress'.
+%%%
+%%% The printout can be reduced or disabled (see {@link
+%%% verbosity_option/0. `verbosity'} option).  Diagnostic messages are
+%%% always printed in the {@section Report File}.
+%%%
+%%% == Report File ==
+%%%
+%%% By default, Concuerror prints analysis findings in a report file.
+%%%
+%%% This file contains:
+%%%
+%%% <ol>
+%%%   <li>A header line containing the version used and starting time.</li>
+%%%   <li>A list of all the options used in the particular run.</li>
+%%%   <li>Zero or more {@section Error Reports} about erroneous
+%%%   interleavings.</li>
+%%%   <li>Diagnostic messages (see {@section Standard Error Printout}).</li>
+%%%   <li>Summary about the analysis, including
+%%%     <ul>
+%%%       <li>completion time,</li>
+%%%       <li>{@link concuerror:analysis_result(). analysis result}</li>
+%%%       <li>total number of interleavings explored</li>
+%%%       <li>total number of interleavings with errors</li>
+%%%    </ul>
+%%%   </li>
+%%% </ol>
+%%%
+%%% === Error Reports ===
+%%%
+%%% An error report corresponds to an interleaving that lead to errors and
+%%% contains at least the following sections:
+%%%
+%%% <ul>
+%%% <li>Description of all errors encountered.</li>
+%%% <li>Linear trace of all events in the interleaving. This contains only
+%%% the operations that read/write shared information.</li>
+%%% </ul>
+%%%
+%%% If the program produce any output, this is also included.
+%%%
+%%% By default, Concuerror reports the following errors:
+%%% <ul>
+%%% <li>A process exited abnormally.</li>
+%%% <li>One or more processes are 'stuck' at a receive statement.</li>
+%%% <li>The trace exceeded a (configurable but finite) number of events.</li>
+%%% <li>Abnormal errors.</li>
+%%% </ul>
+%%%
+%%% If the {@link show_races_option/0. `show_races'} option is used,
+%%% the pairs of racing events that justify the exploration of new
+%%% interleavings are also shown.  These are shown for all
+%%% interleavings, not only the ones with errors.
+
 -module(concuerror_options).
 
--export([parse_cl/1, finalize/1, version/0]).
+-export(
+   [ after_timeout_option/0
+   , assertions_only_option/0
+   , assume_racing_option/0
+   , depth_bound_option/0
+   , disable_sleep_sets_option/0
+   , dpor_option/0
+   , exclude_module_option/0
+   , file_option/0
+   , first_process_errors_only_option/0
+   , graph_option/0
+   , help_option/0
+   , ignore_error_option/0
+   , instant_delivery_option/0
+   , interleaving_bound_option/0
+   , keep_going_option/0
+   , module_option/0
+   , no_output_option/0
+   , non_racing_system_option/0
+   , observers_option/0
+   , optimal_option/0
+   , output_option/0
+   , pa_option/0
+   , print_depth_option/0
+   , pz_option/0
+   , quiet_option/0
+   , scheduling_bound_option/0
+   , scheduling_bound_type_option/0
+   , scheduling_option/0
+   , show_races_option/0
+   , strict_scheduling_option/0
+   , symbolic_names_option/0
+   , test_option/0
+   , timeout_option/0
+   , treat_as_normal_option/0
+   , use_receive_patterns_option/0
+   , verbosity_option/0
+   , version_option/0
+   ]).
 
--export_type([options/0]).
+-export([parse_cl/1, finalize/1]).
+
+-export([generate_option_docfiles/1]).
+
+-export_type([options/0, option_spec/0]).
+
+-ifndef(DOC).
 -export_type(
    [ bound/0
    , dpor/0
    , scheduling/0
    , scheduling_bound_type/0
    ]).
+-endif.
 
 %%%-----------------------------------------------------------------------------
 
@@ -18,10 +173,12 @@
 
 -type options() :: proplists:proplist().
 
--type bound()        :: 'infinity' | non_neg_integer().
--type dpor()         :: 'none' | 'optimal' | 'persistent' | 'source'.
--type scheduling()   :: 'oldest' | 'newest' | 'round_robin'.
+-ifndef(DOC).
+-type bound() :: 'infinity' | non_neg_integer().
+-type dpor() :: 'none' | 'optimal' | 'persistent' | 'source'.
+-type scheduling() :: 'oldest' | 'newest' | 'round_robin'.
 -type scheduling_bound_type() :: 'bpor' | 'delay' | 'none' | 'ubpor'.
+-endif.
 
 %%%-----------------------------------------------------------------------------
 
@@ -38,6 +195,36 @@
 
 %%%-----------------------------------------------------------------------------
 
+-type long_name() :: atom().
+
+-type keywords() ::
+        [ 'advanced' |
+          'basic' |
+          'bound'|
+          'console' |
+          'erlang' |
+          'errors' |
+          'experimental' |
+          'input' |
+          'output' |
+          'por' |
+          'visual'
+        ].
+
+-type short_name() :: char() | undefined.
+-type arg_spec() :: getopt:arg_spec().
+-type short_help() :: string().
+-type long_help() :: string() | 'nolong'.
+
+-opaque option_spec() ::
+        { long_name()
+        , keywords()
+        , short_name()
+        , arg_spec()
+        , short_help()
+        , long_help()
+        }.
+
 -define(OPTION_KEY, 1).
 -define(OPTION_KEYWORDS, 2).
 -define(OPTION_SHORT, 3).
@@ -46,218 +233,652 @@
 -define(OPTION_GETOPT_LONG_HELP, 6).
 
 options() ->
-  [{module, [basic, input], $m, atom,
-    "Module containing the test function",
-    "Concuerror begins exploration from a test function located in the module"
-    " specified by this option.~n~n"
+  [ module_option()
+  , test_option()
+  , output_option()
+  , no_output_option()
+  , verbosity_option()
+  , quiet_option()
+  , graph_option()
+  , symbolic_names_option()
+  , print_depth_option()
+  , show_races_option()
+  , file_option()
+  , pa_option()
+  , pz_option()
+  , exclude_module_option()
+  , depth_bound_option()
+  , interleaving_bound_option()
+  , dpor_option()
+  , optimal_option()
+  , scheduling_bound_type_option()
+  , scheduling_bound_option()
+  , disable_sleep_sets_option()
+  , after_timeout_option()
+  , instant_delivery_option()
+  , use_receive_patterns_option()
+  , observers_option()
+  , scheduling_option()
+  , strict_scheduling_option()
+  , keep_going_option()
+  , ignore_error_option()
+  , treat_as_normal_option()
+  , assertions_only_option()
+  , first_process_errors_only_option()
+  , timeout_option()
+  , assume_racing_option()
+  , non_racing_system_option()
+  , help_option()
+  , version_option()
+  ].
 
+%%%-----------------------------------------------------------------------------
+
+%% @private
+-spec generate_option_docfiles(filename:filename()) -> ok.
+
+generate_option_docfiles(Dir) ->
+  lists:foreach(fun(O) -> generate_option_docfile(O, Dir) end, options()).
+
+-spec generate_option_docfile(option_spec(), filename:filename()) -> ok.
+
+generate_option_docfile(Option, Dir) ->
+  OptionName = element(?OPTION_KEY, Option),
+  OptionShortHelp = element(?OPTION_GETOPT_SHORT_HELP, Option),
+  OptionShort = element(?OPTION_SHORT, Option),
+  OptionKeywords = element(?OPTION_KEYWORDS, Option),
+  OptionLongHelp = element(?OPTION_GETOPT_LONG_HELP, Option),
+  Arg = "...",
+  Filename = filename:join([Dir, atom_to_list(OptionName) ++ "_option.edoc"]),
+  {ok, File} = file:open(Filename, [write]),
+  print_docfile_preamble(File),
+  io:format(File, "@doc ~s~n~n", [OptionShortHelp]),
+  io:format(File, "<ul>", []),
+  item(
+    File,
+    "Long: <strong>`--~p ~s'</strong> or <strong>`@{~p, ~s@}'</strong>",
+    [OptionName, Arg, OptionName, Arg]),
+  case OptionShort =:= undefined of
+    true -> ok;
+    false -> item(File, "Short: `-~c'", [OptionShort])
+  end,
+  AllowedInModuleAttributes =
+    not lists:member(OptionName, not_allowed_in_module_attributes()),
+  item(
+    File, "Allowed in {@section module attributes}: <em>~p</em>",
+    [to_yes_or_no(AllowedInModuleAttributes)]),
+  case OptionKeywords =:= [] of
+    true -> ok;
+    false ->
+      StringKeywords =
+        string:join([atom_to_list(K) || K <- OptionKeywords], ", "),
+      item(File, "{@section Keywords}: ~s", [StringKeywords])
+  end,
+  io:format(File, "</ul>", []),
+  case OptionLongHelp =:= nolong of
+    true -> ok;
+    false -> io:format(File, OptionLongHelp ++ "~n", [])
+  end,
+  file:close(File).
+
+print_docfile_preamble(File) ->
+  Format =
+    "%% ATTENTION!~n"
+    "%% This file is generated by ~w:generate_option_docfile/2~n"
+    "~n",
+  io:format(File, Format, [?MODULE]).
+
+item(File, Format, Args) ->
+  io:format(File, "<li>" ++ Format ++ "</li>", Args).
+
+to_yes_or_no(true) -> yes;
+to_yes_or_no(false) -> no.
+%%%-----------------------------------------------------------------------------
+
+%% @docfile "doc/module_option.edoc"
+-spec module_option() -> option_spec().
+
+module_option() ->
+  { module
+  , [basic, input]
+  , $m
+  , atom
+  , "Module containing the test function"
+  , "Concuerror begins exploration from a test function located in the module"
+    " specified by this option.~n"
+    "~n"
     "There is no need to specify modules used in the test if they are in"
-    " Erlang's code path. Otherwise use '--file', '--pa' or '--pz'."}
-  ,{test, [basic, input], $t, {atom, test},
-    "Test function",
-    "This must be a 0-arity function located in the module specified by"
-    " '--module'. Concuerror will start the test by spawning a process that"
-    " calls this function."}
-  ,{output, [basic, output], $o, {string, ?DEFAULT_OUTPUT},
-    "Output file",
-    "This is where Concuerror writes the results of the analysis."}
-  ,{no_output, [basic, output], undefined, boolean,
-    "Disable output file",
-    "Concuerror will not produce an output file."}
-  ,{verbosity, [basic, console, advanced], $v, {integer, ?DEFAULT_VERBOSITY},
-    io_lib:format("Verbosity level (0-~w)", [?MAX_VERBOSITY]),
-    "Verbosity decides what is shown on stderr. Messages up to info are"
+    " Erlang's code path. Otherwise use `--file', `--pa' or `--pz'."
+  }.
+
+%% @docfile "doc/test_option.edoc"
+-spec test_option() -> option_spec().
+
+test_option() ->
+  { test
+  , [basic, input]
+  , $t
+  , {atom, test}
+  , "Test function"
+  , "This must be a 0-arity function located in the module specified by"
+    " `--module'. Concuerror will start the test by spawning a process that"
+    " calls this function."
+  }.
+
+%% @docfile "doc/output_option.edoc"
+-spec output_option() -> option_spec().
+
+output_option() ->
+  { output
+  , [basic, output]
+  , $o
+  , {string, ?DEFAULT_OUTPUT}
+  , "Output report filename"
+  , "This is where Concuerror writes the results of the analysis."
+  }.
+
+%% @docfile "doc/no_output_option.edoc"
+-spec no_output_option() -> option_spec().
+
+no_output_option() ->
+  { no_output
+  , [basic, output]
+  , undefined
+  , boolean
+  , "Disable output file"
+  , "Concuerror will not produce an output report."
+  }.
+
+%% @docfile "doc/verbosity_option.edoc"
+-spec verbosity_option() -> option_spec().
+
+verbosity_option() ->
+  { verbosity
+  , [advanced, basic, console]
+  , $v
+  , {integer, ?DEFAULT_VERBOSITY}
+  , io_lib:format("Verbosity level (0-~w)", [?MAX_LOG_LEVEL])
+  , "Verbosity decides what is shown on stderr. Messages up to info are"
     " always also shown in the output file. The available levels are the"
     " following:~n~n"
-    "0 <quiet> Nothing is printed (equivalent to '--quiet')~n"
-    "1 <error> Critical, resulting in early termination~n"
-    "2 <warn>  Non-critical, notifying about weak support for a feature or~n"
+    "0 (quiet) Nothing is printed (equivalent to `--quiet')~n"
+    "1 (error) Critical, resulting in early termination~n"
+    "2 (warn)  Non-critical, notifying about weak support for a feature or~n"
     "           the use of an option that alters the output~n"
-    "3 <tip>   Notifying of a suggested refactoring or option to make~n"
+    "3 (tip)   Notifying of a suggested refactoring or option to make~n"
     "           testing more efficient~n"
-    "4 <info>  Normal operation messages, can be ignored~n"
-    "5 <time>  Timing messages~n"
-    "6 <debug> Used only during debugging~n"
-    "7 <trace> Everything else"}
-  ,{quiet, [basic, console], $q, undefined,
-    "Quiet mode",
-    "Do not write anything to stderr. Shorthand for '--verbosity 0'."}
-  ,{graph, [output, visual], $g, string,
-    "Produce a DOT graph in the specified file",
-    "The DOT graph can be converted to an image with 'dot -Tsvg -o graph.svg"
-    " <graph>"}
-  ,{symbolic_names, [output, visual, erlang], $s, {boolean, true},
-    "Use symbolic process names",
-    "Replace PIDs with symbolic names in outputs. The format used is:~n"
-    "  \"<[symbolic name]/[last registered name]>\"~n"
+    "4 (info)  Normal operation messages, can be ignored~n"
+    "5 (time)  Timing messages~n"
+    "6 (debug) Used only during debugging~n"
+    "7 (trace) Everything else"
+  }.
+
+%% @docfile "doc/quiet_option.edoc"
+-spec quiet_option() -> option_spec().
+
+quiet_option() ->
+  { quiet
+  , [basic, console]
+  , $q
+  , undefined
+  , "Do not write anything to stderr"
+  , "Shorthand for `--verbosity 0'."
+  }.
+
+%% @docfile "doc/graph_option.edoc"
+-spec graph_option() -> option_spec().
+
+graph_option() ->
+  { graph
+  , [output, visual]
+  , $g
+  , string
+  , "Produce a DOT graph in the specified file"
+  , "The DOT graph can be converted to an image with"
+    " e.g. `dot -Tsvg -o graph.svg graph'"
+  }.
+
+%% @docfile "doc/symbolic_names_option.edoc"
+-spec symbolic_names_option() -> option_spec().
+
+symbolic_names_option() ->
+  { symbolic_names
+  , [output, erlang, visual]
+  , $s
+  , {boolean, true}
+  , "Use symbolic process names"
+  , "Replace PIDs with symbolic names in outputs. The format used is:~n"
+    "  `<[symbolic name]/[last registered name]>'~n"
     "where [symbolic name] is:~n"
     " * \"P\", for the first process and~n"
     " * \"[parent's symbolic name].[ordinal]\", for any other process,"
-    " where [ordinal] shows the order of spawning (e.g. \"<P.2>\" is the"
-    " second process spawned by \"<P>\").~n"
-    "The [last registered name] part is shown only if relevant."}
-  ,{print_depth, [output, visual], undefined, {integer, ?DEFAULT_PRINT_DEPTH},
-    "Print depth for log/graph",
-    "Specifies the max depth for any terms printed in the log (behaves just as"
-    " the extra argument of ~~W and ~~P argument of io:format/3). If you want"
+    " where [ordinal] shows the order of spawning (e.g. `<P.2>' is the"
+    " second process spawned by `<P>').~n"
+    "The [last registered name] part is shown only if relevant."
+  }.
+
+%% @docfile "doc/print_depth_option.edoc"
+-spec print_depth_option() -> option_spec().
+
+print_depth_option() ->
+  { print_depth
+  , [output, visual]
+  , undefined
+  , {integer, ?DEFAULT_PRINT_DEPTH}
+  , "Print depth for log/graph"
+  , "Specifies the max depth for any terms printed in the log (behaves just as"
+    " the extra argument of ~~W and ~~P argument of `io:format/3'). If you want"
     " more info about a particular piece of data in an interleaving, consider"
-    " using erlang:display/1 and checking the 'standard output section; in the"
-    " log instead."}
-  ,{show_races, [output, visual, dpor], undefined, {boolean, false},
-    "Show races in log/graph",
+    " using `erlang:display/1' and checking the standard output section; in the"
+    " error reports of the analysis report instead."
+  }.
+
+%% @docfile "doc/show_races_option.edoc"
+-spec show_races_option() -> option_spec().
+
+show_races_option() ->
+  { show_races
+  , [output, por, visual]
+  , undefined
+  , {boolean, false}
+  , "Show races in log/graph",
     "Determines whether information about pairs of racing instructions will be"
-    " included in the logs of erroneous interleavings and the graph."}
-  ,{file, [input], $f, string,
-    "Load specific files (.beam or .erl)",
-    "Explicitly load the specified file(s) (.beam or .erl)."
-    " Source (.erl) files should not"
-    " require any special command line compile options. Use a .beam file"
-    " (preferably compiled with +debug_info) if special compilation is needed."}
-  ,{pa, [input], undefined, string,
-    "Add directories to Erlang's code path (front)",
-    "Works exactly like 'erl -pa'."}
-  ,{pz, [input], undefined, string,
-    "Add directories to Erlang's code path (rear)",
-    "Works exactly like 'erl -pz'."}
-  ,{exclude_module, [input, experimental, advanced], $x, atom,
-    "* Do not instrument the specified modules",
-    "Experimental. Concuerror needs to instrument all code in a test to be able"
+    " included in the logs of erroneous interleavings and the graph."
+  }.
+
+%% @docfile "doc/file_option.edoc"
+-spec file_option() -> option_spec().
+
+file_option() ->
+  { file
+  , [input]
+  , $f
+  , string
+  , "Load specific files (.beam or .erl)"
+  , "Explicitly load the specified file(s) (.beam or .erl)."
+    " Source (.erl) files should not require any command line compile options."
+    " Use a .beam file (preferably compiled with `+debug_info') if special"
+    " compilation is needed."
+  }.
+
+%% @docfile "doc/pa_option.edoc"
+-spec pa_option() -> option_spec().
+
+pa_option() ->
+  { pa
+  , [input]
+  , undefined
+  , string
+  , "Add directories to Erlang's code path (front)"
+  , "Works exactly like `erl -pa'."
+  }.
+
+%% @docfile "doc/pz_option.edoc"
+-spec pz_option() -> option_spec().
+
+pz_option() ->
+  { pz
+  , [input]
+  , undefined
+  , string
+  , "Add directories to Erlang's code path (rear)"
+  , "Works exactly like `erl -pz'."
+  }.
+
+%% @docfile "doc/exclude_module_option.edoc"
+-spec exclude_module_option() -> option_spec().
+
+exclude_module_option() ->
+  { exclude_module
+  , [advanced, experimental, input]
+  , $x
+  , atom
+  , "* Do not instrument the specified modules"
+  , "Experimental. Concuerror needs to instrument all code in a test to be able"
     " to reset the state after each exploration. You can use this option to"
     " exclude a module from instrumentation, but you must ensure that any state"
     " is reset correctly, or Concuerror will complain that operations have"
-    " unexpected results."}
-  ,{depth_bound, [bound], $d, {integer, 500},
-    "Maximum number of events",
-    "The maximum number of events allowed in an interleaving. Concuerror will"
-    " stop exploring an interleaving that has events beyond this limit."}
-  ,{interleaving_bound, [bound], $i, {integer, infinity},
-    "Maximum number of interleavings",
-    "The maximum number of interleavings that will be explored. Concuerror will"
-    " stop exploration beyond this limit."}
-  ,{dpor, [por], undefined, {atom, optimal},
-    "DPOR technique",
-    "Specifies which Dynamic Partial Order Reduction technique will be used."
+    " unexpected results."
+  }.
+
+%% @docfile "doc/depth_bound_option.edoc"
+-spec depth_bound_option() -> option_spec().
+
+depth_bound_option() ->
+  { depth_bound
+  , [bound]
+  , $d
+  , {integer, 500}
+  , "Maximum number of events"
+  , "The maximum number of events allowed in an interleaving. Concuerror will"
+    " stop exploring an interleaving that has events beyond this limit."
+  }.
+
+%% @docfile "doc/interleaving_bound_option.edoc"
+-spec interleaving_bound_option() -> option_spec().
+
+interleaving_bound_option() ->
+  { interleaving_bound
+  , [bound]
+  , $i
+  , {integer, infinity}
+  , "Maximum number of interleavings"
+  , "The maximum number of interleavings that will be explored. Concuerror will"
+    " stop exploration beyond this limit."
+  }.
+
+%% @docfile "doc/dpor_option.edoc"
+-spec dpor_option() -> option_spec().
+
+dpor_option() ->
+  { dpor
+  , [por]
+  , undefined
+  , {atom, optimal}
+  , "DPOR technique"
+  , "Specifies which Dynamic Partial Order Reduction technique will be used."
     " The available options are:~n"
-    "-       'none': Disable DPOR. Do not use.~n"
-    "-    'optimal': Using source sets and wakeup trees.~n"
-    "-     'source': Using source sets only. Use this if the rate of~n"
-    "                exploration is too slow. Use 'optimal' if a lot of~n"
+    "-       `none': Disable DPOR. Not recommended.~n"
+    "-    `optimal': Using source sets and wakeup trees.~n"
+    "-     `source': Using source sets only. Use this if the rate of~n"
+    "                exploration is too slow. Use `optimal' if a lot of~n"
     "                interleavings are reported as sleep-set blocked.~n"
-    "- 'persistent': Using persistent sets. Do not use."}
-  ,{optimal, [por], undefined, boolean,
-    "Synonym for `--dpor optimal (true) | source (false)`.",
-    nolong}
-  ,{scheduling_bound_type, [bound, experimental], $c, {atom, none},
-    "* Schedule bounding technique",
-    "Enables scheduling rules that prevent interleavings from being explored."
+    "- `persistent': Using persistent sets. Not recommended."
+  }.
+
+%% @docfile "doc/optimal_option.edoc"
+-spec optimal_option() -> option_spec().
+
+optimal_option() ->
+  { optimal
+  , [por]
+  , undefined
+  , boolean
+  , "Synonym for `--dpor optimal (true) | source (false)'"
+  , nolong
+  }.
+
+%% @docfile "doc/scheduling_bound_type_option.edoc"
+-spec scheduling_bound_type_option() -> option_spec().
+
+scheduling_bound_type_option() ->
+  { scheduling_bound_type
+  , [bound, experimental]
+  , $c, {atom, none}
+  , "* Schedule bounding technique"
+  , "Enables scheduling rules that prevent interleavings from being explored."
     " The available options are:~n"
-    "-   'none': no bounding~n"
-    "-   'bpor': how many times per interleaving the scheduler is allowed~n"
+    "-   `none': no bounding~n"
+    "-   `bpor': how many times per interleaving the scheduler is allowed~n"
     "            to preempt a process.~n"
     "            * Not compatible with Optimal DPOR.~n"
-    "-  'delay': how many times per interleaving the scheduler is allowed~n"
+    "-  `delay': how many times per interleaving the scheduler is allowed~n"
     "            to skip the process chosen by default in order to schedule~n"
     "            others.~n"
-    "-  'ubpor': same as 'bpor' but without conservative backtrack points.~n"
-    "            * Experimental, unsound, not compatible with Optimal DPOR.~n"}
-  ,{scheduling_bound, [bound], $b, integer,
-    "Scheduling bound value",
-    "The maximum number of times the rule specified in '--scheduling_bound_type'"
-    " can be violated."}
-  ,{disable_sleep_sets, [por, advanced], undefined, {boolean, false},
-    "Disable sleep sets",
-    "This option is only available with '--dpor none'."}
-  ,{after_timeout, [erlang], $a, {integer, infinity},
-    "Ignore timeouts greater than this value",
-    "Assume that 'after' clause timeouts higher or equal to the specified value"
-    " (integer) will never be triggered."}
-  ,{instant_delivery, [erlang], undefined, {boolean, true},
-    "Messages and signals arrive instantly",
-    "Assume that messages and signals are delivered immediately, when sent to a"
-    " process on the same node."}
-  ,{use_receive_patterns, [erlang,por,advanced], undefined, {boolean, true},
-    "Use receive patterns for racing sends",
-    "If true, Concuerror will only consider two"
+    "-  `ubpor': same as 'bpor' but without conservative backtrack points.~n"
+    "            * Experimental, unsound, not compatible with Optimal DPOR.~n"
+  }.
+
+%% @docfile "doc/scheduling_bound_option.edoc"
+-spec scheduling_bound_option() -> option_spec().
+
+scheduling_bound_option() ->
+  { scheduling_bound
+  , [bound]
+  , $b
+  , integer
+  , "Scheduling bound value"
+  , "The maximum number of times the rule specified in"
+    " `--scheduling_bound_type' can be violated."
+  }.
+
+%% @docfile "doc/disable_sleep_sets_option.edoc"
+-spec disable_sleep_sets_option() -> option_spec().
+
+disable_sleep_sets_option() ->
+  { disable_sleep_sets
+  , [advanced, por]
+  , undefined
+  , {boolean, false}
+  , "Disable sleep sets"
+  , "This option is only available with `--dpor none'."
+  }.
+
+%% @docfile "doc/after_timeout_option.edoc"
+-spec after_timeout_option() -> option_spec().
+
+after_timeout_option() ->
+  { after_timeout
+  , [erlang]
+  , $a
+  , {integer, infinity}
+  , "Ignore timeouts greater than this value"
+  , "Assume that `after' clause timeouts higher or equal to the specified value"
+    " (integer) will never be triggered."
+  }.
+
+%% @docfile "doc/instant_delivery_option.edoc"
+-spec instant_delivery_option() -> option_spec().
+
+instant_delivery_option() ->
+  { instant_delivery
+  , [erlang]
+  , undefined
+  , {boolean, true}
+  , "Messages and signals arrive instantly"
+  , "Assume that messages and signals are delivered immediately, when sent to a"
+    " process on the same node."
+  }.
+
+%% @docfile "doc/use_receive_patterns_option.edoc"
+-spec use_receive_patterns_option() -> option_spec().
+
+use_receive_patterns_option() ->
+  { use_receive_patterns
+  , [advanced, erlang, por]
+  , undefined
+  , {boolean, true}
+  , "Use receive patterns for racing sends"
+  , "If true, Concuerror will only consider two"
     " message deliveries as racing when the first message is really"
     " received and the patterns used could also match the second"
-    " message."}
-  ,{observers, [erlang,por,advanced], undefined, boolean,
-    "Synonym of --use_receive_patterns",
-    nolong}
-  ,{scheduling, [advanced], undefined, {atom, round_robin},
-    "Scheduling order",
-    "How Concuerror picks the next process to run. The available options are"
-    " 'oldest', 'newest' and 'round_robin'."}
-  ,{strict_scheduling, [advanced], undefined, {boolean, false},
-    "Forces preemptions",
-    "Whether Concuerror should enforce the scheduling strategy strictly or let"
-    " a process run until blocked before reconsidering the scheduling policy."}
-  ,{keep_going, [basic, errors], $k, {boolean, false},
-    "Keep running after an error is found",
-    "Concuerror stops by default when the first error is found. Enable this"
+    " message."
+  }.
+
+%% @docfile "doc/observers_option.edoc"
+-spec observers_option() -> option_spec().
+
+observers_option() ->
+  { observers
+  , [advanced, erlang, por]
+  , undefined
+  , boolean
+  , "Synonym of `--use_receive_patterns'"
+  , nolong
+  }.
+
+%% @docfile "doc/scheduling_option.edoc"
+-spec scheduling_option() -> option_spec().
+
+scheduling_option() ->
+  { scheduling
+  , [advanced]
+  , undefined
+  , {atom, round_robin}
+  , "Scheduling order"
+  , "How Concuerror picks the next process to run. The available options are"
+    " `oldest', `newest' and `round_robin'."
+  }.
+
+%% @docfile "doc/strict_scheduling_option.edoc"
+-spec strict_scheduling_option() -> option_spec().
+
+strict_scheduling_option() ->
+  { strict_scheduling
+  , [advanced]
+  , undefined
+  , {boolean, false}
+  , "Forces preemptions"
+  , "Whether Concuerror should enforce the scheduling strategy strictly or let"
+    " a process run until blocked before reconsidering the scheduling policy."
+  }.
+
+%% @docfile "doc/keep_going_option.edoc"
+-spec keep_going_option() -> option_spec().
+
+keep_going_option() ->
+  { keep_going
+  , [basic, errors]
+  , $k
+  , {boolean, false}
+  , "Keep running after an error is found"
+  , "Concuerror stops by default when the first error is found. Enable this"
     " flag to keep looking for more errors. Preferably, modify the test, or"
-    " use the '--ignore_error' / '--treat_as_normal' options."}
-  ,{ignore_error, [errors], undefined, atom,
+    " use the `--ignore_error' / `--treat_as_normal' options."
+  }.
+
+%% @docfile "doc/ignore_error_option.edoc"
+-spec ignore_error_option() -> option_spec().
+
+ignore_error_option() ->
+  { ignore_error
+  , [errors]
+  , undefined
+  , atom,
     "Ignore particular kinds of errors",
     "Concuerror will not report errors of the specified kind:~n"
     "'abnormal_exit': processes exiting with any abnormal reason;"
-    " check '-h treat_as_normal' and '-h assertions_only' for more refined"
+    " check `-h treat_as_normal' and `-h assertions_only' for more refined"
     " control~n"
     "'abnormal_halt': processes executing erlang:halt/1,2 with status /= 0~n"
     "'deadlock': processes waiting at a receive statement~n"
-    "'depth_bound': reaching the depth bound; check '-h depth_bound'"}
-  ,{treat_as_normal, [errors], undefined, atom,
-    "Exit reasons treated as 'normal'",
-    "A process that exits with the specified atom as reason (or with a reason"
+    "'depth_bound': reaching the depth bound; check `-h depth_bound'"
+  }.
+
+%% @docfile "doc/treat_as_normal_option.edoc"
+-spec treat_as_normal_option() -> option_spec().
+
+treat_as_normal_option() ->
+  { treat_as_normal
+  , [errors]
+  , undefined
+  , atom
+  , "Exit reasons treated as 'normal'"
+  , "A process that exits with the specified atom as reason (or with a reason"
     " that is a tuple with the specified atom as a first element) will not be"
     " reported as exiting abnormally. Useful e.g. when analyzing supervisors"
-    " ('shutdown' is usually a normal exit reason in this case)."}
-  ,{assertions_only, [errors], undefined, {boolean, false},
-    "Only report abnormal exits due to ?asserts",
-    "Only processes that exit with a reason of form '{{assert*, _}, _}' are"
+    " ('shutdown' is usually a normal exit reason in this case)."
+  }.
+
+%% @docfile "doc/assertions_only_option.edoc"
+-spec assertions_only_option() -> option_spec().
+
+assertions_only_option() ->
+  { assertions_only
+  , [errors]
+  , undefined
+  , {boolean, false}
+  , "Only report abnormal exits due to `?asserts'",
+    "Only processes that exit with a reason of form `{{assert*, _}, _}' are"
     " considered errors. Such exit reasons are generated e.g. by the"
-    " stdlib/include/assert.hrl header file."}
-  ,{first_process_errors_only, [errors], undefined, {boolean, false},
-    "Only report errors that involve the first process",
-    "All errors involving only children processes will be ignored."}
-  ,{timeout, [erlang, advanced], undefined, {integer, 5000},
-    "How long to wait for an event (>= " ++
-      integer_to_list(?MINIMUM_TIMEOUT) ++ "ms)",
-    "How many ms to wait before assuming that a process is stuck in an infinite"
+    " macros defined in the `stdlib/include/assert.hrl' header file."
+  }.
+
+%% @docfile "doc/first_process_errors_only_option.edoc"
+-spec first_process_errors_only_option() -> option_spec().
+
+first_process_errors_only_option() ->
+  { first_process_errors_only
+  , [errors]
+  , undefined
+  , {boolean, false}
+  , "Only report errors that involve the first process"
+  , "All errors involving only children processes will be ignored."
+  }.
+
+%% @docfile "doc/timeout_option.edoc"
+-spec timeout_option() -> option_spec().
+
+timeout_option() ->
+  { timeout
+  , [advanced, erlang]
+  , undefined
+  , {integer, 5000}
+  , "How long to wait for an event (>= " ++
+      integer_to_list(?MINIMUM_TIMEOUT) ++ "ms)"
+  , "How many ms to wait before assuming that a process is stuck in an infinite"
     " loop between two operations with side-effects. Setting this to -1 will"
     " make Concuerror wait indefinitely. Otherwise must be >= " ++
-      integer_to_list(?MINIMUM_TIMEOUT) ++ "."}
-  ,{assume_racing, [por, advanced], undefined, {boolean, true},
-    "Unknown operations as considered racing",
-    "Concuerror has a list of operation pairs that are known to be non-racing."
-    " If there is no info about a specific pair of built-in operations"
-    " may race, assume that they do indeed race. If this is set to false,"
-    " Concuerror will exit instead. Useful for detecting"
-    " missing dependency info."}
-  ,{non_racing_system, [erlang], undefined, atom,
-    "No races due to 'system' messages",
-    "Assume that any messages sent to the specified (by registered name) system"
+      integer_to_list(?MINIMUM_TIMEOUT) ++ "."
+  }.
+
+%% @docfile "doc/assume_racing_option.edoc"
+-spec assume_racing_option() -> option_spec().
+
+assume_racing_option() ->
+  { assume_racing
+  , [advanced, por]
+  , undefined
+  , {boolean, true}
+  , "Unknown operations are considered racing"
+  , "Concuerror has a list of operation pairs that are known to be non-racing."
+    " If there is no info about whether a specific pair of built-in operations"
+    " may race, assume that they do indeed race. If this option is set to"
+    " false, Concuerror will exit instead. Useful only for detecting missing"
+    " racing info."
+  }.
+
+%% @docfile "doc/non_racing_system_option.edoc"
+-spec non_racing_system_option() -> option_spec().
+
+non_racing_system_option() ->
+  { non_racing_system
+  , [erlang]
+  , undefined
+  , atom
+  , "No races due to 'system' messages"
+  , "Assume that any messages sent to the specified (by registered name) system"
     " process are not racing with each-other. Useful for reducing the number of"
     " interleavings when processes have calls to e.g. io:format/1,2 or"
-    " similar."}
-  ,{help, [basic], $h, atom,
-    "Display help (use '-h h' for more help)",
-    "Without an argument, prints info for basic options.~n~n"
-    "With 'all' as argument, prints info for all options.~n~n"
-    "With 'attributes' as argument, prints info about passing options using"
+    " similar."
+  }.
+
+%% @docfile "doc/help_option.edoc"
+-spec help_option() -> option_spec().
+
+help_option() ->
+  { help
+  , [basic]
+  , $h
+  , atom
+  , "Display help (use `-h h' for more help)"
+  , "Without an argument, prints info for basic options.~n~n"
+    "With `all' as argument, prints info for all options.~n~n"
+    "With `attributes' as argument, prints info about passing options using"
     " module attributes.~n~n"
-    "With 'progress' as argument, prints info about what the items in the"
+    "With `progress' as argument, prints info about what the items in the"
     " progress info mean.~n~n"
     "With an option name as argument, prints more help for that option.~n~n"
     "Options have keywords associated with them (shown in their help)."
     " With a keyword as argument, prints a list of all options with the"
     " keyword.~n~n"
-    "If an expected argument is omitted, 'true' or '1' is the implied"
-    " value."}
-  ,{version, [basic], undefined, undefined,
-    "Display version information",
-    nolong}
-   ].
+    "If an expected argument is omitted, `true' or `1' is the implied"
+    " value."
+  }.
+
+%% @docfile "doc/version_option.edoc"
+-spec version_option() -> option_spec().
+
+version_option() ->
+  { version
+  , [basic]
+  , undefined
+  , undefined
+  , "Display version information"
+  , nolong
+  }.
+
+%%%-----------------------------------------------------------------------------
 
 synonyms() ->
   [ {{observers, true}, {use_receive_patterns, true}}
@@ -326,8 +947,16 @@ check_validity(Key) ->
 
 %%------------------------------------------------------------------------------
 
+%% @doc Converts command-line arguments to a proplist using getopt
+%%
+%% This function also augments the interface of getopt, allowing
+%% <ul>
+%%   <li> multiple arguments to options</li>
+%%   <li> correction of common errors</li>
+%% </ul>
+
 -spec parse_cl([string()]) ->
-                  {'ok', options()} | {'exit', concuerror:exit_status()}.
+                  {'run', options()} | {'return', concuerror:exit_status()}.
 
 parse_cl(CommandLineArgs) ->
   try
@@ -341,20 +970,20 @@ parse_cl(CommandLineArgs) ->
 options_fail() ->
   [concuerror_logger:print_log_message(Level, Format, Args)
    || {Level, Format, Args} <- get_logs()],
-  {exit, fail}.
+  {return, fail}.
 
 parse_cl_aux([]) ->
-  {ok, [help]};
+  {run, [help]};
 parse_cl_aux(RawCommandLineArgs) ->
   CommandLineArgs = fix_common_errors(RawCommandLineArgs),
   case getopt:parse(getopt_spec_no_default(), CommandLineArgs) of
     {ok, {Options, OtherArgs}} ->
       case OtherArgs of
-        [] -> {ok, Options};
+        [] -> {run, Options};
         [MaybeFilename] ->
           Msg = "Converting dangling argument to '--file ~s'",
           opt_info(Msg, [MaybeFilename]),
-          {ok, Options ++ [{file, MaybeFilename}]};
+          {run, Options ++ [{file, MaybeFilename}]};
         _ ->
           Msg = "Unknown argument(s)/option(s): ~s",
           opt_error(Msg, [?join(OtherArgs, " ")])
@@ -363,7 +992,7 @@ parse_cl_aux(RawCommandLineArgs) ->
       case Error of
         {missing_option_arg, help} ->
           cl_usage(basic),
-          {exit, ok};
+          {return, ok};
         {missing_option_arg, Option} ->
           opt_error("No argument given for '--~s'.", [Option], Option);
         _Other ->
@@ -501,8 +1130,8 @@ cl_usage(Name) ->
         true ->
           KeywordWarningFormat =
             "~n"
-            "NOTE: Only showing options with the keyword '~p'.~n"
-            "      Use '--help all' to see all available options.~n",
+            "NOTE: Only showing options with the keyword `~p'.~n"
+            "      Use `--help all' to see all available options.~n",
           to_stderr(KeywordWarningFormat, [Name]),
           getopt:usage(getopt_spec(MaybeKeyword), "./concuerror"),
           print_suffix(Name);
@@ -512,7 +1141,7 @@ cl_usage(Name) ->
             "_" ++ Rest -> cl_usage(list_to_atom(Rest));
             Other when Other =/= ListName -> cl_usage(list_to_atom(Other));
             _ ->
-              Msg = "invalid option/keyword (as argument to --help): '~w'.",
+              Msg = "invalid option/keyword (as argument to `--help'): '~w'.",
               opt_error(Msg, [Name], help)
           end
       end;
@@ -524,7 +1153,7 @@ cl_usage(Name) ->
       end,
       {Keywords, Related} = get_keywords_and_related(Tuple),
       to_stderr("Option Keywords: ~p~nRelated Options: ~p~n", [Keywords, Related]),
-      to_stderr("For general help use '-h' without an argument.~n")
+      to_stderr("For general help use `-h' without an argument.~n")
   end.
 
 options(Keyword) ->
@@ -535,7 +1164,7 @@ print_suffix(Keyword) ->
     false -> to_stderr("Options with '*' are experimental.~n");
     true -> ok
   end,
-  to_stderr("More info & keywords about a specific option: -h <option>.~n"),
+  to_stderr("More info & keywords about a specific option: `-h <option>'.~n"),
   case Keyword =:= basic orelse Keyword =:= all of
     true -> print_exit_status_info();
     false -> ok
@@ -543,11 +1172,7 @@ print_suffix(Keyword) ->
   print_bugs_message().
 
 print_exit_status_info() ->
-  Message =
-    "Exit status:~n"
-    " 0    ('ok') : Test went well. No errors were found.~n"
-    " 1 ('error') : Test went bad. Errors were found.~n"
-    " 2  ('fail') : Incorrect use. Bad options used, unsupported code, etc.~n",
+  Message = concuerror:analysis_result_documentation(),
   to_stderr(Message).
 
 print_bugs_message() ->
@@ -564,25 +1189,26 @@ get_keywords_and_related(Tuple) ->
   Related =
     [element(?OPTION_KEY, T) ||
       T <- options(), Filter(element(?OPTION_KEYWORDS, T))],
-  {lists:sort(Keywords), lists:sort(Related)}.
+  {Keywords, lists:sort(Related)}.
 
 %%%-----------------------------------------------------------------------------
 
--type log_messages() :: [{?lwarning..?linfo, string(), [term()]}].
+%% @private
+-type log_messages() :: [{concuerror_logger:log_level(), string(), [term()]}].
 
 -spec finalize(options()) ->
-                  {'ok', options(), log_messages()} |
-                  {'exit', concuerror:exit_status()}.
+                  {'run', options(), log_messages()} |
+                  {'return', concuerror:exit_status()}.
 
 finalize(Options) ->
   try
     %% We might have been invoked by an Erlang shell, so check again.
     check_otp_version(),
     case check_help_and_version(Options) of
-      exit -> {exit, ok};
+      exit -> {return, ok};
       ok ->
         FinalOptions = finalize_2(Options),
-        {ok, FinalOptions, get_logs()}
+        {run, FinalOptions, get_logs()}
     end
   catch
     throw:opt_error -> options_fail()
@@ -592,7 +1218,7 @@ check_help_and_version(Options) ->
   case {proplists:get_bool(version, Options),
         proplists:is_defined(help, Options)} of
     {true, _} ->
-      to_stderr("~s", [version()]),
+      to_stderr("~s", [concuerror:version()]),
       exit;
     {false, true} ->
       Value = proplists:get_value(help, Options),
@@ -620,14 +1246,6 @@ check_otp_version() ->
         "Concuerror has been compiled for a different version of Erlang/OTP."
         " Please run `make distclean; make` again.",[])
   end.
-
-%%%-----------------------------------------------------------------------------
-
--spec version() -> string().
-
-version() ->
-  {ok, Vsn} = application:get_key(concuerror, vsn),
-  io_lib:format("Concuerror v~s", [Vsn]).
 
 %%%-----------------------------------------------------------------------------
 
@@ -731,7 +1349,7 @@ set_verbosity(Options) ->
         opt_error(Msg, [], verbosity);
       {N, false} -> lists:sum(N)
     end,
-  Verbosity = min(SpecifiedVerbosity, ?MAX_VERBOSITY),
+  Verbosity = min(SpecifiedVerbosity, ?MAX_LOG_LEVEL),
   case ?has_dev orelse (Verbosity < ?ldebug) of
     true -> ok;
     false ->
@@ -907,7 +1525,7 @@ add_options_from_module(Options) ->
     get_options_from_attribute(?ATTRIBUTE_OPTIONS, Attributes),
   case Forced ++ Others =:= [] of
     true when length(Options) > ?ATTRIBUTE_TIP_THRESHOLD ->
-      opt_tip("Check '--help attributes' for info on how to pass options via"
+      opt_tip("Check `--help attributes' for info on how to pass options via"
               " module attributes.", []);
     _ -> ok
   end,
@@ -1231,12 +1849,12 @@ opt_error(Format) ->
 -spec opt_error(string(), [term()]) -> no_return().
 
 opt_error(Format, Data) ->
-  opt_error(Format, Data, "--help").
+  opt_error(Format, Data, "`--help'").
 
 -spec opt_error(string(), [term()], string() | atom()) -> no_return().
 
 opt_error(Format, Data, Extra) when is_atom(Extra) ->
-  ExtraS = io_lib:format("'--help ~p'", [Extra]),
+  ExtraS = io_lib:format("`--help ~p'", [Extra]),
   opt_error(Format, Data, ExtraS);
 opt_error(Format, Data, Extra) ->
   opt_log(?lerror, Format ++ "~n    Use ~s for more information.", Data ++ [Extra]),

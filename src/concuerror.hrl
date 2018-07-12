@@ -56,7 +56,7 @@
 -define(opt(A,O), proplists:get_value(A,O)).
 -define(opt(A,O,D), proplists:get_value(A,O,D)).
 %%------------------------------------------------------------------------------
-%% Logger verbosity
+%% Logger levels
 -define(lquiet,    0).
 -define(lerror,    1).
 -define(lwarning,  2).
@@ -65,7 +65,7 @@
 -define(ltiming,   5).
 -define(ldebug,    6).
 -define(ltrace,    7).
--define(MAX_VERBOSITY, ?ltrace).
+-define(MAX_LOG_LEVEL, ?ltrace).
 %%------------------------------------------------------------------------------
 -define(nonunique, none).
 

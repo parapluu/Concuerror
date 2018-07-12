@@ -1,0 +1,6 @@
+*_option.edoc
+*.css
+*.html
+edoc-info
+erlang.png
+Gemfile.lock
