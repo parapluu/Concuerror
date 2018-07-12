@@ -898,8 +898,8 @@ assign_happens_before([TraceState|Later], RevLate, RevEarly, State) ->
   %% from the step (spawns, sends and deliveries)
   FinalClockMap =
     add_new_and_messages(Special, HappenedBeforeClock, NewClockMap),
-  ?trace(_Logger, "  SC:~w~n", [StateClock]),
-  ?trace(_Logger, "  AC:~w~n", [HappenedBeforeClock]),
+  ?trace(_Logger, "       SC: ~w~n", [StateClock]),
+  ?trace(_Logger, "       AC: ~w~n", [HappenedBeforeClock]),
   NewTraceState = TraceState#trace_state{clock_map = FinalClockMap},
   assign_happens_before(Later, [NewTraceState|RevLate], RevEarly, State).
 
@@ -955,10 +955,10 @@ update_clock([TraceState|Rest], Event, Clock, State) ->
         Dependent =
           concuerror_dependencies:dependent(EarlyEvent, Event, AssumeRacing),
         ?debug(State#scheduler_state.logger,
-               "    ~s ~s~n",
+               "   ~s ~s~n",
                begin
-                 Star = fun(false) -> " ";(_) -> "*" end,
-                 [Star(Dependent), ?pretty_s(EarlyIndex,EarlyEvent)]
+                 Star = fun(false) -> "  "; (_) -> "->" end,
+                 [Star(Dependent), ?pretty_s(EarlyIndex, EarlyEvent)]
                end),
         case Dependent =:= false of
           true -> Clock;
@@ -995,9 +995,9 @@ plan_more_interleavings([TraceState|Later], RevEarly, State) ->
           ActorClock = lookup_clock(Actor, ClockMap),
           %% Otherwise we zero-down to the latest op that happened before
           LatestHBIndex = find_latest_hb_index(ActorClock, StateClock),
-          ?trace(_Logger, "   SC:~w~n", [StateClock]),
-          ?trace(_Logger, "   AC:~w~n", [ActorClock]),
-          ?debug(_Logger, "  Next @ ~w~n", [LatestHBIndex]),
+          ?trace(_Logger, "    SC: ~w~n", [StateClock]),
+          ?trace(_Logger, "    AC: ~w~n", [ActorClock]),
+          ?debug(_Logger, "    Nearest race @ ~w~n", [LatestHBIndex]),
           NewRevEarly =
             more_interleavings_for_event(
               TraceState, RevEarly, LatestHBIndex, StateClock, Later, State),
@@ -1017,12 +1017,17 @@ skip_planning(TraceState, State) ->
 more_interleavings_for_event(TraceState, RevEarly, NextIndex, Clock, Later, State) ->
   more_interleavings_for_event(TraceState, RevEarly, NextIndex, Clock, Later, State, []).
 
-more_interleavings_for_event(TraceState, [], _NextIndex, _Clock, _Later,
-                             _State, UpdEarly) ->
-  [TraceState|lists:reverse(UpdEarly)];
 more_interleavings_for_event(TraceState, RevEarly, -1, _Clock, _Later,
                              _State, UpdEarly) ->
+  ?trace(_State#scheduler_state.logger, "    Finished checking races for event~n", []),
   [TraceState|lists:reverse(UpdEarly, RevEarly)];
+more_interleavings_for_event(TraceState, [], _NextIndex, _Clock, _Later,
+                             _State, UpdEarly) ->
+  ?trace(
+     _State#scheduler_state.logger,
+     "    Finished checking races for event (NOT FAST)~n",
+     []),
+  [TraceState|lists:reverse(UpdEarly)];
 more_interleavings_for_event(TraceState, [EarlyTraceState|RevEarly], NextIndex,
                              Clock, Later, State, UpdEarly) ->
   #trace_state{
@@ -1068,7 +1073,7 @@ more_interleavings_for_event(TraceState, [EarlyTraceState|RevEarly], NextIndex,
         NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
         ActorClock = lookup_clock(Actor, ClockMap),
         NI = find_latest_hb_index(ActorClock, NC),
-        ?debug(State#scheduler_state.logger, "  Next @ ~w~n", [NI]),
+        ?debug(State#scheduler_state.logger, "    Next nearest race @ ~w~n", [NI]),
         {NC, NI}
     end,
   {NewUpdEarly, NewRevEarly} =
@@ -1112,61 +1117,67 @@ update_trace(
        true -> Clock;
        false -> {EarlyActor, EarlyIndex}
      end},
-  SleepSet = BaseSleepSet ++ Done,
   RevEvent = update_context(Event, EarlyEvent),
-  {MaybeNewWakeup, ConservativeInfo} =
+  FastSkip =
     case Bound < 0 of
       true ->
-        {over_bound,
-         case SchedulingBoundType =:= bpor of
-           true ->
-             NotDep = not_dep(NewOldTrace, Later, DPORInfo, RevEvent),
-             get_initials(NotDep);
-           false ->
-             false
-         end};
-      false ->
-        NotDep = not_dep(NewOldTrace, Later, DPORInfo, RevEvent),
-        {Plan, _} = NW =
-          case DPOR =:= optimal of
+        CI =
+          case SchedulingBoundType =:= bpor of
             true ->
-              case UseReceivePatterns of
-                false ->
-                  {insert_wakeup_optimal(SleepSet, Wakeup, NotDep, Bound, Origin), false};
-                true ->
-                  V =
-                    case ObserverInfo =:= no_observer of
-                      true -> NotDep;
-                      false ->
-                        NotObsRaw =
-                          not_obs_raw(NewOldTrace, Later, ObserverInfo, Event),
-                        NotObs = NotObsRaw -- NotDep,
-                        NotDep ++ [EarlyEvent#event{label = undefined}] ++ NotObs
-                    end,
-                  RevV = lists:reverse(V),
-                  {FixedV, ReceiveInfoDict} = fix_receive_info(RevV),
-                  {FixedRest, _} = fix_receive_info(Rest, ReceiveInfoDict),
-                  show_plan(v, Logger, 0, FixedV),
-                  case has_weak_initial_before(lists:reverse(FixedRest), FixedV, Logger) of
-                    true -> {skip, false};
-                    false ->
-                      {insert_wakeup_optimal(Done, Wakeup, FixedV, Bound, Origin), false}
-                  end
-              end;
+              ND = not_dep(NewOldTrace, Later, DPORInfo, RevEvent),
+              get_initials(ND);
             false ->
-              Initials = get_initials(NotDep),
-              AddCons =
-                case SchedulingBoundType =:= bpor of
-                  true -> Initials;
-                  false -> false
-                end,
-              {insert_wakeup_non_optimal(SleepSet, Wakeup, Initials, false, Origin), AddCons}
+              false
           end,
-        case is_atom(Plan) of
-          true -> NW;
+        {true, {over_bound, [], CI}};
+      false -> false
+    end,
+  {MaybeNewWakeup, VSeq, ConservativeInfo} =
+    case FastSkip of
+      {true, FastSkipReason} -> FastSkipReason;
+      false ->
+        SleepSet = BaseSleepSet ++ Done,
+        NotDep = not_dep(NewOldTrace, Later, DPORInfo, RevEvent),
+        case DPOR =:= optimal of
+          true ->
+            case UseReceivePatterns of
+              false ->
+                V = NotDep,
+                NW = insert_wakeup_optimal(SleepSet, Wakeup, V, Bound, Origin),
+                {NW, V, false};
+              true ->
+                ExtV =
+                  case ObserverInfo =:= no_observer of
+                    true -> NotDep;
+                    false ->
+                      NotObsRaw =
+                        not_obs_raw(NewOldTrace, Later, ObserverInfo, Event),
+                      NotObs = NotObsRaw -- NotDep,
+                      ResetEvent = EarlyEvent#event{label = undefined},
+                      NotDep ++ [ResetEvent] ++ NotObs
+                  end,
+                RevExtV = lists:reverse(ExtV),
+                {V, ReceiveInfoDict} = fix_receive_info(RevExtV),
+                {FixedRest, _} = fix_receive_info(Rest, ReceiveInfoDict),
+                debug_show_sequence("v sequence", Logger, 1, V),
+                RevFixedRest = lists:reverse(FixedRest),
+                case has_weak_initial_before(RevFixedRest, V, Logger) of
+                  true -> {skip, V, false};
+                  false ->
+                    NW = insert_wakeup_optimal(Done, Wakeup, V, Bound, Origin),
+                    {NW, V, false}
+                end
+            end;
           false ->
-            show_plan(standard, Logger, EarlyIndex, NotDep),
-            NW
+            Initials = get_initials(NotDep),
+            V = Initials,
+            AddCons =
+              case SchedulingBoundType =:= bpor of
+                true -> Initials;
+                false -> false
+              end,
+            NW = insert_wakeup_non_optimal(SleepSet, Wakeup, V, false, Origin),
+            {NW, V, AddCons}
         end
     end,
   case MaybeNewWakeup of
@@ -1181,6 +1192,7 @@ update_trace(
       end,
       {[TraceState|NewOldTrace], ConservativeInfo};
     NewWakeup ->
+      debug_show_sequence("PLAN", Logger, EarlyIndex, VSeq),
       NS = TraceState#trace_state{wakeup_tree = NewWakeup},
       concuerror_logger:plan(Logger),
       concuerror_estimator:plan(Estimator, EarlyIndex),
@@ -1274,29 +1286,33 @@ not_obs_raw([TraceState|Rest], Later, ObserverInfo, Event, NotObs) ->
   end.
 
 has_weak_initial_before([], _, _Logger) ->
-  ?debug(_Logger, "No weak initial before~n",[]),
+  ?debug(_Logger, "    No earlier weak initials found~n",[]),
   false;
 has_weak_initial_before([TraceState|Rest], V, Logger) ->
   #trace_state{done = [EarlyEvent|Done]} = TraceState,
   case has_initial(Done, [EarlyEvent|V]) of
     true ->
-      ?debug(Logger, "Check: ~s~n",[?join([?pretty_s(0,D)||D<-Done],"~n")]),
-      show_plan(initial, Logger, 1, [EarlyEvent|V]),
+      ?debug(
+         Logger,
+         "    Has weak initial in: ~s~n",
+         [?join([?pretty_s(0, D) || D <- Done], "~n")]
+        ),
+      debug_show_sequence("if seen as", Logger, 1, [EarlyEvent|V]),
       true;
     false ->
-      ?trace(Logger, "Up~n",[]),
       has_weak_initial_before(Rest, [EarlyEvent|V], Logger)
   end.
 
-show_plan(_Type, _Logger, _Index, _NotDep) ->
+debug_show_sequence(_Type, _Logger, _Index, _NotDep) ->
   ?debug(
-     _Logger, "     PLAN (Type: ~p)~n~s",
+     _Logger, "     ~s:~n~s",
      begin
        Indices = lists:seq(_Index, _Index + length(_NotDep) - 1),
        IndexedNotDep = lists:zip(Indices, _NotDep),
+       Format = "                                       ~s~n",
        [_Type] ++
          [lists:append(
-            [io_lib:format("        ~s~n", [?pretty_s(I,S)])
+            [io_lib:format(Format, [?pretty_s(I,S)])
              || {I,S} <- IndexedNotDep])]
      end).
 

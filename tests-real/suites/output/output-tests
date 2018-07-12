@@ -93,8 +93,12 @@ testing "Symbolic registered names error info"
 ! concuerror_console -f src/register.erl
 outputhas "process <P.1/foo> exited abnormally"
 
-testing "Decent stacktrace reports"
+testing "Decent stacktrace report"
 ! concuerror_console -f src/stacktrace.erl
 outputhas "[{file,\"src/stacktrace.erl\"},{line,93}]"
+
+testing "Yet another decent stacktrace report"
+! concuerror_console -f src/more_stacktrace.erl
+outputhas "[6,{file,\"src/more_stacktrace.erl\"}]"
 
 . footer

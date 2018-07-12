@@ -32,6 +32,9 @@ extractOne(File) ->
       end,
     lists:map(FunMap, Scenarios)
   catch
+    error:undef ->
+      io:format(standard_error, "No scenarios() function in ~s~n", [File]),
+      [];
     {bad_scenario, S} ->
       io:format(standard_error, "Bad scenario in ~s: ~w~n", [File, S]),
       []

@@ -614,15 +614,31 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
 
 %%------------------------------------------------------------------------------
 
-dependent_built_in(#builtin_event{mfargs = {ets, delete, [TableA]}, extra = IdA},
-                   #builtin_event{mfargs = {ets, _Any, [TableB|_]}, extra = IdB}) ->
+dependent_built_in(#builtin_event{mfargs = {ets, rename, [TableA, NameA]}
+                                 , extra = IdA},
+                   #builtin_event{mfargs = {ets, AnyB, [TableB|ArgB]}
+                                 , extra = IdB}) ->
+  ets_same_table(TableA, IdA, TableB, IdB) orelse
+    ets_same_table(NameA, IdA, TableB, IdB) orelse
+    TableA =:= TableB orelse
+    (AnyB =:= rename andalso ArgB =:= [NameA]);
+dependent_built_in(#builtin_event{mfargs = {ets, _Any, _}} = EventA,
+                   #builtin_event{mfargs = {ets, rename, _}} = EventB) ->
+  dependent_built_in(EventB, EventA);
+
+dependent_built_in(#builtin_event{mfargs = {ets, delete, [TableA]}
+                                 , extra = IdA},
+                   #builtin_event{mfargs = {ets, _Any, [TableB|_]}
+                                 , extra = IdB}) ->
   ets_same_table(TableA, IdA, TableB, IdB);
 dependent_built_in(#builtin_event{mfargs = {ets, _Any, _}} = EventA,
                    #builtin_event{mfargs = {ets, delete, _}} = EventB) ->
   dependent_built_in(EventB, EventA);
 
-dependent_built_in(#builtin_event{mfargs = {ets, new, [TableA|_]}, extra = IdA},
-                   #builtin_event{mfargs = {ets, _Any, [TableB|_]}, extra = IdB}) ->
+dependent_built_in(#builtin_event{mfargs = {ets, new, [TableA|_]}
+                                 , extra = IdA},
+                   #builtin_event{mfargs = {ets, _Any, [TableB|_]}
+                                 , extra = IdB}) ->
   ets_same_table(TableA, IdA, TableB, IdB);
 dependent_built_in(#builtin_event{mfargs = {ets, _Any, _}} = EventA,
                    #builtin_event{mfargs = {ets, new, _}} = EventB) ->
@@ -704,6 +720,7 @@ ets_is_mutating(#builtin_event{ mfargs = {_, Op, [_|Rest] = Args}
         SelDelete =:= internal_select_delete ->
       from_delete(hd(Rest));
     {update_counter, 3} -> with_key(hd(Rest));
+    {update_element, 3} -> with_key(hd(Rest));
     {whereis, 1} -> false
   end.
 
@@ -763,6 +780,7 @@ keys_or_tuples(#builtin_event{mfargs = {_, Op, [_|Rest] = Args}}) ->
         SelDelete =:= internal_select_delete ->
       {matchspec, hd(Rest)};
     {update_counter, 3} -> {keys, [hd(Rest)]};
+    {update_element, 3} -> {keys, [hd(Rest)]};
     {whereis, 1} -> none
   end.
 

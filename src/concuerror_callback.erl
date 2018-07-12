@@ -258,8 +258,10 @@ instrumented_call(Module, Name, Arity, Args, _Location,
   end;
 instrumented_call(erlang, apply, 3, [Module, Name, Args], Location, Info) ->
   instrumented_call(Module, Name, length(Args), Args, Location, Info);
-instrumented_call(Module, Name, Arity, Args, Location, Info)
+instrumented_call(Module, Name, Arity, Args, Location, InfoIn)
   when is_atom(Module) ->
+  Info =
+    InfoIn#concuerror_info{stacktop = [{Module, Name, Args, Location}]},
   case
     erlang:is_builtin(Module, Name, Arity) andalso
     concuerror_instrumenter:is_unsafe({Module, Name, Arity})
@@ -343,7 +345,7 @@ built_in(Module, Name, Arity, Args, Location, InfoIn) ->
         },
     Notification = Event#event{event_info = EventInfo},
     NewInfo = notify(Notification, UpdatedInfo),
-    {{didit, Value}, NewInfo#concuerror_info{stacktop = []}}
+    {{didit, Value}, NewInfo}
   catch
     throw:Reason ->
       #concuerror_info{scheduler = Scheduler} = Info,
@@ -359,9 +361,7 @@ built_in(Module, Name, Arity, Args, Location, InfoIn) ->
            trapping = Trapping
           },
       FNotification = FEvent#event{event_info = FEventInfo},
-      FNewInfo = notify(FNotification, LocatedInfo),
-      FinalInfo =
-        FNewInfo#concuerror_info{stacktop = [{Module, Name, Args, Location}]},
+      FinalInfo = notify(FNotification, LocatedInfo),
       {{error, Reason}, FinalInfo}
   end.
 
@@ -1011,6 +1011,14 @@ run_built_in(ets, new, 2, [NameArg, Options], Info) ->
   true = ets:insert(EtsTables, Entry),
   ets:delete_all_objects(Tid),
   {Ret, Info#concuerror_info{extra = {Tid, Name}}};
+run_built_in(ets, rename, 2, [NameOrTid, NewName], Info) ->
+  #concuerror_info{ets_tables = EtsTables} = Info,
+  ?badarg_if_not(is_atom(NewName)),
+  {Tid, _, _} = ets_access_table_info(NameOrTid, {rename, 2}, Info),
+  MatchExistingName = ets:match(EtsTables, ?ets_match_name_to_tid(NewName)),
+  ?badarg_if_not(MatchExistingName =:= []),
+  ets:update_element(EtsTables, Tid, [{?ets_name, NewName}]),
+  {NewName, Info#concuerror_info{extra = {Tid, NewName}}};
 run_built_in(ets, info, 2, [NameOrTid, Field], Info) ->
   #concuerror_info{ets_tables = EtsTables} = Info,
   ?badarg_if_not(is_atom(Field)),
@@ -1097,6 +1105,7 @@ run_built_in(ets, F, N, [NameOrTid|Args], Info)
     ; {F, N} =:= {select, 3}
     ; {F, N} =:= {select_delete, 2}
     ; {F, N} =:= {update_counter, 3}
+    ; {F, N} =:= {update_element, 3}
     ->
   {Tid, Id, IsSystem} = ets_access_table_info(NameOrTid, {F, N}, Info),
   case IsSystem of
@@ -1894,9 +1903,11 @@ ets_ops_access_rights_map(Op) ->
     {match_object, _} -> read;
     {member, _} -> read;
     {next, _} -> read;
+    {rename, 2} -> write;
     {select, _} -> read;
     {select_delete, 2} -> write;
     {update_counter, 3} -> write;
+    {update_element, 3} -> write;
     {whereis, 1} -> none
   end.
 
