@@ -614,15 +614,19 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
 
 %%------------------------------------------------------------------------------
 
-dependent_built_in(#builtin_event{mfargs = {ets, delete, [TableA]}, extra = IdA},
-                   #builtin_event{mfargs = {ets, _Any, [TableB|_]}, extra = IdB}) ->
+dependent_built_in(#builtin_event{mfargs = {ets, delete, [TableA]}
+                                 , extra = IdA},
+                   #builtin_event{mfargs = {ets, _Any, [TableB|_]}
+                                 , extra = IdB}) ->
   ets_same_table(TableA, IdA, TableB, IdB);
 dependent_built_in(#builtin_event{mfargs = {ets, _Any, _}} = EventA,
                    #builtin_event{mfargs = {ets, delete, _}} = EventB) ->
   dependent_built_in(EventB, EventA);
 
-dependent_built_in(#builtin_event{mfargs = {ets, new, [TableA|_]}, extra = IdA},
-                   #builtin_event{mfargs = {ets, _Any, [TableB|_]}, extra = IdB}) ->
+dependent_built_in(#builtin_event{mfargs = {ets, new, [TableA|_]}
+                                 , extra = IdA},
+                   #builtin_event{mfargs = {ets, _Any, [TableB|_]}
+                                 , extra = IdB}) ->
   ets_same_table(TableA, IdA, TableB, IdB);
 dependent_built_in(#builtin_event{mfargs = {ets, _Any, _}} = EventA,
                    #builtin_event{mfargs = {ets, new, _}} = EventB) ->
