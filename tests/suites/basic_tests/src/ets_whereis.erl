@@ -15,6 +15,8 @@ scenarios() ->
       , whereis_race_ww
       , whereis_race_exit
       , whereis_race_del
+      , race_whereis_r
+      , race_whereis_w
       ];
     false -> []
   end.
@@ -102,3 +104,15 @@ whereis_race_del() ->
   C2 = flip(table, T),
   spawn(fun() -> catch ets:insert(C1, {x, 1}) end),
   ets:delete(C2).
+
+race_whereis_r() ->
+  table = ets:new(table, [public, named_table]),
+  spawn_monitor(fun() -> ets:lookup(table, x) end),
+  ets:whereis(table),
+  receive _ -> ok end.
+
+race_whereis_w() ->
+  table = ets:new(table, [public, named_table]),
+  spawn_monitor(fun() -> ets:insert(table, {x, 1}) end),
+  ets:whereis(table),
+  receive _ -> ok end.

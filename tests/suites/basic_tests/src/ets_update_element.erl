@@ -5,6 +5,8 @@
 scenarios() ->
     [ update_element_good
     , update_element_bad
+    , race_update_element_r
+    , race_update_element_w
     ].
 
 update_element_good() ->
@@ -30,6 +32,30 @@ update_element_bad() ->
           error:badarg -> ok
         end
     end),
+  receive
+    _ -> ok
+  end.
+
+race_update_element_r() ->
+  ets:new(table, [named_table, public]),
+  ets:insert(table, {x, 1}),
+  spawn_monitor(
+    fun() ->
+        ets:update_element(table, x, {2, 2})
+    end),
+  ets:lookup(table, x),
+  receive
+    _ -> ok
+  end.
+
+race_update_element_w() ->
+  ets:new(table, [named_table, public]),
+  ets:insert(table, {x, 1}),
+  spawn_monitor(
+    fun() ->
+        ets:update_element(table, x, {2, 2})
+    end),
+  ets:insert(table, {x, 3}),
   receive
     _ -> ok
   end.
