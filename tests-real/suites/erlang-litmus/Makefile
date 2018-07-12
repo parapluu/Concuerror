@@ -1,8 +1,7 @@
 .PHONY: test
 
 test: erlang-concurrency-litmus-tests
-	#./test etsglobal # Skip: The tests are incomplete and a bit
-	#                 #       irrelevant for Concuerror right now
+	./test etsglobal
 	./test leader
 	./test link
 	./test mailbox

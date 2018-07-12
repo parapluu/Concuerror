@@ -1011,6 +1011,14 @@ run_built_in(ets, new, 2, [NameArg, Options], Info) ->
   true = ets:insert(EtsTables, Entry),
   ets:delete_all_objects(Tid),
   {Ret, Info#concuerror_info{extra = {Tid, Name}}};
+run_built_in(ets, rename, 2, [NameOrTid, NewName], Info) ->
+  #concuerror_info{ets_tables = EtsTables} = Info,
+  ?badarg_if_not(is_atom(NewName)),
+  {Tid, _, _} = ets_access_table_info(NameOrTid, {rename, 2}, Info),
+  MatchExistingName = ets:match(EtsTables, ?ets_match_name_to_tid(NewName)),
+  ?badarg_if_not(MatchExistingName =:= []),
+  ets:update_element(EtsTables, Tid, [{?ets_name, NewName}]),
+  {NewName, Info#concuerror_info{extra = {Tid, NewName}}};
 run_built_in(ets, info, 2, [NameOrTid, Field], Info) ->
   #concuerror_info{ets_tables = EtsTables} = Info,
   ?badarg_if_not(is_atom(Field)),
@@ -1895,6 +1903,7 @@ ets_ops_access_rights_map(Op) ->
     {match_object, _} -> read;
     {member, _} -> read;
     {next, _} -> read;
+    {rename, 2} -> write;
     {select, _} -> read;
     {select_delete, 2} -> write;
     {update_counter, 3} -> write;
