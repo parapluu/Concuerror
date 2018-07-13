@@ -443,7 +443,7 @@ graph_option() ->
 
 symbolic_names_option() ->
   { symbolic_names
-  , [output, erlang, visual]
+  , [erlang, output, visual]
   , $s
   , {boolean, true}
   , "Use symbolic process names"

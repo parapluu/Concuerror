@@ -6,11 +6,16 @@
 
 %%==============================================================================
 
-lint_option_specs_test() ->
+lint_option_specs_test_() ->
   LintSpec =
     fun(OptionSpec) ->
-        ?debugFmt("~p", [OptionSpec]),
-        {Keywords, _} = ?M:get_keywords_and_related(OptionSpec),
-        ?debugFmt("ok~n", [])
+        fun() ->
+            {Keywords, _} = ?M:get_keywords_and_related(OptionSpec),
+            OptionName = element(1, OptionSpec),
+            ?assertEqual(
+               {OptionName, Keywords},
+               {OptionName, lists:usort(Keywords)}
+              )
+        end
     end,
-  lists:foreach(LintSpec, ?M:options()).
+  lists:map(LintSpec, ?M:options()).
