@@ -13,15 +13,16 @@ concuerror_console --help
 consolehas 'basic'
 
 testing "Report unknown arguments"
-! concuerror_console unknown arguments
+concuerror_console_fail unknown arguments
 consolehas "Unknown argument"
 
 testing "Report missing arguments"
-! concuerror_console -t
+concuerror_console_fail -t
 consolehas "No argument given for"
 
 testing "Show all options has > 50 lines"
-if [ $($CONCUERROR -h all 2>&1 | wc -l) -lt 50 ]; then
+concuerror_console -h all
+if [ $(cat $Console | wc -l) -lt 50 ]; then
     abort
 fi
 good
@@ -39,11 +40,11 @@ concuerror_console -h --help
 consolehas "Without an argument, prints info for basic options."
 
 testing "Unknown option"
-! concuerror_console --unknown_option
+concuerror_console_fail --unknown_option
 consolehas "invalid option: --unknown_option"
 
 testing "Unknown argument to help"
-! concuerror_console -h elp
+concuerror_console_fail -h elp
 consolehas "invalid option/keyword (as argument to --help)"
 
 testing "No additional help available"
@@ -63,7 +64,7 @@ concuerror_console --version
 consolehas "Concuerror v"
 
 testing "Bad entry point"
-! concuerror_console -f src/foo.erl -t ban
+concuerror_console_fail -f src/foo.erl -t ban
 consolehas "The entry point foo:ban/0 is invalid."
 
 testing "Default verbosity has info"
@@ -71,11 +72,11 @@ concuerror_console -f src/foo.erl
 consolehas "Info:"
 
 testing "Verbosity and quiet"
-! concuerror_console -v --quiet
+concuerror_console_fail -v --quiet
 consolehas "'--verbosity' specified together with '--quiet'."
 
 testing "Too much verbosity"
-! concuerror_console -vvvvvvvvv
+concuerror_console_fail -vvvvvvvvv
 consolehas "make dev"
 
 testing "We found erlang without help"

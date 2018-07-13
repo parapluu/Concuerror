@@ -13,7 +13,7 @@ concuerror_console -f src/other_deadlock.erl --first_process_errors_only
 good
 
 testing "Only first process errors with error"
-! concuerror_console -f src/first_and_other_deadlock.erl --first_process_errors_only
+concuerror_console_error -f src/first_and_other_deadlock.erl --first_process_errors_only
 good
 
 testing "Only first process errors with ignored error"
@@ -74,11 +74,11 @@ else
 fi
 
 testing "Nonexistent input file"
-! concuerror_console -f nonexistent
+concuerror_console_fail -f nonexistent
 consolehas "Error: nonexistent is not a .erl or .beam file"
 
 testing "Bad .erl input file"
-! concuerror_console -f src/bad.erl > /dev/null
+concuerror_console_fail -f src/bad.erl > /dev/null
 consolehas "Error: could not compile src/bad.erl (try to add the .beam file instead)"
 
 testing "BEAM input file"
@@ -91,7 +91,7 @@ rm foo.beam
 testing "Bad BEAM input file"
 rm -f foo.beam
 cp src/foo.erl foo.beam
-! concuerror_console -f foo.beam
+concuerror_console_fail -f foo.beam
 consolehas "Error:"
 rm foo.beam
 
