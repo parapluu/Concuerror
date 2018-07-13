@@ -135,7 +135,7 @@ version() ->
 
 %%------------------------------------------------------------------------------
 
--type string_constant() :: [1..255,...]. % Dialyzer underspecs is unhappy otw.
+-type string_constant() :: [1..255, ...]. % Dialyzer underspecs is unhappy otw.
 
 %% @private
 -spec analysis_result_documentation() -> string_constant().

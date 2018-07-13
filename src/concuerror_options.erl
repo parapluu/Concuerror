@@ -935,7 +935,7 @@ check_validity(Key) ->
     ignore_error ->
       Valid = [abnormal_halt, abnormal_exit, deadlock, depth_bound],
       {fun(V) -> [] =:= (V -- Valid) end,
-       io_lib:format("one or more of ~w",[Valid])};
+       io_lib:format("one or more of ~w", [Valid])};
     scheduling ->
       [newest, oldest, round_robin];
     scheduling_bound ->
@@ -1059,7 +1059,7 @@ fix_multiargs([Flag1, Arg1, Arg2 | Rest], Fixed)
   opt_info(
     "\"~s ~s ~s\" converted to \"~s ~s ~s ~s\"",
     [Flag1, Arg1, Arg2, Flag1, Arg1, Flag1, Arg2]),
-  fix_multiargs([Flag1,Arg2|Rest], [Arg1,Flag1|Fixed]);
+  fix_multiargs([Flag1, Arg2|Rest], [Arg1, Flag1|Fixed]);
 fix_multiargs([Other|Rest], Fixed) ->
   fix_multiargs(Rest, [Other|Fixed]).
 
@@ -1152,7 +1152,8 @@ cl_usage(Name) ->
         String -> to_stderr(String ++ "~n")
       end,
       {Keywords, Related} = get_keywords_and_related(Tuple),
-      to_stderr("Option Keywords: ~p~nRelated Options: ~p~n", [Keywords, Related]),
+      to_stderr("Option Keywords: ~p~n", [Keywords]),
+      to_stderr("Related Options: ~p~n", [Related]),
       to_stderr("For general help use `-h' without an argument.~n")
   end.
 
@@ -1176,7 +1177,8 @@ print_exit_status_info() ->
   to_stderr(Message).
 
 print_bugs_message() ->
-  Message = "Report bugs (and other FAQ): http://parapluu.github.io/Concuerror/faq~n",
+  Message =
+    "Report bugs (and other FAQ): http://parapluu.github.io/Concuerror/faq~n",
   to_stderr(Message).
 
 get_keywords_and_related(Tuple) ->
@@ -1237,14 +1239,14 @@ check_otp_version() ->
   CurrentOTPRelease =
     case erlang:system_info(otp_release) of
       "R" ++ _ -> 16; %% ... or earlier
-      [D,U|_] -> list_to_integer([D,U])
+      [D, U|_] -> list_to_integer([D, U])
     end,
   case CurrentOTPRelease =:= ?OTP_VERSION of
     true -> ok;
     false ->
       opt_error(
         "Concuerror has been compiled for a different version of Erlang/OTP."
-        " Please run `make distclean; make` again.",[])
+        " Please run `make distclean; make` again.", [])
   end.
 
 %%%-----------------------------------------------------------------------------
@@ -1493,18 +1495,20 @@ ensure_module(Options) ->
       [] ->
         case proplists:get_all_values(module, Options) of
           [] ->
-            UndefinedEntryPoint =
-              "The module containing the main test function has not been specified.",
-            opt_error(UndefinedEntryPoint, [], module);
+            UndefinedEntryPointMsg =
+              "The module containing the main test function has not been"
+              " specified.",
+            opt_error(UndefinedEntryPointMsg, [], module);
           [M] -> M;
           _ ->
             multiple_opt_error(module)
         end;
-      [{M,_,_}] -> M;
-      [_,_|_] ->
+      [{M, _, _}] -> M;
+      [_, _|_] ->
         opt_error("Multiple instances of 'entry_point' specified.", [], module);
       [Other] ->
-        opt_error("The specified 'entry_point' '~w' is invalid.", [Other], module)
+        InvalidEntryPointMsg = "The specified 'entry_point' '~w' is invalid.",
+        opt_error(InvalidEntryPointMsg, [Other], module)
     end,
   try
     Module:module_info(attributes)
@@ -1512,7 +1516,7 @@ ensure_module(Options) ->
     _:_ ->
       opt_error("Could not find module ~w.", [Module], module)
   end,
-  [{module, Module}|delete_options(module,Options)].
+  [{module, Module}|delete_options(module, Options)].
 
 %%%-----------------------------------------------------------------------------
 
@@ -1553,7 +1557,7 @@ filter_from_attribute(OptionsRaw, Where) ->
     end,
   case lists:dropwhile(AllowedPred, Options) of
     [] -> Options;
-    [{Key,_}|_] ->
+    [{Key, _}|_] ->
       opt_error("Option '~p' not allowed in ~p.", [Key, Where])
   end.
 
@@ -1736,7 +1740,7 @@ fix_infinities([{Key, Value} = Option|Rest], Acc) ->
 ensure_entry_point(Options) ->
   {M, F, B} = EntryPoint =
     case proplists:get_value(entry_point, Options) of
-      {_,_,_} = EP -> EP;
+      {_, _, _} = EP -> EP;
       undefined ->
         Module = proplists:get_value(module, Options),
         Name = proplists:get_value(test, Options, test),
@@ -1747,14 +1751,14 @@ ensure_entry_point(Options) ->
     true = is_atom(M),
     true = is_atom(F),
     true = is_list(B),
-    true = lists:member({F,length(B)}, M:module_info(exports)),
+    true = lists:member({F, length(B)}, M:module_info(exports)),
     [{entry_point, EntryPoint}|CleanOptions]
   catch
     _:_ ->
       InvalidEntryPoint =
         "The entry point ~w:~w/~w is invalid. Make sure you have"
         " specified the correct module ('-m') and test function ('-t').",
-      opt_error(InvalidEntryPoint, [M,F,length(B)], input)
+      opt_error(InvalidEntryPoint, [M, F, length(B)], input)
   end.
 
 %%------------------------------------------------------------------------------
@@ -1857,7 +1861,8 @@ opt_error(Format, Data, Extra) when is_atom(Extra) ->
   ExtraS = io_lib:format("`--help ~p'", [Extra]),
   opt_error(Format, Data, ExtraS);
 opt_error(Format, Data, Extra) ->
-  opt_log(?lerror, Format ++ "~n    Use ~s for more information.", Data ++ [Extra]),
+  ExtFormat = "~n    Use ~s for more information.",
+  opt_log(?lerror, Format ++ ExtFormat, Data ++ [Extra]),
   throw(opt_error).
 
 -spec multiple_opt_error(atom()) -> no_return().
