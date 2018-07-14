@@ -152,8 +152,6 @@
 
 -export([parse_cl/1, finalize/1]).
 
--export([generate_option_docfiles/1]).
-
 -export_type([options/0, option_spec/0]).
 
 -ifndef(DOC).
@@ -163,6 +161,8 @@
    , scheduling/0
    , scheduling_bound_type/0
    ]).
+-else.
+-export([generate_option_docfiles/1]).
 -endif.
 
 %%%-----------------------------------------------------------------------------
@@ -274,6 +274,8 @@ options() ->
 
 %%%-----------------------------------------------------------------------------
 
+-ifdef(DOC).
+
 %% @private
 -spec generate_option_docfiles(filename:filename()) -> ok.
 
@@ -333,6 +335,9 @@ item(File, Format, Args) ->
 
 to_yes_or_no(true) -> yes;
 to_yes_or_no(false) -> no.
+
+-endif.
+
 %%%-----------------------------------------------------------------------------
 
 %% @docfile "doc/module_option.edoc"
