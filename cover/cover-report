@@ -1,5 +1,5 @@
 #!/usr/bin/env escript
-%%! +S1 -nostick -noshell -pa ../ebin
+%%! +S1 -nostick -noshell -pa ../_build/default/lib/concuerror/ebin
 
 main([CoverDir]) ->
   {ok, Files} = file:list_dir(CoverDir),
