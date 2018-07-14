@@ -75,9 +75,7 @@ main_internal(Args) ->
   AnalysisResult =
     case concuerror_options:parse_cl(Args) of
       {run, Options} -> run(Options);
-      {return, Result} ->
-        maybe_cover_export(Args),
-        Result
+      {return, Result} -> Result
     end,
   ExitStatus =
     case AnalysisResult of
@@ -85,6 +83,7 @@ main_internal(Args) ->
       error -> 1;
       fail -> 2
     end,
+  maybe_cover_export(Args),
   erlang:halt(ExitStatus).
 
 %%------------------------------------------------------------------------------
