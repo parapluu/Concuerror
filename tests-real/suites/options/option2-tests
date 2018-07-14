@@ -4,6 +4,14 @@
 
 print_blue "$0"
 
+testing "Bound infinity"
+concuerror_console_fail --after_timeout infinity -f src/foo.erl
+consolehas "use -1 instead of 'infinity' for bounds on the command line"
+
+testing "Bound -1"
+concuerror_console --after_timeout -1 -f src/foo.erl
+good
+
 testing "No module specified"
 concuerror_console_fail -t module_info
 consolehas "The module containing the main test function has not been specified."

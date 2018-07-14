@@ -207,7 +207,7 @@ log(Logger, Level, Tag, Format, Data) ->
   Logger ! {log, Level, Tag, Format, Data},
   ok.
 
--spec stop(logger(), term()) -> concuerror:exit_status().
+-spec stop(logger(), term()) -> concuerror:analysis_result().
 
 stop(Logger, Status) ->
   Logger ! {stop, Status, self()},
