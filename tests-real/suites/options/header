@@ -35,11 +35,23 @@ function print_ok {
 }
 
 function mygrep {
-    grep -q "$1" $Out
+    grep_this $Out $@
 }
 
 function mygrepconsole {
-    grep -q "$1" $Console
+    grep_this $Console $@
+}
+
+function grep_this {
+    File=$1
+    shift
+    grep -q "$1" $File
+    Ret=$?
+    if [ $Ret -eq 0 ]; then
+       return 0
+    else
+       exit 1
+    fi
 }
 
 function outputhas {
