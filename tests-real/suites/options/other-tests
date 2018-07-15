@@ -53,6 +53,16 @@ consolehas "All 3 tests passed."
 rm eunit_sample.beam
 cd ..
 
+testing "Simple EUnit use with entrypoint"
+cd src
+erlc eunit_sample.erl
+> $Console erl -pa "$CONCUERROR_BEAM" -noinput \
+  -s eunit_sample concuerror_entry_point_tests \
+  -s erlang halt
+consolehas "2 tests passed."
+rm eunit_sample.beam
+cd ..
+
 testing "Report unknown arguments in shell invocation"
 cd src
 erlc from_shell.erl

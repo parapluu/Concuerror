@@ -1,7 +1,9 @@
-%% @doc The estimator process is being updated by the scheduler and
-%%      polled independently by the logger. It stores a lightweight
-%%      representation/summarry of the exploration tree and uses it to
-%%      give an estimation of the total size.
+%%% @private
+%%% @doc
+%%% The estimator process is being updated by the scheduler and polled
+%%% independently by the logger. It stores a lightweight
+%%% representation/summarry of the exploration tree and uses it to
+%%% give an estimation of the total size.
 
 -module(concuerror_estimator).
 

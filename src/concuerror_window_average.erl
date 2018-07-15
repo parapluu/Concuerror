@@ -1,5 +1,7 @@
-%% @doc This module provides functions for calculating a running
-%%      window average of numerical values.
+%%% @private
+%%% @doc
+%%% This module provides functions for calculating a running
+%%% window average of numerical values.
 
 -module(concuerror_window_average).
 

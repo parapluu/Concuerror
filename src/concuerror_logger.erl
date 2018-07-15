@@ -1,5 +1,7 @@
-%% @doc The logger is a process responsible for collecting information
-%%      and sending output to the user in reports and stderr.
+%%% @private
+%%% @doc
+%%% The logger is a process responsible for collecting information and
+%%% sending output to the user in reports and stderr.
 
 -module(concuerror_logger).
 
@@ -9,11 +11,13 @@
 -export([print_log_message/3]).
 -export([showing_progress/1, progress_help/0]).
 
+-export_type([log_level/0]).
+
 %%------------------------------------------------------------------------------
 
 -include("concuerror.hrl").
 
--type log_level() :: ?lquiet..?MAX_VERBOSITY.
+-type log_level() :: 0..7.
 
 -define(TICKER_TIMEOUT, 500).
 
@@ -114,9 +118,7 @@ initialize(Options) ->
       Options),
   GraphData = graph_preamble(Graph),
   Header =
-    io_lib:format(
-      "~s started at ~s~n",
-      [concuerror_options:version(), Timestamp]),
+    io_lib:format("~s started at ~s~n", [concuerror:version(), Timestamp]),
   Ticker =
     case showing_progress(Verbosity) of
       false -> none;
@@ -205,7 +207,7 @@ log(Logger, Level, Tag, Format, Data) ->
   Logger ! {log, Level, Tag, Format, Data},
   ok.
 
--spec stop(logger(), term()) -> concuerror:exit_status().
+-spec stop(logger(), term()) -> concuerror:analysis_result().
 
 stop(Logger, Status) ->
   Logger ! {stop, Status, self()},
@@ -231,7 +233,7 @@ race(Logger, EarlyEvent, Event) ->
   Logger ! {race, EarlyEvent, Event},
   ok.
 
--spec set_verbosity(logger(), ?lquiet..?MAX_VERBOSITY) -> ok.
+-spec set_verbosity(logger(), log_level()) -> ok.
 
 set_verbosity(Logger, Verbosity) ->
   Logger ! {set_verbosity, Verbosity},

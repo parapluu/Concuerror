@@ -1,0 +1,5 @@
+#!/usr/bin/env escript
+%%! -noshell -pa _build/docs/lib/concuerror/ebin
+
+main(Dir) ->
+  concuerror_options:generate_option_docfiles(Dir).

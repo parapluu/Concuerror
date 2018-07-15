@@ -4,36 +4,44 @@
 
 print_blue "$0"
 
+testing "Bound infinity"
+concuerror_console_fail --after_timeout infinity -f src/foo.erl
+consolehas "use -1 instead of 'infinity' for bounds on the command line"
+
+testing "Bound -1"
+concuerror_console --after_timeout -1 -f src/foo.erl
+good
+
 testing "No module specified"
-! concuerror_console -t module_info
+concuerror_console_fail -t module_info
 consolehas "The module containing the main test function has not been specified."
 
 testing "Specified module not found"
-! concuerror_console -m wat_467346
+concuerror_console_fail -m wat_467346
 consolehas "Could not find module wat_467346."
 
 testing "Too many modules"
-! concuerror_console -m too -m many
+concuerror_console_fail -m too -m many
 consolehas "Multiple instances of '--module' specified."
 
 testing "Unknown attribute"
-! concuerror_console -f src/bad_attribute_1.erl
+concuerror_console_fail -f src/bad_attribute_1.erl
 consolehas "invalid option in concuerror_options attribute: 'unknown_unknown'"
 
 testing "Attribute not allowed"
-! concuerror_console -f src/bad_attribute_2.erl
+concuerror_console_fail -f src/bad_attribute_2.erl
 consolehas "Option 'version' not allowed in concuerror_options_forced."
 
 testing "Multiple options in attribute 1"
-! concuerror_console -f src/bad_attribute_3.erl
+concuerror_console_fail -f src/bad_attribute_3.erl
 consolehas "Multiple instances of option keep_going not allowed in concuerror_options."
 
 testing "Multiple options in attribute 2"
-! concuerror_console -f src/bad_attribute_4.erl
+concuerror_console_fail -f src/bad_attribute_4.erl
 consolehas "Multiple instances of option keep_going not allowed in concuerror_options_forced."
 
 testing "Multiple options in attribute 3"
-! concuerror_console -f src/bad_attribute_5.erl
+concuerror_console_fail -f src/bad_attribute_5.erl
 consolehas "Multiple instances of option keep_going in concuerror_options_forced and concuerror_options not allowed."
 
 testing "Multiple options in command_line"
@@ -45,27 +53,27 @@ concuerror_console -f src/foo.erl -b 1
 consolehas "Info: Using '--scheduling_bound_type delay'."
 
 testing "Bad path"
-! concuerror_console -f src/foo.erl --pz bannnn
+concuerror_console_fail -f src/foo.erl --pz bannnn
 consolehas "Error: Could not add 'bannnn' to code path."
 
 testing "Bad output"
-! concuerror_console -f src/foo.erl -o foo/man/choo
+concuerror_console_fail -f src/foo.erl -o foo/man/choo
 consolehas "Error: Could not open '--output' file foo/man/choo for writing."
 
 testing "Bad value for timeout"
-! concuerror_console -f src/foo.erl --timeout 300
+concuerror_console_fail -f src/foo.erl --timeout 300
 consolehas "Error: The value of '--timeout' must be -1 (infinity)"
 
 testing "Bad value for dpor"
-! concuerror_console -f src/foo.erl --dpor exotic
+concuerror_console_fail -f src/foo.erl --dpor exotic
 consolehas "Error: The value of '--dpor' must be one of"
 
 testing "Bad value for scheduling_bound"
-! concuerror_console -f src/foo.erl --scheduling_bound -42
+concuerror_console_fail -f src/foo.erl --scheduling_bound -42
 consolehas "Error: The value of '--scheduling_bound' must be a non-negative integer."
 
 testing "Sleep sets off only if no DPOR"
-! concuerror_console -f src/foo.erl --disable_sleep_sets --dpor optimal
+concuerror_console_fail -f src/foo.erl --disable_sleep_sets --dpor optimal
 consolehas "Setting 'dpor' to 'optimal' is not allowed when 'disable_sleep_sets' is set to true."
 
 . footer

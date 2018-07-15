@@ -1,26 +1,65 @@
+%%% @doc
+%%% Concuerror's main module
+%%%
+%%% Contains the entry points for invoking Concuerror, either directly
+%%% from the command-line or from an Erlang program.
+%%%
+%%% For general documentation go to the Overview page.
+
 -module(concuerror).
 
-%% CLI entry point.
--export([main/1]).
+-export([main/1, run/1, version/0]).
 
-%% Erlang entry point.
--export([run/1]).
+%% Internal export for documentation belonging in this module
+-export([analysis_result_documentation/0]).
 
 %% Internal functions for reloading
 -export([main_internal/1, run_internal/1]).
 
 %%------------------------------------------------------------------------------
 
--export_type([exit_status/0]).
+-export_type([analysis_result/0]).
 
--type exit_status() :: 'ok' | 'error' | 'fail'.
+-type analysis_result() :: 'ok' | 'error' | 'fail'.
+%% @type analysis_result() = 'ok' | 'error' | 'fail'.
+%% Meaning of Concuerror's analysis results, as returned from {@link
+%% concuerror:run/1} (the corresponding exit status
+%% returned by {@link concuerror:main/1} is given in parenthesis):
+%% <dl>
+%%   <dt>`ok' (exit status: <em>0</em>)</dt>
+%%     <dd>
+%%       the analysis terminated and found no errors
+%%     </dd>
+%%   <dt>`error' (exit status: <em>1</em>)</dt>
+%%     <dd>
+%%       the analysis terminated and found errors (see the
+%%       {@link concuerror_options:output_option/0. `output'} option)
+%%     </dd>
+%%   <dt>`fail' (exit status: <em>2</em>)</dt>
+%%     <dd>
+%%       the analysis failed and it might have found errors or not
+%%     </dd>
+%% </dl>
+
+%%------------------------------------------------------------------------------
 
 -include("concuerror.hrl").
 
 %%------------------------------------------------------------------------------
 
-%% @doc Concuerror's entry point when invoked by the command-line with
-%% a list of strings as arguments.
+%% @doc
+%% Command-line entry point.
+%%
+%% This function can be used to invoke Concuerror from the
+%% command-line.
+%%
+%% It accepts a list of strings as argument.  This list is processed by
+%% {@link concuerror_options:parse_cl/1} and the result is passed to
+%% {@link concuerror:run/1}.
+%%
+%% When {@link concuerror:run/1} returns, the Erlang VM will
+%% terminate, with an exit value corresponding to the {@link
+%% analysis_result()}.
 
 -spec main([string()]) -> no_return().
 
@@ -29,40 +68,83 @@ main(Args) ->
   maybe_cover_compile(),
   ?MODULE:main_internal(Args).
 
+%% @private
 -spec main_internal([string()]) -> no_return().
 
 main_internal(Args) ->
-  Status =
+  AnalysisResult =
     case concuerror_options:parse_cl(Args) of
-      {ok, Options} -> run(Options);
-      {exit, ExitStatus} ->
-        maybe_cover_export(Args),
-        ExitStatus
+      {run, Options} -> run(Options);
+      {return, Result} -> Result
     end,
-  cl_exit(Status).
+  ExitStatus =
+    case AnalysisResult of
+      ok -> 0;
+      error -> 1;
+      fail -> 2
+    end,
+  maybe_cover_export(Args),
+  erlang:halt(ExitStatus).
 
 %%------------------------------------------------------------------------------
 
-%% @doc Concuerror's entry point when invoked by an Erlang shell, with
-%% a proplist as argument.
+%% @doc
+%% Erlang entry point.
+%%
+%% This function can be used to invoke Concuerror from an Erlang
+%% program.  This is the recommended way to invoke Concuerror when you
+%% use it as part of a test suite.
+%%
+%% This function accepts a `proplists' list as argument.  The
+%% supported properties are specified at {@link concuerror_options}.
+%%
+%% The meaning of the return values is explained at {@link
+%% analysis_result()}.
 
--spec run(concuerror_options:options()) -> exit_status().
+-spec run(concuerror_options:options()) -> analysis_result().
 
 run(Options) ->
   _ = application:load(concuerror),
   maybe_cover_compile(),
   ?MODULE:run_internal(Options).
 
--spec run_internal(concuerror_options:options()) -> exit_status().
+%% @private
+-spec run_internal(concuerror_options:options()) -> analysis_result().
 
 run_internal(Options) ->
   Status =
     case concuerror_options:finalize(Options) of
-      {ok, FinalOptions, LogMsgs} -> start(FinalOptions, LogMsgs);
-      {exit, ExitStatus} -> ExitStatus
+      {run, FinalOptions, LogMsgs} -> start(FinalOptions, LogMsgs);
+      {return, ExitStatus} -> ExitStatus
     end,
   maybe_cover_export(Options),
   Status.
+
+%%-----------------------------------------------------------------------------
+
+%% @doc
+%% Returns a string representation of Concuerror's version.
+
+-spec version() -> string().
+
+version() ->
+  _ = application:load(concuerror),
+  {ok, Vsn} = application:get_key(concuerror, vsn),
+  io_lib:format("Concuerror v~s", [Vsn]).
+
+%%------------------------------------------------------------------------------
+
+-type string_constant() :: [1..255, ...]. % Dialyzer underspecs is unhappy otw.
+
+%% @private
+-spec analysis_result_documentation() -> string_constant().
+
+analysis_result_documentation() ->
+  ""
+    "Exit status:~n"
+    " 0    ('ok') : Analysis completed. No errors were found.~n"
+    " 1 ('error') : Analysis completed. Errors were found.~n"
+    " 2  ('fail') : Analysis failed to complete.~n".
 
 %%------------------------------------------------------------------------------
 
@@ -118,15 +200,6 @@ maybe_cover_export(Args) ->
       ok;
     false -> ok
   end.
-
-%%------------------------------------------------------------------------------
-
-cl_exit(ok) ->
-  erlang:halt(0);
-cl_exit(error) ->
-  erlang:halt(1);
-cl_exit(fail) ->
-  erlang:halt(2).
 
 %%------------------------------------------------------------------------------
 

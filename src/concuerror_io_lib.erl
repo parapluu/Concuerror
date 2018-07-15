@@ -1,3 +1,4 @@
+%%% @private
 -module(concuerror_io_lib).
 
 -export([error_s/2, pretty/3, pretty_s/2]).

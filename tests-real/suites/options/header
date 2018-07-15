@@ -1,4 +1,4 @@
-TOP_DIR=${TOP_DIR:-../../..}
+TOP_DIR=${TOP_DIR:-$(pwd)/../../..}
 CONCUERROR=${CONCUERROR:-$TOP_DIR/bin/concuerror}
 CONCUERROR_BEAM=${CONCUERROR_BEAM:-$TOP_DIR/_build/default/lib/concuerror/ebin}
 
@@ -10,7 +10,7 @@ rm -f $Out $Console
 . ../print_colors
 
 function abort {
-    trap - 0
+    trap - ERR
     set +e
     echo ""
     echo cat $Out
@@ -18,6 +18,7 @@ function abort {
     echo cat $Console
     cat $Console
     print_red "FAILED"
+    exit 1
 }
 
 function testing {
@@ -34,11 +35,23 @@ function print_ok {
 }
 
 function mygrep {
-    grep -q "$1" $Out
+    grep_this $Out $@
 }
 
 function mygrepconsole {
-    grep -q "$1" $Console
+    grep_this $Console $@
+}
+
+function grep_this {
+    File=$1
+    shift
+    grep -q "$1" $File
+    Ret=$?
+    if [ $Ret -eq 0 ]; then
+       return 0
+    else
+       exit 1
+    fi
 }
 
 function outputhas {
@@ -52,6 +65,24 @@ function concuerror_console {
     2> $Console $CONCUERROR $@
 }
 
+function concuerror_console_expect {
+    Expect=$1
+    shift
+    trap - ERR
+    2> $Console $CONCUERROR $@
+    Ret=$?
+    trap 'abort' ERR
+    [ $Ret -eq $Expect ]
+}
+
+function concuerror_console_error {
+    concuerror_console_expect 1 $@
+}
+
+function concuerror_console_fail {
+    concuerror_console_expect 2 $@
+}
+
 function consolehas {
     print_ok
     testing "... and console has \"$1\""
@@ -59,5 +90,4 @@ function consolehas {
     good
 }
 
-set -e
-trap 'abort' 0
+trap 'abort' ERR

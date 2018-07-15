@@ -1,3 +1,4 @@
+%%% @private
 -module(concuerror_dependencies).
 
 -export([dependent/3, dependent_safe/2, explain_error/1]).
