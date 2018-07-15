@@ -128,7 +128,7 @@ and assumes:
  arrived by the time the `receive` statement is reached.
 
 * **For** `send_after`**-like timeouts**: The timeout message may arrive at
-    anytime until canceled.
+    any time until canceled.
 
 You can use `-- after-timeout N` to make Concuerror regard timeouts higher than
 `N` as infinity.
