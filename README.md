@@ -6,13 +6,15 @@
 
 Concuerror is a stateless model checking tool for Erlang programs. It can be used to systematically test programs for concurrency errors, detect and report errors that only occur on few, specific schedulings or **verify** their absence.
 
-To find out more [visit the website!][website]
+[Visit the website][website] to find out more!
 
 ## How to build
 
 * Compile             : `make`
+* Build documentation : `make edoc`
 * Run the testsuites  : `make tests tests-real tests-unit`
 * Run Dialyzer        : `make dialyzer`
+* Run Elvis           : `make lint`
 * Check code coverage : `make cover`
 * Cleanup             : `make clean`
 
