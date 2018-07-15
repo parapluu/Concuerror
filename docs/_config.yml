@@ -32,6 +32,8 @@ links:
     url: /faq
   - title: <i class="fas fa-info-circle"></i> Tutorials
     url: /tutorials
+  - title: <i class="fas fa-plug"></i> API (Hexdocs)
+    url: https://hexdocs.pm/concuerror
   - title: <i class="fas fa-book"></i> Publications    
     url: /publications
   - title: <i class="fas fa-envelope"></i> Contact

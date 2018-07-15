@@ -12,7 +12,7 @@ Concuerror's latest stable version is available on [Github](https://github.com/p
 {% highlight bash %}
 $ git clone https://github.com/parapluu/Concuerror.git
 $ cd Concuerror
-$ make -j
+$ make
 {% endhighlight %}
 
 The preferred way to start concuerror is via the `bin/concuerror` escript.
