@@ -40,7 +40,7 @@
 %%% boolean()} options in the command line you can omit `true' or 1
 %%% as values.
 %%%
-%%% === Module attributes ===
+%%% === Module Attributes ===
 %%%
 %%% You can use the following attributes in the module specified by `--module'
 %%% to pass options to Concuerror:
@@ -69,7 +69,7 @@
 %%% you will only see options with the keyword `basic'.  To see all
 %%% options use {@link help_option/0. `--help all'}.
 %%%
-%%% === Multiple arguments ===
+%%% === Multiple Arguments ===
 %%%
 %%% Some options can be specified multiple times, each time with a
 %%% different argument.  For those that don't the last value is kept
@@ -360,12 +360,12 @@ generate_option_docfile(Option, Dir) ->
   AllowedInModuleAttributes =
     not lists:member(OptionName, not_allowed_in_module_attributes()),
   item(
-    File, "Allowed in {@section module attributes}: <em>~p</em>",
+    File, "Allowed in {@section Module Attributes}: <em>~p</em>",
     [to_yes_or_no(AllowedInModuleAttributes)]),
   MultipleAllowed =
     lists:member(OptionName, multiple_allowed()),
   item(
-    File, "{@section Multiple arguments}: <em>~p</em>",
+    File, "{@section Multiple Arguments}: <em>~p</em>",
     [to_yes_or_no(MultipleAllowed)]),
   case OptionKeywords =:= [] of
     true -> ok;
@@ -936,9 +936,9 @@ help_option() ->
     " progress info mean.~n~n"
     "With an option name as argument, prints more help for that option.~n~n"
     "Options have keywords associated with them (shown in their help)."
-    " With a keyword as argument, prints a list of all options with the"
-    " keyword.~n~n"
-    "If an expected argument is omitted, `true' or `1' is the implied"
+    " With a keyword as argument, prints a list of all the options that are"
+    " associated with the keyword.~n~n"
+    "If a boolean or integer argument is omitted, `true' or `1' is the implied"
     " value."
   }.
 
