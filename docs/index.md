@@ -32,17 +32,17 @@ updated: 2017-10-16
 
 Concuerror is a stateless model checking tool for Erlang programs. It can be used to systematically test programs for concurrency errors, detect and report errors that only occur on few, specific schedulings or **verify** their absence.
 
-## How do I get Concuerror?
+## How can you get Concuerror?
 
 Read the [Download](/download) page.
 
-## How do I use Concuerror?
+## How can you use Concuerror?
 
 You might find one of the [Tutorials](/tutorials) useful!
 
-In short, all you need is a test that is **terminating** (ideally in any scheduling of the processes) and **closed** (does not require any inputs).
+In short, you need a test that is **terminating** (ideally in any scheduling of the processes) and **closed** (does not require any inputs).
 
-Keep in mind that systematic testing (unlike stress-testing) does not encourage (or require) the use of a ton of processes! **All** schedulings of the test will be explored, so "the simpler, the better"!
+Systematic testing (unlike stress-testing) does not encourage (or require) the use of too many processes! **All** schedulings of the test will be explored, so "the simpler, the better"!
 
 Once you have such a test, all you have to do is compile your code and invoke Concuerror from your shell, specifying the module and function that contains your test:
 
@@ -74,8 +74,8 @@ Well, for many programs that is probably enough!
 If your test is named `test` you can even skip the `-t` option!
 
 If a scheduling leads to one or more processes crashing or
-deadlocking, Concuerror will print a detailed log of all the events
-that lead to the error and by default stop the exporation at that error.
+deadlocking, Concuerror will print a detailed trace of all the events
+that lead to the error and by default stop the exploration.
 
 Otherwise it will keep exploring schedulings, until it has checked them all. [Will the exploration ever finish?](/faq/#will-the-exploration-ever-finish)
 

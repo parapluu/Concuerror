@@ -13,11 +13,11 @@ Gemfile.lock: Gemfile
 
 .PHONY: build
 build: Gemfile.lock
-	jekyll build
+	jekyll build --config _config.yml,_config_local.yml
 
 .PHONY: serve
 serve: Gemfile.lock
-	jekyll serve
+	jekyll serve --config _config.yml,_config_local.yml
 
 .PHONY: test
 test: build

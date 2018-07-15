@@ -7,15 +7,24 @@ description: "Information on how to download Concuerror."
 
 ## Download
 
+### Github
+
 Concuerror's latest stable version is available on [Github](https://github.com/parapluu/Concuerror):
 
 {% highlight bash %}
 $ git clone https://github.com/parapluu/Concuerror.git
 $ cd Concuerror
-$ make -j
+$ make
 {% endhighlight %}
 
 The preferred way to start concuerror is via the `bin/concuerror` escript.
+
+### Hex.pm
+
+Concuerror is also available via [Hex.pm](https://hex.pm/packages/concuerror).
+
+This means that you can include it in your project using any of the
+building tools that support Hex.pm dependencies.
 
 ### Supported OTP Releases
 
