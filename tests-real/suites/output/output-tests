@@ -93,4 +93,10 @@ testing "Yet another decent stacktrace report"
 concuerror_console_error -f src/more_stacktrace.erl
 outputhas "[6,{file,\"src/more_stacktrace.erl\"}]"
 
+testing "Do not blame the innocent stacktrace"
+concuerror_console_error -f src/more_stacktrace.erl -t do_not_blame_me
+print_ok
+nogrep $Out "{erlang,'!',"
+good
+
 . footer
