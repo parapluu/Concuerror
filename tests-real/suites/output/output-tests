@@ -46,13 +46,9 @@ $CONCUERROR -f src/many_scheds.erl -t test_large -v1 -b 6 2>&1 | tr '\033' '#' |
 has_basic_progress
 
 testing "No tip for harmless exit signals"
-! concuerror_console -f src/harmless_exit.erl -k
+concuerror_console_error -f src/harmless_exit.erl -k
 print_ok
-Target="An abnormal exit signal"
-testing "... and output does not have \"$Target\""
-if grep -q "$Target" $Out; then
-    exit 1
-fi
+nogrep $Out "An abnormal exit signal"
 good
 
 testing "Graph format"
@@ -66,39 +62,35 @@ good
 testing "Correct race info"
 concuerror_console -f src/race_info.erl --show_races
 print_ok
-Target="Interleaving #2"
-testing "... and output does not have \"$Target\""
-if grep -q "$Target" $Out; then
-    exit 1
-fi
+nogrep $Out "Interleaving #2"
 outputhas "New races found"
 
 testing "Basic message is produced for error detection"
-! concuerror_console -f src/buggy.erl
+concuerror_console_error -f src/buggy.erl
 consolehas "Errors were found! (check concuerror_report.txt)"
 
 testing "Deadlock shows messages"
-! concuerror_console -f src/deadlock.erl
+concuerror_console_error -f src/deadlock.erl
 outputhas "Mailbox contents: \[foo\]"
 
 testing "Funs are pretty"
-! concuerror_console -f src/a_fun.erl
+concuerror_console_error -f src/a_fun.erl
 outputhas "#Fun<a_fun.0"
 
 testing "Symbolic registered names Info"
-! concuerror_console -f src/register.erl
+concuerror_console_error -f src/register.erl
 consolehas "Showing PIDs as \"<symbolic name(/last registered name)>\" ('-h symbolic_names')."
 
 testing "Symbolic registered names error info"
-! concuerror_console -f src/register.erl
+concuerror_console_error -f src/register.erl
 outputhas "process <P.1/foo> exited abnormally"
 
 testing "Decent stacktrace report"
-! concuerror_console -f src/stacktrace.erl
+concuerror_console_error -f src/stacktrace.erl
 outputhas "[{file,\"src/stacktrace.erl\"},{line,93}]"
 
 testing "Yet another decent stacktrace report"
-! concuerror_console -f src/more_stacktrace.erl
+concuerror_console_error -f src/more_stacktrace.erl
 outputhas "[6,{file,\"src/more_stacktrace.erl\"}]"
 
 . footer
