@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 
 ### Fixed
-
+- fixed stacktrace information (#276)
 
 ## [0.20](https://github.com/parapluu/Concuerror/releases/tag/0.20) - 2018-07-15
 

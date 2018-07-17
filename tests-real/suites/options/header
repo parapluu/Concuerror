@@ -42,12 +42,19 @@ function mygrepconsole {
     grep_this $Console $@
 }
 
+function nogrep {
+    File=$1
+    Target=$2
+    testing "... and $1 does not have \"$Target\""
+    grep -q "$Target" $Out
+    [ $? -eq 1 ]
+}
+
 function grep_this {
     File=$1
     shift
     grep -q "$1" $File
-    Ret=$?
-    if [ $Ret -eq 0 ]; then
+    if [ $? -eq 0 ]; then
        return 0
     else
        exit 1

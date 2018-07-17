@@ -65,7 +65,15 @@ inspect(Tag, Args, Location) ->
           Timeout
       end;
     {didit, Res} -> Res;
-    {error, Reason} -> error(Reason);
+    {error, Reason} ->
+      StackTop =
+        case {Tag, Args} of
+          {apply, Args} ->
+            {erlang, apply, Args, Location};
+          {call, [Module, Name, CallArgs]} ->
+            {Module, Name, CallArgs, Location}
+        end,
+      erlang:raise(error, Reason, [StackTop|get_stacktrace()]);
     {skip_timeout, CreateMessage} ->
       assert_no_messages(),
       case CreateMessage of
@@ -80,6 +88,16 @@ assert_no_messages() ->
     Msg -> exit(self(), {?MODULE, {pending_message, self(), Msg}})
   after
     0 -> ok
+  end.
+
+get_stacktrace() ->
+  {_, Trace} = erlang:process_info(self(), current_stacktrace),
+  [T || T <- Trace, not_concuerror_module(element(1, T))].
+
+not_concuerror_module(Atom) ->
+  case atom_to_list(Atom) of
+    "concuerror" ++ _ -> false;
+    _ -> true
   end.
 
 -spec explain_error(term()) -> string().
