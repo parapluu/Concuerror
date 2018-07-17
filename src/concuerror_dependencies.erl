@@ -375,7 +375,7 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, links]}},
        actor = Pid,
        mfargs = {erlang, UnLink, _}
       } when UnLink =:= link; UnLink =:= unlink -> true;
-    #builtin_event{mfargs = {erlang, UnLink, Pid}}
+    #builtin_event{mfargs = {erlang, UnLink, [Pid]}}
       when UnLink =:= link; UnLink =:= unlink -> true;
     _ -> false
   end;
