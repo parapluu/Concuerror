@@ -95,6 +95,10 @@ dependent(#builtin_event{actor = Recipient, exiting = false,
         {'EXIT', _, Reason} = Signal,
         not Trapping andalso Reason =/= normal
     end;
+dependent(#builtin_event{mfargs = {erlang, demonitor, [R]}} = Builtin
+         , Other) ->
+  dependent(Builtin#builtin_event{mfargs = {erlang, demonitor, [R, []]}},
+            Other);
 dependent(#builtin_event{actor = Recipient,
                          mfargs = {erlang, demonitor, [R, Opts]}},
           #message_event{message = #message{data = {_, R, _, _, _}},
