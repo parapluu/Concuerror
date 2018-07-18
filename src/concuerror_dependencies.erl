@@ -95,6 +95,10 @@ dependent(#builtin_event{actor = Recipient, exiting = false,
         {'EXIT', _, Reason} = Signal,
         not Trapping andalso Reason =/= normal
     end;
+dependent(#builtin_event{mfargs = {erlang, demonitor, [R]}} = Builtin
+         , Other) ->
+  dependent(Builtin#builtin_event{mfargs = {erlang, demonitor, [R, []]}},
+            Other);
 dependent(#builtin_event{actor = Recipient,
                          mfargs = {erlang, demonitor, [R, Opts]}},
           #message_event{message = #message{data = {_, R, _, _, _}},
@@ -371,7 +375,7 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, links]}},
        actor = Pid,
        mfargs = {erlang, UnLink, _}
       } when UnLink =:= link; UnLink =:= unlink -> true;
-    #builtin_event{mfargs = {erlang, UnLink, Pid}}
+    #builtin_event{mfargs = {erlang, UnLink, [Pid]}}
       when UnLink =:= link; UnLink =:= unlink -> true;
     _ -> false
   end;
