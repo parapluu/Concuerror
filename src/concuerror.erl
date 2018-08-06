@@ -130,7 +130,7 @@ run_internal(Options) ->
 version() ->
   _ = application:load(concuerror),
   {ok, Vsn} = application:get_key(concuerror, vsn),
-  io_lib:format("Concuerror v~s", [Vsn]).
+  io_lib:format("Concuerror ~s", [Vsn]).
 
 %%------------------------------------------------------------------------------
 
