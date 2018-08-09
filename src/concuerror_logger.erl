@@ -1009,11 +1009,10 @@ approximate_time_formatters() ->
 %%------------------------------------------------------------------------------
 
 add_seps_to_int(Integer) when Integer < 1000 -> integer_to_list(Integer);
-add_seps_to_int(Integer) when is_integer(Integer) ->
+add_seps_to_int(Integer) ->
   Rem = Integer rem 1000,
   DivS = add_seps_to_int(Integer div 1000),
-  io_lib:format("~s ~3..0w", [DivS, Rem]);
-add_seps_to_int(Other) -> io_lib:format("~w", [Other]).
+  io_lib:format("~s ~3..0w", [DivS, Rem]).
 
 %%------------------------------------------------------------------------------
 
