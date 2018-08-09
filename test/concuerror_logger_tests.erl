@@ -102,3 +102,15 @@ approximate_time_format_test() ->
 
   ?assertEqual("> 10000y", ?M:approximate_time_string((10001*12+6)*30*24*60*60)),
   ok.
+
+estimator_compare_test() ->
+  ?assertEqual(1800, ?M:sanitize_estimation(1783, 560)),
+  ?assertEqual(1800, ?M:sanitize_estimation(1130, 1700)),
+  ?assertEqual(1700, ?M:sanitize_estimation(1130, 1699)),
+
+  ?assertEqual(unknown, ?M:sanitize_estimation(unknown, 340)),
+  ?assertEqual(unknown, ?M:sanitize_estimation(unknown, 1)),
+
+  ?assertEqual(18000, ?M:sanitize_estimation(17843, 3560)),
+  ?assertEqual(18000, ?M:sanitize_estimation(11330, 17100)),
+  ?assertEqual(17000, ?M:sanitize_estimation(11930, 16959)).
