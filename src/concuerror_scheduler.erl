@@ -735,11 +735,9 @@ update_special(Special, #trace_state{actors = Actors} = TraceState) ->
         add_message(Message, Actors);
       {message_delivered, MessageEvent} ->
         remove_message(MessageEvent, Actors);
-      {message_received, _Message} ->
-        Actors;
       {new, SpawnedPid} ->
         Actors ++ [SpawnedPid];
-      {system_communication, _} ->
+      _ ->
         Actors
     end,
   TraceState#trace_state{actors = NewActors}.
@@ -1597,7 +1595,31 @@ fix_receive_info(RevTraceOrEvents) ->
   fix_receive_info(RevTraceOrEvents, empty_map()).
 
 fix_receive_info(RevTraceOrEvents, ReceiveInfoDict) ->
-  fix_receive_info(RevTraceOrEvents, ReceiveInfoDict, []).
+  D = collect_demonitor_info(RevTraceOrEvents, ReceiveInfoDict),
+  fix_receive_info(RevTraceOrEvents, D, []).
+
+collect_demonitor_info([], ReceiveInfoDict) ->
+  ReceiveInfoDict;
+collect_demonitor_info([#trace_state{} = TraceState|RevTrace], ReceiveInfoDict) ->
+  [Event|_] = TraceState#trace_state.done,
+  NewDict = collect_demonitor_info([Event], ReceiveInfoDict),
+  collect_demonitor_info(RevTrace, NewDict);
+collect_demonitor_info([#event{} = Event|RevEvents], ReceiveInfoDict) ->
+  case Event#event.event_info of
+    #builtin_event{mfargs = {erlang, demonitor, _}} ->
+      #event{special = Special} = Event,
+      NewDict = store_demonitor_info(Special, ReceiveInfoDict),
+      collect_demonitor_info(RevEvents, NewDict);
+    _ ->
+      collect_demonitor_info(RevEvents, ReceiveInfoDict)
+  end.
+
+store_demonitor_info(Special, ReceiveInfoDict) ->
+  case [D || {demonitor, D} <- Special] of
+    [{Ref, ReceiveInfo}] ->
+      map_store({demonitor, Ref}, ReceiveInfo, ReceiveInfoDict);
+    [] -> ReceiveInfoDict
+  end.
 
 fix_receive_info([], ReceiveInfoDict, TraceOrEvents) ->
   {TraceOrEvents, ReceiveInfoDict};
@@ -1646,11 +1668,19 @@ store_receive_info(EventInfo, Special, ReceiveInfoDict) ->
   end.
 
 patch_message_delivery({message_delivered, MessageEvent}, ReceiveInfoDict) ->
-  #message_event{message = #message{id = Id}} = MessageEvent,
+  #message_event{message = #message{id = Id, data = Data}} = MessageEvent,
   ReceiveInfo =
     case map_find(Id, ReceiveInfoDict) of
       {ok, RI} -> RI;
-      error -> not_received
+      error ->
+        case Data of
+          {'DOWN', Ref, process, _, _} ->
+            case map_find({demonitor, Ref}, ReceiveInfoDict) of
+              {ok, RI} -> RI;
+              error -> not_received
+            end;
+          _ -> not_received
+        end
     end,
   {message_delivered, MessageEvent#message_event{receive_info = ReceiveInfo}};
 patch_message_delivery(Other, _ReceiveInfoDict) ->

@@ -194,7 +194,6 @@
 
 -record(message_event, {
           cause_label      :: label(),
-          ignored = false  :: boolean(),
           instant = true   :: boolean(),
           killing = false  :: boolean(),
           message          :: message(),

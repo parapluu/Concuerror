@@ -1,4 +1,4 @@
-Concuerror 0.20.0+build.2173.ref62fcec3 started at 17 Aug 2018 15:48:30
+Concuerror 0.20.0+build.2168.refc42817f started at 17 Aug 2018 11:59:16
  Options:
   [{after_timeout,infinity},
    {assertions_only,false},
@@ -6,9 +6,9 @@ Concuerror 0.20.0+build.2173.ref62fcec3 started at 17 Aug 2018 15:48:30
    {depth_bound,500},
    {disable_sleep_sets,false},
    {dpor,optimal},
-   {entry_point,{monitor_info,test2,[]}},
+   {entry_point,{demonitor_flush,test6,[]}},
    {exclude_module,[]},
-   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/monitor_info.erl"]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/demonitor_flush.erl"]},
    {first_process_errors_only,false},
    {ignore_error,[]},
    {instant_delivery,true},
@@ -19,31 +19,37 @@ Concuerror 0.20.0+build.2173.ref62fcec3 started at 17 Aug 2018 15:48:30
    {quiet,true},
    {scheduling,round_robin},
    {scheduling_bound_type,none},
-   {show_races,false},
+   {show_races,true},
    {strict_scheduling,false},
    {symbolic_names,true},
    {timeout,5000},
    {treat_as_normal,[]},
    {use_receive_patterns,true}]
 ################################################################################
+Interleaving #1
+--------------------------------------------------------------------------------
+New races found:
+*    7: <P.2>: {'DOWN',#Ref<0.1678823576.4190896129.18751>,process,<P.2>,normal} = erlang:send(<P>, {'DOWN',#Ref<0.1678823576.4190896129.18751>,process,<P.2>,normal})
+     9: <P>: receives message ({'DOWN',#Ref<0.1678823576.4190896129.18751>,process,<P.2>,normal})
+
+################################################################################
 Exploration completed!
   No errors found!
 ################################################################################
 Tips:
 --------------------------------------------------------------------------------
-* Check `--help attributes' for info on how to pass options via module attributes.
 * Running without a scheduling_bound corresponds to verification and may take a long time.
+* Increase '--print_depth' if output/graph contains "...".
 
 ################################################################################
 Info:
 --------------------------------------------------------------------------------
-* Writing results in /Users/stavros.aronis/git/Concuerror/tests/results/basic_tests/results/monitor_info-test2-inf-dpor.txt
+* Writing results in /Users/stavros.aronis/git/Concuerror/tests/results/basic_tests/results/demonitor_flush-test6-inf-dpor.txt
 * Automatically instrumented module io_lib
 * Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
-* Instrumented & loaded module monitor_info
+* Instrumented & loaded module demonitor_flush
 * Automatically instrumented module erlang
-* You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
 
 ################################################################################
-Done at 17 Aug 2018 15:48:31 (Exit status: ok)
+Done at 17 Aug 2018 11:59:16 (Exit status: ok)
   Summary: 0 errors, 2/2 interleavings explored

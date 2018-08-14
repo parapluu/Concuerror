@@ -15,16 +15,16 @@ scenarios() ->
 test_register() ->
     ServerName = {local, 'gen_server_bug'},
     {ok, Pid1} = gen_server:start(ServerName, ?MODULE, [], []),
-    gen_server:call(Pid1, stop),
+    gen_server:call(Pid1, stop, infinity),
     {ok, Pid2} = gen_server:start(ServerName, ?MODULE, [], []),
-    gen_server:call(Pid2, stop),
+    gen_server:call(Pid2, stop, infinity),
     ok.
 
 test_without_register() ->
-    {ok, Pid1} = gen_server:start_link(?MODULE, [], []),
-    gen_server:call(Pid1, stop),
-    {ok, Pid2} = gen_server:start_link(?MODULE, [], []),
-    gen_server:call(Pid2, stop),
+    {ok, Pid1} = gen_server:start(?MODULE, [], []),
+    gen_server:call(Pid1, stop, infinity),
+    {ok, Pid2} = gen_server:start(?MODULE, [], []),
+    gen_server:call(Pid2, stop, infinity),
     ok.
 
 %% ===================================================================

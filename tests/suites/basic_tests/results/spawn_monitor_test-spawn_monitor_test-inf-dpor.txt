@@ -1,42 +1,86 @@
-################################################################################
-Concuerror started with options:
-  [{'after-timeout',infinite},
+Concuerror 0.20.0+build.2158.ref04ee269 started at 17 Aug 2018 17:02:33
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
    {assume_racing,false},
-   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/spawn_monitor_test.erl"]},
-   {normal_exit,[normal]},
-   {symbolic,true},
-   {target,{spawn_monitor_test,spawn_monitor_test,[]}},
-   {verbose,0},
-   {wait,2000}]
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{spawn_monitor_test,spawn_monitor_test,[]}},
+   {exclude_module,[]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/spawn_monitor_test.erl"]},
+   {first_process_errors_only,false},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,5000},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
 ################################################################################
-Erroneous interleaving 1:
-* At step 7 process P exited abnormally
+Interleaving #2
+--------------------------------------------------------------------------------
+Errors found:
+* At step 6 process <P> exited abnormally
     Reason:
-      {{assertEqual_failed,[{module,spawn_monitor_test},
-                            {line,17},
-                            {expression,"Result"},
-                            {expected,result2},
-                            {value,result1}]},
-       [{spawn_monitor_test,'-spawn_monitor_test/0-fun-1-',2,
-                            [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/spawn_monitor_test.erl"},
+      {{assertEqual,[{module,spawn_monitor_test},
+                     {line,17},
+                     {expression,"Result"},
+                     {expected,result2},
+                     {value,result1}]},
+       [{spawn_monitor_test,'-spawn_monitor_test/0-fun-1-',1,
+                            [{file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/spawn_monitor_test.erl"},
                              {line,17}]}]}
     Stacktrace:
-      [{spawn_monitor_test,'-spawn_monitor_test/0-fun-1-',2,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/spawn_monitor_test.erl"},
+      [{spawn_monitor_test,'-spawn_monitor_test/0-fun-1-',1,
+                           [{file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/spawn_monitor_test.erl"},
                             {line,17}]}]
 --------------------------------------------------------------------------------
-Interleaving info:
-   1: P: {P.1,#Ref<0.0.0.288>} = erlang:spawn_opt({erlang,apply,[#Fun<spawn_monitor_test.0.133352140>,[]],[monitor]})
-    in erlang.erl line 2373
-   2: P.1: exits normally
-   3: P: true = erlang:demonitor(#Ref<0.0.0.288>)
-    in spawn_monitor_test.erl line 11
-   4: P.1: {'DOWN',#Ref<0.0.0.288>,process,P.1,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.288>,process,P.1,normal})
+Event trace:
+   1: <P>: {<P.1>,#Ref<0.1369249345.1553203201.138939>} = erlang:spawn_opt({erlang,apply,[#Fun<spawn_monitor_test.0.80940798>,[]],[monitor]})
+    in erlang.erl line 2731
+   2: <P.1>: exits normally
+   3: <P.1>: {'DOWN',#Ref<0.1369249345.1553203201.138939>,process,<P.1>,normal} = erlang:send(<P>, {'DOWN',#Ref<0.1369249345.1553203201.138939>,process,<P.1>,normal})
     (while exiting)
-   5: Message ({'DOWN',#Ref<0.0.0.288>,process,P.1,normal}) from P.1 reaches P
-   6: P: receives message ({'DOWN',#Ref<0.0.0.288>,process,P.1,normal})
+   4: <P>: true = erlang:demonitor(#Ref<0.1369249345.1553203201.138939>)
+    in spawn_monitor_test.erl line 11
+   5: <P>: receives message ({'DOWN',#Ref<0.1369249345.1553203201.138939>,process,<P.1>,normal})
     in spawn_monitor_test.erl line 13
-   7: P: exits abnormally ({{assertEqual_failed,[{module,spawn_monitor_test},{line,17},{expression,[82,101,115,117,108,116]},{expected,result2},{value,result1}]},[{spawn_monitor_test,'-spawn_monitor_test/0-fun-1-',2,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,112,97,119,110,95,109,111,110,105,116,111,114,95,116,101,115,116,46,101,114,108]},{line,17}]}]})
+   6: <P>: exits abnormally ({{assertEqual,[{module,spawn_monitor_test},{line,17},{expression,[82,101,115,117,108,116]},{expected,result2},{value,result1}]},[{spawn_monitor_test,'-spawn_monitor_test/0-fun-1-',1,[{file,[47,85,115,101,114,115,47,115,116|...]},{line,17}]}]})
 ################################################################################
-Done! (Exit status: completed)
-  Summary: 1 errors, 3/3 interleavings explored
+Exploration completed!
+################################################################################
+Warnings:
+--------------------------------------------------------------------------------
+* Concuerror may let exiting processes emit 'DOWN' messages for cancelled monitors. Any such messages are discarded upon delivery and can never be received.
+
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+* Check `--help attributes' for info on how to pass options via module attributes.
+* Running without a scheduling_bound corresponds to verification and may take a long time.
+* A process exited with reason '{{assert*,_}, _}'. If you want to see only this kind of error you can use the '--assertions_only' option.
+* Increase '--print_depth' if output/graph contains "...".
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+* Writing results in /Users/stavros.aronis/git/Concuerror/tests/results/basic_tests/results/spawn_monitor_test-spawn_monitor_test-inf-dpor.txt
+* Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
+* Instrumented & loaded module spawn_monitor_test
+* Automatically instrumented module erlang
+* You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+* Continuing after error (-k)
+
+################################################################################
+Done at 17 Aug 2018 17:02:33 (Exit status: error)
+  Summary: 1 errors, 2/2 interleavings explored

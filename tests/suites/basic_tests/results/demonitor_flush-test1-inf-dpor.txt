@@ -1,45 +1,47 @@
-Concuerror 0.15 ('90f4283') started at 29 Aug 2016 14:01:26.
+Concuerror 0.20.0+build.2170.refdc8e204 started at 17 Aug 2018 13:46:49
  Options:
   [{after_timeout,infinity},
    {assertions_only,false},
    {assume_racing,false},
    {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
    {entry_point,{demonitor_flush,test1,[]}},
-   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/demonitor_flush.erl"]},
+   {exclude_module,[]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/demonitor_flush.erl"]},
+   {first_process_errors_only,false},
    {ignore_error,[]},
    {instant_delivery,true},
    {interleaving_bound,infinity},
    {keep_going,true},
    {non_racing_system,[]},
-   {optimal,true},
    {print_depth,20},
+   {quiet,true},
    {scheduling,round_robin},
-   {scheduling_bound,infinity},
    {scheduling_bound_type,none},
    {show_races,true},
    {strict_scheduling,false},
    {symbolic_names,true},
-   {timeout,infinity},
-   {treat_as_normal,[]}]
-################################################################################
-Interleaving #1
---------------------------------------------------------------------------------
-New races found:
-*    2: P: true = erlang:demonitor(#Ref<0.0.1.162>, [flush])
-     5: P.1: exits normally
-
-
+   {timeout,5000},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
 ################################################################################
 Exploration completed!
   No errors found!
 ################################################################################
-Info:
+Tips:
 --------------------------------------------------------------------------------
-Instrumented demonitor_flush
-Instrumented io_lib
-Instrumented gen_server
-Instrumented erlang
+* Running without a scheduling_bound corresponds to verification and may take a long time.
 
 ################################################################################
-Done at 29 Aug 2016 14:01:26 (Exit status: ok)
-  Summary: 0 errors, 2/2 interleavings explored
+Info:
+--------------------------------------------------------------------------------
+* Writing results in /Users/stavros.aronis/git/Concuerror/tests/results/basic_tests/results/demonitor_flush-test1-inf-dpor.txt
+* Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
+* Instrumented & loaded module demonitor_flush
+* Automatically instrumented module erlang
+
+################################################################################
+Done at 17 Aug 2018 13:46:50 (Exit status: ok)
+  Summary: 0 errors, 1/1 interleavings explored

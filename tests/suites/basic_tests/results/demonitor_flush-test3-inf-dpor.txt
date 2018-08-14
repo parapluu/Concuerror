@@ -1,98 +1,89 @@
-Concuerror 0.15 ('5585cc7') started at 24 Aug 2016 17:01:55.
+Concuerror 0.20.0+build.2170.refdc8e204 started at 17 Aug 2018 13:46:52
  Options:
   [{after_timeout,infinity},
    {assertions_only,false},
    {assume_racing,false},
    {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
    {entry_point,{demonitor_flush,test3,[]}},
-   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/demonitor_flush.erl"]},
+   {exclude_module,[]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/demonitor_flush.erl"]},
+   {first_process_errors_only,false},
    {ignore_error,[]},
    {instant_delivery,true},
    {interleaving_bound,infinity},
    {keep_going,true},
    {non_racing_system,[]},
-   {optimal,true},
    {print_depth,20},
+   {quiet,true},
    {scheduling,round_robin},
-   {scheduling_bound,infinity},
    {scheduling_bound_type,none},
    {show_races,true},
    {strict_scheduling,false},
    {symbolic_names,true},
-   {timeout,infinity},
-   {treat_as_normal,[]}]
+   {timeout,5000},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
 ################################################################################
 Interleaving #1
 --------------------------------------------------------------------------------
 Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in demonitor_flush.erl line 43
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in demonitor_flush.erl line 41
+     Mailbox contents: []
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: {P.1,#Ref<0.0.1.162>} = erlang:spawn_opt({erlang,apply,[#Fun<demonitor_flush.'-test3/0-fun-0-'.0>,[]],[monitor]})
-    in erlang.erl line 2647
-   2: P: true = erlang:demonitor(#Ref<0.0.1.162>)
-    in demonitor_flush.erl line 37
-   3: P: receive timeout expired after 0 ms
-    in demonitor_flush.erl line 38
-   4: P.1: exits normally
+   1: <P>: {<P.1>,#Ref<0.2393013148.2060189697.193878>} = erlang:spawn_opt({erlang,apply,[#Fun<demonitor_flush.5.40896778>,[]],[monitor]})
+    in erlang.erl line 2826
+   2: <P>: true = erlang:demonitor(#Ref<0.2393013148.2060189697.193878>)
+    in demonitor_flush.erl line 35
+   3: <P>: receive timeout expires after 0 ms
+    in demonitor_flush.erl line 36
+   4: <P.1>: exits normally
+   5: <P.1>: {'DOWN',#Ref<0.2393013148.2060189697.193878>,process,<P.1>,normal} = erlang:send(<P>, {'DOWN',#Ref<0.2393013148.2060189697.193878>,process,<P.1>,normal})
+    (while exiting)
 --------------------------------------------------------------------------------
 New races found:
-*    2: P: true = erlang:demonitor(#Ref<0.0.1.162>)
-     4: P.1: exits normally
-
+*    2: <P>: true = erlang:demonitor(#Ref<0.2393013148.2060189697.193878>)
+     5: <P.1>: {'DOWN',#Ref<0.2393013148.2060189697.193878>,process,<P.1>,normal} = erlang:send(<P>, {'DOWN',#Ref<0.2393013148.2060189697.193878>,process,<P.1>,normal})
 
 ################################################################################
 Interleaving #2
 --------------------------------------------------------------------------------
 Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in demonitor_flush.erl line 43
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P> in demonitor_flush.erl line 41
+     Mailbox contents: []
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: {P.1,#Ref<0.0.1.162>} = erlang:spawn_opt({erlang,apply,[#Fun<demonitor_flush.'-test3/0-fun-0-'.0>,[]],[monitor]})
-    in erlang.erl line 2647
-   2: P.1: exits normally
-   3: P.1: {'DOWN',#Ref<0.0.1.162>,process,P.1,normal} = erlang:send(P, {'DOWN',#Ref<0.0.1.162>,process,P.1,normal})
+   1: <P>: {<P.1>,#Ref<0.2393013148.2060189697.193878>} = erlang:spawn_opt({erlang,apply,[#Fun<demonitor_flush.5.40896778>,[]],[monitor]})
+    in erlang.erl line 2826
+   2: <P.1>: exits normally
+   3: <P.1>: {'DOWN',#Ref<0.2393013148.2060189697.193878>,process,<P.1>,normal} = erlang:send(<P>, {'DOWN',#Ref<0.2393013148.2060189697.193878>,process,<P.1>,normal})
     (while exiting)
-   4: P: true = erlang:demonitor(#Ref<0.0.1.162>)
-    in demonitor_flush.erl line 37
-   5: P: receives message ({'DOWN',#Ref<0.0.1.162>,process,P.1,normal})
-    in demonitor_flush.erl line 38
---------------------------------------------------------------------------------
-New races found:
-*    3: P.1: {'DOWN',#Ref<0.0.1.162>,process,P.1,normal} = erlang:send(P, {'DOWN',#Ref<0.0.1.162>,process,P.1,normal})
-     5: P: receives message ({'DOWN',#Ref<0.0.1.162>,process,P.1,normal})
-
-
-################################################################################
-Interleaving #3
---------------------------------------------------------------------------------
-Errors found:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in demonitor_flush.erl line 43
---------------------------------------------------------------------------------
-Event trace:
-   1: P: {P.1,#Ref<0.0.1.162>} = erlang:spawn_opt({erlang,apply,[#Fun<demonitor_flush.'-test3/0-fun-0-'.0>,[]],[monitor]})
-    in erlang.erl line 2647
-   2: P.1: exits normally
-   3: P: true = erlang:demonitor(#Ref<0.0.1.162>)
-    in demonitor_flush.erl line 37
-   4: P: receive timeout expired after 0 ms
-    in demonitor_flush.erl line 38
-   5: P.1: {'DOWN',#Ref<0.0.1.162>,process,P.1,normal} = erlang:send(P, {'DOWN',#Ref<0.0.1.162>,process,P.1,normal})
-    (while exiting)
+   4: <P>: true = erlang:demonitor(#Ref<0.2393013148.2060189697.193878>)
+    in demonitor_flush.erl line 35
+   5: <P>: receives message ({'DOWN',#Ref<0.2393013148.2060189697.193878>,process,<P.1>,normal})
+    in demonitor_flush.erl line 36
 ################################################################################
 Exploration completed!
 ################################################################################
-Info:
+Tips:
 --------------------------------------------------------------------------------
-Instrumented demonitor_flush
-Instrumented io_lib
-Instrumented gen_server
-Instrumented erlang
-Continuing after error (-k)
+* Running without a scheduling_bound corresponds to verification and may take a long time.
+* Increase '--print_depth' if output/graph contains "...".
 
 ################################################################################
-Done at 24 Aug 2016 17:01:55 (Exit status: error)
-  Summary: 3 errors, 3/3 interleavings explored
+Info:
+--------------------------------------------------------------------------------
+* Writing results in /Users/stavros.aronis/git/Concuerror/tests/results/basic_tests/results/demonitor_flush-test3-inf-dpor.txt
+* Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
+* Instrumented & loaded module demonitor_flush
+* Automatically instrumented module erlang
+* Continuing after error (-k)
+
+################################################################################
+Done at 17 Aug 2018 13:46:52 (Exit status: error)
+  Summary: 2 errors, 2/2 interleavings explored
