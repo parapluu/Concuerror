@@ -113,12 +113,12 @@ pretty_info(#builtin_event{mfargs = {erlang, send, [To, Msg]},
   io_lib:format("expires, delivering ~W to ~W", [Msg, Depth, To, Depth]);
 pretty_info(#builtin_event{mfargs = {erlang, '!', [To, Msg]},
                            status = {crashed, Reason}}, Depth) ->
-  io_lib:format("Exception ~W raised by: ~W ! ~W",
+  io_lib:format("Exception ~W is raised by: ~W ! ~W",
                 [Reason, Depth, To, Depth, Msg, Depth]);
 pretty_info(#builtin_event{mfargs = {M, F, Args},
                            status = {crashed, Reason}}, Depth) ->
   ArgString = pretty_arg(Args, Depth),
-  io_lib:format("Exception ~W raised by: ~p:~p(~s)",
+  io_lib:format("Exception ~W is raised by: ~p:~p(~s)",
                 [Reason, Depth, M, F, ArgString]);
 pretty_info(#builtin_event{mfargs = {erlang, '!', [To, Msg]},
                            result = Result}, Depth) ->
@@ -127,7 +127,7 @@ pretty_info(#builtin_event{mfargs = {M, F, Args}, result = Result}, Depth) ->
   ArgString = pretty_arg(Args, Depth),
   io_lib:format("~W = ~p:~p(~s)", [Result, Depth, M, F, ArgString]);
 pretty_info(#exit_event{actor = Timer}, _Depth) when is_reference(Timer) ->
-  "cancelled";
+  "is removed";
 pretty_info(#exit_event{reason = Reason}, Depth) ->
   ReasonStr =
     case Reason =:= normal of
@@ -157,7 +157,7 @@ pretty_info(#message_event{} = MessageEvent, Depth) ->
 pretty_info(#receive_event{message = Message, timeout = Timeout}, Depth) ->
   case Message of
     'after' ->
-      io_lib:format("receive timeout expired after ~p ms", [Timeout]);
+      io_lib:format("receive timeout expires after ~p ms", [Timeout]);
      #message{data = Data} ->
       io_lib:format("receives message (~W)", [Data, Depth])
   end.

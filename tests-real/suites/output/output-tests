@@ -55,7 +55,7 @@ testing "Graph format"
 concuerror_console -f src/race_info.erl --show_races --graph graph.dot
 print_ok
 testing "... and graph is the same as the ref/graph.dot"
-diff graph.dot ref/graph.dot
+diff ref/graph.dot graph.dot
 rm graph.dot
 good
 
