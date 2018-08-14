@@ -1770,6 +1770,9 @@ exiting(Reason, Stacktrace, InfoIn) ->
   end,
   Info = process_loop(InfoIn),
   Self = self(),
+  %% Registered name has to be picked up before the process starts
+  %% exiting, otherwise it is no longer alive and process_info returns
+  %% 'undefined'.
   {MaybeName, Info} =
     run_built_in(erlang, process_info, 2, [Self, registered_name], Info),
   LocatedInfo = #concuerror_info{event = Event} =
@@ -1804,7 +1807,7 @@ exiting(Reason, Stacktrace, InfoIn) ->
            trapping = Trapping
           }
      },
-  ExitInfo = add_location_info(exit, notify(Notification, LocatedInfo)),
+  ExitInfo = notify(Notification, LocatedInfo),
   FunFold = fun(Fun, Acc) -> Fun(Acc) end,
   FunList =
     [fun ets_ownership_exiting_events/1,
