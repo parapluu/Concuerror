@@ -1703,22 +1703,12 @@ get_next_event_backend(#event{actor = Channel} = Event, State)
   when ?is_channel(Channel) ->
   #scheduler_state{timeout = Timeout} = State,
   #event{event_info = MessageEvent} = Event,
-  assert_no_messages(),
   UpdatedEvent =
     concuerror_callback:deliver_message(Event, MessageEvent, Timeout),
   {ok, UpdatedEvent};
 get_next_event_backend(#event{actor = Pid} = Event, State) when is_pid(Pid) ->
   #scheduler_state{timeout = Timeout} = State,
-  assert_no_messages(),
-  Pid ! Event,
   concuerror_callback:wait_actor_reply(Event, Timeout).
-
-assert_no_messages() ->
-  receive
-    Msg -> error({pending_message, Msg})
-  after
-    0 -> ok
-  end.
 
 %%%----------------------------------------------------------------------
 %%% Helper functions

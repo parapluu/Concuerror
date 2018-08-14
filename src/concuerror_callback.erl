@@ -1229,6 +1229,7 @@ maybe_deliver_message(#event{special = Special} = Event, Info) ->
 -spec deliver_message(event(), message_event(), timeout()) -> event().
 
 deliver_message(Event, MessageEvent, Timeout) ->
+  assert_no_messages(),
   deliver_message(Event, MessageEvent, Timeout, false).
 
 deliver_message(Event, MessageEvent, Timeout, Instant) ->
@@ -1317,6 +1318,8 @@ find_system_reply(System, [_|Special]) ->
 
 wait_actor_reply(Event, Timeout) ->
   Pid = Event#event.actor,
+  assert_no_messages(),
+  Pid ! Event,
   wait_process(Pid, Timeout).
 
 %% Wait for a process to instrument any code.
@@ -1338,6 +1341,13 @@ wait_process(Pid, Timeout) ->
         _ ->
           ?crash({process_did_not_respond, Timeout, Pid})
       end
+  end.
+
+assert_no_messages() ->
+  receive
+    Msg -> error({pending_message, Msg})
+  after
+    0 -> ok
   end.
 
 %%------------------------------------------------------------------------------
