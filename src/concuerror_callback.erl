@@ -75,7 +75,7 @@
 -define(monitor(Ref, Target, As, Status), {Target, {Ref, self(), As}, Status}).
 -define(monitors_pattern_mine(), {self(), '_', '_'}).
 -define(monitor_match_to_target_source_as(Ref),
-        {'$1', {Ref, '$2', '$3'}, active}).
+        {'$1', {Ref, self(), '$2'}, active}).
 
 %%------------------------------------------------------------------------------
 
@@ -396,23 +396,22 @@ run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
   {Result, NewInfo} =
     case ets:match(Monitors, ?monitor_match_to_target_source_as(Ref)) of
       [] ->
-        PatternFun =
-          fun(M) ->
-              case M of
-                {'DOWN', Ref, process, _, _} -> true;
-                _ -> false
-              end
-          end,
         case lists:member(flush, Options) of
           true ->
+            PatternFun =
+              fun(M) ->
+                  case M of
+                    {'DOWN', Ref, process, _, _} -> true;
+                    _ -> false
+                  end
+              end,
             {Match, FlushInfo} =
               has_matching_or_after(PatternFun, infinity, Info),
             {Match =/= false, FlushInfo};
           false ->
             {false, Info}
         end;
-      [[Target, Source, As]] ->
-        ?badarg_if_not(Source =:= self()),
+      [[Target, As]] ->
         true = ets:delete_object(Monitors, ?monitor(Ref, Target, As, active)),
         true = ets:insert(Monitors, ?monitor(Ref, Target, As, inactive)),
         {not lists:member(flush, Options), Info}
