@@ -1842,8 +1842,8 @@ exiting(Reason, Stacktrace, InfoIn) ->
   FunFold = fun(Fun, Acc) -> Fun(Acc) end,
   FunList =
     [fun ets_ownership_exiting_events/1,
-     link_monitor_handlers(links, fun handle_link/3, Links),
-     link_monitor_handlers(monitors, fun handle_monitor/3, Monitors)],
+     link_monitor_handlers(links, fun handle_link/4, Links),
+     link_monitor_handlers(monitors, fun handle_monitor/4, Monitors)],
   NewInfo = ExitInfo#concuerror_info{exit_reason = Reason},
   FinalInfo = lists:foldl(FunFold, NewInfo, FunList),
   ?debug_flag(?loop, exited),
@@ -1882,15 +1882,21 @@ ets_ownership_exiting_events(Info) ->
       lists:foldl(Fold, Info, Tables)
   end.
 
-handle_link(Link, Reason, InfoIn) ->
+handle_link(Link, _S, Reason, InfoIn) ->
   MFArgs = [erlang, exit, [Link, Reason]],
   {{didit, true}, NewInfo} =
     instrumented(call, MFArgs, exit, InfoIn),
   NewInfo.
 
-handle_monitor({Ref, P, As}, Reason, InfoIn) ->
+handle_monitor({Ref, P, As}, S, Reason, InfoIn) ->
   Msg = {'DOWN', Ref, process, As, Reason},
   MFArgs = [erlang, send, [P, Msg]],
+  case S =/= active of
+    true ->
+      #concuerror_info{logger = Logger} = InfoIn,
+      ?unique(Logger, ?lwarning, msg(demonitored), []);
+    false -> ok
+  end,
   {{didit, Msg}, NewInfo} =
     instrumented(call, MFArgs, exit, InfoIn),
   NewInfo.
@@ -1901,7 +1907,7 @@ link_monitor_handlers(Type, Handler, LinksOrMonitors) ->
       HandleActive =
         fun({LinkOrMonitor, S}, InfoIn) ->
             case S =:= active orelse Type =:= monitors of
-              true -> Handler(LinkOrMonitor, Reason, InfoIn);
+              true -> Handler(LinkOrMonitor, S, Reason, InfoIn);
               false -> InfoIn
             end
         end,
@@ -2297,6 +2303,10 @@ io_request(_, IOState) ->
 
 %%------------------------------------------------------------------------------
 
+msg(demonitored) ->
+  "Concuerror may let exiting processes emit 'DOWN' messages for cancelled"
+    " monitors. Any such messages are discarded upon delivery and can never be"
+    " received.~n";
 msg(exit_normal_self_abnormal) ->
   "A process that is not trapping exits (~w) sent a 'normal' exit"
     " signal to itself. This shouldn't make it exit, but in the current"
