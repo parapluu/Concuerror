@@ -380,7 +380,6 @@ built_in(Module, Name, Arity, Args, Location, InfoIn) ->
       {{error, Reason}, FinalInfo}
   end.
 
-%% Special instruction running control (e.g. send to unknown -> wait for reply)
 run_built_in(erlang, demonitor, 1, [Ref], Info) ->
   run_built_in(erlang, demonitor, 2, [Ref, []], Info);
 run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
