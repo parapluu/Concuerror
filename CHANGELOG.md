@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Removed
 
 ### Changed
+- handling of demonitors (#281)
 
 ### Fixed
 - fixed stacktrace information (#276)
