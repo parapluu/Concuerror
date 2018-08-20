@@ -1852,8 +1852,8 @@ exiting(Reason, Stacktrace, InfoIn) ->
   FunFold = fun(Fun, Acc) -> Fun(Acc) end,
   FunList =
     [fun ets_ownership_exiting_events/1,
-     link_monitor_handlers(links, fun handle_link/4, Links),
-     link_monitor_handlers(monitors, fun handle_monitor/4, Monitors)],
+     link_monitor_handlers(fun handle_link/4, Links),
+     link_monitor_handlers(fun handle_monitor/4, Monitors)],
   NewInfo = ExitInfo#concuerror_info{exit_reason = Reason},
   FinalInfo = lists:foldl(FunFold, NewInfo, FunList),
   ?debug_flag(?loop, exited),
@@ -1911,17 +1911,14 @@ handle_monitor({Ref, P, As}, S, Reason, InfoIn) ->
     instrumented(call, MFArgs, exit, InfoIn),
   NewInfo.
 
-link_monitor_handlers(Type, Handler, LinksOrMonitors) ->
+link_monitor_handlers(Handler, LinksOrMonitors) ->
   fun(Info) ->
       #concuerror_info{exit_reason = Reason} = Info,
-      HandleActive =
+      Fold =
         fun({LinkOrMonitor, S}, InfoIn) ->
-            case S =:= active orelse Type =:= monitors of
-              true -> Handler(LinkOrMonitor, S, Reason, InfoIn);
-              false -> InfoIn
-            end
+            Handler(LinkOrMonitor, S, Reason, InfoIn)
         end,
-      lists:foldl(HandleActive, Info, LinksOrMonitors)
+      lists:foldl(Fold, Info, LinksOrMonitors)
   end.
 
 %%------------------------------------------------------------------------------
