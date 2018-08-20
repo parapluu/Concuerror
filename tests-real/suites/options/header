@@ -57,7 +57,7 @@ function grep_this {
     if [ $? -eq 0 ]; then
        return 0
     else
-       exit 1
+       abort
     fi
 }
 

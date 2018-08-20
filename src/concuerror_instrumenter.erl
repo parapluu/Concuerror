@@ -163,6 +163,8 @@ is_unsafe({erlang, exit, 2}) ->
   true;
 is_unsafe({erlang, pid_to_list, 1}) ->
   true; %% Instrumented for symbolic PIDs pretty printing.
+is_unsafe({erlang, fun_to_list, 1}) ->
+  true; %% Instrumented for fun pretty printing.
 is_unsafe({erlang, F, A}) ->
   case
     (erl_internal:guard_bif(F, A)

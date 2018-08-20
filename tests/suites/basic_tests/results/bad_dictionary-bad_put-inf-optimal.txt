@@ -1,0 +1,66 @@
+Concuerror AFS2018+build.2169.refd92d019 started at 20 Aug 2018 15:28:35
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{bad_dictionary,bad_put,[]}},
+   {exclude_module,[]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/bad_dictionary.erl"]},
+   {first_process_errors_only,false},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,5000},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
+################################################################################
+Interleaving #1
+--------------------------------------------------------------------------------
+Errors found:
+* At step 3 process <P.1> exited abnormally
+    Reason:
+      {undef,[{erlang,put,[key,value,extra_arg_bad],[]}]}
+    Stacktrace:
+      [{erlang,put,[key,value,extra_arg_bad],[]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: {<P.1>,#Ref<0.796519702.61079553.22077>} = erlang:spawn_opt({erlang,apply,[#Fun<bad_dictionary.'-bad_put/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2731
+   2: <P>: exits normally
+   3: <P.1>: exits abnormally ({undef,[{erlang,put,[key,value,extra_arg_bad],[]}]})
+   4: <P.1>: {'DOWN',#Ref<0.796519702.61079553.22077>,process,<P.1>,{undef,[{erlang,put,[key,value,extra_arg_bad],[]}]}} = erlang:send(<P>, {'DOWN',#Ref<0.796519702.61079553.22077>,process,<P.1>,{undef,[{erlang,put,[key,value,extra_arg_bad],[]}]}})
+    (while exiting)
+################################################################################
+Exploration completed!
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+* Check `--help attributes' for info on how to pass options via module attributes.
+* Running without a scheduling_bound corresponds to verification and may take a long time.
+* Increase '--print_depth' if output/graph contains "...".
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+* Writing results in /Users/stavros.aronis/git/Concuerror/tests/results/basic_tests/results/bad_dictionary-bad_put-inf-optimal.txt
+* Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
+* Instrumented & loaded module bad_dictionary
+* Automatically instrumented module erlang
+* Continuing after error (-k)
+
+################################################################################
+Done at 20 Aug 2018 15:28:35 (Exit status: error)
+  Summary: 1 errors, 1/1 interleavings explored
