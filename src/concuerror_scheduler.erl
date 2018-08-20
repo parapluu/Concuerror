@@ -973,7 +973,8 @@ update_clock([TraceState|Rest], Event, Clock, State) ->
 
 %%------------------------------------------------------------------------------
 
-plan_more_interleavings([], RevEarly, _SchedulerState) ->
+plan_more_interleavings([], RevEarly, _State) ->
+  ?trace(_State#scheduler_state.logger, "Finished checking races~n", []),
   RevEarly;
 plan_more_interleavings([TraceState|Later], RevEarly, State) ->
   case skip_planning(TraceState, State) of
