@@ -1,0 +1,76 @@
+Concuerror AFS2018+build.2170.ref2939ab1 started at 20 Aug 2018 15:45:39
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{hibernate,test,[]}},
+   {exclude_module,[]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/hibernate.erl"]},
+   {first_process_errors_only,false},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,5000},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
+################################################################################
+Interleaving #1
+--------------------------------------------------------------------------------
+Errors found:
+* At step 4 process <P.1> exited abnormally
+    Reason:
+      {{nocatch,possible},
+       [{hibernate,resume,0,
+                   [{file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/hibernate.erl"},
+                    {line,21}]}]}
+    Stacktrace:
+      [{hibernate,resume,0,
+                  [{file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/hibernate.erl"},
+                   {line,21}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<hibernate.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2687
+   2: <P>: ok = <P.1> ! ok
+    in hibernate.erl line 11
+   3: <P>: exits normally
+   4: <P.1>: exits abnormally ({{nocatch,possible},[{hibernate,resume,0,[{file,[47,85,115,101,114,115,47,115,116|...]},{line,21}]}]})
+################################################################################
+Exploration completed!
+################################################################################
+Warnings:
+--------------------------------------------------------------------------------
+* File /Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/hibernate.erl shadows /Users/stavros.aronis/git/Concuerror/tests/hibernate.beam (found in path)
+
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+* Check `--help attributes' for info on how to pass options via module attributes.
+* Running without a scheduling_bound corresponds to verification and may take a long time.
+* Increase '--print_depth' if output/graph contains "...".
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+* Writing results in /Users/stavros.aronis/git/Concuerror/tests/results/basic_tests/results/hibernate-test-inf-optimal.txt
+* Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
+* Instrumented & loaded module hibernate
+* Automatically instrumented module erlang
+* Continuing after error (-k)
+
+################################################################################
+Done at 20 Aug 2018 15:45:39 (Exit status: error)
+  Summary: 1 errors, 1/1 interleavings explored

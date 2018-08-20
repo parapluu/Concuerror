@@ -321,7 +321,9 @@ built_in(erlang, Name, _Arity, Args, _Location, Info)
   end;
 %% XXX: Temporary
 built_in(erlang, hibernate, 3, Args, _Location, Info) ->
-  erlang:hibernate(?MODULE, wrapper, [Info] ++ Args);
+  [Module, Name, HibArgs] = Args,
+  self() ! {start, Module, Name, HibArgs},
+  erlang:hibernate(?MODULE, process_top_loop, [Info]);
 built_in(erlang, get_stacktrace, 0, [], _Location, Info) ->
   Stacktrace = clean_stacktrace(erlang_get_stacktrace()),
   {{didit, Stacktrace}, Info};
