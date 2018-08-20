@@ -74,6 +74,7 @@
 -define(monitor(Ref, Target, As, Status), {Target, {Ref, self(), As}, Status}).
 -define(monitor_match_to_target_source_as(Ref),
         {'$1', {Ref, self(), '$2'}, '$3'}).
+-define(monitor_status, 3).
 
 %%------------------------------------------------------------------------------
 
@@ -396,28 +397,28 @@ run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
      event = Event,
      monitors = Monitors
     } = Info,
-  PatternFun =
-    fun(M) ->
-        case M of
-          {'DOWN', Ref, process, _, _} -> true;
-          _ -> false
-        end
-    end,
-  {Flushed, NewInfo} =
-    case HasFlush of
-      true ->
-        {Match, FlushInfo} =
-          has_matching_or_after(PatternFun, infinity, Info),
-        {Match =/= false, FlushInfo};
-      false ->
-        {false, Info}
-    end,
-  Demonitored =
-    case ets:match(Monitors, ?monitor_match_to_target_source_as(Ref)) of
-      [] ->
-        %% Invalid, expired or foreign monitor
-        false;
-      [[Target, As, Status]] ->
+  case ets:match(Monitors, ?monitor_match_to_target_source_as(Ref)) of
+    [] ->
+      %% Invalid, expired or foreign monitor
+      {not HasInfo, Info};
+    [[Target, As, Status]] ->
+      PatternFun =
+        fun(M) ->
+            case M of
+              {'DOWN', Ref, process, _, _} -> true;
+              _ -> false
+            end
+        end,
+      {Flushed, NewInfo} =
+        case HasFlush of
+          true ->
+            {Match, FlushInfo} =
+              has_matching_or_after(PatternFun, infinity, Info),
+            {Match =/= false, FlushInfo};
+          false ->
+            {false, Info}
+        end,
+      Demonitored =
         case Status of
           active ->
             Active = ?monitor(Ref, Target, As, active),
@@ -427,19 +428,19 @@ run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
             true;
           inactive ->
             false
-        end
-    end,
-  {Cnt, ReceiveInfo} = get_receive_cnt(NewInfo),
-  NewEvent = Event#event{special = [{demonitor, {Ref, {Cnt, PatternFun}}}]},
-  FinalInfo =
-    ReceiveInfo#concuerror_info{
-      demonitors = [Ref|Demonitors],
-      event = NewEvent
-     },
-  case {HasInfo, HasFlush} of
-    {false, _} -> {true, FinalInfo};
-    {true, false} -> {Demonitored, FinalInfo};
-    {true, true} -> {Flushed, FinalInfo}
+        end,
+      {Cnt, ReceiveInfo} = get_receive_cnt(NewInfo),
+      NewEvent = Event#event{special = [{demonitor, {Ref, {Cnt, PatternFun}}}]},
+      FinalInfo =
+        ReceiveInfo#concuerror_info{
+          demonitors = [Ref|Demonitors],
+          event = NewEvent
+         },
+      case {HasInfo, HasFlush} of
+        {false, _} -> {true, FinalInfo};
+        {true, false} -> {Demonitored, FinalInfo};
+        {true, true} -> {Flushed, FinalInfo}
+      end
   end;
 run_built_in(erlang, exit, 2, [Pid, Reason], Info) ->
   #concuerror_info{
@@ -1813,12 +1814,19 @@ exiting(Reason, Stacktrace, InfoIn) ->
      monitors = MonitorsTable,
      flags = #process_flags{trap_exit = Trapping}} = Info,
   FetchFun =
-    fun(Table) ->
-        [begin ets:delete_object(Table, E), {D, S} end ||
-          {_, D, S} = E <- ets:lookup(Table, Self)]
+    fun(Mode, Table) ->
+        [begin
+           ets:delete_object(Table, E),
+           case Mode of
+             delete -> ok;
+             deactivate -> ets:insert(Table, {K, D, inactive})
+           end,
+           {D, S}
+         end ||
+          {K, D, S} = E <- ets:lookup(Table, Self)]
     end,
-  Links = FetchFun(LinksTable),
-  Monitors = FetchFun(MonitorsTable),
+  Links = FetchFun(delete, LinksTable),
+  Monitors = FetchFun(deactivate, MonitorsTable),
   Name =
     case MaybeName of
       [] -> ?process_name_none;
