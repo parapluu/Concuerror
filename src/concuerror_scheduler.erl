@@ -517,7 +517,7 @@ free_schedule(Event, Actors, State) ->
       free_schedule_1(Event, Actors, NewState)
   end.
 
-enabled({_,_}) -> true;
+enabled({_, _}) -> true;
 enabled(P) -> concuerror_callback:enabled(P).
 
 free_schedule_1(Event, [Actor|_], State) when ?is_channel(Actor) ->
@@ -720,7 +720,7 @@ update_sleep_set(NewEvent, SleepSet, State) ->
   Pred =
     fun(OldEvent) ->
         V = concuerror_dependencies:dependent_safe(NewEvent, OldEvent),
-        ?debug(_Logger, "     Awaking (~p): ~s~n", [V,?pretty_s(OldEvent)]),
+        ?debug(_Logger, "     Awaking (~p): ~s~n", [V, ?pretty_s(OldEvent)]),
         V =:= false
     end,
   lists:filter(Pred, SleepSet).
@@ -762,7 +762,7 @@ insert_message(Channel, Update, _Initial, [{Channel, Queue}|Rest], true, Acc) ->
   lists:reverse(Acc, [{Channel, NewQueue}|Rest]);
 insert_message({From, _} = Channel, Update, Initial, [Other|Rest], Found, Acc) ->
   case Other of
-    {{_,_},_} ->
+    {{_, _}, _} ->
       insert_message(Channel, Update, Initial, Rest, Found, [Other|Acc]);
     From ->
       insert_message(Channel, Update, Initial, Rest,  true, [Other|Acc]);
@@ -771,7 +771,7 @@ insert_message({From, _} = Channel, Update, Initial, [Other|Rest], Found, Acc) -
         false ->
           insert_message(Channel, Update, Initial, Rest, Found, [Other|Acc]);
         true ->
-          lists:reverse(Acc, [{Channel, Initial},Other|Rest])
+          lists:reverse(Acc, [{Channel, Initial}, Other|Rest])
       end
   end.
 
@@ -1176,7 +1176,7 @@ update_trace(
     end,
   case MaybeNewWakeup of
     skip ->
-      ?debug(Logger, "     SKIP~n",[]),
+      ?debug(Logger, "     SKIP~n", []),
       skip;
     over_bound ->
       bound_reached(Logger),
@@ -1280,7 +1280,7 @@ not_obs_raw([TraceState|Rest], Later, ObserverInfo, Event, NotObs) ->
   end.
 
 has_weak_initial_before([], _, _Logger) ->
-  ?debug(_Logger, "    No earlier weak initials found~n",[]),
+  ?debug(_Logger, "    No earlier weak initials found~n", []),
   false;
 has_weak_initial_before([TraceState|Rest], V, Logger) ->
   #trace_state{done = [EarlyEvent|Done]} = TraceState,
@@ -1306,8 +1306,8 @@ debug_show_sequence(_Type, _Logger, _Index, _NotDep) ->
        Format = "                                       ~s~n",
        [_Type] ++
          [lists:append(
-            [io_lib:format(Format, [?pretty_s(I,S)])
-             || {I,S} <- IndexedNotDep])]
+            [io_lib:format(Format, [?pretty_s(I, S)])
+             || {I, S} <- IndexedNotDep])]
      end).
 
 maybe_log_race(EarlyTraceState, TraceState, State) ->
@@ -1435,7 +1435,7 @@ check_initial(Event, [E|NotDep], Acc) ->
   #event{actor = EventActor} = Event,
   #event{actor = EActor} = E,
   case EventActor =:= EActor of
-    true -> lists:reverse(Acc,NotDep);
+    true -> lists:reverse(Acc, NotDep);
     false ->
       case concuerror_dependencies:dependent_safe(E, Event) =:= false of
         true -> check_initial(Event, NotDep, [E|Acc]);
@@ -1470,7 +1470,7 @@ add_conservative(Rest, _Actor, _Clock, false, _State) ->
 add_conservative(Rest, Actor, Clock, Candidates, State) ->
   case add_conservative(Rest, Actor, Clock, Candidates, State, []) of
     abort ->
-      ?debug(State#scheduler_state.logger, "  aborted~n",[]),
+      ?debug(State#scheduler_state.logger, "  aborted~n", []),
       Rest;
     NewRest -> NewRest
   end.
@@ -1579,7 +1579,7 @@ replay(State) ->
   S = io_lib:format("New interleaving ~p. Replaying...", [N]),
   ?time(Logger, S),
   NewState = replay_prefix(NewTrace, State#scheduler_state{trace = NewTrace}),
-  ?debug(Logger, "~s~n",["Replay done."]),
+  ?debug(Logger, "~s~n", ["Replay done."]),
   NewState#scheduler_state{need_to_replay = false}.
 
 %% =============================================================================
@@ -1649,7 +1649,7 @@ fix_receive_info([#event{} = Event|RevEvents], ReceiveInfoDict, Events) ->
   end.
 
 has_delivery_or_receive([]) -> false;
-has_delivery_or_receive([{M,_}|_])
+has_delivery_or_receive([{M, _}|_])
   when M =:= message_delivered; M =:= message_received ->
   true;
 has_delivery_or_receive([_|R]) -> has_delivery_or_receive(R).
@@ -1663,7 +1663,7 @@ store_receive_info(EventInfo, Special, ReceiveInfoDict) ->
           #receive_event{receive_info = RI} -> RI;
           _ -> {system, fun(_) -> true end}
         end,
-      Fold = fun(ID,Dict) -> map_store(ID, ReceiveInfo, Dict) end,
+      Fold = fun(ID, Dict) -> map_store(ID, ReceiveInfo, Dict) end,
       lists:foldl(Fold, ReceiveInfoDict, IDs)
   end.
 
@@ -1863,7 +1863,7 @@ next_bound(SchedulingBoundType, Done, PreviousActor, Bound) ->
 
 bound_reached(Logger) ->
   ?unique(Logger, ?lwarning, msg(scheduling_bound_warning), []),
-  ?debug(Logger, "OVER BOUND~n",[]),
+  ?debug(Logger, "OVER BOUND~n", []),
   concuerror_logger:bound_reached(Logger).
 
 %% =============================================================================
@@ -1880,7 +1880,7 @@ explain_error({blocked_mismatch, I, Event, Depth}) ->
     "  new:~n"
     "    blocked~n"
     ?notify_us_msg,
-    [I,EString]
+    [I, EString]
    );
 explain_error({optimal_sleep_set_block, Origin, Who}) ->
   io_lib:format(
@@ -1897,7 +1897,7 @@ explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
     case EString =/= NEString of
       true -> [EString, NEString];
       false ->
-        [io_lib:format("~p",[E]) || E <- [Event, NewEvent]]
+        [io_lib:format("~p", [E]) || E <- [Event, NewEvent]]
     end,
   io_lib:format(
     "On step ~p, replaying a built-in returned a different result than"
@@ -1907,7 +1907,7 @@ explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
     "  new:~n"
     "    ~s~n"
     ?notify_us_msg,
-    [I,Original,New]
+    [I, Original, New]
    ).
 
 %%==============================================================================
