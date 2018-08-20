@@ -501,7 +501,8 @@ free_schedule(Event, Actors, State) ->
         true -> bound_reached(Logger);
         false -> ok
       end,
-      Eventify = [maybe_prepare_channel_event(E, #event{}) || E <- ToBeExplored],
+      Eventify =
+        [maybe_prepare_channel_event(E, #event{}) || E <- ToBeExplored],
       FullBacktrack = [#backtrack_entry{event = Ev} || Ev <- Eventify],
       case FullBacktrack of
         [] -> ok;
@@ -699,7 +700,8 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
             true ->
               #event{actor = Actor} = Event,
               Stacktrace = Exit#exit_event.stacktrace,
-              add_error({abnormal_exit, {Index, Actor, Reason, Stacktrace}}, State);
+              Error = {abnormal_exit, {Index, Actor, Reason, Stacktrace}},
+              add_error(Error, State);
             false -> State
           end
       end;
@@ -760,7 +762,8 @@ insert_message(Channel, _Update, Initial, [], Found, Acc) ->
 insert_message(Channel, Update, _Initial, [{Channel, Queue}|Rest], true, Acc) ->
   NewQueue = Update(Queue),
   lists:reverse(Acc, [{Channel, NewQueue}|Rest]);
-insert_message({From, _} = Channel, Update, Initial, [Other|Rest], Found, Acc) ->
+insert_message(Channel, Update, Initial, [Other|Rest], Found, Acc) ->
+  {From, _} = Channel,
   case Other of
     {{_, _}, _} ->
       insert_message(Channel, Update, Initial, Rest, Found, [Other|Acc]);
@@ -775,7 +778,8 @@ insert_message({From, _} = Channel, Update, Initial, [Other|Rest], Found, Acc) -
       end
   end.
 
-remove_message(#message_event{recipient = Recipient, sender = Sender}, Actors) ->
+remove_message(MessageEvent, Actors) ->
+  #message_event{recipient = Recipient, sender = Sender} = MessageEvent,
   Channel = {Sender, Recipient},
   remove_message(Channel, Actors, []).
 
@@ -1008,12 +1012,16 @@ skip_planning(TraceState, State) ->
     none -> false
   end.
 
-more_interleavings_for_event(TraceState, RevEarly, NextIndex, Clock, Later, State) ->
-  more_interleavings_for_event(TraceState, RevEarly, NextIndex, Clock, Later, State, []).
+more_interleavings_for_event(TraceState, RevEarly, NextIndex, Clock,
+                             Later, State) ->
+  more_interleavings_for_event(
+    TraceState, RevEarly, NextIndex, Clock, Later, State, []
+   ).
 
 more_interleavings_for_event(TraceState, RevEarly, -1, _Clock, _Later,
-                             _State, UpdEarly) ->
-  ?trace(_State#scheduler_state.logger, "    Finished checking races for event~n", []),
+                             State, UpdEarly) ->
+  _Logger = State#scheduler_state.logger,
+  ?trace(_Logger, "    Finished checking races for event~n", []),
   [TraceState|lists:reverse(UpdEarly, RevEarly)];
 more_interleavings_for_event(TraceState, [], _NextIndex, _Clock, _Later,
                              _State, UpdEarly) ->
@@ -1067,7 +1075,8 @@ more_interleavings_for_event(TraceState, [EarlyTraceState|RevEarly], NextIndex,
         NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
         ActorClock = lookup_clock(Actor, ClockMap),
         NI = find_latest_hb_index(ActorClock, NC),
-        ?debug(State#scheduler_state.logger, "    Next nearest race @ ~w~n", [NI]),
+        _Logger = State#scheduler_state.logger,
+        ?debug(_Logger, "    Next nearest race @ ~w~n", [NI]),
         {NC, NI}
     end,
   {NewUpdEarly, NewRevEarly} =
@@ -1273,7 +1282,8 @@ not_obs_raw([TraceState|Rest], Later, ObserverInfo, Event, NotObs) ->
       ObsNewSpecial =
         case lists:keyfind(message_delivered, 1, NewSpecial) of
           {message_delivered, #message_event{message = #message{id = NewId}}} ->
-            lists:keyreplace(ObserverInfo, 2, Special, {message_received, NewId});
+            NewReceived = {message_received, NewId},
+            lists:keyreplace(ObserverInfo, 2, Special, NewReceived);
           _ -> exit(impossible)
         end,
       [E#event{label = undefined, special = ObsNewSpecial}|NotObs]
@@ -1584,7 +1594,8 @@ replay(State) ->
 
 %% =============================================================================
 
-reset_receive_done([Event|Rest], #scheduler_state{use_receive_patterns = true}) ->
+reset_receive_done([Event|Rest], State)
+  when State#scheduler_state.use_receive_patterns =:= true ->
   NewSpecial =
     [patch_message_delivery(S, empty_map()) || S <- Event#event.special],
   [Event#event{special = NewSpecial}|Rest];
@@ -1600,8 +1611,8 @@ fix_receive_info(RevTraceOrEvents, ReceiveInfoDict) ->
 
 collect_demonitor_info([], ReceiveInfoDict) ->
   ReceiveInfoDict;
-collect_demonitor_info([#trace_state{} = TraceState|RevTrace], ReceiveInfoDict) ->
-  [Event|_] = TraceState#trace_state.done,
+collect_demonitor_info([#trace_state{} = TS|RevTrace], ReceiveInfoDict) ->
+  [Event|_] = TS#trace_state.done,
   NewDict = collect_demonitor_info([Event], ReceiveInfoDict),
   collect_demonitor_info(RevTrace, NewDict);
 collect_demonitor_info([#event{} = Event|RevEvents], ReceiveInfoDict) ->
@@ -1623,22 +1634,25 @@ store_demonitor_info(Special, ReceiveInfoDict) ->
 
 fix_receive_info([], ReceiveInfoDict, TraceOrEvents) ->
   {TraceOrEvents, ReceiveInfoDict};
-fix_receive_info([#trace_state{} = TraceState|RevTrace], ReceiveInfoDict, Trace) ->
-  [Event|Rest] = TraceState#trace_state.done,
+fix_receive_info([#trace_state{} = TS|RevTrace], ReceiveInfoDict, Trace) ->
+  [Event|Rest] = TS#trace_state.done,
   {[NewEvent], NewDict} = fix_receive_info([Event], ReceiveInfoDict, []),
-  NewTraceState = TraceState#trace_state{done = [NewEvent|Rest]},
-  fix_receive_info(RevTrace, NewDict, [NewTraceState|Trace]);
+  NewTS = TS#trace_state{done = [NewEvent|Rest]},
+  fix_receive_info(RevTrace, NewDict, [NewTS|Trace]);
 fix_receive_info([#event{} = Event|RevEvents], ReceiveInfoDict, Events) ->
   case has_delivery_or_receive(Event#event.special) of
     true ->
       #event{event_info = EventInfo, special = Special} = Event,
-      NewReceiveInfoDict = store_receive_info(EventInfo, Special, ReceiveInfoDict),
-      NewSpecial = [patch_message_delivery(S, NewReceiveInfoDict) || S <- Special],
+      NewReceiveInfoDict =
+        store_receive_info(EventInfo, Special, ReceiveInfoDict),
+      NewSpecial =
+        [patch_message_delivery(S, NewReceiveInfoDict) || S <- Special],
       NewEventInfo =
         case EventInfo of
           #message_event{} ->
+            DeliverySpecial = {message_delivered, EventInfo},
             {_, NI} =
-              patch_message_delivery({message_delivered, EventInfo}, NewReceiveInfoDict),
+              patch_message_delivery(DeliverySpecial, NewReceiveInfoDict),
             NI;
           _ -> EventInfo
         end,
@@ -1916,7 +1930,8 @@ msg(after_timeout_tip) ->
   "You can use e.g. '--after_timeout 5000' to treat after timeouts that exceed"
     " some threshold (here 4999ms) as 'infinity'.~n";
 msg(assertions_only_filter) ->
-  "Only assertion failures are considered abnormal exits ('--assertions_only').~n";
+  "Only assertion failures are considered abnormal exits"
+    " ('--assertions_only').~n";
 msg(assertions_only_use) ->
   "A process exited with reason '{{assert*,_}, _}'. If you want to see only"
     " this kind of error you can use the '--assertions_only' option.~n";
