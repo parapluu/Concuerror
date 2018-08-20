@@ -1,4 +1,4 @@
-Concuerror 0.20.0+build.2173.ref62fcec3 started at 17 Aug 2018 15:48:30
+Concuerror 0.20.0+build.2170.refdc8e204 started at 17 Aug 2018 13:42:29
  Options:
   [{after_timeout,infinity},
    {assertions_only,false},
@@ -6,9 +6,9 @@ Concuerror 0.20.0+build.2173.ref62fcec3 started at 17 Aug 2018 15:48:30
    {depth_bound,500},
    {disable_sleep_sets,false},
    {dpor,optimal},
-   {entry_point,{monitor_info,test2,[]}},
+   {entry_point,{precise_demonitor,demonitor_flush,[]}},
    {exclude_module,[]},
-   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/monitor_info.erl"]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/dpor_tests/src/precise_demonitor.erl"]},
    {first_process_errors_only,false},
    {ignore_error,[]},
    {instant_delivery,true},
@@ -37,13 +37,13 @@ Tips:
 ################################################################################
 Info:
 --------------------------------------------------------------------------------
-* Writing results in /Users/stavros.aronis/git/Concuerror/tests/results/basic_tests/results/monitor_info-test2-inf-dpor.txt
+* Writing results in /Users/stavros.aronis/git/Concuerror/tests/results/dpor_tests/results/precise_demonitor-demonitor_flush-inf-optimal.txt
 * Automatically instrumented module io_lib
 * Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
-* Instrumented & loaded module monitor_info
+* Instrumented & loaded module precise_demonitor
 * Automatically instrumented module erlang
 * You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
 
 ################################################################################
-Done at 17 Aug 2018 15:48:31 (Exit status: ok)
+Done at 17 Aug 2018 13:42:30 (Exit status: ok)
   Summary: 0 errors, 2/2 interleavings explored

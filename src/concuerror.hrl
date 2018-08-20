@@ -157,26 +157,13 @@
         , ['$1']
         }).
 %%------------------------------------------------------------------------------
--type modules() :: ets:tid().
-%%------------------------------------------------------------------------------
 -type label() :: reference().
 
 -type mfargs() :: {atom(), atom(), [term()]}.
--type receive_pattern_fun() :: fun((term()) -> boolean()).
--type receive_info() :: {pos_integer() | 'system', receive_pattern_fun()}.
 
 -type location() :: 'exit' | [non_neg_integer() | {file, string()}].
 
 -type index() :: non_neg_integer().
-
--type message_id() :: {pid(), pos_integer()} | 'hidden'.
-
--record(message, {
-          data    :: term(),
-          id      :: message_id()
-         }).
-
--type message() :: #message{}.
 
 -record(builtin_event, {
           actor = self()   :: pid(),
@@ -190,13 +177,27 @@
 
 -type builtin_event() :: #builtin_event{}.
 
+-type message_id() :: {pid(), pos_integer()} | 'hidden'.
+
+-record(message, {
+          data    :: term(),
+          id      :: message_id()
+         }).
+
+-type message() :: #message{}.
+
+-type receive_pattern_fun() :: fun((term()) -> boolean()).
+-type receive_info() ::
+        'undefined' |
+        'not_received' |
+        {pos_integer() | 'system', receive_pattern_fun()}.
+
 -record(message_event, {
           cause_label      :: label(),
-          ignored = false  :: boolean(),
           instant = true   :: boolean(),
           killing = false  :: boolean(),
           message          :: message(),
-          receive_info     :: 'undefined' | 'not_received' | receive_info(),
+          receive_info     :: receive_info(),
           recipient        :: pid(),
           sender = self()  :: pid(),
           trapping = false :: boolean(),

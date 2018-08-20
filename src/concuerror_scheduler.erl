@@ -116,37 +116,37 @@
 %% Default values for fields should be specified in ONLY ONE PLACE.
 %% For e.g., user options this is normally in the _options module.
 -record(scheduler_state, {
-          assertions_only              :: boolean(),
-          assume_racing                :: assume_racing_opt(),
-          depth_bound                  :: pos_integer(),
-          dpor                         :: concuerror_options:dpor(),
-          entry_point                  :: mfargs(),
-          estimator                    :: concuerror_estimator:estimator(),
-          first_process                :: pid(),
-          ignore_error                 :: [{interleaving_error_tag(), scope()}],
-          interleaving_bound           :: concuerror_options:bound(),
-          interleaving_errors          :: [interleaving_error()],
-          interleaving_id              :: interleaving_id(),
-          keep_going                   :: boolean(),
-          logger                       :: pid(),
-          last_scheduled               :: pid(),
-          need_to_replay               :: boolean(),
-          non_racing_system            :: [atom()],
-          origin                       :: interleaving_id(),
-          print_depth                  :: pos_integer(),
-          processes                    :: processes(),
-          receive_timeout_total        :: non_neg_integer(),
-          report_error                 :: [{interleaving_error_tag(), scope()}],
-          scheduling                   :: concuerror_options:scheduling(),
-          scheduling_bound_type        :: concuerror_options:scheduling_bound_type(),
-          show_races                   :: boolean(),
-          strict_scheduling            :: boolean(),
-          timeout                      :: timeout(),
-          trace                        :: [trace_state()],
-          treat_as_normal              :: [atom()],
-          use_receive_patterns         :: boolean(),
-          use_sleep_sets               :: boolean(),
-          use_unsound_bpor             :: boolean()
+          assertions_only :: boolean(),
+          assume_racing :: assume_racing_opt(),
+          depth_bound :: pos_integer(),
+          dpor :: concuerror_options:dpor(),
+          entry_point :: mfargs(),
+          estimator :: concuerror_estimator:estimator(),
+          first_process :: pid(),
+          ignore_error :: [{interleaving_error_tag(), scope()}],
+          interleaving_bound :: concuerror_options:bound(),
+          interleaving_errors :: [interleaving_error()],
+          interleaving_id :: interleaving_id(),
+          keep_going :: boolean(),
+          logger :: pid(),
+          last_scheduled :: pid(),
+          need_to_replay :: boolean(),
+          non_racing_system :: [atom()],
+          origin :: interleaving_id(),
+          print_depth :: pos_integer(),
+          processes :: processes(),
+          receive_timeout_total :: non_neg_integer(),
+          report_error :: [{interleaving_error_tag(), scope()}],
+          scheduling :: concuerror_options:scheduling(),
+          scheduling_bound_type :: concuerror_options:scheduling_bound_type(),
+          show_races :: boolean(),
+          strict_scheduling :: boolean(),
+          timeout :: timeout(),
+          trace :: [trace_state()],
+          treat_as_normal :: [atom()],
+          use_receive_patterns :: boolean(),
+          use_sleep_sets :: boolean(),
+          use_unsound_bpor :: boolean()
          }).
 
 %% =============================================================================
@@ -295,18 +295,12 @@ log_trace(#scheduler_state{logger = Logger} = State) ->
       end,
       InterleavingId = State#scheduler_state.interleaving_id,
       NextInterleavingId = InterleavingId + 1,
-      NextState =
-        State#scheduler_state{
-          interleaving_errors = [],
-          interleaving_id = NextInterleavingId,
-          receive_timeout_total = 0
-         },
       case NextInterleavingId =< State#scheduler_state.interleaving_bound of
-        true -> NextState;
+        true -> State;
         false ->
           UniqueMsg = "Reached interleaving bound (~p)~n",
           ?unique(Logger, ?lwarning, UniqueMsg, [InterleavingId]),
-          NextState#scheduler_state{trace = []}
+          State#scheduler_state{trace = []}
       end
   end.
 
@@ -507,7 +501,8 @@ free_schedule(Event, Actors, State) ->
         true -> bound_reached(Logger);
         false -> ok
       end,
-      Eventify = [maybe_prepare_channel_event(E, #event{}) || E <- ToBeExplored],
+      Eventify =
+        [maybe_prepare_channel_event(E, #event{}) || E <- ToBeExplored],
       FullBacktrack = [#backtrack_entry{event = Ev} || Ev <- Eventify],
       case FullBacktrack of
         [] -> ok;
@@ -523,7 +518,7 @@ free_schedule(Event, Actors, State) ->
       free_schedule_1(Event, Actors, NewState)
   end.
 
-enabled({_,_}) -> true;
+enabled({_, _}) -> true;
 enabled(P) -> concuerror_callback:enabled(P).
 
 free_schedule_1(Event, [Actor|_], State) when ?is_channel(Actor) ->
@@ -705,7 +700,8 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
             true ->
               #event{actor = Actor} = Event,
               Stacktrace = Exit#exit_event.stacktrace,
-              add_error({abnormal_exit, {Index, Actor, Reason, Stacktrace}}, State);
+              Error = {abnormal_exit, {Index, Actor, Reason, Stacktrace}},
+              add_error(Error, State);
             false -> State
           end
       end;
@@ -726,7 +722,7 @@ update_sleep_set(NewEvent, SleepSet, State) ->
   Pred =
     fun(OldEvent) ->
         V = concuerror_dependencies:dependent_safe(NewEvent, OldEvent),
-        ?debug(_Logger, "     Awaking (~p): ~s~n", [V,?pretty_s(OldEvent)]),
+        ?debug(_Logger, "     Awaking (~p): ~s~n", [V, ?pretty_s(OldEvent)]),
         V =:= false
     end,
   lists:filter(Pred, SleepSet).
@@ -741,11 +737,9 @@ update_special(Special, #trace_state{actors = Actors} = TraceState) ->
         add_message(Message, Actors);
       {message_delivered, MessageEvent} ->
         remove_message(MessageEvent, Actors);
-      {message_received, _Message} ->
-        Actors;
       {new, SpawnedPid} ->
         Actors ++ [SpawnedPid];
-      {system_communication, _} ->
+      _ ->
         Actors
     end,
   TraceState#trace_state{actors = NewActors}.
@@ -768,9 +762,10 @@ insert_message(Channel, _Update, Initial, [], Found, Acc) ->
 insert_message(Channel, Update, _Initial, [{Channel, Queue}|Rest], true, Acc) ->
   NewQueue = Update(Queue),
   lists:reverse(Acc, [{Channel, NewQueue}|Rest]);
-insert_message({From, _} = Channel, Update, Initial, [Other|Rest], Found, Acc) ->
+insert_message(Channel, Update, Initial, [Other|Rest], Found, Acc) ->
+  {From, _} = Channel,
   case Other of
-    {{_,_},_} ->
+    {{_, _}, _} ->
       insert_message(Channel, Update, Initial, Rest, Found, [Other|Acc]);
     From ->
       insert_message(Channel, Update, Initial, Rest,  true, [Other|Acc]);
@@ -779,11 +774,12 @@ insert_message({From, _} = Channel, Update, Initial, [Other|Rest], Found, Acc) -
         false ->
           insert_message(Channel, Update, Initial, Rest, Found, [Other|Acc]);
         true ->
-          lists:reverse(Acc, [{Channel, Initial},Other|Rest])
+          lists:reverse(Acc, [{Channel, Initial}, Other|Rest])
       end
   end.
 
-remove_message(#message_event{recipient = Recipient, sender = Sender}, Actors) ->
+remove_message(MessageEvent, Actors) ->
+  #message_event{recipient = Recipient, sender = Sender} = MessageEvent,
   Channel = {Sender, Recipient},
   remove_message(Channel, Actors, []).
 
@@ -973,7 +969,8 @@ update_clock([TraceState|Rest], Event, Clock, State) ->
 
 %%------------------------------------------------------------------------------
 
-plan_more_interleavings([], RevEarly, _SchedulerState) ->
+plan_more_interleavings([], RevEarly, _State) ->
+  ?trace(_State#scheduler_state.logger, "Finished checking races~n", []),
   RevEarly;
 plan_more_interleavings([TraceState|Later], RevEarly, State) ->
   case skip_planning(TraceState, State) of
@@ -1015,12 +1012,16 @@ skip_planning(TraceState, State) ->
     none -> false
   end.
 
-more_interleavings_for_event(TraceState, RevEarly, NextIndex, Clock, Later, State) ->
-  more_interleavings_for_event(TraceState, RevEarly, NextIndex, Clock, Later, State, []).
+more_interleavings_for_event(TraceState, RevEarly, NextIndex, Clock,
+                             Later, State) ->
+  more_interleavings_for_event(
+    TraceState, RevEarly, NextIndex, Clock, Later, State, []
+   ).
 
 more_interleavings_for_event(TraceState, RevEarly, -1, _Clock, _Later,
-                             _State, UpdEarly) ->
-  ?trace(_State#scheduler_state.logger, "    Finished checking races for event~n", []),
+                             State, UpdEarly) ->
+  _Logger = State#scheduler_state.logger,
+  ?trace(_Logger, "    Finished checking races for event~n", []),
   [TraceState|lists:reverse(UpdEarly, RevEarly)];
 more_interleavings_for_event(TraceState, [], _NextIndex, _Clock, _Later,
                              _State, UpdEarly) ->
@@ -1074,7 +1075,8 @@ more_interleavings_for_event(TraceState, [EarlyTraceState|RevEarly], NextIndex,
         NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
         ActorClock = lookup_clock(Actor, ClockMap),
         NI = find_latest_hb_index(ActorClock, NC),
-        ?debug(State#scheduler_state.logger, "    Next nearest race @ ~w~n", [NI]),
+        _Logger = State#scheduler_state.logger,
+        ?debug(_Logger, "    Next nearest race @ ~w~n", [NI]),
         {NC, NI}
     end,
   {NewUpdEarly, NewRevEarly} =
@@ -1183,7 +1185,7 @@ update_trace(
     end,
   case MaybeNewWakeup of
     skip ->
-      ?debug(Logger, "     SKIP~n",[]),
+      ?debug(Logger, "     SKIP~n", []),
       skip;
     over_bound ->
       bound_reached(Logger),
@@ -1280,14 +1282,15 @@ not_obs_raw([TraceState|Rest], Later, ObserverInfo, Event, NotObs) ->
       ObsNewSpecial =
         case lists:keyfind(message_delivered, 1, NewSpecial) of
           {message_delivered, #message_event{message = #message{id = NewId}}} ->
-            lists:keyreplace(ObserverInfo, 2, Special, {message_received, NewId});
+            NewReceived = {message_received, NewId},
+            lists:keyreplace(ObserverInfo, 2, Special, NewReceived);
           _ -> exit(impossible)
         end,
       [E#event{label = undefined, special = ObsNewSpecial}|NotObs]
   end.
 
 has_weak_initial_before([], _, _Logger) ->
-  ?debug(_Logger, "    No earlier weak initials found~n",[]),
+  ?debug(_Logger, "    No earlier weak initials found~n", []),
   false;
 has_weak_initial_before([TraceState|Rest], V, Logger) ->
   #trace_state{done = [EarlyEvent|Done]} = TraceState,
@@ -1313,8 +1316,8 @@ debug_show_sequence(_Type, _Logger, _Index, _NotDep) ->
        Format = "                                       ~s~n",
        [_Type] ++
          [lists:append(
-            [io_lib:format(Format, [?pretty_s(I,S)])
-             || {I,S} <- IndexedNotDep])]
+            [io_lib:format(Format, [?pretty_s(I, S)])
+             || {I, S} <- IndexedNotDep])]
      end).
 
 maybe_log_race(EarlyTraceState, TraceState, State) ->
@@ -1442,7 +1445,7 @@ check_initial(Event, [E|NotDep], Acc) ->
   #event{actor = EventActor} = Event,
   #event{actor = EActor} = E,
   case EventActor =:= EActor of
-    true -> lists:reverse(Acc,NotDep);
+    true -> lists:reverse(Acc, NotDep);
     false ->
       case concuerror_dependencies:dependent_safe(E, Event) =:= false of
         true -> check_initial(Event, NotDep, [E|Acc]);
@@ -1477,7 +1480,7 @@ add_conservative(Rest, _Actor, _Clock, false, _State) ->
 add_conservative(Rest, Actor, Clock, Candidates, State) ->
   case add_conservative(Rest, Actor, Clock, Candidates, State, []) of
     abort ->
-      ?debug(State#scheduler_state.logger, "  aborted~n",[]),
+      ?debug(State#scheduler_state.logger, "  aborted~n", []),
       Rest;
     NewRest -> NewRest
   end.
@@ -1542,8 +1545,16 @@ has_more_to_explore(State) ->
   case TracePrefix =:= [] of
     true -> {false, State#scheduler_state{trace = []}};
     false ->
+      InterleavingId = State#scheduler_state.interleaving_id,
+      NextInterleavingId = InterleavingId + 1,
       NewState =
-        State#scheduler_state{need_to_replay = true, trace = TracePrefix},
+        State#scheduler_state{
+          interleaving_errors = [],
+          interleaving_id = NextInterleavingId,
+          need_to_replay = true,
+          receive_timeout_total = 0,
+          trace = TracePrefix
+         },
       [Last|_] = TracePrefix,
       TopIndex = Last#trace_state.index,
       concuerror_estimator:restart(Estimator, TopIndex),
@@ -1578,12 +1589,13 @@ replay(State) ->
   S = io_lib:format("New interleaving ~p. Replaying...", [N]),
   ?time(Logger, S),
   NewState = replay_prefix(NewTrace, State#scheduler_state{trace = NewTrace}),
-  ?debug(Logger, "~s~n",["Replay done."]),
+  ?debug(Logger, "~s~n", ["Replay done."]),
   NewState#scheduler_state{need_to_replay = false}.
 
 %% =============================================================================
 
-reset_receive_done([Event|Rest], #scheduler_state{use_receive_patterns = true}) ->
+reset_receive_done([Event|Rest], State)
+  when State#scheduler_state.use_receive_patterns =:= true ->
   NewSpecial =
     [patch_message_delivery(S, empty_map()) || S <- Event#event.special],
   [Event#event{special = NewSpecial}|Rest];
@@ -1594,26 +1606,53 @@ fix_receive_info(RevTraceOrEvents) ->
   fix_receive_info(RevTraceOrEvents, empty_map()).
 
 fix_receive_info(RevTraceOrEvents, ReceiveInfoDict) ->
-  fix_receive_info(RevTraceOrEvents, ReceiveInfoDict, []).
+  D = collect_demonitor_info(RevTraceOrEvents, ReceiveInfoDict),
+  fix_receive_info(RevTraceOrEvents, D, []).
+
+collect_demonitor_info([], ReceiveInfoDict) ->
+  ReceiveInfoDict;
+collect_demonitor_info([#trace_state{} = TS|RevTrace], ReceiveInfoDict) ->
+  [Event|_] = TS#trace_state.done,
+  NewDict = collect_demonitor_info([Event], ReceiveInfoDict),
+  collect_demonitor_info(RevTrace, NewDict);
+collect_demonitor_info([#event{} = Event|RevEvents], ReceiveInfoDict) ->
+  case Event#event.event_info of
+    #builtin_event{mfargs = {erlang, demonitor, _}} ->
+      #event{special = Special} = Event,
+      NewDict = store_demonitor_info(Special, ReceiveInfoDict),
+      collect_demonitor_info(RevEvents, NewDict);
+    _ ->
+      collect_demonitor_info(RevEvents, ReceiveInfoDict)
+  end.
+
+store_demonitor_info(Special, ReceiveInfoDict) ->
+  case [D || {demonitor, D} <- Special] of
+    [{Ref, ReceiveInfo}] ->
+      map_store({demonitor, Ref}, ReceiveInfo, ReceiveInfoDict);
+    [] -> ReceiveInfoDict
+  end.
 
 fix_receive_info([], ReceiveInfoDict, TraceOrEvents) ->
   {TraceOrEvents, ReceiveInfoDict};
-fix_receive_info([#trace_state{} = TraceState|RevTrace], ReceiveInfoDict, Trace) ->
-  [Event|Rest] = TraceState#trace_state.done,
+fix_receive_info([#trace_state{} = TS|RevTrace], ReceiveInfoDict, Trace) ->
+  [Event|Rest] = TS#trace_state.done,
   {[NewEvent], NewDict} = fix_receive_info([Event], ReceiveInfoDict, []),
-  NewTraceState = TraceState#trace_state{done = [NewEvent|Rest]},
-  fix_receive_info(RevTrace, NewDict, [NewTraceState|Trace]);
+  NewTS = TS#trace_state{done = [NewEvent|Rest]},
+  fix_receive_info(RevTrace, NewDict, [NewTS|Trace]);
 fix_receive_info([#event{} = Event|RevEvents], ReceiveInfoDict, Events) ->
   case has_delivery_or_receive(Event#event.special) of
     true ->
       #event{event_info = EventInfo, special = Special} = Event,
-      NewReceiveInfoDict = store_receive_info(EventInfo, Special, ReceiveInfoDict),
-      NewSpecial = [patch_message_delivery(S, NewReceiveInfoDict) || S <- Special],
+      NewReceiveInfoDict =
+        store_receive_info(EventInfo, Special, ReceiveInfoDict),
+      NewSpecial =
+        [patch_message_delivery(S, NewReceiveInfoDict) || S <- Special],
       NewEventInfo =
         case EventInfo of
           #message_event{} ->
+            DeliverySpecial = {message_delivered, EventInfo},
             {_, NI} =
-              patch_message_delivery({message_delivered, EventInfo}, NewReceiveInfoDict),
+              patch_message_delivery(DeliverySpecial, NewReceiveInfoDict),
             NI;
           _ -> EventInfo
         end,
@@ -1624,7 +1663,7 @@ fix_receive_info([#event{} = Event|RevEvents], ReceiveInfoDict, Events) ->
   end.
 
 has_delivery_or_receive([]) -> false;
-has_delivery_or_receive([{M,_}|_])
+has_delivery_or_receive([{M, _}|_])
   when M =:= message_delivered; M =:= message_received ->
   true;
 has_delivery_or_receive([_|R]) -> has_delivery_or_receive(R).
@@ -1638,16 +1677,24 @@ store_receive_info(EventInfo, Special, ReceiveInfoDict) ->
           #receive_event{receive_info = RI} -> RI;
           _ -> {system, fun(_) -> true end}
         end,
-      Fold = fun(ID,Dict) -> map_store(ID, ReceiveInfo, Dict) end,
+      Fold = fun(ID, Dict) -> map_store(ID, ReceiveInfo, Dict) end,
       lists:foldl(Fold, ReceiveInfoDict, IDs)
   end.
 
 patch_message_delivery({message_delivered, MessageEvent}, ReceiveInfoDict) ->
-  #message_event{message = #message{id = Id}} = MessageEvent,
+  #message_event{message = #message{id = Id, data = Data}} = MessageEvent,
   ReceiveInfo =
     case map_find(Id, ReceiveInfoDict) of
       {ok, RI} -> RI;
-      error -> not_received
+      error ->
+        case Data of
+          {'DOWN', Ref, process, _, _} ->
+            case map_find({demonitor, Ref}, ReceiveInfoDict) of
+              {ok, RI} -> RI;
+              error -> not_received
+            end;
+          _ -> not_received
+        end
     end,
   {message_delivered, MessageEvent#message_event{receive_info = ReceiveInfo}};
 patch_message_delivery(Other, _ReceiveInfoDict) ->
@@ -1703,22 +1750,12 @@ get_next_event_backend(#event{actor = Channel} = Event, State)
   when ?is_channel(Channel) ->
   #scheduler_state{timeout = Timeout} = State,
   #event{event_info = MessageEvent} = Event,
-  assert_no_messages(),
   UpdatedEvent =
     concuerror_callback:deliver_message(Event, MessageEvent, Timeout),
   {ok, UpdatedEvent};
 get_next_event_backend(#event{actor = Pid} = Event, State) when is_pid(Pid) ->
   #scheduler_state{timeout = Timeout} = State,
-  assert_no_messages(),
-  Pid ! Event,
   concuerror_callback:wait_actor_reply(Event, Timeout).
-
-assert_no_messages() ->
-  receive
-    Msg -> error({pending_message, Msg})
-  after
-    0 -> ok
-  end.
 
 %%%----------------------------------------------------------------------
 %%% Helper functions
@@ -1840,7 +1877,7 @@ next_bound(SchedulingBoundType, Done, PreviousActor, Bound) ->
 
 bound_reached(Logger) ->
   ?unique(Logger, ?lwarning, msg(scheduling_bound_warning), []),
-  ?debug(Logger, "OVER BOUND~n",[]),
+  ?debug(Logger, "OVER BOUND~n", []),
   concuerror_logger:bound_reached(Logger).
 
 %% =============================================================================
@@ -1857,7 +1894,7 @@ explain_error({blocked_mismatch, I, Event, Depth}) ->
     "  new:~n"
     "    blocked~n"
     ?notify_us_msg,
-    [I,EString]
+    [I, EString]
    );
 explain_error({optimal_sleep_set_block, Origin, Who}) ->
   io_lib:format(
@@ -1874,7 +1911,7 @@ explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
     case EString =/= NEString of
       true -> [EString, NEString];
       false ->
-        [io_lib:format("~p",[E]) || E <- [Event, NewEvent]]
+        [io_lib:format("~p", [E]) || E <- [Event, NewEvent]]
     end,
   io_lib:format(
     "On step ~p, replaying a built-in returned a different result than"
@@ -1884,7 +1921,7 @@ explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
     "  new:~n"
     "    ~s~n"
     ?notify_us_msg,
-    [I,Original,New]
+    [I, Original, New]
    ).
 
 %%==============================================================================
@@ -1893,7 +1930,8 @@ msg(after_timeout_tip) ->
   "You can use e.g. '--after_timeout 5000' to treat after timeouts that exceed"
     " some threshold (here 4999ms) as 'infinity'.~n";
 msg(assertions_only_filter) ->
-  "Only assertion failures are considered abnormal exits ('--assertions_only').~n";
+  "Only assertion failures are considered abnormal exits"
+    " ('--assertions_only').~n";
 msg(assertions_only_use) ->
   "A process exited with reason '{{assert*,_}, _}'. If you want to see only"
     " this kind of error you can use the '--assertions_only' option.~n";

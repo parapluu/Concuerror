@@ -1,155 +1,162 @@
-Concuerror 0.15 ('90f4283') started at 25 Aug 2016 18:56:29.
+Concuerror 0.20.0+build.2170.refdc8e204 started at 17 Aug 2018 13:46:59
  Options:
   [{after_timeout,infinity},
    {assertions_only,false},
    {assume_racing,false},
    {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
    {entry_point,{demonitor_exhaustive,child_info,[]}},
-   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"]},
+   {exclude_module,[]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"]},
+   {first_process_errors_only,false},
    {ignore_error,[]},
    {instant_delivery,true},
    {interleaving_bound,infinity},
    {keep_going,true},
    {non_racing_system,[]},
-   {optimal,true},
    {print_depth,20},
+   {quiet,true},
    {scheduling,round_robin},
-   {scheduling_bound,infinity},
    {scheduling_bound_type,none},
    {show_races,true},
    {strict_scheduling,false},
    {symbolic_names,true},
-   {timeout,infinity},
-   {treat_as_normal,[]}]
+   {timeout,5000},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
 ################################################################################
 Interleaving #1
 --------------------------------------------------------------------------------
 New races found:
-*    4: P.1: {'DOWN',#Ref<0.0.1.189>,process,P.1,normal} = erlang:send(P, {'DOWN',#Ref<0.0.1.189>,process,P.1,normal})
-     6: P: receives message ({'DOWN',#Ref<0.0.1.189>,process,P.1,normal})
-
+*    4: <P.1>: {'DOWN',#Ref<0.3459075005.4207411201.161962>,process,<P.1>,normal} = erlang:send(<P>, {'DOWN',#Ref<0.3459075005.4207411201.161962>,process,<P.1>,normal})
+     6: <P>: receives message ({'DOWN',#Ref<0.3459075005.4207411201.161962>,process,<P.1>,normal})
 
 ################################################################################
 Interleaving #2
 --------------------------------------------------------------------------------
 Errors found:
-* At step 8 process P exited abnormally
+* At step 8 process <P> exited abnormally
     Reason:
       {{assertion_failed,[{module,demonitor_exhaustive},
-                          {line,78},
+                          {line,77},
                           {expression,"Before orelse After"},
                           {expected,true},
                           {explain,"Breakable: if demonitor before child exits or monitor arrives too late."},
                           {value,false}]},
        [{demonitor_exhaustive,'-before_demonitor_after/3-fun-1-',2,
-                              [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
-                               {line,78}]},
-        {demonitor_exhaustive,before_demonitor_after,3,
-                              [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
+                              [{file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
                                {line,77}]},
+        {demonitor_exhaustive,before_demonitor_after,3,
+                              [{file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
+                               {line,76}]},
         {demonitor_exhaustive,with_info,2,
-                              [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
-                               {line,101}]}]}
+                              [{file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
+                               {line,100}]}]}
     Stacktrace:
       [{demonitor_exhaustive,'-before_demonitor_after/3-fun-1-',2,
-                             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
-                              {line,78}]},
-       {demonitor_exhaustive,before_demonitor_after,3,
-                             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
+                             [{file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
                               {line,77}]},
+       {demonitor_exhaustive,before_demonitor_after,3,
+                             [{file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
+                              {line,76}]},
        {demonitor_exhaustive,with_info,2,
-                             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
-                              {line,101}]}]
+                             [{file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
+                              {line,100}]}]
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: {P.1,#Ref<0.0.1.189>} = erlang:spawn_opt({erlang,apply,[#Fun<demonitor_exhaustive.'-child/0-fun-0-'.0>,[]],[monitor]})
-    in erlang.erl line 2647
-   2: P.1: go = P ! go
+   1: <P>: {<P.1>,#Ref<0.3459075005.4207411201.161962>} = erlang:spawn_opt({erlang,apply,[#Fun<demonitor_exhaustive.1.62722954>,[]],[monitor]})
+    in erlang.erl line 2826
+   2: <P.1>: go = <P> ! go
+    in demonitor_exhaustive.erl line 32
+   3: <P.1>: exits normally
+   4: <P>: receives message (go)
     in demonitor_exhaustive.erl line 33
-   3: P.1: exits normally
-   4: P: receives message (go)
-    in demonitor_exhaustive.erl line 34
-   5: P: receive timeout expired after 0 ms
-    in demonitor_exhaustive.erl line 64
-   6: P: false = erlang:demonitor(#Ref<0.0.1.189>, [info])
-    in demonitor_exhaustive.erl line 72
-   7: P: receive timeout expired after 0 ms
-    in demonitor_exhaustive.erl line 64
-   8: P: exits abnormally ({{assertion_failed,[{module,demonitor_exhaustive},{line,78},{expression,[66,101,102,111,114,101,32,111,114,101,108|...]},{expected,true},{explain,[66,114,101,97,107,97,98,108,101|...]},{value,false}]},[{demonitor_exhaustive,'-before_demonitor_after/3-fun-1-',2,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,78}]},{demonitor_exhaustive,before_demonitor_after,3,[{file,[47,104,111,109,101,47,115,116|...]},{line,77}]},{demonitor_exhaustive,with_info,2,[{file,[47,104,111,109,101,47,115|...]},{line,101}]}]})
-   9: P.1: {'DOWN',#Ref<0.0.1.189>,process,P.1,normal} = erlang:send(P, {'DOWN',#Ref<0.0.1.189>,process,P.1,normal})
+   5: <P>: receive timeout expires after 0 ms
+    in demonitor_exhaustive.erl line 63
+   6: <P>: false = erlang:demonitor(#Ref<0.3459075005.4207411201.161962>, [info])
+    in demonitor_exhaustive.erl line 71
+   7: <P>: receive timeout expires after 0 ms
+    in demonitor_exhaustive.erl line 63
+   8: <P>: exits abnormally ({{assertion_failed,[{module,demonitor_exhaustive},{line,77},{expression,[66,101,102,111,114,101,32,111,114,101,108|...]},{expected,true},{explain,[66,114,101,97,107,97,98,108,101|...]},{value,false}]},[{demonitor_exhaustive,'-before_demonitor_after/3-fun-1-',2,[{file,[47,85,115,101,114,115,47,115,116|...]},{line,77}]},{demonitor_exhaustive,before_demonitor_after,3,[{file,[47,85,115,101,114,115,47,115|...]},{line,76}]},{demonitor_exhaustive,with_info,2,[{file,[47,85,115,101,114,115,47|...]},{line,100}]}]})
+   9: <P.1>: {'DOWN',#Ref<0.3459075005.4207411201.161962>,process,<P.1>,normal} = erlang:send(<P>, {'DOWN',#Ref<0.3459075005.4207411201.161962>,process,<P.1>,normal})
     (while exiting)
 --------------------------------------------------------------------------------
 New races found:
-*    3: P.1: exits normally
-     6: P: false = erlang:demonitor(#Ref<0.0.1.189>, [info])
+*    3: <P.1>: exits normally
+     6: <P>: false = erlang:demonitor(#Ref<0.3459075005.4207411201.161962>, [info])
 
-*    6: P: false = erlang:demonitor(#Ref<0.0.1.189>, [info])
-     9: P.1: {'DOWN',#Ref<0.0.1.189>,process,P.1,normal} = erlang:send(P, {'DOWN',#Ref<0.0.1.189>,process,P.1,normal})
-
+*    6: <P>: false = erlang:demonitor(#Ref<0.3459075005.4207411201.161962>, [info])
+     9: <P.1>: {'DOWN',#Ref<0.3459075005.4207411201.161962>,process,<P.1>,normal} = erlang:send(<P>, {'DOWN',#Ref<0.3459075005.4207411201.161962>,process,<P.1>,normal})
 
 ################################################################################
 Interleaving #4
 --------------------------------------------------------------------------------
 Errors found:
-* At step 7 process P exited abnormally
+* At step 7 process <P> exited abnormally
     Reason:
       {{assertion_failed,[{module,demonitor_exhaustive},
-                          {line,78},
+                          {line,77},
                           {expression,"Before orelse After"},
                           {expected,true},
                           {explain,"Breakable: if demonitor before child exits or monitor arrives too late."},
                           {value,false}]},
        [{demonitor_exhaustive,'-before_demonitor_after/3-fun-1-',2,
-                              [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
-                               {line,78}]},
-        {demonitor_exhaustive,before_demonitor_after,3,
-                              [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
+                              [{file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
                                {line,77}]},
+        {demonitor_exhaustive,before_demonitor_after,3,
+                              [{file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
+                               {line,76}]},
         {demonitor_exhaustive,with_info,2,
-                              [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
-                               {line,101}]}]}
+                              [{file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
+                               {line,100}]}]}
     Stacktrace:
       [{demonitor_exhaustive,'-before_demonitor_after/3-fun-1-',2,
-                             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
-                              {line,78}]},
-       {demonitor_exhaustive,before_demonitor_after,3,
-                             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
+                             [{file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
                               {line,77}]},
+       {demonitor_exhaustive,before_demonitor_after,3,
+                             [{file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
+                              {line,76}]},
        {demonitor_exhaustive,with_info,2,
-                             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
-                              {line,101}]}]
+                             [{file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/demonitor_exhaustive.erl"},
+                              {line,100}]}]
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: {P.1,#Ref<0.0.1.189>} = erlang:spawn_opt({erlang,apply,[#Fun<demonitor_exhaustive.'-child/0-fun-0-'.0>,[]],[monitor]})
-    in erlang.erl line 2647
-   2: P.1: go = P ! go
+   1: <P>: {<P.1>,#Ref<0.3459075005.4207411201.161962>} = erlang:spawn_opt({erlang,apply,[#Fun<demonitor_exhaustive.1.62722954>,[]],[monitor]})
+    in erlang.erl line 2826
+   2: <P.1>: go = <P> ! go
+    in demonitor_exhaustive.erl line 32
+   3: <P>: receives message (go)
     in demonitor_exhaustive.erl line 33
-   3: P: receives message (go)
-    in demonitor_exhaustive.erl line 34
-   4: P: receive timeout expired after 0 ms
-    in demonitor_exhaustive.erl line 64
-   5: P: true = erlang:demonitor(#Ref<0.0.1.189>, [info])
-    in demonitor_exhaustive.erl line 72
-   6: P: receive timeout expired after 0 ms
-    in demonitor_exhaustive.erl line 64
-   7: P: exits abnormally ({{assertion_failed,[{module,demonitor_exhaustive},{line,78},{expression,[66,101,102,111,114,101,32,111,114,101,108|...]},{expected,true},{explain,[66,114,101,97,107,97,98,108,101|...]},{value,false}]},[{demonitor_exhaustive,'-before_demonitor_after/3-fun-1-',2,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,78}]},{demonitor_exhaustive,before_demonitor_after,3,[{file,[47,104,111,109,101,47,115,116|...]},{line,77}]},{demonitor_exhaustive,with_info,2,[{file,[47,104,111,109,101,47,115|...]},{line,101}]}]})
-   8: P.1: exits normally
+   4: <P>: receive timeout expires after 0 ms
+    in demonitor_exhaustive.erl line 63
+   5: <P>: true = erlang:demonitor(#Ref<0.3459075005.4207411201.161962>, [info])
+    in demonitor_exhaustive.erl line 71
+   6: <P>: receive timeout expires after 0 ms
+    in demonitor_exhaustive.erl line 63
+   7: <P>: exits abnormally ({{assertion_failed,[{module,demonitor_exhaustive},{line,77},{expression,[66,101,102,111,114,101,32,111,114,101,108|...]},{expected,true},{explain,[66,114,101,97,107,97,98,108,101|...]},{value,false}]},[{demonitor_exhaustive,'-before_demonitor_after/3-fun-1-',2,[{file,[47,85,115,101,114,115,47,115,116|...]},{line,77}]},{demonitor_exhaustive,before_demonitor_after,3,[{file,[47,85,115,101,114,115,47,115|...]},{line,76}]},{demonitor_exhaustive,with_info,2,[{file,[47,85,115,101,114,115,47|...]},{line,100}]}]})
+   8: <P.1>: exits normally
+   9: <P.1>: {'DOWN',#Ref<0.3459075005.4207411201.161962>,process,<P.1>,normal} = erlang:send(<P>, {'DOWN',#Ref<0.3459075005.4207411201.161962>,process,<P.1>,normal})
+    (while exiting)
 ################################################################################
 Exploration completed!
 ################################################################################
 Tips:
 --------------------------------------------------------------------------------
-A process crashed with reason '{{assert*,_}, _}'. If you want to see only this kind of error you can use the '--assertions_only' option.
+* Running without a scheduling_bound corresponds to verification and may take a long time.
+* Increase '--print_depth' if output/graph contains "...".
+* A process exited with reason '{{assert*,_}, _}'. If you want to see only this kind of error you can use the '--assertions_only' option.
 
 ################################################################################
 Info:
 --------------------------------------------------------------------------------
-Instrumented demonitor_exhaustive
-Instrumented io_lib
-Instrumented gen_server
-Instrumented erlang
-Continuing after error (-k)
+* Writing results in /Users/stavros.aronis/git/Concuerror/tests/results/basic_tests/results/demonitor_exhaustive-child_info-inf-dpor.txt
+* Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
+* Instrumented & loaded module demonitor_exhaustive
+* Automatically instrumented module erlang
+* Continuing after error (-k)
 
 ################################################################################
-Done at 25 Aug 2016 18:56:29 (Exit status: error)
+Done at 17 Aug 2018 13:46:59 (Exit status: error)
   Summary: 2 errors, 4/4 interleavings explored

@@ -1,88 +1,73 @@
-Concuerror 0.15 ('5585cc7') started at 25 Aug 2016 11:16:23.
+Concuerror 0.20.0+build.2157.ref998cde3 started at 15 Aug 2018 12:57:27
  Options:
   [{after_timeout,infinity},
    {assertions_only,false},
    {assume_racing,false},
    {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
    {entry_point,{demonitor_sane_opts,test1,[]}},
-   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/demonitor_sane_opts.erl"]},
+   {exclude_module,[]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/demonitor_sane_opts.erl"]},
+   {first_process_errors_only,false},
    {ignore_error,[]},
    {instant_delivery,true},
    {interleaving_bound,infinity},
    {keep_going,true},
    {non_racing_system,[]},
-   {optimal,true},
    {print_depth,20},
+   {quiet,true},
    {scheduling,round_robin},
-   {scheduling_bound,infinity},
    {scheduling_bound_type,none},
-   {show_races,false},
+   {show_races,true},
    {strict_scheduling,false},
    {symbolic_names,true},
-   {timeout,infinity},
-   {treat_as_normal,[]}]
+   {timeout,5000},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
 ################################################################################
 Interleaving #1
 --------------------------------------------------------------------------------
 Errors found:
-* At step 3 process P exited abnormally
+* At step 3 process <P> exited abnormally
     Reason:
       {badarg,[{erlang,demonitor,
-                       [#Ref<0.0.1.160>,ban],
-                       [18,
-                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/demonitor_sane_opts.erl"}]}]}
+                       [#Ref<0.1130250481.263454721.53799>,ban],
+                       [17,
+                        {file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/demonitor_sane_opts.erl"}]}]}
     Stacktrace:
       [{erlang,demonitor,
-               [#Ref<0.0.1.160>,ban],
-               [18,
-                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/demonitor_sane_opts.erl"}]}]
+               [#Ref<0.1130250481.263454721.53799>,ban],
+               [17,
+                {file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/demonitor_sane_opts.erl"}]}]
 --------------------------------------------------------------------------------
 Event trace:
-   1: P: {P.1,#Ref<0.0.1.160>} = erlang:spawn_opt({erlang,apply,[#Fun<demonitor_sane_opts.'-test1/0-fun-0-'.0>,[]],[monitor]})
-    in erlang.erl line 2647
-   2: P: Exception badarg raised by: erlang:demonitor(#Ref<0.0.1.160>, ban)
-    in demonitor_sane_opts.erl line 18
-   3: P: exits abnormally ({badarg,[{erlang,demonitor,[#Ref<0.0.1.160>,ban],[18,{file,[47,104,111,109,101,47,115,116|...]}]}]})
-   4: P.1: exits normally
-   5: P.1: {'DOWN',#Ref<0.0.1.160>,process,P.1,normal} = erlang:send(P, {'DOWN',#Ref<0.0.1.160>,process,P.1,normal})
+   1: <P>: {<P.1>,#Ref<0.1130250481.263454721.53799>} = erlang:spawn_opt({erlang,apply,[#Fun<demonitor_sane_opts.0.131387192>,[]],[monitor]})
+    in erlang.erl line 2731
+   2: <P>: Exception badarg is raised by: erlang:demonitor(#Ref<0.1130250481.263454721.53799>, ban)
+    in demonitor_sane_opts.erl line 17
+   3: <P>: exits abnormally ({badarg,[{erlang,demonitor,[#Ref<0.1130250481.263454721.53799>,ban],[17,{file,[47,85,115,101,114,115,47,115|...]}]}]})
+   4: <P.1>: exits normally
+   5: <P.1>: {'DOWN',#Ref<0.1130250481.263454721.53799>,process,<P.1>,normal} = erlang:send(<P>, {'DOWN',#Ref<0.1130250481.263454721.53799>,process,<P.1>,normal})
     (while exiting)
-################################################################################
-Interleaving #2
---------------------------------------------------------------------------------
-Errors found:
-* At step 5 process P exited abnormally
-    Reason:
-      {badarg,[{erlang,demonitor,
-                       [#Ref<0.0.1.160>,ban],
-                       [18,
-                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/demonitor_sane_opts.erl"}]}]}
-    Stacktrace:
-      [{erlang,demonitor,
-               [#Ref<0.0.1.160>,ban],
-               [18,
-                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/demonitor_sane_opts.erl"}]}]
---------------------------------------------------------------------------------
-Event trace:
-   1: P: {P.1,#Ref<0.0.1.160>} = erlang:spawn_opt({erlang,apply,[#Fun<demonitor_sane_opts.'-test1/0-fun-0-'.0>,[]],[monitor]})
-    in erlang.erl line 2647
-   2: P.1: exits normally
-   3: P.1: {'DOWN',#Ref<0.0.1.160>,process,P.1,normal} = erlang:send(P, {'DOWN',#Ref<0.0.1.160>,process,P.1,normal})
-    (while exiting)
-   4: P: Exception badarg raised by: erlang:demonitor(#Ref<0.0.1.160>, ban)
-    in demonitor_sane_opts.erl line 18
-   5: P: exits abnormally ({badarg,[{erlang,demonitor,[#Ref<0.0.1.160>,ban],[18,{file,[47,104,111,109,101,47,115,116|...]}]}]})
 ################################################################################
 Exploration completed!
 ################################################################################
-Info:
+Tips:
 --------------------------------------------------------------------------------
-Instrumented demonitor_sane_opts
-Instrumented io_lib
-Instrumented gen_server
-Instrumented erlang
-You can see pairs of racing instructions (in the report and --graph) with '--show_races true'
-Continuing after error (-k)
+* Running without a scheduling_bound corresponds to verification and may take a long time.
+* Increase '--print_depth' if output/graph contains "...".
 
 ################################################################################
-Done at 25 Aug 2016 11:16:23 (Exit status: error)
-  Summary: 2 errors, 2/2 interleavings explored
+Info:
+--------------------------------------------------------------------------------
+* Writing results in /Users/stavros.aronis/git/Concuerror/tests/results/basic_tests/results/demonitor_sane_opts-test1-inf-dpor.txt
+* Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
+* Instrumented & loaded module demonitor_sane_opts
+* Automatically instrumented module erlang
+* Continuing after error (-k)
+
+################################################################################
+Done at 15 Aug 2018 12:57:27 (Exit status: error)
+  Summary: 1 errors, 1/1 interleavings explored

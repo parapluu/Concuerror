@@ -95,22 +95,22 @@ dependent(#builtin_event{actor = Recipient, exiting = false,
         {'EXIT', _, Reason} = Signal,
         not Trapping andalso Reason =/= normal
     end;
-dependent(#builtin_event{mfargs = {erlang, demonitor, [R]}} = Builtin
-         , Other) ->
-  dependent(Builtin#builtin_event{mfargs = {erlang, demonitor, [R, []]}},
-            Other);
 dependent(#builtin_event{actor = Recipient,
-                         mfargs = {erlang, demonitor, [R, Opts]}},
-          #message_event{message = #message{data = {_, R, _, _, _}},
+                         mfargs = {erlang, demonitor, [R|Rest]}
+                        },
+          #message_event{message = #message{data = {'DOWN', R, _, _, _}},
                          recipient = Recipient, type = message}) ->
-  is_list(Opts)
-    andalso
-      ([] =:= [O || O <- Opts, O =/= info, O =/= flush])
-    andalso
-    case {lists:member(flush, Opts), lists:member(info, Opts)} of
-      {true, false} -> throw(irreversible);
-      {    _,    _} -> true
-    end;
+  Options = case Rest of [] -> []; [O] -> O end,
+  try
+    [] = [O || O <- Options, O =/= flush, O =/= info],
+    {lists:member(flush, Options), lists:member(info, Options)}
+  of
+    {true, false} -> false; %% Message will be discarded either way
+    {true, true} -> true; %% Result is affected by the message being flushed
+    {false, _} -> true %% Message is discarded upon delivery or not
+  catch
+    _:_ -> false
+  end;
 dependent(#builtin_event{}, #message_event{}) ->
   false;
 dependent(#message_event{} = Message,
@@ -123,7 +123,6 @@ dependent(#exit_event{
              last_status = LastStatus,
              trapping = Trapping},
           #message_event{
-             ignored = false,
              killing = Killing,
              message = #message{data = Signal},
              recipient = Recipient,
@@ -152,7 +151,6 @@ dependent(#exit_event{}, #exit_event{}) ->
   false;
 
 dependent(#message_event{
-             ignored = false,
              killing = Killing1,
              message = #message{id = Id, data = EarlyData},
              receive_info = EarlyInfo,
@@ -160,7 +158,6 @@ dependent(#message_event{
              trapping = Trapping,
              type = EarlyType},
           #message_event{
-             ignored = false,
              killing = Killing2,
              message = #message{data = Data},
              receive_info = LateInfo,
@@ -196,7 +193,6 @@ dependent(#message_event{
   end;
 
 dependent(#message_event{
-             ignored = false,
              message = #message{data = Data, id = MsgId},
              recipient = Recipient,
              type = Type
@@ -240,21 +236,27 @@ dependent(#message_event{
   end;
 dependent(#receive_event{
              message = 'after',
-             receive_info = {_,  Patterns},
+             receive_info = {RecCounter, Patterns},
              recipient = Recipient,
              trapping = Trapping},
           #message_event{
-             ignored = false,
              message = #message{data = Data},
+             receive_info = LateInfo,
              recipient = Recipient,
              type = Type
             }) ->
-  message_could_match(Patterns, Data, Trapping, Type);
+  case LateInfo of
+    {Counter, _} ->
+      %% The message might have been discarded before the receive.
+      Counter >= RecCounter;
+    _ -> true
+  end
+    andalso
+    message_could_match(Patterns, Data, Trapping, Type);
 dependent(#receive_event{
              recipient = Recipient,
              trapping = Trapping},
           #message_event{
-             ignored = false,
              message = #message{data = Signal},
              recipient = Recipient,
              type = exit_signal
@@ -335,8 +337,20 @@ dependent_exit(#exit_event{actor = Exiting},
 dependent_exit(#exit_event{actor = Exiting}, {erlang, UnLink, [Linked]})
   when UnLink =:= link; UnLink =:= unlink ->
   Exiting =:= Linked;
-dependent_exit(#exit_event{monitors = Monitors}, {erlang, demonitor, [Ref|_]}) ->
-  false =/= lists:keyfind(Ref, 1, Monitors);
+dependent_exit(#exit_event{monitors = Monitors},
+               {erlang, demonitor, [Ref|Rest]}) ->
+  Options = case Rest of [] -> []; [O] -> O end,
+  try
+    [] = [O || O <- Options, O =/= flush, O =/= info],
+    {lists:member(flush, Options), lists:member(info, Options)}
+  of
+    {false, true} ->
+      %% Result is whether monitor has been emitted
+      false =/= lists:keyfind(Ref, 1, Monitors);
+    {_, _} -> false
+  catch
+    _:_ -> false
+  end;
 dependent_exit(#exit_event{actor = Exiting, name = Name},
                {erlang, monitor, [process, PidOrName]}) ->
   Exiting =:= PidOrName orelse Name =:= PidOrName;
@@ -383,7 +397,7 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, Msg]}},
                        Other)
   when Msg =:= messages; Msg =:= message_queue_len ->
   case Other of
-    #message_event{ignored = false, recipient = Recipient} ->
+    #message_event{recipient = Recipient} ->
       Recipient =:= Pid;
     #receive_event{recipient = Recipient, message = M} ->
       Recipient =:= Pid andalso M =/= 'after';
