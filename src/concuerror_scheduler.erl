@@ -295,18 +295,12 @@ log_trace(#scheduler_state{logger = Logger} = State) ->
       end,
       InterleavingId = State#scheduler_state.interleaving_id,
       NextInterleavingId = InterleavingId + 1,
-      NextState =
-        State#scheduler_state{
-          interleaving_errors = [],
-          interleaving_id = NextInterleavingId,
-          receive_timeout_total = 0
-         },
       case NextInterleavingId =< State#scheduler_state.interleaving_bound of
-        true -> NextState;
+        true -> State;
         false ->
           UniqueMsg = "Reached interleaving bound (~p)~n",
           ?unique(Logger, ?lwarning, UniqueMsg, [InterleavingId]),
-          NextState#scheduler_state{trace = []}
+          State#scheduler_state{trace = []}
       end
   end.
 
@@ -1543,8 +1537,16 @@ has_more_to_explore(State) ->
   case TracePrefix =:= [] of
     true -> {false, State#scheduler_state{trace = []}};
     false ->
+      InterleavingId = State#scheduler_state.interleaving_id,
+      NextInterleavingId = InterleavingId + 1,
       NewState =
-        State#scheduler_state{need_to_replay = true, trace = TracePrefix},
+        State#scheduler_state{
+          interleaving_errors = [],
+          interleaving_id = NextInterleavingId,
+          need_to_replay = true,
+          receive_timeout_total = 0,
+          trace = TracePrefix
+         },
       [Last|_] = TracePrefix,
       TopIndex = Last#trace_state.index,
       concuerror_estimator:restart(Estimator, TopIndex),
