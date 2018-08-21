@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - handling of demonitors (#281)
+- handling of process_info(..., messages) (#283)
 
 ### Fixed
 - fixed stacktrace information (#276)
