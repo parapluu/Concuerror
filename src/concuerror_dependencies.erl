@@ -393,14 +393,17 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, links]}},
       when UnLink =:= link; UnLink =:= unlink -> true;
     _ -> false
   end;
-dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, Msg]}},
-                       Other)
-  when Msg =:= messages; Msg =:= message_queue_len ->
+dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, message_queue_len]}},
+                       Other) ->
   case Other of
     #message_event{recipient = Recipient} ->
       Recipient =:= Pid;
     #receive_event{recipient = Recipient, message = M} ->
       Recipient =:= Pid andalso M =/= 'after';
+    #builtin_event{actor = Recipient, mfargs = {M, F, [_, Args]}} ->
+      Recipient =:= Pid andalso
+        {M, F} =:= {erlang, demonitor} andalso
+        try lists:member(flush, Args) catch _:_ -> false end;
     _ -> false
   end;
 dependent_process_info(#builtin_event{mfargs = {_, _, [Pid, registered_name]}},
@@ -431,6 +434,7 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[_, Safe]}},
     Safe =:= current_stacktrace;
     Safe =:= dictionary;
     Safe =:= heap_size;
+    Safe =:= messages; %% If fixed, it should be an observer of message races
     Safe =:= reductions;
     Safe =:= stack_size;
     Safe =:= status

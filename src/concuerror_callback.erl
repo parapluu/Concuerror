@@ -311,15 +311,11 @@ built_in(erlang, Display, 1, [Term], _Location, Info)
     end,
   concuerror_logger:print(Info#concuerror_info.logger, standard_io, Chars),
   {{didit, true}, Info};
-%% Process dictionary has been restored here. No need to report such ops.
+%% Inner process dictionary has been restored here. No need to report such ops.
+%% Also can't fail, as only true builtins reach this code.
 built_in(erlang, Name, _Arity, Args, _Location, Info)
   when Name =:= get; Name =:= get_keys; Name =:= put; Name =:= erase ->
-  try
-    {{didit, erlang:apply(erlang, Name, Args)}, Info}
-  catch
-    error:Reason -> {{error, Reason}, Info}
-  end;
-%% XXX: Temporary
+  {{didit, erlang:apply(erlang, Name, Args)}, Info};
 built_in(erlang, hibernate, 3, Args, _Location, Info) ->
   [Module, Name, HibArgs] = Args,
   self() ! {start, Module, Name, HibArgs},
@@ -682,8 +678,13 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
             catch error:badarg -> []
             end;
           messages ->
-            #concuerror_info{message_queue = Queue} = TheirInfo,
-            [M || #message{data = M} <- queue:to_list(Queue)];
+            #concuerror_info{logger = Logger} = TheirInfo,
+            Msg =
+              "Concuerror does not properly support"
+              " erlang:process_info(Other, messages),"
+              " returning an empty list instead.~n",
+            ?unique(Logger, ?lwarning, Msg, []),
+            [];
           message_queue_len ->
             #concuerror_info{message_queue = Queue} = TheirInfo,
             queue:len(Queue);
@@ -1852,8 +1853,8 @@ exiting(Reason, Stacktrace, InfoIn) ->
   FunFold = fun(Fun, Acc) -> Fun(Acc) end,
   FunList =
     [fun ets_ownership_exiting_events/1,
-     link_monitor_handlers(links, fun handle_link/4, Links),
-     link_monitor_handlers(monitors, fun handle_monitor/4, Monitors)],
+     link_monitor_handlers(fun handle_link/4, Links),
+     link_monitor_handlers(fun handle_monitor/4, Monitors)],
   NewInfo = ExitInfo#concuerror_info{exit_reason = Reason},
   FinalInfo = lists:foldl(FunFold, NewInfo, FunList),
   ?debug_flag(?loop, exited),
@@ -1911,17 +1912,14 @@ handle_monitor({Ref, P, As}, S, Reason, InfoIn) ->
     instrumented(call, MFArgs, exit, InfoIn),
   NewInfo.
 
-link_monitor_handlers(Type, Handler, LinksOrMonitors) ->
+link_monitor_handlers(Handler, LinksOrMonitors) ->
   fun(Info) ->
       #concuerror_info{exit_reason = Reason} = Info,
-      HandleActive =
+      Fold =
         fun({LinkOrMonitor, S}, InfoIn) ->
-            case S =:= active orelse Type =:= monitors of
-              true -> Handler(LinkOrMonitor, S, Reason, InfoIn);
-              false -> InfoIn
-            end
+            Handler(LinkOrMonitor, S, Reason, InfoIn)
         end,
-      lists:foldl(HandleActive, Info, LinksOrMonitors)
+      lists:foldl(Fold, Info, LinksOrMonitors)
   end.
 
 %%------------------------------------------------------------------------------

@@ -1,0 +1,151 @@
+Concuerror AFS2018+build.2178.ref4861cf2 started at 21 Aug 2018 13:56:25
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{process_info,test_mql_flush,[]}},
+   {exclude_module,[]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/process_info.erl"]},
+   {first_process_errors_only,false},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,5000},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
+################################################################################
+Interleaving #1
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P.1> in process_info.erl line 67
+     Mailbox contents: []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<process_info.'-test_mql_flush/0-fun-1-'.0>,[]])
+    in erlang.erl line 2687
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<process_info.'-test_mql_flush/0-fun-2-'.0>,[]])
+    in erlang.erl line 2687
+   3: <P>: exits normally
+   4: <P.1>: {<P.1.1>,#Ref<0.4212114868.2148532225.166955>} = erlang:spawn_opt({erlang,apply,[#Fun<process_info.'-test_mql_flush/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2731
+   5: <P.1>: true = erlang:demonitor(#Ref<0.4212114868.2148532225.166955>, [flush])
+    in process_info.erl line 66
+   6: <P.2>: {message_queue_len,0} = erlang:process_info(<P.1>, message_queue_len)
+    in process_info.erl line 72
+   7: <P.2>: exits normally
+   8: <P.1.1>: exits normally
+   9: <P.1.1>: {'DOWN',#Ref<0.4212114868.2148532225.166955>,process,<P.1.1>,normal} = erlang:send(<P.1>, {'DOWN',#Ref<0.4212114868.2148532225.166955>,process,<P.1.1>,normal})
+    (while exiting)
+################################################################################
+Interleaving #2
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P.1> in process_info.erl line 67
+     Mailbox contents: []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<process_info.'-test_mql_flush/0-fun-1-'.0>,[]])
+    in erlang.erl line 2687
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<process_info.'-test_mql_flush/0-fun-2-'.0>,[]])
+    in erlang.erl line 2687
+   3: <P>: exits normally
+   4: <P.1>: {<P.1.1>,#Ref<0.4212114868.2148532225.166955>} = erlang:spawn_opt({erlang,apply,[#Fun<process_info.'-test_mql_flush/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2731
+   5: <P.1>: true = erlang:demonitor(#Ref<0.4212114868.2148532225.166955>, [flush])
+    in process_info.erl line 66
+   6: <P.1.1>: exits normally
+   7: <P.1.1>: {'DOWN',#Ref<0.4212114868.2148532225.166955>,process,<P.1.1>,normal} = erlang:send(<P.1>, {'DOWN',#Ref<0.4212114868.2148532225.166955>,process,<P.1.1>,normal})
+    (while exiting)
+   8: <P.2>: {message_queue_len,0} = erlang:process_info(<P.1>, message_queue_len)
+    in process_info.erl line 72
+   9: <P.2>: exits normally
+################################################################################
+Interleaving #3
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P.1> in process_info.erl line 67
+     Mailbox contents: []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<process_info.'-test_mql_flush/0-fun-1-'.0>,[]])
+    in erlang.erl line 2687
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<process_info.'-test_mql_flush/0-fun-2-'.0>,[]])
+    in erlang.erl line 2687
+   3: <P>: exits normally
+   4: <P.1>: {<P.1.1>,#Ref<0.4212114868.2148532225.166955>} = erlang:spawn_opt({erlang,apply,[#Fun<process_info.'-test_mql_flush/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2731
+   5: <P.1.1>: exits normally
+   6: <P.2>: {message_queue_len,0} = erlang:process_info(<P.1>, message_queue_len)
+    in process_info.erl line 72
+   7: <P.2>: exits normally
+   8: <P.1.1>: {'DOWN',#Ref<0.4212114868.2148532225.166955>,process,<P.1.1>,normal} = erlang:send(<P.1>, {'DOWN',#Ref<0.4212114868.2148532225.166955>,process,<P.1.1>,normal})
+    (while exiting)
+   9: <P.1>: true = erlang:demonitor(#Ref<0.4212114868.2148532225.166955>, [flush])
+    in process_info.erl line 66
+################################################################################
+Interleaving #4
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P.1> in process_info.erl line 67
+     Mailbox contents: []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<process_info.'-test_mql_flush/0-fun-1-'.0>,[]])
+    in erlang.erl line 2687
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<process_info.'-test_mql_flush/0-fun-2-'.0>,[]])
+    in erlang.erl line 2687
+   3: <P>: exits normally
+   4: <P.1>: {<P.1.1>,#Ref<0.4212114868.2148532225.166955>} = erlang:spawn_opt({erlang,apply,[#Fun<process_info.'-test_mql_flush/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2731
+   5: <P.1.1>: exits normally
+   6: <P.1.1>: {'DOWN',#Ref<0.4212114868.2148532225.166955>,process,<P.1.1>,normal} = erlang:send(<P.1>, {'DOWN',#Ref<0.4212114868.2148532225.166955>,process,<P.1.1>,normal})
+    (while exiting)
+   7: <P.2>: {message_queue_len,1} = erlang:process_info(<P.1>, message_queue_len)
+    in process_info.erl line 72
+   8: <P.2>: exits normally
+   9: <P.1>: true = erlang:demonitor(#Ref<0.4212114868.2148532225.166955>, [flush])
+    in process_info.erl line 66
+################################################################################
+Exploration completed!
+################################################################################
+Warnings:
+--------------------------------------------------------------------------------
+* Concuerror may let exiting processes emit 'DOWN' messages for cancelled monitors. Any such messages are discarded upon delivery and can never be received.
+
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+* Check `--help attributes' for info on how to pass options via module attributes.
+* Running without a scheduling_bound corresponds to verification and may take a long time.
+* Increase '--print_depth' if output/graph contains "...".
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+* Writing results in /Users/stavros.aronis/git/Concuerror/tests/results/basic_tests/results/process_info-test_mql_flush-inf-dpor.txt
+* Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
+* Instrumented & loaded module process_info
+* Automatically instrumented module erlang
+* Continuing after error (-k)
+* You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+
+################################################################################
+Done at 21 Aug 2018 13:56:26 (Exit status: error)
+  Summary: 4 errors, 4/4 interleavings explored
