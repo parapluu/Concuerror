@@ -311,15 +311,11 @@ built_in(erlang, Display, 1, [Term], _Location, Info)
     end,
   concuerror_logger:print(Info#concuerror_info.logger, standard_io, Chars),
   {{didit, true}, Info};
-%% Process dictionary has been restored here. No need to report such ops.
+%% Inner process dictionary has been restored here. No need to report such ops.
+%% Also can't fail, as only true builtins reach this code.
 built_in(erlang, Name, _Arity, Args, _Location, Info)
   when Name =:= get; Name =:= get_keys; Name =:= put; Name =:= erase ->
-  try
-    {{didit, erlang:apply(erlang, Name, Args)}, Info}
-  catch
-    error:Reason -> {{error, Reason}, Info}
-  end;
-%% XXX: Temporary
+  {{didit, erlang:apply(erlang, Name, Args)}, Info};
 built_in(erlang, hibernate, 3, Args, _Location, Info) ->
   [Module, Name, HibArgs] = Args,
   self() ! {start, Module, Name, HibArgs},
