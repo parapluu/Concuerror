@@ -678,8 +678,13 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
             catch error:badarg -> []
             end;
           messages ->
-            #concuerror_info{message_queue = Queue} = TheirInfo,
-            [M || #message{data = M} <- queue:to_list(Queue)];
+            #concuerror_info{logger = Logger} = TheirInfo,
+            Msg =
+              "Concuerror does not properly support"
+              " erlang:process_info(Other, messages),"
+              " returning an empty list instead.~n",
+            ?unique(Logger, ?lwarning, Msg, []),
+            [];
           message_queue_len ->
             #concuerror_info{message_queue = Queue} = TheirInfo,
             queue:len(Queue);
