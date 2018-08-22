@@ -681,7 +681,7 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
             #concuerror_info{logger = Logger} = TheirInfo,
             Msg =
               "Concuerror does not properly support"
-              " erlang:process_info(Other, messages),"
+              " erlang:process_info(_, messages),"
               " returning an empty list instead.~n",
             ?unique(Logger, ?lwarning, Msg, []),
             [];
