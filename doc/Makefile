@@ -6,11 +6,11 @@ Gemfile.lock: Gemfile
 	touch $@
 
 .PHONY: build
-build: Gemfile.lock
+build:
 	make -C .. edoc
 
 .PHONY: test
-test: build
+test: build Gemfile.lock
 	htmlproofer . --disable-external
 
 .PHONY: clean
