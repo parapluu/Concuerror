@@ -1,0 +1,116 @@
+Concuerror AFS2018+build.2182.ref247dd32 started at 30 Aug 2018 10:42:09
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{code_when_undef,test,[]}},
+   {exclude_module,[]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/code_when_undef.erl"]},
+   {first_process_errors_only,false},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,5000},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
+################################################################################
+Interleaving #1
+--------------------------------------------------------------------------------
+Errors found:
+* At step 8 process <P> exited abnormally
+    Reason:
+      error
+    Stacktrace:
+      [{code_when_undef,test,0,
+                        [{file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/code_when_undef.erl"},
+                         {line,19}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.code_server/code_server> = erlang:whereis(code_server)
+    in error_handler.erl line 118
+   2: <P>: #Ref<0.1904029171.2247884801.36018> = erlang:monitor(process, code_server)
+    in code_server.erl line 138
+   3: <P>: {code_call,<P>,{ensure_loaded,ets}} = code_server ! {code_call,<P>,{ensure_loaded,ets}}
+    in code_server.erl line 139
+   4: <P>: receives message ({code_server,{module,ets}})
+    in code_server.erl line 140
+   5: <P>: true = erlang:demonitor(#Ref<0.1904029171.2247884801.36018>, [flush])
+    in code_server.erl line 142
+   6: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<code_when_undef.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2687
+   7: <P>: receive timeout expires after 0 ms
+    in code_when_undef.erl line 14
+   8: <P>: exits abnormally (error)
+   9: <P.1>: ok = <P> ! ok
+    in code_when_undef.erl line 13
+  10: <P.1>: exits normally
+################################################################################
+Interleaving #2
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process <P> exited abnormally
+    Reason:
+      error
+    Stacktrace:
+      [{code_when_undef,test,0,
+                        [{file,"/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/code_when_undef.erl"},
+                         {line,19}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.code_server/code_server> = erlang:whereis(code_server)
+    in error_handler.erl line 118
+   2: <P>: #Ref<0.1904029171.2247884801.36018> = erlang:monitor(process, code_server)
+    in code_server.erl line 138
+   3: <P>: {code_call,<P>,{ensure_loaded,ets}} = code_server ! {code_call,<P>,{ensure_loaded,ets}}
+    in code_server.erl line 139
+   4: <P>: receives message ({code_server,{module,ets}})
+    in code_server.erl line 140
+   5: <P>: true = erlang:demonitor(#Ref<0.1904029171.2247884801.36018>, [flush])
+    in code_server.erl line 142
+   6: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<code_when_undef.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2687
+   7: <P.1>: ok = <P> ! ok
+    in code_when_undef.erl line 13
+   8: <P.1>: exits normally
+   9: <P>: receives message (ok)
+    in code_when_undef.erl line 14
+  10: <P>: exits abnormally (error)
+################################################################################
+Exploration completed!
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+* Check `--help attributes' for info on how to pass options via module attributes.
+* Running without a scheduling_bound corresponds to verification and may take a long time.
+* Increase '--print_depth' if output/graph contains "...".
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+* Writing results in /Users/stavros.aronis/git/Concuerror/tests/results/basic_tests/results/code_when_undef-test-inf-optimal.txt
+* Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
+* Instrumented & loaded module code_when_undef
+* Automatically instrumented module error_handler
+* Automatically instrumented module ets
+* Automatically instrumented module code
+* Automatically instrumented module code_server
+* Automatically instrumented module erlang
+* Continuing after error (-k)
+* You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+
+################################################################################
+Done at 30 Aug 2018 10:42:09 (Exit status: error)
+  Summary: 2 errors, 2/2 interleavings explored

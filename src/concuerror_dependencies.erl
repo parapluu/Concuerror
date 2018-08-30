@@ -301,6 +301,7 @@ dependent_exit(_Exit, {erlang, A, _})
     ;A =:= exit
     ;A =:= get_stacktrace
     ;A =:= make_ref
+    ;A =:= module_loaded
     ;A =:= monotonic_time
     ;A =:= now
     ;A =:= process_flag
@@ -664,6 +665,7 @@ safe_erlang(A)
     ;A =:= get_stacktrace   %% Depends with nothing
     ;A =:= is_process_alive %% Depends only with an exit event
     ;A =:= make_ref         %% Depends with nothing
+    ;A =:= module_loaded
     ;A =:= monitor          %% Depends only with an exit event or proc_info
     ;A =:= monotonic_time
     ;A =:= now
