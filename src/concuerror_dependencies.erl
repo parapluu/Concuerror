@@ -585,55 +585,26 @@ dependent_built_in(#builtin_event{mfargs = {erlang, monotonic_time, _}},
                    #builtin_event{mfargs = {erlang, monotonic_time, _}}) ->
   true;
 
-dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
-                   #builtin_event{mfargs = {erlang, B, _}})
-  when
-    false
-    ;A =:= date
-    ;A =:= demonitor        %% Depends only with an exit event or proc_info
-    ;A =:= exit             %% Sending an exit signal (dependencies are on delivery)
-    ;A =:= get_stacktrace   %% Depends with nothing
-    ;A =:= is_process_alive %% Depends only with an exit event
-    ;A =:= make_ref         %% Depends with nothing
-    ;A =:= monitor          %% Depends only with an exit event or proc_info
-    ;A =:= monotonic_time
-    ;A =:= now
-    ;A =:= process_flag     %% Depends only with delivery of a signal
-    ;A =:= processes        %% Depends only with spawn and exit
-    ;A =:= send_after
-    ;A =:= spawn            %% Depends only with processes/0
-    ;A =:= spawn_link       %% Depends only with processes/0
-    ;A =:= spawn_opt        %% Depends only with processes/0
-    ;A =:= start_timer
-    ;A =:= system_time
-    ;A =:= time
-    ;A =:= time_offset
-    ;A =:= timestamp
-    ;A =:= unique_integer
-
-    ;B =:= date
-    ;B =:= demonitor
-    ;B =:= exit
-    ;B =:= get_stacktrace
-    ;B =:= is_process_alive
-    ;B =:= make_ref
-    ;B =:= monitor
-    ;B =:= monotonic_time
-    ;B =:= now
-    ;B =:= process_flag
-    ;B =:= processes
-    ;B =:= send_after
-    ;B =:= spawn
-    ;B =:= spawn_link
-    ;B =:= spawn_opt
-    ;B =:= start_timer
-    ;B =:= system_time
-    ;B =:= time
-    ;B =:= time_offset
-    ;B =:= timestamp
-    ;B =:= unique_integer
-    ->
+dependent_built_in(#builtin_event{mfargs = {erlang, _, _}},
+                   #builtin_event{mfargs = {ets, _, _}}) ->
   false;
+dependent_built_in(#builtin_event{mfargs = {ets, _, _}} = Ets,
+                   #builtin_event{mfargs = {erlang, _, _}} = Erlang) ->
+  dependent_built_in(Erlang, Ets);
+
+dependent_built_in(#builtin_event{mfargs = {MaybeErlangA, A, _}},
+                   #builtin_event{mfargs = {MaybeErlangB, B, _}})
+  when
+    MaybeErlangA =:= erlang;
+    MaybeErlangB =:= erlang
+    ->
+  MaybeSafeErlangA = MaybeErlangA =:= erlang andalso safe_erlang(A),
+  MaybeSafeErlangB = MaybeErlangB =:= erlang andalso safe_erlang(B),
+  case {MaybeSafeErlangA, MaybeSafeErlangB} of
+    {true, _} -> false;
+    {_, true} -> false;
+    {_, _} -> error(function_clause)
+  end;
 
 %%------------------------------------------------------------------------------
 
@@ -680,14 +651,38 @@ dependent_built_in(#builtin_event{ mfargs = {ets, _, [TableA|_]}
           Pred -> Pred(EventA)
         end;
       Pred -> Pred(EventB)
-    end;
+    end.
 
-dependent_built_in(#builtin_event{mfargs = {erlang, _, _}},
-                   #builtin_event{mfargs = {ets, _, _}}) ->
-  false;
-dependent_built_in(#builtin_event{mfargs = {ets, _, _}} = Ets,
-                   #builtin_event{mfargs = {erlang, _, _}} = Erlang) ->
-  dependent_built_in(Erlang, Ets).
+%%------------------------------------------------------------------------------
+
+safe_erlang(A)
+  when
+    false
+    ;A =:= date
+    ;A =:= demonitor        %% Depends only with an exit event or proc_info
+    ;A =:= exit             %% Sending an exit signal (dependencies are on delivery)
+    ;A =:= get_stacktrace   %% Depends with nothing
+    ;A =:= is_process_alive %% Depends only with an exit event
+    ;A =:= make_ref         %% Depends with nothing
+    ;A =:= monitor          %% Depends only with an exit event or proc_info
+    ;A =:= monotonic_time
+    ;A =:= now
+    ;A =:= process_flag     %% Depends only with delivery of a signal
+    ;A =:= processes        %% Depends only with spawn and exit
+    ;A =:= send_after
+    ;A =:= spawn            %% Depends only with processes/0
+    ;A =:= spawn_link       %% Depends only with processes/0
+    ;A =:= spawn_opt        %% Depends only with processes/0
+    ;A =:= start_timer
+    ;A =:= system_time
+    ;A =:= time
+    ;A =:= time_offset
+    ;A =:= timestamp
+    ;A =:= unique_integer
+    ->
+  true;
+safe_erlang(_) ->
+  false.
 
 %%------------------------------------------------------------------------------
 
