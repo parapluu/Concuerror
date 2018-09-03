@@ -164,13 +164,14 @@
 -spec spawn_first_process(concuerror_options:options()) -> pid().
 
 spawn_first_process(Options) ->
+  Logger = ?opt(logger, Options),
   Info =
     #concuerror_info{
        after_timeout  = ?opt(after_timeout, Options),
        ets_tables     = ets:new(ets_tables, [public]),
        instant_delivery = ?opt(instant_delivery, Options),
        links          = ets:new(links, [bag, public]),
-       logger         = ?opt(logger, Options),
+       logger         = Logger,
        monitors       = ets:new(monitors, [bag, public]),
        notify_when_ready = {self(), true},
        processes      = Processes = ?opt(processes, Options),
@@ -181,6 +182,7 @@ spawn_first_process(Options) ->
       },
   system_processes_wrappers(Info),
   system_ets_entries(Info),
+  ?autoload_and_log(error_handler, Logger),
   P = new_process(Info),
   true = ets:insert(Processes, ?new_process(P, "P")),
   {DefLeader, _} = run_built_in(erlang, whereis, 1, [user], Info),
@@ -681,7 +683,7 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
             #concuerror_info{logger = Logger} = TheirInfo,
             Msg =
               "Concuerror does not properly support"
-              " erlang:process_info(Other, messages),"
+              " erlang:process_info(_, messages),"
               " returning an empty list instead.~n",
             ?unique(Logger, ?lwarning, Msg, []),
             [];
@@ -1197,6 +1199,7 @@ run_built_in(erlang = Module, Name, Arity, Args, Info)
   when
     false
     ;{Name, Arity} =:= {date, 0}
+    ;{Name, Arity} =:= {module_loaded, 1}
     ;{Name, Arity} =:= {monotonic_time, 0}
     ;{Name, Arity} =:= {monotonic_time, 1}
     ;{Name, Arity} =:= {now, 0}
