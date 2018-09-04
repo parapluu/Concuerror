@@ -642,6 +642,8 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
               true ->
                 {_, Stacktrace} = erlang:process_info(Pid, current_stacktrace),
                 case clean_stacktrace(Stacktrace) of
+                  %% Reachable by
+                  %% basic_tests/process_info/test_current_function_top
                   [] -> TheirInfo#concuerror_info.initial_call;
                   [{M, F, A, _}|_] -> {M, F, A}
                 end;
