@@ -24,7 +24,7 @@ matrix:
   include:
 
   # When otp_release is unspecified, the first value in the corresponding
-  # list below will be used
+  # list further down in this file will be used
 
   # Check that the latest Erlang version is tested
 
@@ -51,7 +51,7 @@ matrix:
     stage: basic
 
   # Minimal support for R16B03-1
-  - env: TEST=".travis/script tests-real"
+  - env: TEST="make tests-real"
     otp_release: R16B03-1
     stage: test
 
@@ -70,15 +70,15 @@ matrix:
 env:
 
   # FLAG is used by Codecov reporter (.travis/after_success)
-  - TEST=".travis/script tests" FLAG="tests"
-  - TEST=".travis/script tests-real" FLAG="tests_real"
-  - TEST=".travis/script tests-unit" FLAG="unit_tests"
+  - TEST=".travis/maybe_cover make tests" FLAG="tests"
+  - TEST=".travis/maybe_cover make tests-real" FLAG="tests_real"
+  - TEST="make tests-unit" FLAG="unit_tests"
 
 otp_release:
 
   # Two latest minor versions of the most recent OTP release
-  # Remember to also update the badge in README.md and the used
-  # as argument to generate_version_hrl in rebar.config
+  # Remember to also update the badge in README.md and the
+  # argument to generate_version_hrl in rebar.config
 
   - 21.0
 

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -xe
+
+DIR=$(dirname $(readlink -f $0))
+export TOP=$(readlink -f $DIR/..)
+
+export ENABLE_COVER=true
+
+$DIR/maybe_cover $@
+
+cd $TOP/cover
+./cover-report data

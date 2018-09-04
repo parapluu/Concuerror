@@ -19,8 +19,8 @@ main([CoverDir]) ->
 print(List) ->
 
   %% THRESHOLDS
-  ThresholdSingle = 0.75,
-  Threshold = 0.92,
+  ThresholdSingle = 0.85,
+  Threshold = 0.94,
 
   %% HEADER
   to_stderr("~-30s | ~5s | ~6s | ~5s~n", ["Module", "Lines", "NotCov", "Cov %"]),

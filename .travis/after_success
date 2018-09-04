@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-. $(dirname $0)/header
+DIR=$(dirname $(readlink -f $0))
+. $DIR/travis_enable_cover_if_latest
 
-if [ "$COLLECT_COVERAGE" = "true" ]; then
+if [ "$ENABLE_COVER" = "true" ]; then
   echo "Generate coverage report..."
   EBIN=$(rebar3 path --ebin --app concuerror)
   cd cover

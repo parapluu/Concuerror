@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
-. $(dirname $0)/header
+DIR=$(dirname $(readlink -f $0))
+. $DIR/travis_enable_cover_if_latest
 
-if [ "$COLLECT_COVERAGE" = "true" ]; then
+if [ "$ENABLE_COVER" = "true" ]; then
   echo "Prepare to collect coverage data."
-  make cover/data
+  make -C $TOP cover/data
   cd cover
   git clone https://github.com/concuerror/covertool.git --branch 0.0.0-concuerror1
   cd covertool

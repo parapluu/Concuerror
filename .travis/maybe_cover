@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+DIR=$(dirname $(readlink -f $0))
+. $DIR/travis_enable_cover_if_latest
+
+if [ "$ENABLE_COVER" = "true" ]; then
+  ## Use non escriptized version for coverage report
+  make -C $TOP cover/data
+  export CONCUERROR=$TOP/priv/concuerror
+  export CONCUERROR_COVER=$TOP/cover/data
+fi
+
+$@

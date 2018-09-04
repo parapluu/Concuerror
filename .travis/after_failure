@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
 
-. $(dirname $0)/header
-
 bash tests/thediff
 bash tests-long/thediff
