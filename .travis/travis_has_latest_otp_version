@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 
+DIR=$(dirname $(readlink -f $0))
+. $DIR/travis_enable_cover_if_latest
+
 curl -sO https://raw.githubusercontent.com/kerl/kerl/master/kerl
 chmod a+x kerl
 LATEST=`./kerl update releases | tr ' ' '\n' | tail -n1`
 rm ./kerl
+
 if [ "$LATEST" != "$TRAVIS_OTP_RELEASE" ]; then
     printf "\nA newer OTP release is available via kerl ($LATEST)!\n"
     printf " (.travis.yml uses $TRAVIS_OTP_RELEASE for this test)\n\n"
@@ -11,10 +15,7 @@ if [ "$LATEST" != "$TRAVIS_OTP_RELEASE" ]; then
     false
 fi
 
-THISDIR=$(dirname $0)
-REPO=`$THISDIR/get_latest_travis $THISDIR/../.travis.yml`
-
-if [ "$LATEST" != "$REPO" ]; then
+if [ "$LATEST" != "$REPO_LATEST" ]; then
     printf "\nA newer OTP release is available on Travis ($LATEST)!\n"
     printf " (.travis.yml has $REPO on top)\n\n"
     printf "See .travis.yml for instructions about how to fix this.\n"

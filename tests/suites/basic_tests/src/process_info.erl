@@ -10,6 +10,8 @@ scenarios() ->
          , test_messages
          , test_message_queue_len
          , test_mql_flush
+         , test_current_function
+         , test_current_function_top
          ]].
 
 test1() ->
@@ -72,3 +74,23 @@ test_mql_flush() ->
         process_info(P, message_queue_len)
     end,
   spawn(Fun2).
+
+test_current_function() ->
+  this_is_a_one().
+
+this_is_a_one() ->
+  this_is_a_name().
+
+this_is_a_name() ->
+  {current_function, {process_info, this_is_a_name, 0}} =
+    process_info(self(), current_function).
+
+test_current_function_top() ->
+  Fun =
+    fun() ->
+        %% This is to test a clause of debatable interest in
+        %% concuerror_callback... If it is matched against anything
+        %% then the clause is no longer covered.
+        process_info(self(), current_function)
+    end,
+  spawn(Fun).

@@ -118,8 +118,10 @@
 -define(pretty_s(E), ?pretty_s(0,E)).
 %%------------------------------------------------------------------------------
 -define(crash(Reason), exit({?MODULE, Reason})).
+-define(can_fix_msg,
+        " If you really need this functionality, contact the developers.").
 -define(notify_us_msg,
-        "~nPlease notify the developers, as this is a bug of Concuerror.").
+        " Please notify the developers, as this is a bug of Concuerror.").
 %%------------------------------------------------------------------------------
 -type timers()       :: ets:tid().
 

@@ -86,26 +86,27 @@
 
 -define(ets_name_none, 0).
 
--define(ets_table_entry(Tid, Name, Owner, Protection, Heir),
-        {Tid, Name, Owner, Protection, Heir, true}).
+-define(ets_table_entry(Tid, Name, Owner, Protection, Heir, System),
+        {Tid, Name, Owner, Protection, Heir, System, true}).
 -define(ets_table_entry_system(Tid, Name, Protection, Owner),
-        ?ets_table_entry(Tid, Name, Owner, Protection, {heir, none})).
+        ?ets_table_entry(Tid, Name, Owner, Protection, {heir, none}, true)).
 
 -define(ets_tid, 1).
 -define(ets_name, 2).
 -define(ets_owner, 3).
 -define(ets_protection, 4).
 -define(ets_heir, 5).
--define(ets_alive, 6).
+-define(ets_system, 6).
+-define(ets_alive, 7).
 
 -define(ets_match_owner_to_heir_info(Owner),
-        {'$2', '$3', Owner, '_', '$1', true}).
+        {'$2', '$3', Owner, '_', '$1', '_', true}).
 -define(ets_match_tid_to_permission_info(Tid),
-        {Tid, '$3', '$1', '$2', '_', true}).
+        {Tid, '$3', '$1', '$2', '_', '$4', true}).
 -define(ets_match_name_to_tid(Name),
-        {'$1', Name, '_', '_', '_', true}).
+        {'$1', Name, '_', '_', '_', '_', true}).
 -define(ets_pattern_mine(),
-        {'_', '_', self(), '_', '_', '_'}).
+        {'_', '_', self(), '_', '_', '_', '_'}).
 
 %%------------------------------------------------------------------------------
 
@@ -642,6 +643,8 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
               true ->
                 {_, Stacktrace} = erlang:process_info(Pid, current_stacktrace),
                 case clean_stacktrace(Stacktrace) of
+                  %% Reachable by
+                  %% basic_tests/process_info/test_current_function_top
                   [] -> TheirInfo#concuerror_info.initial_call;
                   [{M, F, A, _}|_] -> {M, F, A}
                 end;
@@ -1055,7 +1058,7 @@ run_built_in(ets, new, 2, [NameArg, Options], Info) ->
       none -> {heir, none};
       Other -> Other
     end,
-  Entry = ?ets_table_entry(Tid, Name, self(), Protection, Heir),
+  Entry = ?ets_table_entry(Tid, Name, self(), Protection, Heir, false),
   true = ets:insert(EtsTables, Entry),
   ets:delete_all_objects(Tid),
   {Ret, Info#concuerror_info{extra = {Tid, Name}}};
@@ -1132,38 +1135,6 @@ run_built_in(ets, whereis, _, [Name], Info) ->
   catch
     error:badarg -> {undefined, Info}
   end;
-run_built_in(ets, F, N, [NameOrTid|Args], Info)
-  when
-    false
-    ; {F, N} =:= {delete, 2}
-    ; {F, N} =:= {delete_all_objects, 1}
-    ; {F, N} =:= {delete_object, 2}
-    ; {F, N} =:= {first, 1}
-    ; {F, N} =:= {insert, 2}
-    ; {F, N} =:= {insert_new, 2}
-    ; {F, N} =:= {internal_delete_all, 2}
-    ; {F, N} =:= {internal_select_delete, 2}
-    ; {F, N} =:= {lookup, 2}
-    ; {F, N} =:= {lookup_element, 3}
-    ; {F, N} =:= {match, 2}
-    ; {F, N} =:= {match_object, 2}
-    ; {F, N} =:= {member, 2}
-    ; {F, N} =:= {next, 2}
-    ; {F, N} =:= {select, 2}
-    ; {F, N} =:= {select, 3}
-    ; {F, N} =:= {select_delete, 2}
-    ; {F, N} =:= {update_counter, 3}
-    ; {F, N} =:= {update_element, 3}
-    ->
-  {Tid, Id, IsSystem} = ets_access_table_info(NameOrTid, {F, N}, Info),
-  case IsSystem of
-    true ->
-      #concuerror_info{system_ets_entries = SystemEtsEntries} = Info,
-      ets:insert(SystemEtsEntries, {Tid, Args});
-    false ->
-      true
-  end,
-  {erlang:apply(ets, F, [Tid|Args]), Info#concuerror_info{extra = Id}};
 run_built_in(ets, delete, 1, [NameOrTid], Info) ->
   #concuerror_info{ets_tables = EtsTables} = Info,
   {Tid, Id, _} = ets_access_table_info(NameOrTid, {delete, 1}, Info),
@@ -1194,6 +1165,23 @@ run_built_in(ets, give_away, 3, [NameOrTid, Pid, GiftData], Info) ->
   Update = [{?ets_owner, Pid}],
   true = ets:update_element(EtsTables, Tid, Update),
   {true, NewInfo#concuerror_info{extra = Id}};
+run_built_in(ets, F, N, [NameOrTid|Args], Info) ->
+  try
+    _ = ets_ops_access_rights_map({F, N})
+  catch
+    error:function_clause ->
+      #concuerror_info{event = #event{location = Location}} = Info,
+      ?crash_instr({unknown_built_in, {ets, F, N, Location}})
+  end,
+  {Tid, Id, IsSystemInsert} = ets_access_table_info(NameOrTid, {F, N}, Info),
+  case IsSystemInsert of
+    true ->
+      #concuerror_info{system_ets_entries = SystemEtsEntries} = Info,
+      ets:insert(SystemEtsEntries, {Tid, Args});
+    false ->
+      true
+  end,
+  {erlang:apply(ets, F, [Tid|Args]), Info#concuerror_info{extra = Id}};
 
 run_built_in(erlang = Module, Name, Arity, Args, Info)
   when
@@ -1599,9 +1587,16 @@ wrapper(InfoIn, Module, Name, Args) ->
 -endif.
 
 request_system_reset(Pid) ->
+  Mon = monitor(process, Pid),
   Pid ! reset_system,
   receive
-    reset_system_done -> ok
+    reset_system_done ->
+      demonitor(Mon, [flush]),
+      ok;
+    {'DOWN', Mon, process, Pid, Reason} ->
+      exit(Reason)
+  after
+    5000 -> exit(timeout)
   end.
 
 reset_system(Info) ->
@@ -1952,7 +1947,7 @@ ets_system_name_to_tid(Name) ->
 -endif.
 
 ets_access_table_info(NameOrTid, Op, Info) ->
-  #concuerror_info{ets_tables = EtsTables, scheduler = Scheduler} = Info,
+  #concuerror_info{ets_tables = EtsTables} = Info,
   ?badarg_if_not(is_valid_ets_id(NameOrTid)),
   Tid =
     case is_atom(NameOrTid) of
@@ -1965,8 +1960,8 @@ ets_access_table_info(NameOrTid, Op, Info) ->
     end,
   case ets:match(EtsTables, ?ets_match_tid_to_permission_info(Tid)) of
     [] -> error(badarg);
-    [[Owner, Protection, Name]] ->
-      Test =
+    [[Owner, Protection, Name, IsSystem]] ->
+      IsAllowed =
         (Owner =:= self()
          orelse
          case ets_ops_access_rights_map(Op) of
@@ -1975,15 +1970,17 @@ ets_access_table_info(NameOrTid, Op, Info) ->
            read  -> Protection =/= private;
            write -> Protection =:= public
          end),
-      ?badarg_if_not(Test),
-      IsSystem =
-        (Owner =:= Scheduler) andalso
+      ?badarg_if_not(IsAllowed),
+      IsSystemInsert =
+        IsSystem andalso
+        ets_ops_access_rights_map(Op) =:= write andalso
         case element(1, Op) of
+          delete -> false;
           insert -> true;
-          insert_new -> true;
-          _ -> false
+          NotAllowed ->
+            ?crash_instr({restricted_ets_system, NameOrTid, NotAllowed})
         end,
-      {Tid, {Tid, Name}, IsSystem}
+      {Tid, {Tid, Name}, IsSystemInsert}
   end.
 
 ets_ops_access_rights_map(Op) ->
@@ -2383,7 +2380,7 @@ explain_error({no_response_for_message, Timeout, Recipient}) ->
 explain_error({not_local_node, Node}) ->
   io_lib:format(
     "A built-in tried to use ~p as a remote node. Concuerror does not support"
-    " remote nodes yet.",
+    " remote nodes.",
     [Node]);
 explain_error({process_did_not_respond, Timeout, Actor}) ->
   io_lib:format(
@@ -2401,9 +2398,16 @@ explain_error({process_did_not_respond_system, Actor}) ->
 explain_error({registered_process_not_wrapped, Name}) ->
   io_lib:format(
     "The test tries to communicate with a process registered as '~w' that is"
-    " not under Concuerror's control. If your test cannot avoid this"
-    " communication please open an issue to consider adding support.~n",
+    " not under Concuerror's control."
+    ?can_fix_msg,
     [Name]);
+explain_error({restricted_ets_system, NameOrTid, NotAllowed}) ->
+  io_lib:format(
+    "A process tried to execute an 'ets:~p' operation on ~p. Only insert and"
+    " delete write operations are supported for public ETS tables owned by"
+    " 'system' processes."
+    ?can_fix_msg,
+    [NotAllowed, NameOrTid]);
 explain_error({system_wrapper_error, Name, Type, Reason}) ->
   io_lib:format(
     "Concuerror's wrapper for system process ~p crashed (~p):~n"
@@ -2422,11 +2426,10 @@ explain_error({unexpected_builtin_change,
     [Module, Name, Arity, Args, M, F, length(OArgs), OArgs, Location]);
 explain_error({unknown_protocol_for_system, {System, Data}}) ->
   io_lib:format(
-    "A process tried to send a message to system process ~p. Concuerror does"
-    " not currently support communication with this process. Please contact the"
-    " developers for more information.~n"
-    "Message:~n"
-    " ~p~n", [System, Data]);
+    "A process tried to send a message (~p) to system process ~p. Concuerror"
+    " does not currently support communication with this process."
+    ?can_fix_msg,
+    [Data, System]);
 explain_error({unknown_built_in, {Module, Name, Arity, Location}}) ->
   LocationString =
     case Location of
@@ -2434,13 +2437,14 @@ explain_error({unknown_built_in, {Module, Name, Arity, Location}}) ->
       _ -> ""
     end,
   io_lib:format(
-    "Concuerror does not support calls to built-in ~p:~p/~p~s.~n  If you cannot"
-    " avoid its use, please contact the developers.~n",
+    "Concuerror does not support calls to built-in ~p:~p/~p~s."
+    ?can_fix_msg,
     [Module, Name, Arity, LocationString]);
 explain_error({unsupported_request, Name, Type}) ->
   io_lib:format(
     "A process sent a request of type '~w' to ~p. Concuerror does not yet"
-    " support this type of request to this process.",
+    " support this type of request to this process."
+    ?can_fix_msg,
     [Type, Name]).
 
 location(F, L) ->

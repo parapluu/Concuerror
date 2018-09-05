@@ -2,13 +2,15 @@
 
 set -xe
 
-THISDIR=$(dirname $0)
-REPO_LATEST=`$THISDIR/get_latest_travis $THISDIR/../.travis.yml`
+DIR=$(dirname $(readlink -f $0))
+TOP=$(readlink -f $DIR/..)
+
+REPO_LATEST=`$DIR/get_latest_travis $TOP/.travis.yml`
 
 if [ "$REPO_LATEST" = "$TRAVIS_OTP_RELEASE" ]; then
     if [ -z ${FLAG+x} ]; then
         echo "FLAG not set, so no coverage generated"
     else
-        COLLECT_COVERAGE=true
+        ENABLE_COVER=true
     fi
 fi

@@ -5,6 +5,7 @@
          test7/0,test8/0,test9/0,testA/0,testB/0,testC/0,
          test11/0,test12/0,test13/0,test14/0,test15/0,test16/0,
          test17/0,test18/0,test19/0,test1A/0,test1B/0,test1C/0
+        ,test1D/0
         ]).
 
 scenarios() ->
@@ -14,6 +15,7 @@ scenarios() ->
              test7,test8,test9,testA,testB,testC,
              test11,test12,test13,test14,test15,test16,
              test17,test18,test19,test1A,test1B,test1C
+            ,test1D
             ]
     ].
 
@@ -65,6 +67,14 @@ test1B() ->
     test(cancel_safe_2, send_after, 0).
 test1C() ->
     test(cancel_safe_2, start_timer, 0).
+
+test1D() ->
+  erlang:send_after(0, self(), ok),
+  receive ok -> ok end,
+  P = self(),
+  spawn(fun() -> P ! foo end),
+  spawn(fun() -> P ! bar end),
+  receive _ -> ok end.
 
 test(Tag, Type) ->
     test(Tag, Type, 1000).
