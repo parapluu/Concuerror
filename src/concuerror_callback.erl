@@ -1601,9 +1601,16 @@ wrapper(InfoIn, Module, Name, Args) ->
 -endif.
 
 request_system_reset(Pid) ->
+  Mon = monitor(process, Pid),
   Pid ! reset_system,
   receive
-    reset_system_done -> ok
+    reset_system_done ->
+      demonitor(Mon, [flush]),
+      ok;
+    {'DOWN', Mon, process, Pid, Reason} ->
+      exit(Reason)
+  after
+    5000 -> exit(timeout)
   end.
 
 reset_system(Info) ->
