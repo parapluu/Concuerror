@@ -1,0 +1,129 @@
+Concuerror AFS2018+build.2190.ref1f07408 started at 05 Sep 2018 14:39:12
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{system_instant_delivery,test,[]}},
+   {exclude_module,[]},
+   {files,["/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/system_instant_delivery.erl"]},
+   {first_process_errors_only,false},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,5000},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
+################################################################################
+Interleaving #1
+--------------------------------------------------------------------------------
+Errors found:
+* At step 2 process <P> exited abnormally
+    Reason:
+      died_to_show_trace
+    Stacktrace:
+      [{system_instant_delivery,test,0,
+           [{file,
+                "/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/system_instant_delivery.erl"},
+            {line,43}]}]
+--------------------------------------------------------------------------------
+Standard Output:
+Hello world!
+
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<system_instant_delivery.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2687
+   2: <P>: exits abnormally (died_to_show_trace)
+   3: <P.1>: <P.user/user> = erlang:group_leader()
+    in system_instant_delivery.erl line 20
+   4: <P.1>: #Ref<0.1361855070.3086745601.65145> = erlang:monitor(process, <P.user/user>)
+    in system_instant_delivery.erl line 21
+   5: <P.1>: {io_request,<P.1>,#Ref<0.1361855070.3086745601.65145>,{put_chars,unicode,io_lib,format,[[72,101,108,108,111,32,119,111,114|...],[]]}} = <P.user/user> ! {io_request,<P.1>,#Ref<0.1361855070.3086745601.65145>,{put_chars,unicode,io_lib,format,[[72,101,108,108,111,32,119,111,114|...],[]]}}
+    in system_instant_delivery.erl line 25
+   6: <P.1>: receives message ({io_reply,#Ref<0.1361855070.3086745601.65145>,ok})
+    in system_instant_delivery.erl line 26
+   7: <P.1>: true = erlang:demonitor(#Ref<0.1361855070.3086745601.65145>, [flush])
+    in system_instant_delivery.erl line 34
+   8: <P.1>: <P.1.1> = erlang:spawn(erlang, apply, [#Fun<system_instant_delivery.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2687
+   9: <P.1>: receive timeout expires after 0 ms
+    in system_instant_delivery.erl line 36
+  10: <P.1>: exits normally
+  11: <P.1.1>: ok = <P.1> ! ok
+    in system_instant_delivery.erl line 35
+  12: <P.1.1>: exits normally
+################################################################################
+Interleaving #2
+--------------------------------------------------------------------------------
+Errors found:
+* At step 2 process <P> exited abnormally
+    Reason:
+      died_to_show_trace
+    Stacktrace:
+      [{system_instant_delivery,test,0,
+           [{file,
+                "/Users/stavros.aronis/git/Concuerror/tests/suites/basic_tests/src/system_instant_delivery.erl"},
+            {line,43}]}]
+--------------------------------------------------------------------------------
+Standard Output:
+Hello world!
+
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<system_instant_delivery.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2687
+   2: <P>: exits abnormally (died_to_show_trace)
+   3: <P.1>: <P.user/user> = erlang:group_leader()
+    in system_instant_delivery.erl line 20
+   4: <P.1>: #Ref<0.1361855070.3086745601.65145> = erlang:monitor(process, <P.user/user>)
+    in system_instant_delivery.erl line 21
+   5: <P.1>: {io_request,<P.1>,#Ref<0.1361855070.3086745601.65145>,{put_chars,unicode,io_lib,format,[[72,101,108,108,111,32,119,111,114|...],[]]}} = <P.user/user> ! {io_request,<P.1>,#Ref<0.1361855070.3086745601.65145>,{put_chars,unicode,io_lib,format,[[72,101,108,108,111,32,119,111,114|...],[]]}}
+    in system_instant_delivery.erl line 25
+   6: <P.1>: receives message ({io_reply,#Ref<0.1361855070.3086745601.65145>,ok})
+    in system_instant_delivery.erl line 26
+   7: <P.1>: true = erlang:demonitor(#Ref<0.1361855070.3086745601.65145>, [flush])
+    in system_instant_delivery.erl line 34
+   8: <P.1>: <P.1.1> = erlang:spawn(erlang, apply, [#Fun<system_instant_delivery.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2687
+   9: <P.1.1>: ok = <P.1> ! ok
+    in system_instant_delivery.erl line 35
+  10: <P.1.1>: exits normally
+  11: <P.1>: receives message (ok)
+    in system_instant_delivery.erl line 36
+  12: <P.1>: exits normally
+################################################################################
+Exploration completed!
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+* Running without a scheduling_bound corresponds to verification and may take a long time.
+* Your test sends messages to the 'user' process to write output. Such messages from different processes may race, producing spurious interleavings. Consider using '--non_racing_system user' to avoid them.
+* Increase '--print_depth' if output/graph contains "...".
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+* Writing results in /Users/stavros.aronis/git/Concuerror/tests/results/basic_tests/results/system_instant_delivery-test-inf-optimal.txt
+* Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
+* Instrumented & loaded module system_instant_delivery
+* Automatically instrumented module error_handler
+* Automatically instrumented module erlang
+* Continuing after error (-k)
+* You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+
+################################################################################
+Done at 05 Sep 2018 14:39:13 (Exit status: error)
+  Summary: 2 errors, 2/2 interleavings explored
