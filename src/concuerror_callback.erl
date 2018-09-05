@@ -86,26 +86,27 @@
 
 -define(ets_name_none, 0).
 
--define(ets_table_entry(Tid, Name, Owner, Protection, Heir),
-        {Tid, Name, Owner, Protection, Heir, true}).
+-define(ets_table_entry(Tid, Name, Owner, Protection, Heir, System),
+        {Tid, Name, Owner, Protection, Heir, System, true}).
 -define(ets_table_entry_system(Tid, Name, Protection, Owner),
-        ?ets_table_entry(Tid, Name, Owner, Protection, {heir, none})).
+        ?ets_table_entry(Tid, Name, Owner, Protection, {heir, none}, true)).
 
 -define(ets_tid, 1).
 -define(ets_name, 2).
 -define(ets_owner, 3).
 -define(ets_protection, 4).
 -define(ets_heir, 5).
--define(ets_alive, 6).
+-define(ets_system, 6).
+-define(ets_alive, 7).
 
 -define(ets_match_owner_to_heir_info(Owner),
-        {'$2', '$3', Owner, '_', '$1', true}).
+        {'$2', '$3', Owner, '_', '$1', '_', true}).
 -define(ets_match_tid_to_permission_info(Tid),
-        {Tid, '$3', '$1', '$2', '_', true}).
+        {Tid, '$3', '$1', '$2', '_', '$4', true}).
 -define(ets_match_name_to_tid(Name),
-        {'$1', Name, '_', '_', '_', true}).
+        {'$1', Name, '_', '_', '_', '_', true}).
 -define(ets_pattern_mine(),
-        {'_', '_', self(), '_', '_', '_'}).
+        {'_', '_', self(), '_', '_', '_', '_'}).
 
 %%------------------------------------------------------------------------------
 
@@ -1057,7 +1058,7 @@ run_built_in(ets, new, 2, [NameArg, Options], Info) ->
       none -> {heir, none};
       Other -> Other
     end,
-  Entry = ?ets_table_entry(Tid, Name, self(), Protection, Heir),
+  Entry = ?ets_table_entry(Tid, Name, self(), Protection, Heir, false),
   true = ets:insert(EtsTables, Entry),
   ets:delete_all_objects(Tid),
   {Ret, Info#concuerror_info{extra = {Tid, Name}}};
@@ -1157,8 +1158,8 @@ run_built_in(ets, F, N, [NameOrTid|Args], Info)
     ; {F, N} =:= {update_counter, 3}
     ; {F, N} =:= {update_element, 3}
     ->
-  {Tid, Id, IsSystem} = ets_access_table_info(NameOrTid, {F, N}, Info),
-  case IsSystem of
+  {Tid, Id, IsSystemInsert} = ets_access_table_info(NameOrTid, {F, N}, Info),
+  case IsSystemInsert of
     true ->
       #concuerror_info{system_ets_entries = SystemEtsEntries} = Info,
       ets:insert(SystemEtsEntries, {Tid, Args});
@@ -1961,7 +1962,7 @@ ets_system_name_to_tid(Name) ->
 -endif.
 
 ets_access_table_info(NameOrTid, Op, Info) ->
-  #concuerror_info{ets_tables = EtsTables, scheduler = Scheduler} = Info,
+  #concuerror_info{ets_tables = EtsTables} = Info,
   ?badarg_if_not(is_valid_ets_id(NameOrTid)),
   Tid =
     case is_atom(NameOrTid) of
@@ -1974,8 +1975,8 @@ ets_access_table_info(NameOrTid, Op, Info) ->
     end,
   case ets:match(EtsTables, ?ets_match_tid_to_permission_info(Tid)) of
     [] -> error(badarg);
-    [[Owner, Protection, Name]] ->
-      Test =
+    [[Owner, Protection, Name, IsSystem]] ->
+      IsAllowed =
         (Owner =:= self()
          orelse
          case ets_ops_access_rights_map(Op) of
@@ -1984,15 +1985,17 @@ ets_access_table_info(NameOrTid, Op, Info) ->
            read  -> Protection =/= private;
            write -> Protection =:= public
          end),
-      ?badarg_if_not(Test),
-      IsSystem =
-        (Owner =:= Scheduler) andalso
+      ?badarg_if_not(IsAllowed),
+      IsSystemInsert =
+        IsSystem andalso
+        ets_ops_access_rights_map(Op) =:= write andalso
         case element(1, Op) of
+          delete -> false;
           insert -> true;
-          insert_new -> true;
-          _ -> false
+          NotAllowed ->
+            ?crash_instr({restricted_ets_system, NameOrTid, NotAllowed})
         end,
-      {Tid, {Tid, Name}, IsSystem}
+      {Tid, {Tid, Name}, IsSystemInsert}
   end.
 
 ets_ops_access_rights_map(Op) ->
@@ -2413,6 +2416,13 @@ explain_error({registered_process_not_wrapped, Name}) ->
     " not under Concuerror's control. If your test cannot avoid this"
     " communication please open an issue to consider adding support.~n",
     [Name]);
+explain_error({restricted_ets_system, NameOrTid, NotAllowed}) ->
+  io_lib:format(
+    "A process tried to execute an 'ets:~p' operation on ~p. Only insert and"
+    " delete write operations are supported for public ETS tables owned by"
+    " 'system' processes."
+    ?can_fix_msg,
+    [NotAllowed, NameOrTid]);
 explain_error({system_wrapper_error, Name, Type, Reason}) ->
   io_lib:format(
     "Concuerror's wrapper for system process ~p crashed (~p):~n"
