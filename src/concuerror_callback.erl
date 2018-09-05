@@ -2380,7 +2380,7 @@ explain_error({no_response_for_message, Timeout, Recipient}) ->
 explain_error({not_local_node, Node}) ->
   io_lib:format(
     "A built-in tried to use ~p as a remote node. Concuerror does not support"
-    " remote nodes yet.",
+    " remote nodes.",
     [Node]);
 explain_error({process_did_not_respond, Timeout, Actor}) ->
   io_lib:format(
@@ -2398,8 +2398,8 @@ explain_error({process_did_not_respond_system, Actor}) ->
 explain_error({registered_process_not_wrapped, Name}) ->
   io_lib:format(
     "The test tries to communicate with a process registered as '~w' that is"
-    " not under Concuerror's control. If your test cannot avoid this"
-    " communication please open an issue to consider adding support.~n",
+    " not under Concuerror's control."
+    ?can_fix_msg,
     [Name]);
 explain_error({restricted_ets_system, NameOrTid, NotAllowed}) ->
   io_lib:format(
@@ -2426,11 +2426,10 @@ explain_error({unexpected_builtin_change,
     [Module, Name, Arity, Args, M, F, length(OArgs), OArgs, Location]);
 explain_error({unknown_protocol_for_system, {System, Data}}) ->
   io_lib:format(
-    "A process tried to send a message to system process ~p. Concuerror does"
-    " not currently support communication with this process. Please contact the"
-    " developers for more information.~n"
-    "Message:~n"
-    " ~p~n", [System, Data]);
+    "A process tried to send a message (~p) to system process ~p. Concuerror"
+    " does not currently support communication with this process."
+    ?can_fix_msg,
+    [Data, System]);
 explain_error({unknown_built_in, {Module, Name, Arity, Location}}) ->
   LocationString =
     case Location of
@@ -2438,13 +2437,14 @@ explain_error({unknown_built_in, {Module, Name, Arity, Location}}) ->
       _ -> ""
     end,
   io_lib:format(
-    "Concuerror does not support calls to built-in ~p:~p/~p~s.~n  If you cannot"
-    " avoid its use, please contact the developers.~n",
+    "Concuerror does not support calls to built-in ~p:~p/~p~s."
+    ?can_fix_msg,
     [Module, Name, Arity, LocationString]);
 explain_error({unsupported_request, Name, Type}) ->
   io_lib:format(
     "A process sent a request of type '~w' to ~p. Concuerror does not yet"
-    " support this type of request to this process.",
+    " support this type of request to this process."
+    ?can_fix_msg,
     [Type, Name]).
 
 location(F, L) ->
