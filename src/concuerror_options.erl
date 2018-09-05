@@ -50,7 +50,6 @@
 %%%       A list of Options that can be overriden by other options.
 %%%     </dd>
 %%%   <dt>`-concuerror_options_forced(Options)'</dt>
-%%%   <dt>`error' (exit status: <em>1</em>)</dt>
 %%%     <dd>
 %%%       A list of Options that override any other options.
 %%%     </dd>
