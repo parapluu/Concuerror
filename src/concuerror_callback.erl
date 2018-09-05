@@ -1135,38 +1135,6 @@ run_built_in(ets, whereis, _, [Name], Info) ->
   catch
     error:badarg -> {undefined, Info}
   end;
-run_built_in(ets, F, N, [NameOrTid|Args], Info)
-  when
-    false
-    ; {F, N} =:= {delete, 2}
-    ; {F, N} =:= {delete_all_objects, 1}
-    ; {F, N} =:= {delete_object, 2}
-    ; {F, N} =:= {first, 1}
-    ; {F, N} =:= {insert, 2}
-    ; {F, N} =:= {insert_new, 2}
-    ; {F, N} =:= {internal_delete_all, 2}
-    ; {F, N} =:= {internal_select_delete, 2}
-    ; {F, N} =:= {lookup, 2}
-    ; {F, N} =:= {lookup_element, 3}
-    ; {F, N} =:= {match, 2}
-    ; {F, N} =:= {match_object, 2}
-    ; {F, N} =:= {member, 2}
-    ; {F, N} =:= {next, 2}
-    ; {F, N} =:= {select, 2}
-    ; {F, N} =:= {select, 3}
-    ; {F, N} =:= {select_delete, 2}
-    ; {F, N} =:= {update_counter, 3}
-    ; {F, N} =:= {update_element, 3}
-    ->
-  {Tid, Id, IsSystemInsert} = ets_access_table_info(NameOrTid, {F, N}, Info),
-  case IsSystemInsert of
-    true ->
-      #concuerror_info{system_ets_entries = SystemEtsEntries} = Info,
-      ets:insert(SystemEtsEntries, {Tid, Args});
-    false ->
-      true
-  end,
-  {erlang:apply(ets, F, [Tid|Args]), Info#concuerror_info{extra = Id}};
 run_built_in(ets, delete, 1, [NameOrTid], Info) ->
   #concuerror_info{ets_tables = EtsTables} = Info,
   {Tid, Id, _} = ets_access_table_info(NameOrTid, {delete, 1}, Info),
@@ -1197,6 +1165,23 @@ run_built_in(ets, give_away, 3, [NameOrTid, Pid, GiftData], Info) ->
   Update = [{?ets_owner, Pid}],
   true = ets:update_element(EtsTables, Tid, Update),
   {true, NewInfo#concuerror_info{extra = Id}};
+run_built_in(ets, F, N, [NameOrTid|Args], Info) ->
+  try
+    _ = ets_ops_access_rights_map({F, N})
+  catch
+    error:function_clause ->
+      #concuerror_info{event = #event{location = Location}} = Info,
+      ?crash_instr({unknown_built_in, {ets, F, N, Location}})
+  end,
+  {Tid, Id, IsSystemInsert} = ets_access_table_info(NameOrTid, {F, N}, Info),
+  case IsSystemInsert of
+    true ->
+      #concuerror_info{system_ets_entries = SystemEtsEntries} = Info,
+      ets:insert(SystemEtsEntries, {Tid, Args});
+    false ->
+      true
+  end,
+  {erlang:apply(ets, F, [Tid|Args]), Info#concuerror_info{extra = Id}};
 
 run_built_in(erlang = Module, Name, Arity, Args, Info)
   when
