@@ -11,12 +11,13 @@
 -export([print_log_message/3]).
 -export([showing_progress/1, progress_help/0]).
 
--export_type([log_level/0]).
+-export_type([logger/0, log_level/0]).
 
 %%------------------------------------------------------------------------------
 
 -include("concuerror.hrl").
 
+-type logger() :: pid().
 -type log_level() :: 0..7.
 
 -define(TICKER_TIMEOUT, 500).

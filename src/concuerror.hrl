@@ -49,10 +49,6 @@
 -define(debug_flag(_A, _B, _C), ?debug(_B, _C)).
 -endif.
 %%------------------------------------------------------------------------------
--type scheduler() :: pid().
--type logger()    :: pid().
--type assume_racing_opt() :: {boolean(), logger() | 'ignore'}.
-%%------------------------------------------------------------------------------
 -define(opt(A,O), proplists:get_value(A,O)).
 -define(opt(A,O,D), proplists:get_value(A,O,D)).
 %%------------------------------------------------------------------------------
@@ -123,41 +119,8 @@
 -define(notify_us_msg,
         " Please notify the developers, as this is a bug of Concuerror.").
 %%------------------------------------------------------------------------------
--type timers()       :: ets:tid().
-
--define(notify_none, 1).
-%%------------------------------------------------------------------------------
 -type processes() :: ets:tid().
--type symbolic_name() :: string().
-
 -define(process_name_none, 0).
--define(new_process(Pid, Symbolic),
-        {Pid, exited, ?process_name_none, ?process_name_none, undefined, Symbolic, 0, regular}).
--define(new_system_process(Pid, Name, Type),
-        {Pid, running, Name, Name, undefined, "P." ++ atom_to_list(Name), 0, Type}).
--define(process_pat_pid(Pid),                {Pid,      _,    _, _, _, _, _,    _}).
--define(process_pat_pid_name(Pid, Name),     {Pid,      _, Name, _, _, _, _,    _}).
--define(process_pat_pid_status(Pid, Status), {Pid, Status,    _, _, _, _, _,    _}).
--define(process_pat_pid_kind(Pid, Kind),     {Pid,      _,    _, _, _, _, _, Kind}).
--define(process_status, 2).
--define(process_name, 3).
--define(process_last_name, 4).
--define(process_leader, 5).
--define(process_symbolic, 6).
--define(process_children, 7).
--define(process_kind, 8).
--define(process_match_name_to_pid(Name),
-        {'$1',   '_', Name, '_', '_', '_', '_', '_'}).
--define(process_match_symbol_to_pid(Symbol),
-        {'$1',   '_', '_', '_', '_', Symbol, '_', '_'}).
-
--define(process_match_active(),
-        { {'$1', '$2', '_', '_', '_', '_', '_', '_'}
-        , [ {'=/=', '$2', exited}
-          , {'=/=', '$2', exiting}
-          ]
-        , ['$1']
-        }).
 %%------------------------------------------------------------------------------
 -type label() :: reference().
 

@@ -47,11 +47,14 @@
                unique_id/0
              ]).
 
+-export_type([scheduler/0]).
+
 %% =============================================================================
 %% DATA STRUCTURES & TYPES
 %% =============================================================================
 
 -include("concuerror.hrl").
+-type scheduler() :: pid().
 
 %%------------------------------------------------------------------------------
 
@@ -117,7 +120,7 @@
 %% For e.g., user options this is normally in the _options module.
 -record(scheduler_state, {
           assertions_only :: boolean(),
-          assume_racing :: assume_racing_opt(),
+          assume_racing :: concuerror_dependencies:assume_racing_opt(),
           depth_bound :: pos_integer(),
           dpor :: concuerror_options:dpor(),
           entry_point :: mfargs(),
@@ -128,7 +131,7 @@
           interleaving_errors :: [interleaving_error()],
           interleaving_id :: interleaving_id(),
           keep_going :: boolean(),
-          logger :: pid(),
+          logger :: concuerror_logger:logger(),
           last_scheduled :: pid(),
           need_to_replay :: boolean(),
           non_racing_system :: [atom()],
