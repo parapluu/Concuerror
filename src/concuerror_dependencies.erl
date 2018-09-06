@@ -3,9 +3,13 @@
 
 -export([dependent/3, dependent_safe/2, explain_error/1]).
 
+-export_type([assume_racing_opt/0]).
+
 %%------------------------------------------------------------------------------
 
 -include("concuerror.hrl").
+
+-type assume_racing_opt() :: {boolean(), concuerror_logger:logger() | 'ignore'}.
 
 %%------------------------------------------------------------------------------
 
