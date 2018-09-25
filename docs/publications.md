@@ -21,6 +21,12 @@ PhD Dissertation, Uppsala University, 2018.
 ## Papers
 
 <div style="margin-left:25px" markdown="1">
+[**Modelling distributed Erlang within a single node**](https://dl.acm.org/citation.cfm?id=3242764)<br />
+Stavros Aronis, Viktória Fördős, and Dániel Szoboszlay.<br/>
+Erlang 2018, Proceedings of the 17th ACM SIGPLAN International Workshop on Erlang, 2018.<br/>
+</div>
+
+<div style="margin-left:25px" markdown="1">
 [**Optimal Dynamic Partial Order Reduction with Observers**](https://rdcu.be/LLeU)<br />
 Stavros Aronis, Bengt Jonsson, Magnus Lång, and Konstantinos Sagonas.<br />
 TACAS 2018, Tools and Algorithms for the Construction and Analysis of Systems. Lecture Notes in Computer Science, vol 10806, 2018.<br />
