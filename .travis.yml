@@ -77,6 +77,7 @@ otp_release:
   # README.md and the argument given to generate_version_hrl in
   # rebar.config
 
+  - 21.1
   - 21.0
 
   # Last minor version of older OTP releases
