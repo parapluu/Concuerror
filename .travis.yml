@@ -27,13 +27,8 @@ matrix:
   # list further down in this file will be used
 
   # Check that the latest Erlang version is tested
-
-  # This test will fail with 'X' when a new version is available via kerl.
-  # At that point, update THIS test's otp_release to the new one.
-  # The test will keep failing with '!', until Travis has the new version.
-  # When the test starts failing with 'X' again, Travis has the new version.
-  # At that point, update otp_release in the corresponding list below
-
+  # See the warning printed by the script to understand why this test
+  # has a separate otp_release specification.
   - env: TEST=".travis/travis_has_latest_otp_version"
     otp_release: 21.1
     stage: basic
@@ -76,10 +71,13 @@ env:
 
 otp_release:
 
-  # Two latest minor versions of the most recent OTP release
-  # Remember to also update the badge in README.md and the
-  # argument to generate_version_hrl in rebar.config
+  # Two latest minor versions of the most recent OTP release.
 
+  # When a new major OTP release is enabled, also update the badge in
+  # README.md and the argument given to generate_version_hrl in
+  # rebar.config
+
+  - 21.1
   - 21.0
 
   # Last minor version of older OTP releases

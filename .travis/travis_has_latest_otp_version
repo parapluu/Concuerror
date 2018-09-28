@@ -11,15 +11,36 @@ rm ./kerl
 set +x
 
 if [ "$LATEST" != "$TRAVIS_OTP_RELEASE" ]; then
-    printf "\nA newer OTP release is available via kerl ($LATEST)!\n"
-    printf " (.travis.yml uses $TRAVIS_OTP_RELEASE for this test)\n\n"
-    printf "See .travis.yml for instructions about how to fix this.\n"
+    cat <<EOF
+
+Error: OTP release $LATEST is available via kerl but this test has been
+configured in .travis.yml to use $TRAVIS_OTP_RELEASE (as the most recent release).
+
+Fix: Update .travis.yml to use $LATEST *FOR THIS TEST ONLY*.
+
+Warning: This test WILL KEEP FAILING, either with 'X' (but a DIFFERENT message
+will be shown) or with '!':
+
+- If the test fails with 'X', read the new message for further instructions.
+- If the test fails with '!', Travis maintainers have not yet enabled the newer
+  OTP release on Travis. Wait until this test fails with 'X' again.
+
+This approach is not the smoothest, but it is a simple way to perform the test:
+  "Does Travis support the latest OTP release"
+
+EOF
     false
 fi
 
 if [ "$LATEST" != "$REPO_LATEST" ]; then
-    printf "\nA newer OTP release is available on Travis ($LATEST)!\n"
-    printf " (.travis.yml has $REPO on top)\n\n"
-    printf "See .travis.yml for instructions about how to fix this.\n"
+    cat <<EOF
+
+Error: OTP release $LATEST is available on Travis but .travis.yml specifies
+$REPO_LATEST as the latest release used for all tests.
+
+Fix: Update .travis.yml to use $LATEST as the top otp_release (and make sure
+to follow the rest of the specifications written there).
+
+EOF
     false
 fi
