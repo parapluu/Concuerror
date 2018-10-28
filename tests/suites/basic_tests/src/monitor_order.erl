@@ -1,15 +1,15 @@
 -module(monitor_order).
 
--export([monitor_order/0]).
+-export([test/0]).
 -export([scenarios/0]).
 
--concuerror_options([{treat_as_normal, [test]},
-                     {first_process_errors_only, true}
-                    ]).
+%%------------------------------------------------------------------------------
 
-scenarios() -> [{?MODULE, inf, dpor}].
+scenarios() -> [test].
 
-monitor_order() ->
+%%------------------------------------------------------------------------------
+
+test() ->
   P1 = spawn(fun () -> p1(undefined) end),
   _2 = spawn(fun () -> p2(P1) end),
   P3 = spawn(fun () -> p3(P1) end),
@@ -18,7 +18,7 @@ monitor_order() ->
 p1(State) ->
   receive
     {p2, P2} ->
-      erlang:send_after(0, self(), clear),
+      self() ! clear,
       p1({P2, monitor(process, P2)});
     p3 ->
       case State of
