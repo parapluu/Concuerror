@@ -4,7 +4,7 @@ logo:             site-logo.png
 disqus_shortname: 
 #Comment out url when working locally to resolve base urls correctly
 url:             https://concuerror.com
-author: Vahnatai
+author:          Stavros Aronis
 
 # Owner/author information
 owner:
