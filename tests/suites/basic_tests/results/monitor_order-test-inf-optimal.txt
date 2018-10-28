@@ -1,0 +1,719 @@
+Concuerror AFS2018+build.2207.ref3c388c4 started at 28 Oct 2018 13:08:40
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{monitor_order,test,[]}},
+   {exclude_module,[]},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/monitor_order.erl"]},
+   {first_process_errors_only,false},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,5000},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
+################################################################################
+Interleaving #1
+--------------------------------------------------------------------------------
+Errors found:
+* At step 8 process <P.3> exited abnormally
+    Reason:
+      test
+    Stacktrace:
+      []
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P.1> in monitor_order.erl line 19
+     Mailbox contents: []
+    <P.2> in monitor_order.erl line 43
+     Mailbox contents: []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2783
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2783
+   3: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2783
+   4: <P>: true = erlang:exit(<P.3>, test)
+    in monitor_order.erl line 16
+   5: <P>: exits normally
+   6: <P.2>: #Ref<0.2250441900.414449665.224941> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 41
+   7: <P.2>: {p2,<P.2>} = <P.1> ! {p2,<P.2>}
+    in monitor_order.erl line 42
+   8: <P.3>: exits abnormally (test)
+   9: <P.1>: receives message ({p2,<P.2>})
+    in monitor_order.erl line 19
+  10: <P.1>: clear = <P.1> ! clear
+    in monitor_order.erl line 21
+  11: <P.1>: #Ref<0.2250441900.414449665.224948> = erlang:monitor(process, <P.2>)
+    in monitor_order.erl line 22
+  12: <P.1>: receives message (clear)
+    in monitor_order.erl line 19
+################################################################################
+Interleaving #2
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P.1> in monitor_order.erl line 19
+     Mailbox contents: []
+    <P.2> in monitor_order.erl line 43
+     Mailbox contents: []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2783
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2783
+   3: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2783
+   4: <P.2>: #Ref<0.2250441900.414449665.224941> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 41
+   5: <P.2>: {p2,<P.2>} = <P.1> ! {p2,<P.2>}
+    in monitor_order.erl line 42
+   6: <P.1>: receives message ({p2,<P.2>})
+    in monitor_order.erl line 19
+   7: <P.1>: clear = <P.1> ! clear
+    in monitor_order.erl line 21
+   8: <P.1>: #Ref<0.2250441900.414449665.224948> = erlang:monitor(process, <P.2>)
+    in monitor_order.erl line 22
+   9: <P.1>: receives message (clear)
+    in monitor_order.erl line 19
+  10: <P.3>: #Ref<0.2250441900.414449665.224989> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 50
+  11: <P.3>: p3 = <P.1> ! p3
+    in monitor_order.erl line 51
+  12: <P.3>: true = erlang:demonitor(#Ref<0.2250441900.414449665.224989>, [flush])
+    in monitor_order.erl line 52
+  13: <P.3>: exits normally
+  14: <P>: true = erlang:exit(<P.3>, test)
+    in monitor_order.erl line 16
+  15: <P>: exits normally
+  16: <P.1>: receives message (p3)
+    in monitor_order.erl line 19
+################################################################################
+Interleaving #3
+--------------------------------------------------------------------------------
+Errors found:
+* At step 16 process <P.3> exited abnormally
+    Reason:
+      test
+    Stacktrace:
+      []
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P.1> in monitor_order.erl line 19
+     Mailbox contents: []
+    <P.2> in monitor_order.erl line 43
+     Mailbox contents: []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2783
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2783
+   3: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2783
+   4: <P.2>: #Ref<0.2250441900.414449665.224941> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 41
+   5: <P.2>: {p2,<P.2>} = <P.1> ! {p2,<P.2>}
+    in monitor_order.erl line 42
+   6: <P.1>: receives message ({p2,<P.2>})
+    in monitor_order.erl line 19
+   7: <P.1>: clear = <P.1> ! clear
+    in monitor_order.erl line 21
+   8: <P.1>: #Ref<0.2250441900.414449665.224948> = erlang:monitor(process, <P.2>)
+    in monitor_order.erl line 22
+   9: <P.1>: receives message (clear)
+    in monitor_order.erl line 19
+  10: <P.3>: #Ref<0.2250441900.414449665.224989> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 50
+  11: <P.3>: p3 = <P.1> ! p3
+    in monitor_order.erl line 51
+  12: <P.3>: true = erlang:demonitor(#Ref<0.2250441900.414449665.224989>, [flush])
+    in monitor_order.erl line 52
+  13: <P.1>: receives message (p3)
+    in monitor_order.erl line 19
+  14: <P>: true = erlang:exit(<P.3>, test)
+    in monitor_order.erl line 16
+  15: <P>: exits normally
+  16: <P.3>: exits abnormally (test)
+################################################################################
+Interleaving #4
+--------------------------------------------------------------------------------
+Errors found:
+* At step 15 process <P.3> exited abnormally
+    Reason:
+      test
+    Stacktrace:
+      []
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P.1> in monitor_order.erl line 19
+     Mailbox contents: []
+    <P.2> in monitor_order.erl line 43
+     Mailbox contents: []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2783
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2783
+   3: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2783
+   4: <P.2>: #Ref<0.2250441900.414449665.224941> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 41
+   5: <P.2>: {p2,<P.2>} = <P.1> ! {p2,<P.2>}
+    in monitor_order.erl line 42
+   6: <P.1>: receives message ({p2,<P.2>})
+    in monitor_order.erl line 19
+   7: <P.1>: clear = <P.1> ! clear
+    in monitor_order.erl line 21
+   8: <P.1>: #Ref<0.2250441900.414449665.224948> = erlang:monitor(process, <P.2>)
+    in monitor_order.erl line 22
+   9: <P.1>: receives message (clear)
+    in monitor_order.erl line 19
+  10: <P.3>: #Ref<0.2250441900.414449665.224989> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 50
+  11: <P.3>: p3 = <P.1> ! p3
+    in monitor_order.erl line 51
+  12: <P.1>: receives message (p3)
+    in monitor_order.erl line 19
+  13: <P>: true = erlang:exit(<P.3>, test)
+    in monitor_order.erl line 16
+  14: <P>: exits normally
+  15: <P.3>: exits abnormally (test)
+################################################################################
+Interleaving #5
+--------------------------------------------------------------------------------
+Errors found:
+* At step 13 process <P.3> exited abnormally
+    Reason:
+      test
+    Stacktrace:
+      []
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P.1> in monitor_order.erl line 19
+     Mailbox contents: []
+    <P.2> in monitor_order.erl line 43
+     Mailbox contents: []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2783
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2783
+   3: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2783
+   4: <P.2>: #Ref<0.2250441900.414449665.224941> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 41
+   5: <P.2>: {p2,<P.2>} = <P.1> ! {p2,<P.2>}
+    in monitor_order.erl line 42
+   6: <P.1>: receives message ({p2,<P.2>})
+    in monitor_order.erl line 19
+   7: <P.1>: clear = <P.1> ! clear
+    in monitor_order.erl line 21
+   8: <P.1>: #Ref<0.2250441900.414449665.224948> = erlang:monitor(process, <P.2>)
+    in monitor_order.erl line 22
+   9: <P.1>: receives message (clear)
+    in monitor_order.erl line 19
+  10: <P.3>: #Ref<0.2250441900.414449665.224989> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 50
+  11: <P>: true = erlang:exit(<P.3>, test)
+    in monitor_order.erl line 16
+  12: <P>: exits normally
+  13: <P.3>: exits abnormally (test)
+################################################################################
+Interleaving #6
+--------------------------------------------------------------------------------
+Errors found:
+* At step 24 process <P.1> exited abnormally
+    Reason:
+      test
+    Stacktrace:
+      [{monitor_order,p1,1,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/monitor_order.erl"},
+                       {line,31}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2783
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2783
+   3: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2783
+   4: <P.2>: #Ref<0.2250441900.414449665.224941> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 41
+   5: <P.2>: {p2,<P.2>} = <P.1> ! {p2,<P.2>}
+    in monitor_order.erl line 42
+   6: <P.1>: receives message ({p2,<P.2>})
+    in monitor_order.erl line 19
+   7: <P.3>: #Ref<0.2250441900.414449665.224989> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 50
+   8: <P.3>: p3 = <P.1> ! p3
+    in monitor_order.erl line 51
+   9: <P.1>: clear = <P.1> ! clear
+    in monitor_order.erl line 21
+  10: <P.1>: #Ref<0.2250441900.414449665.224948> = erlang:monitor(process, <P.2>)
+    in monitor_order.erl line 22
+  11: <P.1>: receives message (p3)
+    in monitor_order.erl line 19
+  12: <P.1>: ok = <P.2> ! ok
+    in monitor_order.erl line 26
+  13: <P.1>: receives message (clear)
+    in monitor_order.erl line 19
+  14: <P.2>: receives message (ok)
+    in monitor_order.erl line 43
+  15: <P.2>: demonitor_p2 = <P.1> ! demonitor_p2
+    in monitor_order.erl line 45
+  16: <P.2>: true = erlang:demonitor(#Ref<0.2250441900.414449665.224941>, [flush])
+    in monitor_order.erl line 46
+  17: <P.2>: exits normally
+  18: <P.2>: {'DOWN',#Ref<0.2250441900.414449665.224948>,process,<P.2>,normal} = erlang:send(<P.1>, {'DOWN',#Ref<0.2250441900.414449665.224948>,process,<P.2>,normal})
+    (while exiting)
+  19: <P.3>: true = erlang:demonitor(#Ref<0.2250441900.414449665.224989>, [flush])
+    in monitor_order.erl line 52
+  20: <P.3>: exits normally
+  21: <P>: true = erlang:exit(<P.3>, test)
+    in monitor_order.erl line 16
+  22: <P>: exits normally
+  23: <P.1>: receives message (demonitor_p2)
+    in monitor_order.erl line 19
+  24: <P.1>: exits abnormally (test)
+  25: <P.1>: {'DOWN',#Ref<0.2250441900.414449665.224941>,process,<P.1>,test} = erlang:send(<P.2>, {'DOWN',#Ref<0.2250441900.414449665.224941>,process,<P.1>,test})
+    (while exiting)
+  26: <P.1>: {'DOWN',#Ref<0.2250441900.414449665.224989>,process,<P.1>,test} = erlang:send(<P.3>, {'DOWN',#Ref<0.2250441900.414449665.224989>,process,<P.1>,test})
+    (while exiting)
+################################################################################
+Interleaving #7
+--------------------------------------------------------------------------------
+Errors found:
+* At step 21 process <P.1> exited abnormally
+    Reason:
+      test
+    Stacktrace:
+      [{monitor_order,p1,1,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/monitor_order.erl"},
+                       {line,31}]}]
+* At step 26 process <P.3> exited abnormally
+    Reason:
+      test
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2783
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2783
+   3: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2783
+   4: <P.2>: #Ref<0.2250441900.414449665.224941> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 41
+   5: <P.2>: {p2,<P.2>} = <P.1> ! {p2,<P.2>}
+    in monitor_order.erl line 42
+   6: <P.1>: receives message ({p2,<P.2>})
+    in monitor_order.erl line 19
+   7: <P.3>: #Ref<0.2250441900.414449665.224989> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 50
+   8: <P.3>: p3 = <P.1> ! p3
+    in monitor_order.erl line 51
+   9: <P.1>: clear = <P.1> ! clear
+    in monitor_order.erl line 21
+  10: <P.1>: #Ref<0.2250441900.414449665.224948> = erlang:monitor(process, <P.2>)
+    in monitor_order.erl line 22
+  11: <P.1>: receives message (p3)
+    in monitor_order.erl line 19
+  12: <P.1>: ok = <P.2> ! ok
+    in monitor_order.erl line 26
+  13: <P.1>: receives message (clear)
+    in monitor_order.erl line 19
+  14: <P.2>: receives message (ok)
+    in monitor_order.erl line 43
+  15: <P.2>: demonitor_p2 = <P.1> ! demonitor_p2
+    in monitor_order.erl line 45
+  16: <P.2>: true = erlang:demonitor(#Ref<0.2250441900.414449665.224941>, [flush])
+    in monitor_order.erl line 46
+  17: <P.2>: exits normally
+  18: <P.2>: {'DOWN',#Ref<0.2250441900.414449665.224948>,process,<P.2>,normal} = erlang:send(<P.1>, {'DOWN',#Ref<0.2250441900.414449665.224948>,process,<P.2>,normal})
+    (while exiting)
+  19: <P.3>: true = erlang:demonitor(#Ref<0.2250441900.414449665.224989>, [flush])
+    in monitor_order.erl line 52
+  20: <P.1>: receives message (demonitor_p2)
+    in monitor_order.erl line 19
+  21: <P.1>: exits abnormally (test)
+  22: <P.1>: {'DOWN',#Ref<0.2250441900.414449665.224941>,process,<P.1>,test} = erlang:send(<P.2>, {'DOWN',#Ref<0.2250441900.414449665.224941>,process,<P.1>,test})
+    (while exiting)
+  23: <P.1>: {'DOWN',#Ref<0.2250441900.414449665.224989>,process,<P.1>,test} = erlang:send(<P.3>, {'DOWN',#Ref<0.2250441900.414449665.224989>,process,<P.1>,test})
+    (while exiting)
+  24: <P>: true = erlang:exit(<P.3>, test)
+    in monitor_order.erl line 16
+  25: <P>: exits normally
+  26: <P.3>: exits abnormally (test)
+################################################################################
+Interleaving #8
+--------------------------------------------------------------------------------
+Errors found:
+* At step 21 process <P.1> exited abnormally
+    Reason:
+      test
+    Stacktrace:
+      [{monitor_order,p1,1,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/monitor_order.erl"},
+                       {line,31}]}]
+* At step 26 process <P.3> exited abnormally
+    Reason:
+      test
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2783
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2783
+   3: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2783
+   4: <P.2>: #Ref<0.2250441900.414449665.224941> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 41
+   5: <P.2>: {p2,<P.2>} = <P.1> ! {p2,<P.2>}
+    in monitor_order.erl line 42
+   6: <P.1>: receives message ({p2,<P.2>})
+    in monitor_order.erl line 19
+   7: <P.3>: #Ref<0.2250441900.414449665.224989> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 50
+   8: <P.3>: p3 = <P.1> ! p3
+    in monitor_order.erl line 51
+   9: <P.1>: clear = <P.1> ! clear
+    in monitor_order.erl line 21
+  10: <P.1>: #Ref<0.2250441900.414449665.224948> = erlang:monitor(process, <P.2>)
+    in monitor_order.erl line 22
+  11: <P.1>: receives message (p3)
+    in monitor_order.erl line 19
+  12: <P.1>: ok = <P.2> ! ok
+    in monitor_order.erl line 26
+  13: <P.1>: receives message (clear)
+    in monitor_order.erl line 19
+  14: <P.2>: receives message (ok)
+    in monitor_order.erl line 43
+  15: <P.2>: demonitor_p2 = <P.1> ! demonitor_p2
+    in monitor_order.erl line 45
+  16: <P.2>: true = erlang:demonitor(#Ref<0.2250441900.414449665.224941>, [flush])
+    in monitor_order.erl line 46
+  17: <P.2>: exits normally
+  18: <P.2>: {'DOWN',#Ref<0.2250441900.414449665.224948>,process,<P.2>,normal} = erlang:send(<P.1>, {'DOWN',#Ref<0.2250441900.414449665.224948>,process,<P.2>,normal})
+    (while exiting)
+  19: <P.3>: true = erlang:demonitor(#Ref<0.2250441900.414449665.224989>, [flush])
+    in monitor_order.erl line 52
+  20: <P.1>: receives message (demonitor_p2)
+    in monitor_order.erl line 19
+  21: <P.1>: exits abnormally (test)
+  22: <P.1>: {'DOWN',#Ref<0.2250441900.414449665.224941>,process,<P.1>,test} = erlang:send(<P.2>, {'DOWN',#Ref<0.2250441900.414449665.224941>,process,<P.1>,test})
+    (while exiting)
+  23: <P>: true = erlang:exit(<P.3>, test)
+    in monitor_order.erl line 16
+  24: <P>: exits normally
+  25: <P.1>: {'DOWN',#Ref<0.2250441900.414449665.224989>,process,<P.1>,test} = erlang:send(<P.3>, {'DOWN',#Ref<0.2250441900.414449665.224989>,process,<P.1>,test})
+    (while exiting)
+  26: <P.3>: exits abnormally (test)
+################################################################################
+Interleaving #9
+--------------------------------------------------------------------------------
+Errors found:
+* At step 20 process <P.1> exited abnormally
+    Reason:
+      test
+    Stacktrace:
+      [{monitor_order,p1,1,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/monitor_order.erl"},
+                       {line,31}]}]
+* At step 25 process <P.3> exited abnormally
+    Reason:
+      test
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2783
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2783
+   3: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2783
+   4: <P.2>: #Ref<0.2250441900.414449665.224941> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 41
+   5: <P.2>: {p2,<P.2>} = <P.1> ! {p2,<P.2>}
+    in monitor_order.erl line 42
+   6: <P.1>: receives message ({p2,<P.2>})
+    in monitor_order.erl line 19
+   7: <P.3>: #Ref<0.2250441900.414449665.224989> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 50
+   8: <P.3>: p3 = <P.1> ! p3
+    in monitor_order.erl line 51
+   9: <P.1>: clear = <P.1> ! clear
+    in monitor_order.erl line 21
+  10: <P.1>: #Ref<0.2250441900.414449665.224948> = erlang:monitor(process, <P.2>)
+    in monitor_order.erl line 22
+  11: <P.1>: receives message (p3)
+    in monitor_order.erl line 19
+  12: <P.1>: ok = <P.2> ! ok
+    in monitor_order.erl line 26
+  13: <P.1>: receives message (clear)
+    in monitor_order.erl line 19
+  14: <P.2>: receives message (ok)
+    in monitor_order.erl line 43
+  15: <P.2>: demonitor_p2 = <P.1> ! demonitor_p2
+    in monitor_order.erl line 45
+  16: <P.2>: true = erlang:demonitor(#Ref<0.2250441900.414449665.224941>, [flush])
+    in monitor_order.erl line 46
+  17: <P.2>: exits normally
+  18: <P.2>: {'DOWN',#Ref<0.2250441900.414449665.224948>,process,<P.2>,normal} = erlang:send(<P.1>, {'DOWN',#Ref<0.2250441900.414449665.224948>,process,<P.2>,normal})
+    (while exiting)
+  19: <P.1>: receives message (demonitor_p2)
+    in monitor_order.erl line 19
+  20: <P.1>: exits abnormally (test)
+  21: <P.1>: {'DOWN',#Ref<0.2250441900.414449665.224941>,process,<P.1>,test} = erlang:send(<P.2>, {'DOWN',#Ref<0.2250441900.414449665.224941>,process,<P.1>,test})
+    (while exiting)
+  22: <P.1>: {'DOWN',#Ref<0.2250441900.414449665.224989>,process,<P.1>,test} = erlang:send(<P.3>, {'DOWN',#Ref<0.2250441900.414449665.224989>,process,<P.1>,test})
+    (while exiting)
+  23: <P>: true = erlang:exit(<P.3>, test)
+    in monitor_order.erl line 16
+  24: <P>: exits normally
+  25: <P.3>: exits abnormally (test)
+################################################################################
+Interleaving #10
+--------------------------------------------------------------------------------
+Errors found:
+* At step 20 process <P.1> exited abnormally
+    Reason:
+      test
+    Stacktrace:
+      [{monitor_order,p1,1,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/monitor_order.erl"},
+                       {line,31}]}]
+* At step 25 process <P.3> exited abnormally
+    Reason:
+      test
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2783
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2783
+   3: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2783
+   4: <P.2>: #Ref<0.2250441900.414449665.224941> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 41
+   5: <P.2>: {p2,<P.2>} = <P.1> ! {p2,<P.2>}
+    in monitor_order.erl line 42
+   6: <P.1>: receives message ({p2,<P.2>})
+    in monitor_order.erl line 19
+   7: <P.3>: #Ref<0.2250441900.414449665.224989> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 50
+   8: <P.3>: p3 = <P.1> ! p3
+    in monitor_order.erl line 51
+   9: <P.1>: clear = <P.1> ! clear
+    in monitor_order.erl line 21
+  10: <P.1>: #Ref<0.2250441900.414449665.224948> = erlang:monitor(process, <P.2>)
+    in monitor_order.erl line 22
+  11: <P.1>: receives message (p3)
+    in monitor_order.erl line 19
+  12: <P.1>: ok = <P.2> ! ok
+    in monitor_order.erl line 26
+  13: <P.1>: receives message (clear)
+    in monitor_order.erl line 19
+  14: <P.2>: receives message (ok)
+    in monitor_order.erl line 43
+  15: <P.2>: demonitor_p2 = <P.1> ! demonitor_p2
+    in monitor_order.erl line 45
+  16: <P.2>: true = erlang:demonitor(#Ref<0.2250441900.414449665.224941>, [flush])
+    in monitor_order.erl line 46
+  17: <P.2>: exits normally
+  18: <P.2>: {'DOWN',#Ref<0.2250441900.414449665.224948>,process,<P.2>,normal} = erlang:send(<P.1>, {'DOWN',#Ref<0.2250441900.414449665.224948>,process,<P.2>,normal})
+    (while exiting)
+  19: <P.1>: receives message (demonitor_p2)
+    in monitor_order.erl line 19
+  20: <P.1>: exits abnormally (test)
+  21: <P.1>: {'DOWN',#Ref<0.2250441900.414449665.224941>,process,<P.1>,test} = erlang:send(<P.2>, {'DOWN',#Ref<0.2250441900.414449665.224941>,process,<P.1>,test})
+    (while exiting)
+  22: <P>: true = erlang:exit(<P.3>, test)
+    in monitor_order.erl line 16
+  23: <P>: exits normally
+  24: <P.1>: {'DOWN',#Ref<0.2250441900.414449665.224989>,process,<P.1>,test} = erlang:send(<P.3>, {'DOWN',#Ref<0.2250441900.414449665.224989>,process,<P.1>,test})
+    (while exiting)
+  25: <P.3>: exits abnormally (test)
+################################################################################
+Interleaving #11
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P.1> in monitor_order.erl line 19
+     Mailbox contents: []
+    <P.2> in monitor_order.erl line 43
+     Mailbox contents: []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2783
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2783
+   3: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2783
+   4: <P.2>: #Ref<0.2250441900.414449665.224941> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 41
+   5: <P.3>: #Ref<0.2250441900.414449665.224989> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 50
+   6: <P.3>: p3 = <P.1> ! p3
+    in monitor_order.erl line 51
+   7: <P.2>: {p2,<P.2>} = <P.1> ! {p2,<P.2>}
+    in monitor_order.erl line 42
+   8: <P.1>: receives message (p3)
+    in monitor_order.erl line 19
+   9: <P.1>: receives message ({p2,<P.2>})
+    in monitor_order.erl line 19
+  10: <P.1>: clear = <P.1> ! clear
+    in monitor_order.erl line 21
+  11: <P.1>: #Ref<0.2250441900.414449665.224948> = erlang:monitor(process, <P.2>)
+    in monitor_order.erl line 22
+  12: <P.1>: receives message (clear)
+    in monitor_order.erl line 19
+  13: <P.3>: true = erlang:demonitor(#Ref<0.2250441900.414449665.224989>, [flush])
+    in monitor_order.erl line 52
+  14: <P.3>: exits normally
+  15: <P>: true = erlang:exit(<P.3>, test)
+    in monitor_order.erl line 16
+  16: <P>: exits normally
+################################################################################
+Interleaving #12
+--------------------------------------------------------------------------------
+Errors found:
+* At step 16 process <P.3> exited abnormally
+    Reason:
+      test
+    Stacktrace:
+      []
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P.1> in monitor_order.erl line 19
+     Mailbox contents: []
+    <P.2> in monitor_order.erl line 43
+     Mailbox contents: []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2783
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2783
+   3: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2783
+   4: <P.2>: #Ref<0.2250441900.414449665.224941> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 41
+   5: <P.3>: #Ref<0.2250441900.414449665.224989> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 50
+   6: <P.3>: p3 = <P.1> ! p3
+    in monitor_order.erl line 51
+   7: <P.2>: {p2,<P.2>} = <P.1> ! {p2,<P.2>}
+    in monitor_order.erl line 42
+   8: <P.1>: receives message (p3)
+    in monitor_order.erl line 19
+   9: <P.1>: receives message ({p2,<P.2>})
+    in monitor_order.erl line 19
+  10: <P.1>: clear = <P.1> ! clear
+    in monitor_order.erl line 21
+  11: <P.1>: #Ref<0.2250441900.414449665.224948> = erlang:monitor(process, <P.2>)
+    in monitor_order.erl line 22
+  12: <P.1>: receives message (clear)
+    in monitor_order.erl line 19
+  13: <P.3>: true = erlang:demonitor(#Ref<0.2250441900.414449665.224989>, [flush])
+    in monitor_order.erl line 52
+  14: <P>: true = erlang:exit(<P.3>, test)
+    in monitor_order.erl line 16
+  15: <P>: exits normally
+  16: <P.3>: exits abnormally (test)
+################################################################################
+Interleaving #13
+--------------------------------------------------------------------------------
+Errors found:
+* At step 15 process <P.3> exited abnormally
+    Reason:
+      test
+    Stacktrace:
+      []
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    <P.1> in monitor_order.erl line 19
+     Mailbox contents: []
+    <P.2> in monitor_order.erl line 43
+     Mailbox contents: []
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2783
+   2: <P>: <P.2> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2783
+   3: <P>: <P.3> = erlang:spawn(erlang, apply, [#Fun<monitor_order.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2783
+   4: <P.2>: #Ref<0.2250441900.414449665.224941> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 41
+   5: <P.3>: #Ref<0.2250441900.414449665.224989> = erlang:monitor(process, <P.1>)
+    in monitor_order.erl line 50
+   6: <P.3>: p3 = <P.1> ! p3
+    in monitor_order.erl line 51
+   7: <P.2>: {p2,<P.2>} = <P.1> ! {p2,<P.2>}
+    in monitor_order.erl line 42
+   8: <P.1>: receives message (p3)
+    in monitor_order.erl line 19
+   9: <P.1>: receives message ({p2,<P.2>})
+    in monitor_order.erl line 19
+  10: <P.1>: clear = <P.1> ! clear
+    in monitor_order.erl line 21
+  11: <P.1>: #Ref<0.2250441900.414449665.224948> = erlang:monitor(process, <P.2>)
+    in monitor_order.erl line 22
+  12: <P.1>: receives message (clear)
+    in monitor_order.erl line 19
+  13: <P>: true = erlang:exit(<P.3>, test)
+    in monitor_order.erl line 16
+  14: <P>: exits normally
+  15: <P.3>: exits abnormally (test)
+################################################################################
+Exploration completed!
+################################################################################
+Warnings:
+--------------------------------------------------------------------------------
+* Concuerror may let exiting processes emit 'DOWN' messages for cancelled monitors. Any such messages are discarded upon delivery and can never be received.
+
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+* Check `--help attributes' for info on how to pass options via module attributes.
+* Running without a scheduling_bound corresponds to verification and may take a long time.
+* An abnormal exit signal killed a process. This is probably the worst thing that can happen race-wise, as any other side-effecting operation races with the arrival of the signal. If the test produces too many interleavings consider refactoring your code.
+* Increase '--print_depth' if output/graph contains "...".
+* Each of the first 10 interleavings explored so far had some error. This can make later debugging difficult, as the generated report will include too much info. Consider refactoring your code, or using the appropriate options to filter out irrelevant errors.
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+* Writing results in /home/stavros/git/Concuerror/tests/results/basic_tests/results/monitor_order-test-inf-optimal.txt
+* Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
+* Instrumented & loaded module monitor_order
+* Automatically instrumented module error_handler
+* Automatically instrumented module erlang
+* Continuing after error (-k)
+* You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+
+################################################################################
+Done at 28 Oct 2018 13:08:40 (Exit status: error)
+  Summary: 13 errors, 13/13 interleavings explored

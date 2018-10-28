@@ -1885,8 +1885,8 @@ exiting(Reason, Stacktrace, InfoIn) ->
          end ||
           {K, D, S} = E <- ets:lookup(Table, Self)]
     end,
-  Links = FetchFun(delete, LinksTable),
-  Monitors = FetchFun(deactivate, MonitorsTable),
+  Links = lists:sort(FetchFun(delete, LinksTable)),
+  Monitors = lists:sort(FetchFun(deactivate, MonitorsTable)),
   Name =
     case MaybeName of
       [] -> ?process_name_none;
