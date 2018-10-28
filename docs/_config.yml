@@ -1,5 +1,5 @@
 title:            Concuerror
-description:      Concuerror is a model checking tool for testing and verifying concurrent Erlang programs.
+description:      Concuerror is a model checking tool for debugging, testing and verifying concurrent Erlang programs.
 logo:             site-logo.png
 disqus_shortname: 
 #Comment out url when working locally to resolve base urls correctly
