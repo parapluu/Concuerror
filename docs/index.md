@@ -32,7 +32,15 @@ description: "Homepage of the Concuerror, a tool for debugging, testing and veri
 
 ## What is Concuerror?
 
-Concuerror is a stateless model checking tool for Erlang programs. It can be used to systematically test programs for concurrency errors, detect and report errors that only occur on few, specific schedulings or **verify** their absence.
+Concuerror is a stateless model checking tool for Erlang programs.
+It can be used to detect and debug concurrency errors,
+such as deadlocks and errors due to race conditions.
+The key property of such errors is that
+they only occur on few, specific schedulings of the program.
+Moreover,
+unlike tools based on randomisation,
+Concuerror can **verify** the absence of such errors,
+because it tests the program systematically.
 
 ## How can you get Concuerror?
 
@@ -44,9 +52,13 @@ You might find one of the [Tutorials](/tutorials) useful!
 
 In short, you need a test that is **terminating** (ideally in any scheduling of the processes) and **closed** (does not require any inputs).
 
-Systematic testing (unlike stress-testing) does not encourage (or require) the use of too many processes! **All** schedulings of the test will be explored, so "the simpler, the better"!
+Systematic testing (unlike stress-testing) does not encourage (or require) the use of too many processes!
+**All** schedulings of the test will be explored, so "the simpler, the better"!
 
-Once you have such a test, all you have to do is compile your code and invoke Concuerror from your shell, specifying the module and function that contains your test:
+Once you have such a test,
+all you have to do is compile your code as usual (preferably with `debug_info`)
+and then invoke Concuerror from your shell,
+specifying the module and function that contains your test:
 
 {% highlight bash %}
 $ concuerror -m my_module -t my_test
@@ -78,8 +90,31 @@ If your test is named `test` you can even skip the `-t` option!
 If a scheduling leads to one or more processes crashing or
 deadlocking, Concuerror will print a detailed trace of all the events
 that lead to the error and by default stop the exploration.
+You can then use this trace to debug the detected error.
 
 Otherwise it will keep exploring schedulings, until it has checked them all. [Will the exploration ever finish?](/faq/#will-the-exploration-ever-finish)
+
+## What are race conditions?
+
+Concuerror's operation is based on detecting pairs of operations that are racing,
+i.e. could have a different result if scheduled in the opposite order.
+You can see some of these pairs by using the [`--show_races` option](https://hexdocs.pm/concuerror/concuerror_options.html#show_races_option-0).
+
+Remember, however, that not all race conditions are necessarily bad!
+An example of benign racing
+is when worker processes report their progress
+by sending messages to a work managing process.
+These messages are racing,
+as they may reach (and be received) by the managing process in different orders.
+
+Race conditions become can lead to errors
+when the program expects certain events to occur in a particular order,
+but that order is not always guaranteed.
+Such errors are often hard to reproduce,
+when they require rare, particular schedulings.
+
+Concuerror systematically explores all "meaningfully different" schedulings,
+detecting all such errors or verifying their absence.
 
 ## How does Concuerror work?
 
