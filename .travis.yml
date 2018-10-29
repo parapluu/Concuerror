@@ -7,10 +7,10 @@ branches:
   - master
   - /^\d+\..*/ # version tags
 
-# Two stages, so that basic tests are run first
 stages:
   - basic
   - test
+  - website
 
 matrix:
   fast_finish: true
@@ -41,6 +41,10 @@ matrix:
   - env: TEST="make lint"
     stage: basic
 
+  # FLAG is used by Codecov reporter (.travis/after_success)
+  - env: TEST="make tests-unit" FLAG="unit_tests"
+    stage: basic
+
   # Test documentation
   - env: TEST="make -C doc test"
     stage: basic
@@ -52,11 +56,11 @@ matrix:
 
   # Test website
   - env: TEST="make -C docs test"
-    stage: test
+    stage: website
 
   # Test external links separately, cause they can break unexpectedly
   - env: TEST="make -C docs test-external"
-    stage: test
+    stage: website
     addons:
       apt:
         packages:
@@ -67,7 +71,6 @@ env:
   # FLAG is used by Codecov reporter (.travis/after_success)
   - TEST=".travis/maybe_cover make tests" FLAG="tests"
   - TEST=".travis/maybe_cover make tests-real" FLAG="tests_real"
-  - TEST="make tests-unit" FLAG="unit_tests"
 
 otp_release:
 
