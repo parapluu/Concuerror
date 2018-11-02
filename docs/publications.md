@@ -20,11 +20,10 @@ PhD Dissertation, Uppsala University, 2018.
 
 ## Papers
 
-<div style="margin-left:25px" markdown="1">
-[**Modelling distributed Erlang within a single node**](https://dl.acm.org/citation.cfm?id=3242764)<br />
-Stavros Aronis, Viktória Fördős, and Dániel Szoboszlay.<br/>
-Erlang 2018, Proceedings of the 17th ACM SIGPLAN International Workshop on Erlang, 2018.<br/>
-</div>
+<!-- ACM DL Article: Modelling distributed Erlang within a single node -->
+<div class="acmdlitem" id="item3242764"><img src="https://dl.acm.org/images/oa.gif" width="25" height="25" border="0" alt="ACM DL Author-ize service" style="vertical-align:middle"/><a href="https://dl.acm.org/authorize?N663452" title="Modelling distributed Erlang within a single node" markdown="1">**Modelling distributed Erlang within a single node**</a><div style="margin-left:25px"><a href="http://dl.acm.org/author_page.cfm?id=81488667954" >Stavros Aronis</a>, <a href="http://dl.acm.org/author_page.cfm?id=99658635518" >Viktória Fördős</a>, and <a href="http://dl.acm.org/author_page.cfm?id=99659307811" >Dániel Szoboszlay</a><br />Erlang 2018 Proceedings of the 17th ACM SIGPLAN International Workshop on Erlang, 2018</div></div>
+<!-- ACM DL Bibliometrics: Modelling distributed Erlang within a single node-->
+<div class="acmdlstat" id ="stats3242764"><iframe src="https://dl.acm.org/authorizestats?N663452" width="100%" height="30" scrolling="no" frameborder="0">frames are not supported</iframe></div>
 
 <div style="margin-left:25px" markdown="1">
 [**Optimal Dynamic Partial Order Reduction with Observers**](https://rdcu.be/LLeU)<br />
