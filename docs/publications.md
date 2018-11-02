@@ -20,11 +20,10 @@ PhD Dissertation, Uppsala University, 2018.
 
 ## Papers
 
-<div style="margin-left:25px" markdown="1">
-[**Modelling distributed Erlang within a single node**](https://dl.acm.org/citation.cfm?id=3242764)<br />
-Stavros Aronis, Viktória Fördős, and Dániel Szoboszlay.<br/>
-Erlang 2018, Proceedings of the 17th ACM SIGPLAN International Workshop on Erlang, 2018.<br/>
-</div>
+<!-- ACM DL Article: Modelling distributed Erlang within a single node -->
+<div class="acmdlitem" id="item3242764"><img src="https://dl.acm.org/images/oa.gif" width="25" height="25" border="0" alt="ACM DL Author-ize service" style="vertical-align:middle"/><a href="https://dl.acm.org/authorize?N663452" title="Modelling distributed Erlang within a single node" markdown="1">**Modelling distributed Erlang within a single node**</a><div style="margin-left:25px"><a href="http://dl.acm.org/author_page.cfm?id=81488667954" >Stavros Aronis</a>, <a href="http://dl.acm.org/author_page.cfm?id=99658635518" >Viktória Fördős</a>, and <a href="http://dl.acm.org/author_page.cfm?id=99659307811" >Dániel Szoboszlay</a><br />Erlang 2018 Proceedings of the 17th ACM SIGPLAN International Workshop on Erlang, 2018</div></div>
+<!-- ACM DL Bibliometrics: Modelling distributed Erlang within a single node-->
+<div class="acmdlstat" id ="stats3242764"><iframe src="https://dl.acm.org/authorizestats?N663452" width="100%" height="30" scrolling="no" frameborder="0">frames are not supported</iframe></div>
 
 <div style="margin-left:25px" markdown="1">
 [**Optimal Dynamic Partial Order Reduction with Observers**](https://rdcu.be/LLeU)<br />
@@ -45,12 +44,12 @@ The official publication is available at link.springer.com via [its DOI link](ht
 </div>
 
 <!-- ACM DL Article: The shared-memory interferences of Erlang/OTP built-ins -->
-<div class="acmdlitem" id="item3123573"><img src="https://dl.acm.org/images/oa.gif" width="25" height="25" border="0" alt="ACM DL Author-ize service" style="vertical-align:middle"/><a href="http://dl.acm.org/authorize?N46294" title="The shared-memory interferences of Erlang/OTP built-ins" markdown="1">**The shared-memory interferences of Erlang/OTP built-ins**</a><div style="margin-left:25px"><a href="http://dl.acm.org/author_page.cfm?id=81488667954" >Stavros Aronis</a> and <a href="http://dl.acm.org/author_page.cfm?id=81548020391" >Konstantinos Sagonas</a>.<br />Erlang 2017, Proceedings of the 16th ACM SIGPLAN International Workshop on Erlang, 2017.</div></div>
+<div class="acmdlitem" id="item3123573"><img src="https://dl.acm.org/images/oa.gif" width="25" height="25" border="0" alt="ACM DL Author-ize service" style="vertical-align:middle"/><a href="https://dl.acm.org/authorize?N46294" title="The shared-memory interferences of Erlang/OTP built-ins" markdown="1">**The shared-memory interferences of Erlang/OTP built-ins**</a><div style="margin-left:25px"><a href="http://dl.acm.org/author_page.cfm?id=81488667954" >Stavros Aronis</a> and <a href="http://dl.acm.org/author_page.cfm?id=81548020391" >Konstantinos Sagonas</a>.<br />Erlang 2017, Proceedings of the 16th ACM SIGPLAN International Workshop on Erlang, 2017.</div></div>
 <!-- ACM DL Bibliometrics: The shared-memory interferences of Erlang/OTP built-ins-->
 <div class="acmdlstat footnotes" id ="stats3123573"><iframe src="https://dl.acm.org/authorizestats?N46294" width="100%" height="30" scrolling="no" frameborder="0">frames are not supported</iframe></div>
 
 <!-- ACM DL Article: Source Sets: A Foundation for Optimal Dynamic Partial Order Reduction -->
-<div class="acmdlitem" id="item3073408"><img src="https://dl.acm.org/images/oa.gif" width="25" height="25" border="0" alt="ACM DL Author-ize service" style="vertical-align:middle"/><a href="http://dl.acm.org/authorize?N46293" title="Source Sets: A Foundation for Optimal Dynamic Partial Order Reduction" markdown="1">**Source Sets: A Foundation for Optimal Dynamic Partial Order Reduction**</a><div style="margin-left:25px"><a href="http://dl.acm.org/author_page.cfm?id=81100490166" >Parosh Aziz Abdulla</a>, <a href="http://dl.acm.org/author_page.cfm?id=81488667954" >Stavros Aronis</a>, <a href="http://dl.acm.org/author_page.cfm?id=81100619282" >Bengt Jonsson</a>, and <a href="http://dl.acm.org/author_page.cfm?id=81548020391" >Konstantinos Sagonas</a>.<br />Journal of the ACM (JACM), 2017.</div></div>
+<div class="acmdlitem" id="item3073408"><img src="https://dl.acm.org/images/oa.gif" width="25" height="25" border="0" alt="ACM DL Author-ize service" style="vertical-align:middle"/><a href="https://dl.acm.org/authorize?N46293" title="Source Sets: A Foundation for Optimal Dynamic Partial Order Reduction" markdown="1">**Source Sets: A Foundation for Optimal Dynamic Partial Order Reduction**</a><div style="margin-left:25px"><a href="http://dl.acm.org/author_page.cfm?id=81100490166" >Parosh Aziz Abdulla</a>, <a href="http://dl.acm.org/author_page.cfm?id=81488667954" >Stavros Aronis</a>, <a href="http://dl.acm.org/author_page.cfm?id=81100619282" >Bengt Jonsson</a>, and <a href="http://dl.acm.org/author_page.cfm?id=81548020391" >Konstantinos Sagonas</a>.<br />Journal of the ACM (JACM), 2017.</div></div>
 <!-- ACM DL Bibliometrics: Source Sets: A Foundation for Optimal Dynamic Partial Order Reduction-->
 <div class="acmdlstat footnotes" id ="stats3073408"><iframe src="https://dl.acm.org/authorizestats?N46293" width="100%" height="30" scrolling="no" frameborder="0">frames are not supported</iframe></div>
 
@@ -69,7 +68,7 @@ The official publication is available at ieeexplore.ieee.org via [its DOI link](
 </div>
 
 <!-- ACM DL Article: Test-driven development of concurrent programs using concuerror -->
-<div class="acmdlitem" id="item2034664"><img src="https://dl.acm.org/images/oa.gif" width="25" height="25" border="0" alt="ACM DL Author-ize service" style="vertical-align:middle"/><a href="http://dl.acm.org/authorize?N49975" title="Test-driven development of concurrent programs using Concuerror" markdown="1">**Test-driven development of concurrent programs using Concuerror**</a><div style="margin-left:25px"><a href="http://dl.acm.org/author_page.cfm?id=81488671778" >Alkis Gotovos</a>, <a href="http://dl.acm.org/author_page.cfm?id=81481650826" >Maria Christakis</a>, and <a href="http://dl.acm.org/author_page.cfm?id=81100605481" >Konstantinos Sagonas</a>.<br />Erlang '11, Proceedings of the 10th ACM SIGPLAN workshop on Erlang, 2011.</div></div>
+<div class="acmdlitem" id="item2034664"><img src="https://dl.acm.org/images/oa.gif" width="25" height="25" border="0" alt="ACM DL Author-ize service" style="vertical-align:middle"/><a href="https://dl.acm.org/authorize?N49975" title="Test-driven development of concurrent programs using Concuerror" markdown="1">**Test-driven development of concurrent programs using Concuerror**</a><div style="margin-left:25px"><a href="http://dl.acm.org/author_page.cfm?id=81488671778" >Alkis Gotovos</a>, <a href="http://dl.acm.org/author_page.cfm?id=81481650826" >Maria Christakis</a>, and <a href="http://dl.acm.org/author_page.cfm?id=81100605481" >Konstantinos Sagonas</a>.<br />Erlang '11, Proceedings of the 10th ACM SIGPLAN workshop on Erlang, 2011.</div></div>
 <!-- ACM DL Bibliometrics: Test-driven development of concurrent programs using concuerror-->
 <div class="acmdlstat" id ="stats2034664"><iframe src="https://dl.acm.org/authorizestats?N49975" width="100%" height="30" scrolling="no" frameborder="0">frames are not supported</iframe></div>
 
