@@ -1461,8 +1461,6 @@ enabled(P) ->
   P ! enabled,
   receive
     {enabled, Answer} -> Answer
-  after
-    5000 -> ?crash({process_did_not_respond_system, P})
   end.
 
 %%------------------------------------------------------------------------------
@@ -2447,12 +2445,6 @@ explain_error({process_did_not_respond, Timeout, Actor}) ->
     " to increase the '--timeout' limit and/or ensure that there are no"
     " infinite loops in your test.",
     [Actor, Timeout]
-   );
-explain_error({process_did_not_respond_system, Actor}) ->
-  io_lib:format(
-    "A process (~p) did not respond to a control signal. Ensure that there are"
-    " no infinite loops in your test.",
-    [Actor]
    );
 explain_error({registered_process_not_wrapped, Name}) ->
   io_lib:format(
