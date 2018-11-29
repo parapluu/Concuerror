@@ -1026,7 +1026,7 @@ check_validity(Key) ->
 %%
 %% This function also augments the interface of getopt, allowing
 %% <ul>
-%%   <li> {@section multiple arguments} to options</li>
+%%   <li> {@section Multiple Arguments} to options</li>
 %%   <li> correction of common errors</li>
 %% </ul>
 
