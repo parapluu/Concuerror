@@ -49,5 +49,5 @@ Details can be found in the [LICENSE][license] file.
 
 <!-- Badges -->
 [codecov badge]: https://codecov.io/gh/parapluu/Concuerror/branch/master/graph/badge.svg
-[erlang versions badge]: https://img.shields.io/badge/erlang-R16B03%20to%2021.0-blue.svg
+[erlang versions badge]: https://img.shields.io/badge/erlang-R16B03%20to%2021.2-blue.svg
 [travis badge]: https://travis-ci.org/parapluu/Concuerror.svg?branch=master
