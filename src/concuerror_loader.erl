@@ -1,11 +1,12 @@
 %%% @private
 -module(concuerror_loader).
 
--export([initialize/1,
-         load/1,
-         load_initially/1,
-         load_binary/3,
-         is_instrumenting/0]).
+-export([ initialize/1
+        , is_instrumenting/0
+        , load/1
+        , load_binary/3
+        , load_initially/1
+        ]).
 
 %%------------------------------------------------------------------------------
 
