@@ -26,7 +26,7 @@ The preferred way to start concuerror is via the `bin/concuerror` escript.
 
 ## Copyright and License
 
-Copyright (c) 2014-2018,
+Copyright (c) 2014-2019,
 Stavros Aronis (<aronisstav@gmail.com>) and
 Kostis Sagonas (<kostis@cs.ntua.gr>).
 All rights reserved
@@ -49,5 +49,5 @@ Details can be found in the [LICENSE][license] file.
 
 <!-- Badges -->
 [codecov badge]: https://codecov.io/gh/parapluu/Concuerror/branch/master/graph/badge.svg
-[erlang versions badge]: https://img.shields.io/badge/erlang-R16B03%20to%2021.2-blue.svg
+[erlang versions badge]: https://img.shields.io/badge/erlang-R16B03%20to%2021.3-blue.svg
 [travis badge]: https://travis-ci.org/parapluu/Concuerror.svg?branch=master

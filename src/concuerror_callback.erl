@@ -1263,7 +1263,10 @@ run_built_in(erlang = Module, Name, Arity, Args, Info)
 
 run_built_in(os = Module, Name, Arity, Args, Info)
   when
-    {Name, Arity} =:= {timestamp, 0}
+    false
+    ;{Name, Arity} =:= {system_time, 0}
+    ;{Name, Arity} =:= {system_time, 1}
+    ;{Name, Arity} =:= {timestamp, 0}
     ->
   maybe_reuse_old(Module, Name, Arity, Args, Info);
 

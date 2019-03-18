@@ -1,0 +1,49 @@
+Concuerror AFS2018+build.2229.ref8e9c505 started at 26 Jun 2019 22:10:32
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{timestamps,exit_system_time0,[]}},
+   {exclude_module,[]},
+   {files,["/Users/stavros/git/Concuerror/tests/suites/basic_tests/src/timestamps.erl"]},
+   {first_process_errors_only,false},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,5000},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
+################################################################################
+Exploration completed!
+  No errors found!
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+* Check `--help attributes' for info on how to pass options via module attributes.
+* Running without a scheduling_bound corresponds to verification and may take a long time.
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+* Writing results in /Users/stavros/git/Concuerror/tests/results/basic_tests/results/timestamps-exit_system_time0-inf-optimal.txt
+* Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
+* Instrumented & loaded module timestamps
+* Automatically instrumented module error_handler
+* Automatically instrumented module erlang
+
+################################################################################
+Done at 26 Jun 2019 22:10:33 (Exit status: ok)
+  Summary: 0 errors, 1/1 interleavings explored
