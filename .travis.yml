@@ -109,3 +109,10 @@ after_success:
 
 after_failure:
   - .travis/after_failure
+
+# Other configuration
+
+notifications:
+  email:
+    - aronisstav@gmail.com
+    - kostis@it.uu.se
