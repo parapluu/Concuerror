@@ -32,7 +32,15 @@
 %%     - the atom `crash`, if Concuerror should crash when executing the test
 %%     - a specialization for the bounding algorithm (bpor)
 
-scenarios() -> [{test, inf, optimal}].
+scenarios() ->
+  %% [{test, inf, optimal}].
+  [{T, inf, optimal} ||
+    {T, 0} <-
+      ?MODULE:module_info(exports)
+      , T =/= exceptional
+      , T =/= scenarios
+      , T =/= module_info
+  ].
 
 %% A test may have a different pass condition. The `exceptional/0`
 %% function can be used to define an anonymous function with inputs

@@ -11,7 +11,15 @@
 
 %%------------------------------------------------------------------------------
 
-scenarios() -> [{test, inf, optimal}].
+scenarios() ->
+  %% [{test, inf, optimal}].
+  [{T, inf, optimal} ||
+    {T, 0} <-
+      ?MODULE:module_info(exports)
+      , T =/= exceptional
+      , T =/= scenarios
+      , T =/= module_info
+  ].
 
 exceptional() ->
   fun(_Expected, _Actual) ->
