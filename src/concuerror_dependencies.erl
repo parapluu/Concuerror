@@ -298,7 +298,7 @@ dependent_exit(#exit_event{actor = Exiting, name = Name},
 dependent_exit(Exit, MFArgs, _Extra) ->
   dependent_exit(Exit, MFArgs).
 
-dependent_exit(_Exit, {erlang, A, _})
+ dependent_exit(_Exit, {erlang, A, _})
   when
     false
     ;A =:= date
@@ -321,7 +321,20 @@ dependent_exit(_Exit, {erlang, A, _})
     ;A =:= unique_integer
     ->
   false;
-dependent_exit(#exit_event{},
+dependent_exit(_Exit, {os, Name, []})
+  when
+    false
+    ;Name =:= system_time
+    ;Name =:= timestamp
+    ->
+  false;
+dependent_exit(_Exit, {os, Name, [_]})
+  when
+    false
+    ;Name =:= system_time
+    ->
+  false;
+ dependent_exit(#exit_event{},
                {_, group_leader, []}) ->
   false;
 dependent_exit(#exit_event{actor = Exiting},
@@ -596,6 +609,25 @@ dependent_built_in(#builtin_event{mfargs = {erlang, _, _}},
 dependent_built_in(#builtin_event{mfargs = {ets, _, _}} = Ets,
                    #builtin_event{mfargs = {erlang, _, _}} = Erlang) ->
   dependent_built_in(Erlang, Ets);
+
+dependent_built_in(#builtin_event{mfargs = {os, Name, []}},
+                   #builtin_event{})
+  when
+    false
+    ;Name =:= system_time
+    ;Name =:= timestamp
+    ->
+  false;
+dependent_built_in(#builtin_event{mfargs = {os, Name, [_]}},
+                   #builtin_event{})
+  when
+    false
+    ;Name =:= system_time
+    ->
+  false;
+dependent_built_in(#builtin_event{} = Other,
+                   #builtin_event{mfargs = {os, _, _}} = OsOp) ->
+  dependent_built_in(OsOp, Other);
 
 dependent_built_in(#builtin_event{mfargs = {MaybeErlangA, A, _}},
                    #builtin_event{mfargs = {MaybeErlangB, B, _}})
