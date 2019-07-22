@@ -1,5 +1,9 @@
 sudo: false
 
+# temporarily, so that we can test with OTP versions prior to 19.x
+# without a dist: line, default in travis is xenial (Ubuntu 16.04)
+dist: trusty
+
 language: erlang
 
 branches:
