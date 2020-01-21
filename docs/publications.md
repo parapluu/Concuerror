@@ -56,7 +56,7 @@ The official publication is available at link.springer.com via [its DOI link](ht
 <!-- ACM DL Article: Optimal dynamic partial order reduction -->
 <div class="acmdlitem" id="item2535845"><img src="https://dl.acm.org/images/oa.gif" width="25" height="25" border="0" alt="ACM DL Author-ize service" style="vertical-align:middle"/><a href="https://dl.acm.org/authorize?N87798" title="Optimal dynamic partial order reduction" markdown="1">**Optimal dynamic partial order reduction**</a><div style="margin-left:25px"><a href="http://dl.acm.org/author_page.cfm?id=81100490166" >Parosh Abdulla</a>, <a href="http://dl.acm.org/author_page.cfm?id=81488667954" >Stavros Aronis</a>, <a href="http://dl.acm.org/author_page.cfm?id=81100619282" >Bengt Jonsson</a>, and <a href="http://dl.acm.org/author_page.cfm?id=81100605481" >Konstantinos Sagonas</a>.<br />POPL '14, Proceedings of the 41st ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages, 2014.</div></div>
 <!-- ACM DL Bibliometrics: Optimal dynamic partial order reduction-->
-<div class="acmdlstat footnotes" id ="stats2535845"><iframe src="https://dl.acm.org/authorizestats?N87798" width="100%" height="30" scrolling="no" frameborder="0">frames are not supported</iframe></div>
+<div class="acmdlstat footnotes" id ="stats2535845"><iframe src="https://dl.acm.org/action/renderAuthorizerContentBib?doi=10.1145/2578855.2535845" width="100%" height="30" scrolling="no" frameborder="0">frames are not supported</iframe></div>
 
 <div style="margin-left:25px" markdown="1">
 [**Systematic Testing for Detecting Concurrency Errors in Erlang Programs**](/assets/pdf/ICST2013.pdf)<br />
