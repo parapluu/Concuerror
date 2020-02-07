@@ -1,7 +1,12 @@
 %%% @private
 -module(concuerror_loader).
 
--export([initialize/1, load/1, load_initially/1, is_instrumenting/0]).
+-export([ initialize/1
+        , is_instrumenting/0
+        , load/1
+        , load_binary/3
+        , load_initially/1
+        ]).
 
 %%------------------------------------------------------------------------------
 
@@ -136,16 +141,11 @@ set_is_instrumenting(Value) ->
 
 %%------------------------------------------------------------------------------
 
-get_instrumented_table() ->
-  concuerror_instrumented.
+-spec load_binary(module(), string(), binary()) -> {ok, [iodata()]}.
 
-check_shadow(File, Module) ->
-  Default = code:which(Module),
-  case Default =:= non_existing of
-    true -> [];
-    false ->
-      [io_lib:format("File ~s shadows ~s (found in path)", [File, Default])]
-  end.
+load_binary(Module, Filename, Beam) ->
+  Instrumented = get_instrumented_table(),
+  load_binary(Module, Filename, Beam, Instrumented).
 
 load_binary(Module, Filename, Beam, Instrumented) ->
   Core = get_core(Beam),
@@ -161,6 +161,19 @@ load_binary(Module, Filename, Beam, Instrumented) ->
     compile:forms(InstrumentedCore, [from_core, report_errors, binary]),
   {module, Module} = code:load_binary(Module, Filename, NewBinary),
   {ok, Warnings}.
+
+%%------------------------------------------------------------------------------
+
+get_instrumented_table() ->
+  concuerror_instrumented.
+
+check_shadow(File, Module) ->
+  Default = code:which(Module),
+  case Default =:= non_existing of
+    true -> [];
+    false ->
+      [io_lib:format("File ~s shadows ~s (found in path)", [File, Default])]
+  end.
 
 get_core(Beam) ->
   {ok, {Module, [{abstract_code, ChunkInfo}]}} =
