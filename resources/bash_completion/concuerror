@@ -1,0 +1,53 @@
+#!/bin/bash
+# bash_completion for concuerror
+
+_concuerror()
+{
+    long_opts="--after_timeout --assertions_only --assume_racing --disable_sleep_sets
+        --disable_sleep_sets --dpor --exclude_module --file --first_process_errors_only
+        --graph --help --ignore_error --instant_delivery --interleaving_bound --keep_going
+        --module --no_output --non_racing_system --observers --optimal --output --pa
+        --print_depth --pz --quiet --scheduling --scheduling_bound --scheduling_bound_type
+        --show_races --strict_scheduling --symbolic_names --test --timeout --treat_as_normal
+        --use_receive_patterns --verbosity --version"
+    
+    opts="-a -d -x -f -g -h -i -k -m -o -q -b -c -s -t -v"
+    local cur prev
+    if type _get_comp_words_by_ref &>/dev/null ; then
+        _get_comp_words_by_ref cur prev
+    else
+        cur=$2 prev=$3
+    fi
+    case $prev in
+        concuerror)
+            if [[ ${cur} == -* ]] ; then
+                COMPREPLY=($(compgen -W "${opts}" -- ${cur}))
+            fi
+            if [[ ${cur} == --* ]] ; then
+                COMPREPLY=($(compgen -W "${long_opts}" -- ${cur}))
+            fi
+            ;;
+        --dpor)
+            COMPREPLY=($(compgen -W "none optimal persistent source" -- ${cur}))
+            ;;
+        -f|--file|--pa|--pz)
+            _filedir
+            ;;
+        -h|--help)
+            help_args="all attributes progress"
+            keywords="advanced basic bound console erlang errors experimental input output por visual"
+            COMPREPLY=($(compgen -W "${help_args} ${keywords}" -- ${cur}))
+            ;;
+        -c|--scheduling_bound_type)
+            COMPREPLY=($(compgen -W "bpor delay none ubpor" -- ${cur}))
+            ;;
+        --scheduling)
+            COMPREPLY=($(compgen -W "oldest newest round_robin" -- ${cur}))
+            ;;
+        -a|--after_timeout|-i|--interleaving_bound|--timeout)
+            COMPREPLY=($(compgen -W "infinity" -- ${cur}))
+            ;;
+    esac
+}
+
+complete -F _concuerror concuerror
