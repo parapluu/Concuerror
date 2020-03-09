@@ -20,6 +20,16 @@ Concuerror is a stateless model checking tool for Erlang programs. It can be use
 
 The preferred way to start concuerror is via the `bin/concuerror` escript.
 
+## Using the bash_completion
+
+You can optionally install concuerror's bash_completion file from https://github.com/parapluu/Concuerror/raw/master/resources/bash_completion/concuerror
+
+To use it, you can either:
+
+- Move the file to `/etc/bash_completion.d`
+- Write `. /path-to-the-file`, if you want to use it only for the current shell session
+- Edit your `.bashrc` file and add `[ -s "/path-to-the-file" ] && \. "/path-to-the-file"`
+
 ## Is there a changelog?
 
 [Yes!][changelog]
