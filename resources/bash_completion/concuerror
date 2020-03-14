@@ -1,6 +1,11 @@
 #!/bin/bash
 # bash_completion for concuerror
 
+# To use it, you can either:
+# - Link the file to e.g. `/etc/bash_completion.d`
+# - Run `. /path-to-the-file`, if you want to use it only for the current shell session
+# - Add `[ -s "/path-to-the-file" ] && \. "/path-to-the-file"` to your e.g. `.bashrc` file
+
 _concuerror()
 {
     long_opts="--after_timeout --assertions_only --assume_racing --disable_sleep_sets
