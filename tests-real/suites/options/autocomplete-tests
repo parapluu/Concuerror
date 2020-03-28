@@ -1,0 +1,33 @@
+#!/bin/bash
+
+autocomplete_test(){
+    cd autocomplete
+    erlc autocomplete_common.erl $1.erl
+    2> $Console erl -pa "$CONCUERROR_BEAM" -noinput -s $1 test -s erlang halt || return 1
+    rm autocomplete_common.beam $1.beam
+    cd ..
+    good
+}
+
+. header
+
+print_blue "$0"
+
+if ! $(dirname $0)/../check_version.escript 18; then
+    print_blue "SKIPPING"
+    exit 0
+fi
+
+testing "Long options in sync with bash completion"
+autocomplete_test autocomplete_long
+
+testing "Long options by default"
+autocomplete_test autocomplete_none
+
+testing "Short options in sync with bash completion"
+autocomplete_test autocomplete_short
+
+testing "Help options in sync with bash completion"
+autocomplete_test autocomplete_help
+
+. footer

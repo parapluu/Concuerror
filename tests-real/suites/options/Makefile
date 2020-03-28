@@ -9,4 +9,5 @@ options:
 
 .PHONY: other
 other:
+	./autocomplete-tests
 	./other-tests
