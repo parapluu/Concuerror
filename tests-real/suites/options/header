@@ -12,7 +12,7 @@ rm -f $Out $Console
 function abort {
     trap - ERR
     set +e
-    echo ""
+    print_red "FAILED"
     echo cat $Out
     cat $Out
     echo cat $Console

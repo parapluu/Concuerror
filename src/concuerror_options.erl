@@ -181,7 +181,10 @@
    , version_option/0
    ]).
 
--export([parse_cl/1, finalize/1]).
+-export([finalize/1, parse_cl/1]).
+
+%% Exported for autocomplete tests
+-export([options/0]).
 
 -export_type(
    [ option_spec/0
@@ -274,6 +277,7 @@
 -define(OPTION_GETOPT_SHORT_HELP, 5).
 -define(OPTION_GETOPT_LONG_HELP, 6).
 
+-spec options() -> [option_spec()].
 options() ->
   [ module_option()
   , test_option()

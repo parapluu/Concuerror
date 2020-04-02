@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased](https://github.com/parapluu/Concuerror/tree/master)
 
 ### Added
+- bash_completion (#308)
 
 ### Removed
 
