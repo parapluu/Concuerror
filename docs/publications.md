@@ -75,13 +75,13 @@ The official publication is available at ieeexplore.ieee.org via [its DOI link](
 ## Theses
 
 <div style="margin-left:25px" markdown="1">
-[**Systematic Testing of Concurrent Erlang Programs: Some Experiences**](http://dspace.lib.ntua.gr/handle/123456789/38329)<br />
+[**Systematic Testing of Concurrent Erlang Programs: Some Experiences**](http://dx.doi.org/10.26240/heal.ntua.16898)<br />
 Ilias Tsitsimpis.<br />
 Diploma Thesis, National Technical University of Athens, 2013.
 </div>
 
 <div style="margin-left:25px" markdown="1">
-[**Dynamic Systematic Testing of Concurrent Erlang Programs**](http://dspace.lib.ntua.gr/handle/123456789/4618)<br />
+[**Dynamic Systematic Testing of Concurrent Erlang Programs**](http://dx.doi.org/10.26240/heal.ntua.7193)<br />
 Alkis Gotovos.<br />
 Diploma Thesis, National Technical University of Athens, 2011.
 </div>
