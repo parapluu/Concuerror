@@ -25,4 +25,6 @@ test: build
 
 .PHONY: test-external
 test-external: build
-	htmlproofer ./_site --external-only
+	htmlproofer ./_site --external-only \
+		--url-ignore '/http*://vimeo.com*' \
+		--http-status-ignore "302"
