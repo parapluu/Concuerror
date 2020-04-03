@@ -22,7 +22,7 @@ jobs:
   # Jobs that are allowed to fail:
   allow_failures:
   - env: TEST=".travis/travis_has_latest_otp_version"
-  - env: TEST="make -C docs test-external"
+  - env: TEST="make -C docs test-external-travis"
   - env: TEST="make -C doc test-external"
 
   include:
@@ -63,7 +63,7 @@ jobs:
     stage: website
 
   # Test external links separately, cause they can break unexpectedly
-  - env: TEST="make -C docs test-external"
+  - env: TEST="make -C docs test-external-travis"
     stage: website
     addons:
       apt:
