@@ -41,7 +41,7 @@ figcaption{padding-top:10px;font-size:14px;font-size:0.875rem;line-height:1.7143
 .image-credit:after{clear:both;}
 @media only screen and (min-width: 48em){.image-credit{max-width:760px;padding-right:60px;padding-left:60px;}}@media only screen and (min-width: 62.5em){.image-credit{max-width:960px;}}.image-credit a{color:#6f6f6f;}
 .notice{margin-top:1.5em;padding:.5em 1em;text-indent:0;font-size:16px;font-size:1rem;background-color:#f2f2f2;border:1px solid #e6e6e6;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;}
-blockquote{font-family:'volkhov',serif;font-style:italic;font-size:24px;font-size:1.5rem;line-height:1;margin-bottom:24px;margin-bottom:1.5rem;padding-left:20px;border-left:8px solid #000000;}
+blockquote{font-style:italic;margin-bottom:24px;margin-bottom:1.5rem;padding-left:20px;border-left:8px solid #000000;}
 .footnotes{font-size:14px;font-size:0.875rem;line-height:1.7143;font-family:'source-sans-pro',sans-serif;}
 tt,code,kbd,samp,pre{font-family:'source-code-pro',monospace;}
 p code,li code{font-size:12px;font-size:0.75rem;line-height:2;white-space:nowrap;margin:0 2px;padding:0 5px;border:1px solid #e6e6e6;background-color:#f2f2f2;-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px;}
