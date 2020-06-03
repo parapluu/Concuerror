@@ -334,7 +334,9 @@ dependent_exit(_Exit, {os, Name, [_]})
     ;Name =:= system_time
     ->
   false;
- dependent_exit(#exit_event{},
+dependent_exit(_Exit, {persistent_term, _, _}) ->
+  false;
+dependent_exit(#exit_event{},
                {_, group_leader, []}) ->
   false;
 dependent_exit(#exit_event{actor = Exiting},
@@ -610,6 +612,20 @@ dependent_built_in(#builtin_event{mfargs = {ets, _, _}} = Ets,
                    #builtin_event{mfargs = {erlang, _, _}} = Erlang) ->
   dependent_built_in(Erlang, Ets);
 
+dependent_built_in(#builtin_event{mfargs = {persistent_term, Name1, Args1}},
+                   #builtin_event{mfargs = {persistent_term, Name2, Args2}}) ->
+  case {Name1, Name2, Args1, Args2} of
+    {get, get, _, _} -> false;
+    {Mod, _, [K|_], [K|_]} when Mod =:= put; Mod =:= erase -> true;
+    {_, Mod, [K|_], [K|_]} when Mod =:= put; Mod =:= erase -> true;
+    _ -> false
+  end;
+dependent_built_in(#builtin_event{mfargs = {persistent_term, _, _}},
+                   #builtin_event{}) ->
+  false;
+dependent_built_in(#builtin_event{},
+                   #builtin_event{mfargs = {persistent_term, _, _}}) ->
+  false;
 dependent_built_in(#builtin_event{mfargs = {os, Name, []}},
                    #builtin_event{})
   when

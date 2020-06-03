@@ -13,11 +13,7 @@
 
 -include("concuerror.hrl").
 
--ifdef(BEFORE_OTP_17).
-%% defined as builtin
--else.
 -type queue() :: queue:queue().
--endif.
 
 -record(average, {
           queue  :: queue(),

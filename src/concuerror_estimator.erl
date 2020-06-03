@@ -33,13 +33,8 @@
 
 -include("concuerror.hrl").
 
--ifdef(BEFORE_OTP_17).
--type explored() :: dict().
--type planned()  :: dict().
--else.
 -type explored() :: dict:dict(index(), [pos_integer()]).
 -type planned()  :: dict:dict(index(), pos_integer()).
--endif.
 
 %%------------------------------------------------------------------------------
 
@@ -125,21 +120,8 @@ stop(none) -> ok;
 stop(Estimator) ->
   gen_server_stop(Estimator).
 
--ifdef(BEFORE_OTP_18).
-
-gen_server_stop(Server) ->
-  M = monitor(process, Server),
-  gen_server:cast(Server, stop),
-  receive
-    {'DOWN', M, process, Server, _} -> ok
-  end.
-
--else.
-
 gen_server_stop(Server) ->
   gen_server:stop(Server).
-
--endif.
 
 %%------------------------------------------------------------------------------
 

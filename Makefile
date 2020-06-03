@@ -61,9 +61,17 @@ dialyzer: $(REBAR)
 CONCUERROR?=$(abspath bin/$(NAME))
 
 .PHONY: tests
-tests: bin/$(NAME)
-	@$(RM) $@/thediff
-	@(cd $@; ./runtests.py)
+tests: tests-1 tests-2
+
+.PHONY: tests-1
+tests-1: bin/$(NAME)
+	@$(RM) tests/thediff
+	@(cd tests; ./runtests.py suites/ba*/src/*)
+
+.PHONY: tests-2
+tests-2: bin/$(NAME)
+	@$(RM) tests/thediff
+	@(cd tests; ./runtests.py suites/b[^a]*/src/* suites/[^b]*/src/*)
 
 ## -j 1: ensure that the outputs of different suites are not interleaved
 .PHONY: tests-real

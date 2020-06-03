@@ -75,7 +75,7 @@ outputhas "Mailbox contents: \[foo\]"
 
 testing "Funs are pretty"
 concuerror_console_error -f src/a_fun.erl
-outputhas "#Fun<a_fun.'-test/0-fun-1-'.0>"
+outputhas "#Fun<a_fun.'-test/0-fun-"
 
 testing "Symbolic registered names Info"
 concuerror_console_error -f src/register.erl
