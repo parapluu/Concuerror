@@ -663,7 +663,7 @@ dependent_built_in(#builtin_event{mfargs = {ets, delete, [TableA]}
                                  , extra = IdB}) ->
   ets_same_table(TableA, IdA, TableB, IdB);
 dependent_built_in(#builtin_event{mfargs = {ets, _Any, _}} = EventA,
-                   #builtin_event{mfargs = {ets, delete, _}} = EventB) ->
+                   #builtin_event{mfargs = {ets, delete, [_]}} = EventB) ->
   dependent_built_in(EventB, EventA);
 
 dependent_built_in(#builtin_event{mfargs = {ets, new, [TableA|_]}
