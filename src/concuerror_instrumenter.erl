@@ -181,6 +181,8 @@ is_unsafe({erlang, F, A}) ->
   end;
 is_unsafe({erts_internal, garbage_collect, _}) ->
   false;
+is_unsafe({erts_internal, map_next, 3}) ->
+  false;
 is_unsafe({Safe, _, _})
   when
     Safe =:= binary
