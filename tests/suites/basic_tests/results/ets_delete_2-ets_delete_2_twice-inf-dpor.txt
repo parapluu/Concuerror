@@ -1,0 +1,77 @@
+Concuerror 0.20.0+build.2248.ref65ec741 started at 15 Jun 2020 18:31:11
+ Options:
+  [{after_timeout,5000},
+   {assertions_only,false},
+   {assume_racing,true},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{ranch_concuerror,ets_delete_twice,[]}},
+   {exclude_module,[]},
+   {first_process_errors_only,false},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {pa,"/home/essen/ninenines/ranch/ebin"},
+   {pa,"/home/essen/ninenines/ranch/test"},
+   {print_depth,20},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,5000},
+   {treat_as_normal,[killed,shutdown]},
+   {use_receive_patterns,true}]
+################################################################################
+Interleaving #1
+--------------------------------------------------------------------------------
+Errors found:
+* At step 8 process <P.1> exited abnormally
+    Reason:
+      {badarg,[{ets,delete,
+                    [concuets,key],
+                    [34,{file,"test/ranch_concuerror.erl"}]}]}
+    Stacktrace:
+      [{ets,delete,[concuets,key],[34,{file,"test/ranch_concuerror.erl"}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: <P>: concuets = ets:new(concuets, [ordered_set,named_table,public])
+    in ranch_concuerror.erl line 32
+   2: <P>: true = ets:insert(concuets, {key,value})
+    in ranch_concuerror.erl line 33
+   3: <P>: <P.1> = erlang:spawn(erlang, apply, [#Fun<ranch_concuerror.'-ets_delete_twice/0-fun-0-'.0>,[]])
+    in erlang.erl line 2789
+   4: <P>: true = ets:delete(concuets, key)
+    in ranch_concuerror.erl line 35
+   5: <P>: exits normally
+   6: <P>: true = ets:delete(concuets)
+    (while exiting)
+   7: <P.1>: Exception badarg is raised by: ets:delete(concuets, key)
+    in ranch_concuerror.erl line 34
+   8: <P.1>: exits abnormally ({badarg,[{ets,delete,[concuets,key],[34,{file,[116,101,115,116,47,114,97,110|...]}]}]})
+################################################################################
+Exploration completed!
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+* Running without a scheduling_bound corresponds to verification and may take a long time.
+* Increase '--print_depth' if output/graph contains "...".
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+* Writing results in /home/essen/ninenines/ranch/logs/concuerror-ranch_concuerror-ets_delete_twice.txt
+* Automatically instrumented module io_lib
+* Showing PIDs as "<symbolic name(/last registered name)>" ('-h symbolic_names').
+* Automatically instrumented module error_handler
+* Automatically instrumented module ranch_concuerror
+* Automatically instrumented module erlang
+* Continuing after error (-k)
+* You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+
+################################################################################
+Done at 15 Jun 2020 18:31:12 (Exit status: error)
+  Summary: 1 errors, 3/3 interleavings explored
