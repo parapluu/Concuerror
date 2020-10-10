@@ -12,7 +12,7 @@ _concuerror()
     long_opts="--after_timeout --assertions_only --assume_racing --depth_bound
         --disable_sleep_sets --dpor --exclude_module --file --first_process_errors_only
         --graph --help --ignore_error --instant_delivery --interleaving_bound --keep_going
-        --module --no_output --non_racing_system --observers --optimal --output --pa
+        --log_all --module --no_output --non_racing_system --observers --optimal --output --pa
         --print_depth --pz --quiet --scheduling --scheduling_bound --scheduling_bound_type
         --show_races --strict_scheduling --symbolic_names --test --timeout --treat_as_normal
         --use_receive_patterns --verbosity --version"

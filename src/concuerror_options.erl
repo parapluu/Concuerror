@@ -138,6 +138,10 @@
 %%% the pairs of racing events that justify the exploration of new
 %%% interleavings are also shown.  These are shown for all
 %%% interleavings, not only the ones with errors.
+%%%
+%%% If the {@link log_all_option/0. `log_all'} option is used,
+%%% all interleavings will be shown, not only the ones with errors.
+%%%
 
 -module(concuerror_options).
 
@@ -157,6 +161,7 @@
    , instant_delivery_option/0
    , interleaving_bound_option/0
    , keep_going_option/0
+   , log_all_option/0
    , module_option/0
    , no_output_option/0
    , non_racing_system_option/0
@@ -292,6 +297,7 @@ options() ->
   , file_option()
   , pa_option()
   , pz_option()
+  , log_all_option()
   , exclude_module_option()
   , depth_bound_option()
   , interleaving_bound_option()
@@ -594,6 +600,18 @@ pz_option() ->
   , string
   , "Add directory to Erlang's code path (rear)"
   , "Works exactly like `erl -pz'."
+  }.
+
+%% @docfile "doc/log_all_option.edoc"
+-spec log_all_option() -> option_spec().
+
+log_all_option() ->
+  { log_all
+  , [output]
+  , undefined
+  , {boolean, false}
+  , "Show all interleavings in log",
+    "Determines whether correct interleavings will be also shown in the logs."
   }.
 
 %% @docfile "doc/exclude_module_option.edoc"

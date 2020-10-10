@@ -131,6 +131,7 @@
           interleaving_errors :: [interleaving_error()],
           interleaving_id :: interleaving_id(),
           keep_going :: boolean(),
+          log_all :: boolean(),
           logger :: concuerror_logger:logger(),
           last_scheduled :: pid(),
           need_to_replay :: boolean(),
@@ -198,6 +199,7 @@ run(Options) ->
        interleaving_id = 1,
        keep_going = ?opt(keep_going, Options),
        last_scheduled = FirstProcess,
+       log_all = ?opt(log_all, Options),
        logger = Logger,
        need_to_replay = false,
        non_racing_system = ?opt(non_racing_system, Options),
@@ -262,30 +264,30 @@ explore(State) ->
 
 %%------------------------------------------------------------------------------
 
-log_trace(#scheduler_state{logger = Logger} = State) ->
-  Log =
-    case filter_errors(State) of
-      [] -> none;
-      Errors ->
-        case proplists:get_value(sleep_set_block, Errors) of
-          {Origin, Sleep} ->
-            case State#scheduler_state.dpor =:= optimal of
-              true -> ?crash({optimal_sleep_set_block, Origin, Sleep});
-              false -> ok
-            end,
-            sleep_set_block;
-          undefined ->
-            #scheduler_state{trace = Trace} = State,
-            Fold =
-              fun(#trace_state{done = [A|_], index = I}, Acc) ->
-                  [{I, A}|Acc]
-              end,
-            TraceInfo = lists:foldl(Fold, [], Trace),
-            {lists:reverse(Errors), TraceInfo}
-        end
+log_trace(#scheduler_state{log_all = LogAll, logger = Logger} = State) ->
+  FilteredErrors = filter_errors(State),
+  Errors =
+    case proplists:get_value(sleep_set_block, FilteredErrors) of
+      {Origin, Sleep} ->
+        case State#scheduler_state.dpor =:= optimal of
+          true -> ?crash({optimal_sleep_set_block, Origin, Sleep});
+          false -> sleep_set_block
+        end;
+      undefined -> lists:reverse(FilteredErrors)
     end,
-  concuerror_logger:complete(Logger, Log),
-  case Log =/= none andalso Log =/= sleep_set_block of
+  TraceInfo =
+    case LogAll orelse (Errors =/= [] andalso Errors =/= sleep_set_block) of
+      true ->
+        #scheduler_state{trace = Trace} = State,
+        Fold =
+          fun(#trace_state{done = [A|_], index = I}, Acc) ->
+              [{I, A}|Acc]
+          end,
+        lists:foldl(Fold, [], Trace);
+      false -> []
+    end,
+  concuerror_logger:complete(Logger, {Errors, TraceInfo}),
+  case Errors =/= [] andalso Errors =/= sleep_set_block of
     true when not State#scheduler_state.keep_going ->
       ?unique(Logger, ?lerror, msg(stop_first_error), []),
       State#scheduler_state{trace = []};
