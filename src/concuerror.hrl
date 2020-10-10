@@ -53,6 +53,7 @@
 -define(opt(A,O,D), proplists:get_value(A,O,D)).
 %%------------------------------------------------------------------------------
 %% Logger levels
+%% See concuerror_options:verbosity/0 for meaning of each level
 -define(lquiet,    0).
 -define(lerror,    1).
 -define(lwarning,  2).

@@ -21,6 +21,8 @@
 -type log_level() :: 0..7.
 
 -define(TICKER_TIMEOUT, 500).
+-define(llog(L, F, A), ?log(self(), L, F, A)).
+-define(llog(L, F), ?llog(L, F, [])).
 
 %%------------------------------------------------------------------------------
 
@@ -77,7 +79,8 @@ timediff(After, Before) ->
           estimator                    :: concuerror_estimator:estimator(),
           graph_data                   :: graph_data() | 'disable',
           interleaving_bound           :: concuerror_options:bound(),
-          last_had_errors = false      :: boolean(),
+          last_had_output = false      :: boolean(),
+          log_all                      :: boolean(),
           log_msgs = []                :: [string()],
           output                       :: file:io_device() | 'disable',
           output_name                  :: string(),
@@ -113,10 +116,13 @@ start(Options) ->
 
 initialize(Options) ->
   Timestamp = format_utc_timestamp(),
-  [{Output, OutputName}, Graph, SymbolicNames, Processes, Verbosity] =
-    get_properties(
-      [output, graph, symbolic_names, processes, verbosity],
-      Options),
+  Graph = ?opt(graph, Options),
+  {Output, OutputName} = ?opt(output, Options),
+  LogAll = ?opt(log_all, Options),
+  Processes = ?opt(processes, Options),
+  SymbolicNames = ?opt(symbolic_names, Options),
+  Verbosity = ?opt(verbosity, Options),
+
   GraphData = graph_preamble(Graph),
   Header =
     io_lib:format("~s started at ~s~n", [concuerror:version(), Timestamp]),
@@ -126,24 +132,28 @@ initialize(Options) ->
       true ->
         to_stderr("~s~n", [Header]),
         initialize_ticker(),
-        ProgressHelpMsg = "Showing progress (-h progress, for details)~n",
-        ?log(self(), ?linfo, ProgressHelpMsg, []),
+        ?llog(?linfo, "Showing progress ('-h progress', for details)~n"),
         Self = self(),
         spawn_link(fun() -> ticker(Self) end)
     end,
   case Output =:= disable of
     true ->
-      Msg = "No output report will be generated~n",
-      ?log(self(), ?lwarning, Msg, []);
+      ?llog(?lwarning, "No output report will be generated~n");
     false ->
-      ?log(self(), ?linfo, "Writing results in ~s~n", [OutputName])
+      ?llog(?linfo, "Writing results in ~s~n", [OutputName])
   end,
   case GraphData =:= disable of
     true ->
       ok;
     false ->
       {_, GraphName} = Graph,
-      ?log(self(), ?linfo, "Writing graph in ~s~n", [GraphName])
+      ?llog(?linfo, "Writing graph in ~s~n", [GraphName])
+  end,
+  case LogAll of
+    true ->
+      ?llog(?lwarning, "Logging all interleavings ('--log_all true')~n");
+    false ->
+      ?llog(?linfo, "Only logging errors ('--log_all false')~n")
   end,
   PrintableOptions =
     delete_props(
@@ -161,20 +171,13 @@ initialize(Options) ->
      estimator = ?opt(estimator, Options),
      graph_data = GraphData,
      interleaving_bound = ?opt(interleaving_bound, Options),
+     log_all = LogAll,
      output = Output,
      output_name = OutputName,
      print_depth = ?opt(print_depth, Options),
      ticker = Ticker,
      verbosity = Verbosity
     }.
-
-get_properties(Props, PropList) ->
-  get_properties(Props, PropList, []).
-
-get_properties([], _, Acc) -> lists:reverse(Acc);
-get_properties([Prop|Props], PropList, Acc) ->
-  PropVal = proplists:get_value(Prop, PropList),
-  get_properties(Props, PropList, [PropVal|Acc]).
 
 delete_props([], Proplist) ->
   Proplist;
@@ -280,7 +283,7 @@ loop(Message,
         "A lot of events in this test are racing. You can see such pairs"
         " by using '--show_races' true. You may want to consider reducing some"
         " parameters in your test (e.g. number of processes or events).~n",
-      ?log(self(), ?ltip, ManyMsg, []);
+      ?llog(?ltip, ManyMsg);
     false -> ok
   end,
   case Errors =:= 10 of
@@ -290,7 +293,7 @@ loop(Message,
         " This can make later debugging difficult, as the generated report will"
         " include too much info. Consider refactoring your code, or using the"
         " appropriate options to filter out irrelevant errors.~n",
-      ?log(self(), ?ltip, ErrorsMsg, []);
+      ?llog(?ltip, ErrorsMsg);
     false -> ok
   end,
   loop(Message, State#logger_state{emit_logger_tips = false});
@@ -299,7 +302,8 @@ loop(Message, State) ->
   #logger_state{
      already_emitted = AlreadyEmitted,
      errors = Errors,
-     last_had_errors = LastHadErrors,
+     last_had_output = LastHadOutput,
+     log_all = LogAll,
      log_msgs = LogMsgs,
      output = Output,
      output_name = OutputName,
@@ -408,14 +412,14 @@ loop(Message, State) ->
     {set_verbosity, NewVerbosity} ->
       NewState = State#logger_state{verbosity = NewVerbosity},
       loop(NewState);
-    {complete, Warn, Scheduler, Ref} ->
+    {complete, {Warnings, TraceInfo}, Scheduler, Ref} ->
       %% We may have race information referring to the previous
       %% interleaving, as race analysis happens after trace logging.
       RaceInfo = [S || S = {T, _} <- Streams, T =:= race],
       case RaceInfo =:= [] of
         true -> ok;
         false ->
-          case LastHadErrors of
+          case LastHadOutput of
             true -> ok;
             false ->
               %% Add missing header
@@ -425,36 +429,40 @@ loop(Message, State) ->
           separator(Output, $-),
           print_streams(RaceInfo, Output)
       end,
+      case TraceInfo =/= [] of
+        true ->
+          separator(Output, $#),
+          to_file(Output, "Interleaving #~p~n", [TracesExplored + 1]),
+          separator(Output, $-),
+          case Warnings =:= [] of
+            true ->
+              to_file(Output, "No errors found.~n", []),
+              separator(Output, $-);
+            false ->
+              to_file(Output, "Errors found:~n", []),
+              print_depth_tip(),
+              WarnStr =
+                [concuerror_io_lib:error_s(W, PrintDepth) || W <- Warnings],
+              to_file(Output, "~s", [WarnStr]),
+              separator(Output, $-)
+          end,
+          print_streams([S || S = {T, _} <- Streams, T =/= race], Output),
+          to_file(Output, "Event trace:~n", []),
+          concuerror_io_lib:pretty(Output, TraceInfo, PrintDepth);
+        false -> ok
+      end,
       {NewErrors, NewSSB, GraphFinal, GraphColor} =
-        case Warn of
+        case Warnings of
           sleep_set_block ->
-            %% Can only happen if --dpor is not optimal (scheduler
-            %% crashes otherwise).
-            case TracesSSB =:= 0 of
-              true ->
-                Msg =
-                  "Some interleavings were 'sleep-set blocked' (SSB). This"
-                  " is expected, since you are not using '--dpor"
-                  " optimal', but indicates wasted effort.~n",
-                ?log(self(), ?lwarning, Msg, []);
-              false -> ok
-            end,
+            Msg =
+              "Some interleavings were 'sleep-set blocked' (SSB). This"
+              " is expected, since you are not using '--dpor"
+              " optimal', but indicates wasted effort.~n",
+            ?unique(self(), ?lwarning, Msg, []),
             {Errors, TracesSSB + 1, "SSB", "yellow"};
-          none ->
+          [] ->
             {Errors, TracesSSB, "Ok", "limegreen"};
-          {Warnings, TraceInfo} ->
-            separator(Output, $#),
-            to_file(Output, "Interleaving #~p~n", [TracesExplored + 1]),
-            separator(Output, $-),
-            to_file(Output, "Errors found:~n", []),
-            print_depth_tip(),
-            WarnStr =
-              [concuerror_io_lib:error_s(W, PrintDepth) || W <-Warnings],
-            to_file(Output, "~s", [WarnStr]),
-            separator(Output, $-),
-            print_streams([S || S = {T, _} <- Streams, T =/= race], Output),
-            to_file(Output, "Event trace:~n", []),
-            concuerror_io_lib:pretty(Output, TraceInfo, PrintDepth),
+          _ ->
             ErrorString =
               case proplists:get_value(fatal, Warnings) of
                 true -> " (Concuerror crashed)";
@@ -472,7 +480,7 @@ loop(Message, State) ->
         graph_command({status, TracesExplored, GraphFinal, GraphColor}, State),
       NewState =
         State#logger_state{
-          last_had_errors = NewErrors =/= Errors,
+          last_had_output = LogAll orelse NewErrors =/= Errors,
           streams = [],
           traces_explored = TracesExplored + 1,
           traces_ssb = NewSSB,

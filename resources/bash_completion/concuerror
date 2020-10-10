@@ -12,7 +12,7 @@ _concuerror()
     long_opts="--after_timeout --assertions_only --assume_racing --depth_bound
         --disable_sleep_sets --dpor --exclude_module --file --first_process_errors_only
         --graph --help --ignore_error --instant_delivery --interleaving_bound --keep_going
-        --module --no_output --non_racing_system --observers --optimal --output --pa
+        --log_all --module --no_output --non_racing_system --observers --optimal --output --pa
         --print_depth --pz --quiet --scheduling --scheduling_bound --scheduling_bound_type
         --show_races --strict_scheduling --symbolic_names --test --timeout --treat_as_normal
         --use_receive_patterns --verbosity --version"
@@ -26,15 +26,6 @@ _concuerror()
         cur=$2 prev=$3
     fi
     case $prev in
-        concuerror)
-            if [[ ${cur} == --* ]] ; then
-                COMPREPLY=($(compgen -W "${long_opts}" -- ${cur}))
-            elif [[ ${cur} == -* ]] ; then
-                COMPREPLY=($(compgen -W "${opts}" -- ${cur}))
-            else
-                COMPREPLY=($(compgen -W "${long_opts}" -- ${cur}))
-            fi
-            ;;
         --dpor)
             COMPREPLY=($(compgen -W "none optimal persistent source" -- ${cur}))
             ;;
@@ -54,6 +45,15 @@ _concuerror()
             ;;
         -a|--after_timeout|-i|--interleaving_bound|--timeout)
             COMPREPLY=($(compgen -W "infinity" -- ${cur}))
+            ;;
+        *)
+            if [[ ${cur} == --* ]] ; then
+                COMPREPLY=($(compgen -W "${long_opts}" -- ${cur}))
+            elif [[ ${cur} == -* ]] ; then
+                COMPREPLY=($(compgen -W "${opts}" -- ${cur}))
+            else
+                _filedir
+            fi
             ;;
     esac
 }

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - bash_completion (#308)
+- log_all option (#320)
 
 ### Removed
 
