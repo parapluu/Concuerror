@@ -115,10 +115,12 @@ start(Options) ->
 
 initialize(Options) ->
   Timestamp = format_utc_timestamp(),
-  [{Output, OutputName}, Graph, SymbolicNames, Processes, Verbosity] =
-    get_properties(
-      [output, graph, symbolic_names, processes, verbosity],
-      Options),
+  Graph = ?opt(graph, Options),
+  {Output, OutputName} = ?opt(output, Options),
+  Processes = ?opt(processes, Options),
+  SymbolicNames = ?opt(symbolic_names, Options),
+  Verbosity = ?opt(verbosity, Options),
+
   GraphData = graph_preamble(Graph),
   Header =
     io_lib:format("~s started at ~s~n", [concuerror:version(), Timestamp]),
@@ -167,14 +169,6 @@ initialize(Options) ->
      ticker = Ticker,
      verbosity = Verbosity
     }.
-
-get_properties(Props, PropList) ->
-  get_properties(Props, PropList, []).
-
-get_properties([], _, Acc) -> lists:reverse(Acc);
-get_properties([Prop|Props], PropList, Acc) ->
-  PropVal = proplists:get_value(Prop, PropList),
-  get_properties(Props, PropList, [PropVal|Acc]).
 
 delete_props([], Proplist) ->
   Proplist;
