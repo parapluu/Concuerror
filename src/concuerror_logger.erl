@@ -21,6 +21,8 @@
 -type log_level() :: 0..7.
 
 -define(TICKER_TIMEOUT, 500).
+-define(llog(L, F, A), ?log(self(), L, F, A)).
+-define(llog(L, F), ?llog(L, F, [])).
 
 %%------------------------------------------------------------------------------
 
@@ -126,24 +128,22 @@ initialize(Options) ->
       true ->
         to_stderr("~s~n", [Header]),
         initialize_ticker(),
-        ProgressHelpMsg = "Showing progress (-h progress, for details)~n",
-        ?log(self(), ?linfo, ProgressHelpMsg, []),
+        ?llog(?linfo, "Showing progress ('-h progress', for details)~n"),
         Self = self(),
         spawn_link(fun() -> ticker(Self) end)
     end,
   case Output =:= disable of
     true ->
-      Msg = "No output report will be generated~n",
-      ?log(self(), ?lwarning, Msg, []);
+      ?llog(?lwarning, "No output report will be generated~n");
     false ->
-      ?log(self(), ?linfo, "Writing results in ~s~n", [OutputName])
+      ?llog(?linfo, "Writing results in ~s~n", [OutputName])
   end,
   case GraphData =:= disable of
     true ->
       ok;
     false ->
       {_, GraphName} = Graph,
-      ?log(self(), ?linfo, "Writing graph in ~s~n", [GraphName])
+      ?llog(?linfo, "Writing graph in ~s~n", [GraphName])
   end,
   PrintableOptions =
     delete_props(
@@ -280,7 +280,7 @@ loop(Message,
         "A lot of events in this test are racing. You can see such pairs"
         " by using '--show_races' true. You may want to consider reducing some"
         " parameters in your test (e.g. number of processes or events).~n",
-      ?log(self(), ?ltip, ManyMsg, []);
+      ?llog(?ltip, ManyMsg);
     false -> ok
   end,
   case Errors =:= 10 of
@@ -290,7 +290,7 @@ loop(Message,
         " This can make later debugging difficult, as the generated report will"
         " include too much info. Consider refactoring your code, or using the"
         " appropriate options to filter out irrelevant errors.~n",
-      ?log(self(), ?ltip, ErrorsMsg, []);
+      ?llog(?ltip, ErrorsMsg);
     false -> ok
   end,
   loop(Message, State#logger_state{emit_logger_tips = false});
