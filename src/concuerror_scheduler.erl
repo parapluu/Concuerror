@@ -65,7 +65,9 @@
 -type message_event_queue() :: queue().
 -else.
 -type vector_clock()        :: #{actor() => index()}.
--type clock_map()           :: #{actor() => vector_clock()}.
+-type clock_map()           :: #{actor() => vector_clock(),
+                                 state => vector_clock() | 'independent'
+                                }.
 -type message_event_queue() :: queue:queue(#message_event{}).
 -endif.
 
