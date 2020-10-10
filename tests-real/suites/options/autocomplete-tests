@@ -21,9 +21,6 @@ fi
 testing "Long options in sync with bash completion"
 autocomplete_test autocomplete_long
 
-testing "Long options by default"
-autocomplete_test autocomplete_none
-
 testing "Short options in sync with bash completion"
 autocomplete_test autocomplete_short
 
