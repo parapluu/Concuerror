@@ -1,12 +1,15 @@
 [![Travis][travis badge]][travis]
 [![Codecov][codecov badge]][codecov]
-[![Erlang Versions][erlang versions badge]][travis]
 
 # Concuerror
 
 Concuerror is a stateless model checking tool for Erlang programs. It can be used to systematically test programs for concurrency errors, detect and report errors that only occur on few, specific schedulings or **verify** their absence.
 
 [Visit the website][website] for documentation, examples, tutorials, publications, and many more!
+
+## Supported OTP Releases
+
+[![Erlang Versions][erlang versions badge]][travis]
 
 ## How to build
 
@@ -54,5 +57,5 @@ Details can be found in the [LICENSE][license] file.
 
 <!-- Badges -->
 [codecov badge]: https://codecov.io/gh/parapluu/Concuerror/branch/master/graph/badge.svg
-[erlang versions badge]: https://img.shields.io/badge/erlang-R16B03%20to%2022.3-blue.svg
+[erlang versions badge]: https://img.shields.io/badge/erlang-20.3%20to%2023.0-blue.svg
 [travis badge]: https://travis-ci.org/parapluu/Concuerror.svg?branch=master

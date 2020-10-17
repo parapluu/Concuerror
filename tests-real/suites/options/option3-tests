@@ -4,6 +4,8 @@
 
 print_blue "$0"
 
+rm -f foo.beam
+
 testing "Help for progress"
 concuerror_console -h progress
 consolehas "Progress bar item explanations"
@@ -25,7 +27,7 @@ concuerror_console -vvvv -f src/foo.erl -pa .. src
 print_ok
 testing "... and console does not have \"Warning\""
 if grep -q "Warning" $Console; then
-    exit 1
+    false
 fi
 good
 
@@ -53,7 +55,7 @@ testing "... and output file doesn't exist."
 if [ ! -f "$Out" ]; then
     good
 else
-    exit 1
+    false
 fi
 
 testing "Total silence"
@@ -64,13 +66,13 @@ testing "... and output file doesn't exist"
 if [ ! -f "$Out" ]; then
     print_ok
 else
-    exit 1
+    false
 fi
 testing "... and console is empty"
 if [ ! -f "$Console" ]; then
     good
 else
-    exit 1
+    false
 fi
 
 testing "Nonexistent input file"
@@ -82,21 +84,18 @@ concuerror_console_fail -f src/bad.erl > /dev/null
 consolehas "Error: could not compile src/bad.erl (try to add the .beam file instead)"
 
 testing "BEAM input file"
-rm -f foo.beam
 erlc src/foo.erl
 concuerror_console -f foo.beam
 good
 rm foo.beam
 
 testing "Bad BEAM input file"
-rm -f foo.beam
 cp src/foo.erl foo.beam
 concuerror_console_fail -f foo.beam
 consolehas "Error:"
 rm foo.beam
 
 testing "Warn about shadowing"
-rm -f foo.beam
 erlc src/foo.erl
 concuerror_console -f src/foo.erl
 consolehas "Warning: File src/foo.erl shadows ./foo.beam (found in path)"
@@ -111,7 +110,7 @@ concuerror_console -vvvv -f src/foo.erl
 print_ok
 testing "... and console does not have \"Parsing\""
 if grep -q "Parsing" $Console; then
-    exit 1
+    false
 fi
 good
 

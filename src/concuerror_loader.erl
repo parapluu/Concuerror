@@ -148,27 +148,29 @@ check_shadow(File, Module) ->
   end.
 
 load_binary(Module, Filename, Beam, Instrumented) ->
-  Core = get_core(Beam),
-  {InstrumentedCore, Warnings} =
+  Abstract = get_abstract(Beam),
+  {InstrumentedAbstract, Warnings} =
     case ets:lookup(Instrumented, Module) =:= [] of
       true ->
         ets:insert(Instrumented, {Module, concuerror_instrumented}),
-        concuerror_instrumenter:instrument(Module, Core, Instrumented);
+        concuerror_instrumenter:instrument(Module, Abstract, Instrumented);
       false ->
-        {Core, []}
+        {Abstract, []}
     end,
+  %% io:format("~p~n~p~n", [Abstract, InstrumentedAbstract]),
+  %% exit(1),
   {ok, _, NewBinary} =
-    compile:forms(InstrumentedCore, [from_core, report_errors, binary]),
+    compile:forms(InstrumentedAbstract, [report_errors, binary]),
   {module, Module} = code:load_binary(Module, Filename, NewBinary),
   {ok, Warnings}.
 
-get_core(Beam) ->
+get_abstract(Beam) ->
   {ok, {Module, [{abstract_code, ChunkInfo}]}} =
     beam_lib:chunks(Beam, [abstract_code]),
   case ChunkInfo of
     {_, Chunk} ->
-      {ok, Module, Core} = compile:forms(Chunk, [binary, to_core0]),
-      Core;
+      {ok, _, Abs} = compile:forms(Chunk, [binary, to_exp]),
+      Abs;
     no_abstract_code ->
       {ok, {Module, [{compile_info, CompileInfo}]}} =
         beam_lib:chunks(Beam, [compile_info]),
@@ -179,7 +181,7 @@ get_core(Beam) ->
             lists:member(element(1, Option), [d, i, parse_transform])
         end,
       CleanOptions = lists:filter(Filter, CompileOptions),
-      Options = [debug_info, report_errors, binary, to_core0|CleanOptions],
-      {ok, Module, Core} = compile:file(File, Options),
-      Core
+      Options = [debug_info, report_errors, binary, to_exp|CleanOptions],
+      {ok, _, Abstract} = compile:file(File, Options),
+      Abstract
   end.

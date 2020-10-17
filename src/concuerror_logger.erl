@@ -37,31 +37,15 @@
 
 %%------------------------------------------------------------------------------
 
--ifdef(BEFORE_OTP_17).
--type unique_ids() :: set().
--else.
 -type unique_ids() :: sets:set(integer()).
--endif.
 
 %%------------------------------------------------------------------------------
-
--ifdef(BEFORE_OTP_18).
-
--type timestamp() :: erlang:timestamp().
-timestamp() ->
-  erlang:now().
-timediff(After, Before) ->
-  timer:now_diff(After, Before) / 1000000.
-
--else.
 
 -type timestamp() :: integer().
 timestamp() ->
   erlang:monotonic_time(milli_seconds).
 timediff(After, Before) ->
   (After - Before) / 1000.
-
--endif.
 
 %%------------------------------------------------------------------------------
 

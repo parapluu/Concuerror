@@ -1,3 +1,5 @@
+#!/bin/bash
+
 TOP_DIR=${TOP_DIR:-$(pwd)/../../..}
 CONCUERROR=${CONCUERROR:-$TOP_DIR/bin/concuerror}
 CONCUERROR_BEAM=${CONCUERROR_BEAM:-$TOP_DIR/_build/default/lib/concuerror/ebin}

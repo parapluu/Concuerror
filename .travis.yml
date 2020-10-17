@@ -1,8 +1,6 @@
 os: linux
 
-# temporarily, so that we can test with OTP versions prior to 19.x
-# without a dist: line, default in travis is xenial (Ubuntu 16.04)
-dist: trusty
+dist: xenial
 
 language: erlang
 
@@ -33,7 +31,7 @@ jobs:
   # See the warning printed by the script to understand why this test
   # has a separate otp_release specification.
   - env: TEST=".travis/travis_has_latest_otp_version"
-    otp_release: 23.0.2
+    otp_release: 23.1
     stage: basic
 
   # Check dialyzer
@@ -52,11 +50,6 @@ jobs:
   - env: TEST="make -C doc test"
     stage: basic
 
-  # Minimal support for R16B03-1
-  - env: TEST="make tests-real"
-    otp_release: R16B03-1
-    stage: test
-
   # Test website
   - env: TEST="make -C docs test"
     stage: website
@@ -72,8 +65,9 @@ jobs:
 env:
 
   # FLAG is used by Codecov reporter (.travis/after_success)
-  - TEST=".travis/maybe_cover make tests" FLAG="tests"
-  - TEST=".travis/maybe_cover make tests-real" FLAG="tests_real"
+  - TEST=".travis/run make tests-1" FLAG="tests-1"
+  - TEST=".travis/run make tests-2" FLAG="tests-2"
+  - TEST=".travis/run make tests-real" FLAG="tests_real"
 
 otp_release:
 
@@ -83,19 +77,21 @@ otp_release:
   # README.md and the argument given to generate_version_hrl in
   # rebar.config
 
-  - 22.3
+  - 23.0
 
   # Last minor version of older OTP releases
 
+  - 22.3
   - 21.3
   - 20.3
-  - 19.3
-  - 18.3
-  - 17.5
-  # R16B03-1 is minimally supported (see matrix section)
 
 
 # Travis build steps configuration
+
+addons:
+  apt:
+    packages:
+    - moreutils
 
 cache:
   timeout: 5

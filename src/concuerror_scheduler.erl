@@ -60,16 +60,11 @@
 
 -type interleaving_id() :: pos_integer().
 
--ifdef(BEFORE_OTP_17).
--type clock_map()           :: dict().
--type message_event_queue() :: queue().
--else.
 -type vector_clock()        :: #{actor() => index()}.
 -type clock_map()           :: #{actor() => vector_clock(),
                                  state => vector_clock() | 'independent'
                                 }.
 -type message_event_queue() :: queue:queue(#message_event{}).
--endif.
 
 -record(backtrack_entry, {
           conservative = false :: boolean(),
@@ -1768,58 +1763,6 @@ get_next_event_backend(#event{actor = Pid} = Event, State) when is_pid(Pid) ->
 %%% Helper functions
 %%%----------------------------------------------------------------------
 
--ifdef(BEFORE_OTP_17).
-
-empty_map() ->
-  dict:new().
-
-map_store(K, V, Map) ->
-  dict:store(K, V, Map).
-
-map_find(K, Map) ->
-  dict:find(K, Map).
-
-is_empty_map(Map) ->
-  dict:size(Map) =:= 0.
-
-lookup_clock(P, ClockMap) ->
-  case dict:find(P, ClockMap) of
-    {ok, Clock} -> Clock;
-    error -> clock_new()
-  end.
-
-clock_new() ->
-  orddict:new().
-
-clock_store(_, 0, VectorClock) ->
-  VectorClock;
-clock_store(Actor, Index, VectorClock) ->
-  orddict:store(Actor, Index, VectorClock).
-
-lookup_clock_value(Actor, VectorClock) ->
-  case orddict:find(Actor, VectorClock) of
-    {ok, Value} -> Value;
-    error -> 0
-  end.
-
-max_cv(D1, D2) ->
-  Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
-  orddict:merge(Merger, D1, D2).
-
-find_latest_hb_index(ActorClock, StateClock) ->
-  %% This is the max index that is in the Actor clock but not in the
-  %% corresponding state clock.
-  Fold =
-    fun(K, V, Next) ->
-        case orddict:find(K, StateClock) =:= {ok, V} of
-          true -> Next;
-          false -> max(V, Next)
-        end
-    end,
-  orddict:fold(Fold, -1, ActorClock).
-
--else.
-
 empty_map() ->
   #{}.
 
@@ -1864,8 +1807,6 @@ find_latest_hb_index(ActorClock, StateClock) ->
         end
     end,
   maps:fold(Fold, -1, ActorClock).
-
--endif.
 
 next_bound(SchedulingBoundType, Done, PreviousActor, Bound) ->
   case SchedulingBoundType of
