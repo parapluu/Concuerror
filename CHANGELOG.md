@@ -11,8 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - bash_completion (#308)
 - log_all option (#320)
+- support for OTP 23.0 (#311)
 
 ### Removed
+- support for OTP 16, OTP 17, OTP 18, and OTP 19
 
 ### Changed
 - handling of demonitors (#281)

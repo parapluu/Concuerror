@@ -2003,17 +2003,8 @@ get_logs() ->
     Whats -> lists:reverse(Whats)
   end.
 
--ifdef(BEFORE_OTP_20).
-
-lowercase(String) ->
-  string:to_lower(String).
-
--else.
-
 lowercase(String) ->
   string:lowercase(String).
-
--endif.
 
 to_stderr(Format) ->
   to_stderr(Format, []).

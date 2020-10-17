@@ -2007,17 +2007,8 @@ link_monitor_handlers(Handler, LinksOrMonitors) ->
 
 %%------------------------------------------------------------------------------
 
--ifdef(BEFORE_OTP_20).
-
-is_valid_ets_id(NameOrTid) ->
-  is_atom(NameOrTid) orelse is_integer(NameOrTid).
-
--else.
-
 is_valid_ets_id(NameOrTid) ->
   is_atom(NameOrTid) orelse is_reference(NameOrTid).
-
--endif.
 
 -ifdef(BEFORE_OTP_21).
 

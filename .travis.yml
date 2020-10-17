@@ -1,6 +1,5 @@
 os: linux
 
-# without a dist: line, default in travis is xenial (Ubuntu 16.04)
 dist: xenial
 
 language: erlang
@@ -32,7 +31,7 @@ jobs:
   # See the warning printed by the script to understand why this test
   # has a separate otp_release specification.
   - env: TEST=".travis/travis_has_latest_otp_version"
-    otp_release: 23.0.2
+    otp_release: 23.1
     stage: basic
 
   # Check dialyzer
@@ -78,14 +77,13 @@ otp_release:
   # README.md and the argument given to generate_version_hrl in
   # rebar.config
 
-  - 23.0.2
+  - 23.0
 
   # Last minor version of older OTP releases
 
   - 22.3
   - 21.3
   - 20.3
-  - 19.3
 
 
 # Travis build steps configuration

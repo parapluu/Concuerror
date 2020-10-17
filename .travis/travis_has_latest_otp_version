@@ -5,7 +5,7 @@ DIR=$(dirname $(readlink -f $0))
 
 curl -sO https://raw.githubusercontent.com/kerl/kerl/master/kerl
 chmod a+x kerl
-LATEST=`./kerl update releases | tr ' ' '\n' | tail -n1`
+LATEST=`./kerl update releases | grep "^..\..$" | tail -n1`
 rm ./kerl
 
 set +x

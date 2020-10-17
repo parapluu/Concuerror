@@ -147,47 +147,6 @@ check_shadow(File, Module) ->
       [io_lib:format("File ~s shadows ~s (found in path)", [File, Default])]
   end.
 
--ifdef(BEFORE_OTP_23).
-
-load_binary(Module, Filename, Beam, Instrumented) ->
-  Core = get_core(Beam),
-  {InstrumentedCore, Warnings} =
-    case ets:lookup(Instrumented, Module) =:= [] of
-      true ->
-        ets:insert(Instrumented, {Module, concuerror_instrumented}),
-        concuerror_instrumenter_old:instrument(Module, Core, Instrumented);
-      false ->
-        {Core, []}
-    end,
-  {ok, _, NewBinary} =
-    compile:forms(InstrumentedCore, [from_core, report_errors, binary]),
-  {module, Module} = code:load_binary(Module, Filename, NewBinary),
-  {ok, Warnings}.
-
-get_core(Beam) ->
-  {ok, {Module, [{abstract_code, ChunkInfo}]}} =
-    beam_lib:chunks(Beam, [abstract_code]),
-  case ChunkInfo of
-    {_, Chunk} ->
-      {ok, Module, Core} = compile:forms(Chunk, [binary, to_core0]),
-      Core;
-    no_abstract_code ->
-      {ok, {Module, [{compile_info, CompileInfo}]}} =
-        beam_lib:chunks(Beam, [compile_info]),
-      {source, File} = proplists:lookup(source, CompileInfo),
-      {options, CompileOptions} = proplists:lookup(options, CompileInfo),
-      Filter =
-        fun(Option) ->
-            lists:member(element(1, Option), [d, i, parse_transform])
-        end,
-      CleanOptions = lists:filter(Filter, CompileOptions),
-      Options = [debug_info, report_errors, binary, to_core0|CleanOptions],
-      {ok, Module, Core} = compile:file(File, Options),
-      Core
-  end.
-
--else.
-
 load_binary(Module, Filename, Beam, Instrumented) ->
   Abstract = get_abstract(Beam),
   {InstrumentedAbstract, Warnings} =
@@ -226,5 +185,3 @@ get_abstract(Beam) ->
       {ok, _, Abstract} = compile:file(File, Options),
       Abstract
   end.
-
--endif.
