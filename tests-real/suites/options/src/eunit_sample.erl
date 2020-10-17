@@ -7,7 +7,7 @@
 -export([concuerror_entry_point_tests/0]).
 
 concuerror_tests() ->
-  eunit:test(
+  eunit_test(
     [{test, ?MODULE, T} ||
       T <-
         [ foo_concuerror_test
@@ -18,7 +18,7 @@ concuerror_tests() ->
    ).
 
 concuerror_entry_point_tests() ->
-  eunit:test(
+  eunit_test(
     [{test, ?MODULE, T} ||
       T <-
         [ foo_ep_concuerror_test
@@ -26,6 +26,9 @@ concuerror_entry_point_tests() ->
         ]
     ]
    ).
+
+eunit_test(Tests) ->
+  eunit:test({timeout, 10, Tests}).
 
 %%==============================================================================
 
