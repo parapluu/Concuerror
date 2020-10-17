@@ -65,9 +65,9 @@ jobs:
 env:
 
   # FLAG is used by Codecov reporter (.travis/after_success)
-  - TEST=".travis/maybe_cover make tests-1" FLAG="tests-1"
-  - TEST=".travis/maybe_cover make tests-2" FLAG="tests-2"
-  - TEST=".travis/maybe_cover make tests-real" FLAG="tests_real"
+  - TEST=".travis/run make tests-1" FLAG="tests-1"
+  - TEST=".travis/run make tests-2" FLAG="tests-2"
+  - TEST=".travis/run make tests-real" FLAG="tests_real"
 
 otp_release:
 
@@ -87,6 +87,11 @@ otp_release:
 
 
 # Travis build steps configuration
+
+addons:
+  apt:
+    packages:
+    - moreutils
 
 cache:
   timeout: 5
