@@ -52,11 +52,11 @@ jobs:
 
   # Test website
   - env: TEST="make -C docs test"
-    stage: website
+    stage: basic
 
   # Test external links separately, cause they can break unexpectedly
   - env: TEST="make -C docs test-external-travis"
-    stage: website
+    stage: basic
     addons:
       apt:
         packages:
@@ -94,9 +94,10 @@ addons:
     - moreutils
 
 cache:
-  timeout: 5
+  timeout: 30
   directories:
   - "$HOME/.cache/rebar3"
+  - "$HOME/.rvm/"
 
 before_script:
   - .travis/before_script

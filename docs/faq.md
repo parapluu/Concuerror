@@ -3,7 +3,6 @@ layout: page
 permalink: /faq/index.html
 title: "Concuerror's FAQ"
 description: "Concuerror's Frequently Asked Questions"
-updated: 2017-10-16
 ---
 
 # Frequently Asked Questions

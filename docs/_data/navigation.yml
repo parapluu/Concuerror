@@ -1,0 +1,21 @@
+- title: <i class="fas fa-home"></i> Home
+  url: /
+- title: <i class="fas fa-newspaper"></i> News
+  url: /news
+- title: <i class="fas fa-download"></i> Download
+  url: /download
+- title: <i class="fas fa-question-circle"></i> FAQ
+  url: /faq
+- title: <i class="fas fa-info-circle"></i> Tutorials
+  url: /tutorials
+- title: <i class="fas fa-plug"></i> API (Hexdocs)
+  url: https://hexdocs.pm/concuerror
+- title: <i class="fas fa-book"></i> Publications
+  url: /publications
+- title: <i class="fas fa-envelope"></i> Contact
+  url: /contact
+  icon: fas fa-envelope
+- title: <i class="fas fa-search"></i> Search
+  url: /search
+- title: <i class="fab fa-github"></i> Github
+  url: https://github.com/parapluu/Concuerror

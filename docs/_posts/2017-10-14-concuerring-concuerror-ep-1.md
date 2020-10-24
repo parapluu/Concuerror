@@ -1,6 +1,8 @@
 ---
 layout: post
 title: "Concuerring Concuerror"
+category: news
+redirect_from: /concuerring-concuerror-ep-1.html
 ---
 
 ### ... and some useful lessons for testing complex applications.
@@ -57,7 +59,7 @@ The stage was set for a (very nerdy) action film!
 
 One of Concuerror's most useful features is its ability to find source
 code, instrument it, recompile and reload it on an Erlang VM
-[in a totally automatic and seamless way](/#-is-it-really-that-simple).
+[in a totally automatic and seamless way](/tutorials/basic-tutorial.html/#-is-it-really-that-simple).
 Doing this as part of a test, however, would require handling files
 and this is a very hard task in stateless model checking. In Erlang,
 this could entail unloads, resets and other similar horrors.

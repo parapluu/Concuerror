@@ -1,0 +1,10 @@
+<header class="masthead">
+  <div class="wrap">
+    {% if site.logo %}
+      <a href="{{ '/' | relative_url }}" class="site-logo" rel="home" title="{{ site.title }}">
+        <img src="{{ site.logo | relative_url }}" class="animated fadeInDown" alt="{{ site.title }}">
+      </a>
+    {% endif %}
+    {% assign page_image = page.image.path | default: page.image %}
+  </div>
+</header><!-- /.masthead -->
