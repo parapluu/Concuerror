@@ -1,12 +1,14 @@
 ---
 layout: post
 title: "Talk at Functional Conf 2018: Video and Slides"
-# updated:
+category: news
+redirect_from: /functional-conf-2018.html
 ---
 
 Stavros Aronis presented a talk on Concuerror at Functional Conf 2018.
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/xAoIn_3b_n8" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+{% assign yt-link = "xAoIn_3b_n8" %}
+{% include yt.html %}
 
 You can find more info [here](https://confengine.com/functional-conf-2018/proposal/8528/conquering-race-conditions-in-erlang-programs-with-concuerror).
 

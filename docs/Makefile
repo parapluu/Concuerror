@@ -7,16 +7,16 @@ HTML_PROOOFER_OPTS = \
 	--check-opengraph \
 	--disable-external
 
-Gemfile.lock: Gemfile
+.PHONY: jekyll
+jekyll: Gemfile
 	bundle install
-	touch $@
 
 .PHONY: build
-build: Gemfile.lock
+build: jekyll
 	jekyll build --config _config.yml,_config_local.yml
 
 .PHONY: serve
-serve: Gemfile.lock
+serve: jekyll
 	jekyll serve --config _config.yml,_config_local.yml
 
 .PHONY: test

@@ -1,0 +1,12 @@
+stavros:
+  name: Stavros Aronis
+  picture: http://www.gravatar.com/avatar/5730e85681def67cb10151437519f39d?s=200
+  email: aronisstav@gmail.com
+  twitter: "@Vahnatai"
+  links:
+    - title: Twitter
+      url: https://twitter.com/Vahnatai
+      icon: fab fa-twitter-square
+    - title: Github
+      url: https://github.com/aronisstav
+      icon: fab fa-github
