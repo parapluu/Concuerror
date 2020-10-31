@@ -31,6 +31,10 @@ The preferred way to start concuerror is via the `bin/concuerror` escript.
 
 [Yes!][changelog]
 
+## How to prepare for a release?
+
+[Read this][release]
+
 ## Copyright and License
 
 Copyright (c) 2014-2020,
@@ -52,6 +56,7 @@ Details can be found in the [LICENSE][license] file.
 [changelog]: ./CHANGELOG.md
 [codecov]: https://codecov.io/gh/parapluu/Concuerror
 [license]: ./LICENSE
+[release]: ./resources/how-to-release.md
 [travis]: https://travis-ci.org/parapluu/Concuerror
 [website]: http://parapluu.github.io/Concuerror
 
