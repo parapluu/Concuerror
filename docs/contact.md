@@ -3,6 +3,7 @@ layout: page
 permalink: /contact/index.html
 title: "Contact"
 description: "Information about contacting Concuerror's developers"
+updated: 2018-02-22
 ---
 
 Here is information about how to contact the developers.

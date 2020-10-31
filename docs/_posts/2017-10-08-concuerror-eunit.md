@@ -2,6 +2,7 @@
 layout: post
 title: "How to run Concuerror with EUnit"
 category: tutorials
+updated: 2018-03-09
 ---
 
 Here are some guidelines on how to use Concuerror as part of an EUnit

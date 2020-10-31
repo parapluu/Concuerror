@@ -1,3 +1,4 @@
+# Base config
 title: "Concuerror"
 description: "Concuerror is a model checking tool for debugging, testing and verifying concurrent Erlang programs."
 logo: "/images/site-logo.png"
@@ -9,11 +10,11 @@ author: stavros
 # Analytics and webmaster tools stuff goes here
 google_analytics: "UA-43607387-1"
 
+# Theme
 remote_theme: "mmistakes/so-simple-theme@afc3a8b"
 skin: "/assets/css/skins/default.css"
 locale: en-US
 date_format: "%B %-d, %Y"
-
 
 # Front Matter Defaults
 defaults:
@@ -28,8 +29,13 @@ defaults:
 read_time: true
 words_per_minute: 50
 
+# Search
 search_full_content: true
 
+# Taxonomy pages
+category_archive_path: /
+
+# Fonts
 google_fonts:
   - name: "Source Sans Pro"
     weights: "400,400i,700,700i"
@@ -58,6 +64,7 @@ liquid:
 # https://github.com/mojombo/jekyll/wiki/Permalinks
 permalink:   /:categories/:title:output_ext
 
+# Markdown
 markdown: kramdown
 kramdown:
   auto_ids: true
@@ -66,19 +73,22 @@ kramdown:
   syntax_highlighter: rouge
   toc_levels: 1..6
 
+# Plugins
 plugins:
   - jekyll-feed
   - jekyll-gist
-  - jekyll-last-modified-at
   - jekyll-redirect-from
   - jekyll-seo-tag
 
+# Feed
 feed:
   path: "feed.xml"
 
+# Redirects
 redirect_from:
   json: false
 
+# Include/exclude
 include: [".htaccess"]
 exclude: ["CNAME", "Gemfile", "Gemfile.lock", "README.md", "Makefile"]
 

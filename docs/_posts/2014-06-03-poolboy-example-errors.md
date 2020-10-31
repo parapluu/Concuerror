@@ -2,6 +2,7 @@
 layout: post
 title: "Reading Concuerror's reports (Testing Poolboy, Part 2)"
 category: tutorials
+updated: 2018-03-21
 ---
 
 We continue our tutorial on Concuerror, explaining the errors it can detect and

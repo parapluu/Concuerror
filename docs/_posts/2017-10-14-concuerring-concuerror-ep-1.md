@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Concuerring Concuerror"
-category: news
+category: tutorials
 redirect_from: /concuerring-concuerror-ep-1.html
 ---
 

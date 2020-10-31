@@ -3,6 +3,7 @@ layout: page
 permalink: /publications/index.html
 title: Publications
 description: "Scientific publications regarding and involving Concuerror."
+updated: 2020-10-03
 ---
 
 This is a list of publications related to Concuerror. Most titles are

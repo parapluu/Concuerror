@@ -2,6 +2,7 @@
 layout: post
 title: "Concuerror basics (Testing Poolboy, Part 1)"
 category: tutorials
+updated: 2018-03-21
 ---
 
 In this tutorial we will explain some basic use of Concuerror
