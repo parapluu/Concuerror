@@ -1,0 +1,19 @@
+name: Website
+
+on:
+  push:
+    branches: master
+    paths: docs/**
+  pull_request:
+    branches: master
+    paths: docs/**
+
+jobs:
+  website-tests:
+    name: Run website tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run tests
+        run: make -C docs test
