@@ -1,6 +1,6 @@
 ---
 layout: page
-updated: 2020-10-25
+updated: 2020-11-07
 description: "Homepage of the Concuerror, a tool for debugging, testing and verifying concurrent Erlang programs."
 ---
 
