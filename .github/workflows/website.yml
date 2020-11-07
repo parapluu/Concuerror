@@ -10,10 +10,12 @@ on:
 
 jobs:
   website-tests:
-    name: Run website tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Run tests
-        run: make -C docs test
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+          bundler-cache: true
+          working-directory: docs
+      - run: make -C docs test

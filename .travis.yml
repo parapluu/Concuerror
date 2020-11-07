@@ -50,10 +50,6 @@ jobs:
   - env: TEST="make -C doc test"
     stage: basic
 
-  # Test website
-  - env: TEST="make -C docs test"
-    stage: basic
-
   # Test external links separately, cause they can break unexpectedly
   - env: TEST="make -C docs test-external-travis"
     stage: basic
