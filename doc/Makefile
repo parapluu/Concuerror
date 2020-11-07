@@ -11,7 +11,7 @@ build:
 
 .PHONY: test
 test: build Gemfile.lock
-	htmlproofer . --disable-external
+	bundle exec htmlproofer . --disable-external --file_ignore "/vendor*/" --log_level debug
 
 .PHONY: clean
 clean:
