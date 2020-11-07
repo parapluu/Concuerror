@@ -3,13 +3,19 @@ name: Website
 on:
   push:
     branches: master
-    paths: docs/**
+    paths: 'docs/**'
   pull_request:
     branches: master
-    paths: docs/**
+    paths: 'docs/**'
 
 jobs:
-  website-tests:
+  test:
+    strategy:
+      matrix:
+        target:
+          - test
+          - test-external
+    name: ${{ matrix.target }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -18,4 +24,4 @@ jobs:
           ruby-version: 2.7
           bundler-cache: true
           working-directory: docs
-      - run: make -C docs test
+      - run: make -C docs ${{ matrix.target }}

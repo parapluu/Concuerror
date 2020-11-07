@@ -3,6 +3,7 @@ default: build
 
 JEKYLL = bundle exec jekyll
 PROOFER = bundle exec htmlproofer ./_site
+CONFIG = --config _config.yml,_config_local.yml
 
 .PHONY: jekyll
 jekyll: Gemfile
@@ -10,11 +11,11 @@ jekyll: Gemfile
 
 .PHONY: build
 build: jekyll
-	$(JEKYLL) build --config _config.yml,_config_local.yml
+	$(JEKYLL) build $(CONFIG)
 
 .PHONY: serve
 serve: jekyll
-	$(JEKYLL) serve --config _config.yml,_config_local.yml
+	$(JEKYLL) serve $(CONFIG)
 
 .PHONY: test
 test: build
@@ -25,10 +26,4 @@ test: build
 
 .PHONY: test-external
 test-external: build
-	$(PROOFER) --external-only
-
-.PHONY: test-external-travis
-test-external-travis: build
-	$(PROOFER) --external-only \
-		--url-ignore '/http://vimeo.com*/,/https://vimeo.com*/' \
-		--http-status-ignore "302"
+	$(PROOFER) --external-only --http-status-ignore "302"
