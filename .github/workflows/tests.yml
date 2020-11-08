@@ -71,12 +71,12 @@ jobs:
     name: OTP ${{ matrix.otp }} - ${{ matrix.target }}
     steps:
       - uses: actions/checkout@v2
-      - run: .github/scripts/codecov_setup
+      - run: .github/scripts/covertool_setup
       - run: make ${{ matrix.target }}
         env:
           CONCUERROR: ${{ github.workspace }}/priv/concuerror
           CONCUERROR_COVER: ${{ github.workspace}}/cover/data
-      - run: .github/scripts/codecov_combine
+      - run: .github/scripts/covertool_combine
       - uses: codecov/codecov-action@v1
         with:
           file: cover/coverage.xml
