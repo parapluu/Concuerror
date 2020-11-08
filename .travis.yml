@@ -33,10 +33,6 @@ jobs:
     otp_release: 23.1
     stage: basic
 
-  # FLAG is used by Codecov reporter (.travis/after_success)
-  - env: TEST="make tests-unit" FLAG="unit_tests"
-    stage: basic
-
 env:
 
   # FLAG is used by Codecov reporter (.travis/after_success)

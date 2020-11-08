@@ -1,0 +1,22 @@
+name: Tests
+
+on:
+  push:
+    branches: master
+  pull_request:
+    branches: master
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    container: erlang:latest
+    name: Unit
+    steps:
+      - uses: actions/checkout@v2
+      - run: make tests-unit
+      - run: rebar3 covertool generate
+      - uses: codecov/codecov-action@v1
+        with:
+          file: ${{ github.workspace }}/_build/test/covertool/concuerror.covertool.xml
+          flags: unit_tests
+          fail_ci_if_error: true
