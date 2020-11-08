@@ -90,5 +90,5 @@ redirect_from:
 
 # Include/exclude
 include: [".htaccess"]
-exclude: ["CNAME", "Gemfile", "Gemfile.lock", "README.md", "Makefile"]
+exclude: ["CNAME", "Gemfile", "Gemfile.lock", "Makefile", "README.md", "vendor"]
 

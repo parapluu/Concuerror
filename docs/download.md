@@ -28,7 +28,7 @@ building tools that support Hex.pm dependencies.
 
 See [Supported OTP
 Releases](https://github.com/parapluu/Concuerror#supported-otp-releases).
-We use [Travis](https://travis-ci.org/parapluu/Concuerror) to test:
+We use [Github Actions](https://github.com/parapluu/Concuerror/actions) to test:
 
 * The *two last* minor versions of the 'current' major Erlang/OTP release
 * The *last* minor version of recent older major releases
