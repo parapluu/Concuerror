@@ -12,12 +12,12 @@ env:
 jobs:
   basic:
     runs-on: ubuntu-latest
-    container: erlang:latest
     strategy:
       matrix:
         target:
           - lint
           - dialyzer
+    container: erlang:latest
     name: ${{ matrix.target }}
     steps:
       - uses: actions/checkout@v2
@@ -40,23 +40,10 @@ jobs:
           working-directory: doc
       - uses: actions/setup-elixir@v1
         with:
-          otp-version: 23
+          otp-version: '23.0'
           elixir-version: master
       - run: make -C doc test
-  unit:
-    runs-on: ubuntu-latest
-    container: erlang:latest
-    name: Unit
-    steps:
-      - uses: actions/checkout@v2
-      - run: make tests-unit
-      - run: rebar3 covertool generate
-      - uses: codecov/codecov-action@v1
-        with:
-          file: ${{ github.workspace }}/_build/test/covertool/concuerror.covertool.xml
-          flags: unit_tests
-          fail_ci_if_error: true
-  test-latest:
+  tests-latest:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -64,39 +51,50 @@ jobs:
           # When a new major OTP release is enabled, also update the badge in
           # README.md and the argument given to generate_version_hrl in
           # rebar.config
-          - 23.0
+          - '23.0'
         target:
-          - tests-1
-          - tests-2
-          - tests-real
+          - 'tests-unit'
+          - 'tests-1'
+          - 'tests-2'
+          - 'tests-real'
     container: erlang:${{ matrix.otp }}
-    name: ${{ matrix.otp }} - ${{ matrix.target }}
+    name: OTP ${{ matrix.otp }} - ${{ matrix.target }}
     steps:
       - uses: actions/checkout@v2
-      - run: .github/scripts/codecov_setup
+      - if: matrix.target != 'tests-unit'
+        run: .github/scripts/covertool_setup
       - run: make ${{ matrix.target }}
         env:
           CONCUERROR: ${{ github.workspace }}/priv/concuerror
           CONCUERROR_COVER: ${{ github.workspace}}/cover/data
-      - run: .github/scripts/codecov_report
-        env:
-          FLAG: ${{ matrix.target }}
-  test-older:
+      - if: matrix.target == 'tests-unit'
+        run: |
+          rebar3 covertool generate
+          cp _build/test/covertool/concuerror.covertool.xml coverage.xml
+      - if: matrix.target != 'tests-unit'
+        run: |
+          .github/scripts/covertool_combine
+          cp cover/coverage.xml coverage.xml
+      - uses: codecov/codecov-action@v1
+        with:
+          file: coverage.xml
+          flags: ${{ matrix.target }}
+  tests-older:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         # Two latest minor versions of the most recent OTP release.
         # Last minor version of older OTP releases
         otp:
-          - 22
-          - 21
-          - 20
+          - '22'
+          - '21'
+          - '20'
         target:
-          - tests-1
-          - tests-2
-          - tests-real
+          - 'tests-1'
+          - 'tests-2'
+          - 'tests-real'
     container: erlang:${{ matrix.otp }}
-    name: ${{ matrix.otp }} - ${{ matrix.target }}
+    name: OTP ${{ matrix.otp }} - ${{ matrix.target }}
     steps:
       - uses: actions/checkout@v2
       - run: make ${{ matrix.target }}
