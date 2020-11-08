@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+make cover/data
+cd cover
+git clone https://github.com/covertool/covertool.git --branch 2.0.3
+cd covertool
+make compile

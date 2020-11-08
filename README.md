@@ -1,4 +1,4 @@
-[![Travis][travis badge]][travis]
+[![Tests][tests badge]][tests]
 [![Codecov][codecov badge]][codecov]
 
 # Concuerror
@@ -9,7 +9,7 @@ Concuerror is a stateless model checking tool for Erlang programs. It can be use
 
 ## Supported OTP Releases
 
-[![Erlang Versions][erlang versions badge]][travis]
+[![Erlang Versions][erlang versions badge]][tests]
 
 ## How to build
 
@@ -57,10 +57,10 @@ Details can be found in the [LICENSE][license] file.
 [codecov]: https://codecov.io/gh/parapluu/Concuerror
 [license]: ./LICENSE
 [release]: ./resources/how-to-release.md
-[travis]: https://travis-ci.org/parapluu/Concuerror
+[tests]: https://github.com/parapluu/Concuerror/actions
 [website]: http://parapluu.github.io/Concuerror
 
 <!-- Badges -->
 [codecov badge]: https://codecov.io/gh/parapluu/Concuerror/branch/master/graph/badge.svg
 [erlang versions badge]: https://img.shields.io/badge/erlang-20.3%20to%2023.0-blue.svg
-[travis badge]: https://travis-ci.org/parapluu/Concuerror.svg?branch=master
+[tests badge]: https://github.com/parapluu/Concuerror/workflows/Tests/badge.svg

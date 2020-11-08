@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-bash tests/thediff
-bash tests-long/thediff
