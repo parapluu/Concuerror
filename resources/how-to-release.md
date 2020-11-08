@@ -40,6 +40,10 @@ If no info shown:
 
 `git push parapluu ${RELEASE}`
 
+## Create release from tag
+
+Copy the most recent section of the CHANGELOG as description and leave title empty
+
 ## Add a new UNRELEASED section in CHANGELOG.md
 
 ```
