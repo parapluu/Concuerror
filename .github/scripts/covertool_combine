@@ -6,3 +6,4 @@ cd cover
 export COVER_COMBINE=all.coverdata
 ./cover-report data || true
 covertool/covertool -cover $COVER_COMBINE -ebin $EBIN -appname concuerror
+cd ..
