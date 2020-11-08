@@ -6,4 +6,3 @@ cd cover
 export COVER_COMBINE=all.coverdata
 ./cover-report data || true
 covertool/covertool -cover $COVER_COMBINE -ebin $EBIN -appname concuerror
-bash <(curl -s https://codecov.io/bash) -c -F "$FLAG"

@@ -12,12 +12,12 @@ env:
 jobs:
   basic:
     runs-on: ubuntu-latest
-    container: erlang:latest
     strategy:
       matrix:
         target:
           - lint
           - dialyzer
+    container: erlang:latest
     name: ${{ matrix.target }}
     steps:
       - uses: actions/checkout@v2
@@ -43,20 +43,18 @@ jobs:
           otp-version: 23
           elixir-version: master
       - run: make -C doc test
-  unit:
+  tests-unit:
     runs-on: ubuntu-latest
-    container: erlang:latest
-    name: Unit
+    container: erlang:23.0
     steps:
       - uses: actions/checkout@v2
       - run: make tests-unit
       - run: rebar3 covertool generate
       - uses: codecov/codecov-action@v1
         with:
-          file: ${{ github.workspace }}/_build/test/covertool/concuerror.covertool.xml
-          flags: unit_tests
-          fail_ci_if_error: true
-  test-latest:
+          file: _build/test/covertool/concuerror.covertool.xml
+          flags: tests-unit
+  tests-latest:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -64,13 +62,13 @@ jobs:
           # When a new major OTP release is enabled, also update the badge in
           # README.md and the argument given to generate_version_hrl in
           # rebar.config
-          - 23.0
+          - '23.0'
         target:
           - tests-1
           - tests-2
           - tests-real
     container: erlang:${{ matrix.otp }}
-    name: ${{ matrix.otp }} - ${{ matrix.target }}
+    name: OTP ${{ matrix.otp }} - ${{ matrix.target }}
     steps:
       - uses: actions/checkout@v2
       - run: .github/scripts/codecov_setup
@@ -78,10 +76,12 @@ jobs:
         env:
           CONCUERROR: ${{ github.workspace }}/priv/concuerror
           CONCUERROR_COVER: ${{ github.workspace}}/cover/data
-      - run: .github/scripts/codecov_report
-        env:
-          FLAG: ${{ matrix.target }}
-  test-older:
+      - run: .github/scripts/codecov_combine
+      - uses: codecov/codecov-action@v1
+        with:
+          file: cover/coverage.xml
+          flags: ${{ matrix.target }}
+  tests-older:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -96,7 +96,7 @@ jobs:
           - tests-2
           - tests-real
     container: erlang:${{ matrix.otp }}
-    name: ${{ matrix.otp }} - ${{ matrix.target }}
+    name: OTP ${{ matrix.otp }} - ${{ matrix.target }}
     steps:
       - uses: actions/checkout@v2
       - run: make ${{ matrix.target }}
