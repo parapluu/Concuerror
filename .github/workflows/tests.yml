@@ -42,6 +42,7 @@ jobs:
         with:
           otp-version: '23.0'
           elixir-version: master
+          experimental-otp: true
       - run: make -C doc test
   tests-latest:
     runs-on: ubuntu-latest
