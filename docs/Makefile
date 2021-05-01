@@ -7,7 +7,7 @@ CONFIG = --config _config.yml,_config_local.yml
 
 .PHONY: jekyll
 jekyll: Gemfile
-	bundle install
+	bundle install --path vendor/bundle
 
 .PHONY: build
 build: jekyll
