@@ -17,7 +17,7 @@ jobs:
         target:
           - lint
           - dialyzer
-    container: erlang:latest
+    container: erlang:23.0
     name: ${{ matrix.target }}
     steps:
       - uses: actions/checkout@v2
