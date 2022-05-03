@@ -15,7 +15,7 @@ poolboy/poolboy_tests_1.erl: | poolboy
 	rm -rf tmp
 
 poolboy/rebar: | poolboy
-	cd poolboy; wget https://github.com/rebar/rebar/wiki/rebar; chmod u+x rebar
+	cd poolboy; curl -O https://raw.githubusercontent.com/wiki/rebar/rebar/rebar; chmod u+x rebar
 
 poolboy:
 	git clone -q https://github.com/devinus/poolboy.git --branch 1.2.2
