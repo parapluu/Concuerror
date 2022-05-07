@@ -8,10 +8,10 @@ url: "https://concuerror.com"
 author: stavros
 
 # Analytics and webmaster tools stuff goes here
-google_analytics: "UA-43607387-1"
+google_analytics: "G-PJT79WHMGH"
 
 # Theme
-remote_theme: "mmistakes/so-simple-theme@afc3a8b"
+remote_theme: "aronisstav/so-simple-theme"
 skin: "/assets/css/skins/default.css"
 locale: en-US
 date_format: "%B %-d, %Y"

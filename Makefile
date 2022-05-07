@@ -20,7 +20,7 @@ MAKEFLAGS += --no-builtin-rules
 REBAR_URL="https://s3.amazonaws.com/rebar3/rebar3"
 
 ./$(REBAR):
-	wget $(REBAR_URL) && chmod +x rebar3
+	curl -o $@ $(REBAR_URL) && chmod +x $@
 
 ###-----------------------------------------------------------------------------
 ### Compile
