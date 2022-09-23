@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import re
@@ -44,7 +44,7 @@ def runTest(test):
     procS = []
     for scenario in pout:
         # scenario has the format of {<mod_name>,<func_name>,<preb>}\n
-        scen = scenario.strip("{}").split(",")
+        scen = scenario.decode('utf8').strip("{}").split(",")
         # And run the test
         p = Process(
             target=runScenario,
@@ -144,11 +144,11 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
             os.remove(rslt)
         except:
             pass
-        print "%s \033[01;32m    ok\033[00m" % (logline)
+        print("%s \033[01;32m    ok\033[00m" % (logline))
               
     else:
         total_failed.value += 1
-        print "%s \033[01;31mfailed\033[00m" % (logline)
+        print("%s \033[01;31mfailed\033[00m" % (logline))
     lock.release()
     sema.release()
 
@@ -192,10 +192,10 @@ if threads == "":
         threads = "1"
 
 # Print header
-print "Concuerror's Testsuite (THREADS=%d)\n" % int(threads)
-print "%-8s %-63s %s" % \
-      ("Suite", "Module, Test (' '=Module), Bound (' '=inf), DPOR (' '=optimal)", "Result")
-print "-------------------------------------------------------------------------------"
+print("Concuerror's Testsuite (THREADS=%d)\n" % int(threads))
+print("%-8s %-63s %s" % \
+      ("Suite", "Module, Test (' '=Module), Bound (' '=inf), DPOR (' '=optimal)", "Result"))
+print("-------------------------------------------------------------------------------")
 
 # Create share integers to count tests and
 # a lock to protect printings
@@ -218,10 +218,10 @@ for p in procT:
     p.join()
 
 # Print overview
-print "\nOVERALL SUMMARY for test run"
-print "  %d total tests, which contained" % len(tests)
-print "  %d scenarios, of which" % total_tests.value
-print "  %d caused unexpected failures!" % total_failed.value
+print("\nOVERALL SUMMARY for test run")
+print("  %d total tests, which contained" % len(tests))
+print("  %d scenarios, of which" % total_tests.value)
+print("  %d caused unexpected failures!" % total_failed.value)
 
 if total_failed.value != 0:
     exit(1)
