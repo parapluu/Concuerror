@@ -17,11 +17,11 @@ jobs:
         target:
           - lint
           - dialyzer
-    container: erlang:23.0
+    container: erlang:23
     name: ${{ matrix.target }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
         with:
           path: '~/.cache'
           key: ${{ runner.os }}-rebar-${{ matrix.target }}-${{ hashFiles(format('{0}{1}', github.workspace, '/rebar.config')) }}
@@ -32,7 +32,7 @@ jobs:
   doc:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7
@@ -40,17 +40,19 @@ jobs:
           working-directory: doc
       - uses: erlef/setup-beam@v1
         with:
-          otp-version: '23.0'
+          otp-version: '23'
       - run: make -C doc test
   tests-latest:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         otp:
+          # Two latest minor versions of the most recent OTP release,
+          # if supported.
           # When a new major OTP release is enabled, also update the badge in
           # README.md and the argument given to generate_version_hrl in
           # rebar.config
-          - '23.0'
+          - '23'
         target:
           - 'tests-unit'
           - 'tests-1'
@@ -59,7 +61,7 @@ jobs:
     container: erlang:${{ matrix.otp }}
     name: OTP ${{ matrix.otp }} - ${{ matrix.target }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - if: matrix.target != 'tests-unit'
         run: .github/scripts/covertool_setup
       - run: make ${{ matrix.target }}
@@ -74,7 +76,7 @@ jobs:
         run: |
           .github/scripts/covertool_combine
           cp cover/coverage.xml coverage.xml
-      - uses: codecov/codecov-action@v1
+      - uses: codecov/codecov-action@v3
         with:
           file: coverage.xml
           flags: ${{ matrix.target }}
@@ -82,7 +84,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # Two latest minor versions of the most recent OTP release.
         # Last minor version of older OTP releases
         otp:
           - '22'
@@ -95,5 +96,5 @@ jobs:
     container: erlang:${{ matrix.otp }}
     name: OTP ${{ matrix.otp }} - ${{ matrix.target }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: make ${{ matrix.target }}
