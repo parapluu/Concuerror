@@ -17,7 +17,7 @@ jobs:
         target:
           - lint
           - dialyzer
-    container: erlang:23.0
+    container: erlang:23
     name: ${{ matrix.target }}
     steps:
       - uses: actions/checkout@v2
@@ -40,17 +40,19 @@ jobs:
           working-directory: doc
       - uses: erlef/setup-beam@v1
         with:
-          otp-version: '23.0'
+          otp-version: '23'
       - run: make -C doc test
   tests-latest:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         otp:
+          # Two latest minor versions of the most recent OTP release,
+          # if supported.
           # When a new major OTP release is enabled, also update the badge in
           # README.md and the argument given to generate_version_hrl in
           # rebar.config
-          - '23.0'
+          - '23'
         target:
           - 'tests-unit'
           - 'tests-1'
@@ -82,7 +84,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # Two latest minor versions of the most recent OTP release.
         # Last minor version of older OTP releases
         otp:
           - '22'

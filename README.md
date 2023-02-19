@@ -62,5 +62,5 @@ Details can be found in the [LICENSE][license] file.
 
 <!-- Badges -->
 [codecov badge]: https://codecov.io/gh/parapluu/Concuerror/branch/master/graph/badge.svg
-[erlang versions badge]: https://img.shields.io/badge/erlang-20.3%20to%2023.0-blue.svg
+[erlang versions badge]: https://img.shields.io/badge/erlang-20.3%20to%2023.3-blue.svg
 [tests badge]: https://github.com/parapluu/Concuerror/workflows/Tests/badge.svg
