@@ -20,8 +20,8 @@ jobs:
     container: erlang:23
     name: ${{ matrix.target }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
         with:
           path: '~/.cache'
           key: ${{ runner.os }}-rebar-${{ matrix.target }}-${{ hashFiles(format('{0}{1}', github.workspace, '/rebar.config')) }}
@@ -32,7 +32,7 @@ jobs:
   doc:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7
@@ -61,7 +61,7 @@ jobs:
     container: erlang:${{ matrix.otp }}
     name: OTP ${{ matrix.otp }} - ${{ matrix.target }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - if: matrix.target != 'tests-unit'
         run: .github/scripts/covertool_setup
       - run: make ${{ matrix.target }}
@@ -96,5 +96,5 @@ jobs:
     container: erlang:${{ matrix.otp }}
     name: OTP ${{ matrix.otp }} - ${{ matrix.target }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: make ${{ matrix.target }}
