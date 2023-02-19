@@ -1,4 +1,4 @@
-# Concuerror's Page
+# Concuerror's Website
 
 Based on the [**So Simple Theme**](http://mmistakes.github.io)
 
