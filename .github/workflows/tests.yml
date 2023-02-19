@@ -30,7 +30,7 @@ jobs:
             ${{ runner.os }}-rebar-
       - run: make ${{ matrix.target }}
   doc:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
@@ -38,11 +38,9 @@ jobs:
           ruby-version: 2.7
           bundler-cache: true
           working-directory: doc
-      - uses: actions/setup-elixir@v1
+      - uses: erlef/setup-beam@v1
         with:
           otp-version: '23.0'
-          elixir-version: master
-          experimental-otp: true
       - run: make -C doc test
   tests-latest:
     runs-on: ubuntu-latest
