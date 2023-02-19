@@ -37,7 +37,7 @@ The preferred way to start concuerror is via the `bin/concuerror` escript.
 
 ## Copyright and License
 
-Copyright (c) 2014-2020,
+Copyright (c) 2014-2023,
 Stavros Aronis (<aronisstav@gmail.com>) and
 Kostis Sagonas (<kostis@cs.ntua.gr>).
 All rights reserved
