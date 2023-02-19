@@ -11,3 +11,5 @@ coverage:
     patch:
       default:
         target: 90%
+fixes:
+  - "_build/default/lib/concuerror/::"
