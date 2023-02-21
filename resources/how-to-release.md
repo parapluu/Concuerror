@@ -8,7 +8,7 @@ Follow semantic versioning (link in CHANGELOG.md)
 
 `RELEASE=0.42`
 
-## Fix and commit release number in CHNAGELOG.md
+## Fix and commit release number in CHANGELOG.md
 
 Format the UNRELEASED section in CHANGELOG.md
 
