@@ -1,3 +1,4 @@
+[![Hex Docs][hex badge]][hex]
 [![Tests][tests badge]][tests]
 [![Codecov][codecov badge]][codecov]
 
@@ -55,6 +56,7 @@ Details can be found in the [LICENSE][license] file.
 [bash_completion]: ./resources/bash_completion/concuerror
 [changelog]: ./CHANGELOG.md
 [codecov]: https://codecov.io/gh/parapluu/Concuerror
+[hex]: https://hexdocs.pm/concuerror/
 [license]: ./LICENSE
 [release]: ./resources/how-to-release.md
 [tests]: https://github.com/parapluu/Concuerror/actions
@@ -63,4 +65,5 @@ Details can be found in the [LICENSE][license] file.
 <!-- Badges -->
 [codecov badge]: https://codecov.io/gh/parapluu/Concuerror/branch/master/graph/badge.svg
 [erlang versions badge]: https://img.shields.io/badge/erlang-20.3%20to%2023.3-blue.svg
+[hex badge]: https://img.shields.io/badge/hex-docs-green.svg
 [tests badge]: https://github.com/parapluu/Concuerror/workflows/Tests/badge.svg
