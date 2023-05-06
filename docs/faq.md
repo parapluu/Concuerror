@@ -114,7 +114,7 @@ Use a higher `--print_depth`.
 #### Timeouts
 
 Timeouts may appear as part of an Erlang
-[`receive`](https://erlang.org/doc/reference_manual/expressions.html#id77242)
+[`receive`](https://erlang.org/doc/reference_manual/expressions.html#receive)
 statement or calls to
 [`erlang:send_after/3`](https://erlang.org/doc/man/erlang.html#send_after-3) and
 [`erlang:start_timer/3`](https://erlang.org/doc/man/erlang.html#start_timer-3). Due
