@@ -12,7 +12,7 @@ links to official versions of the articles.
 ## Dissertation
 
 <div style="margin-left:25px" markdown="1">
-[**Effective Techniques for Stateless Model Checking**](http://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-333541)<br />
+[**Effective Techniques for Stateless Model Checking**](https://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-333541)<br />
 Stavros Aronis.<br />
 PhD Dissertation, Uppsala University, 2018.
 </div>
