@@ -2,28 +2,24 @@
 default: build
 
 JEKYLL = bundle exec jekyll
-PROOFER = bundle exec htmlproofer ./_site
-CONFIG = --config _config.yml,_config_local.yml
+PROOFER = bundle exec htmlproofer ./_site --checks "Images,Links,Script,Favicon,OpenGraph"
 
 .PHONY: jekyll
 jekyll: Gemfile
-	bundle install --path vendor/bundle
+	bundle install
 
 .PHONY: build
 build: jekyll
-	$(JEKYLL) build $(CONFIG)
+	$(JEKYLL) build
 
 .PHONY: serve
 serve: jekyll
-	$(JEKYLL) serve $(CONFIG)
+	$(JEKYLL) serve --config _config.yml,_config_local.yml
 
 .PHONY: test
 test: build
-	$(PROOFER) --disable_external \
-	--check-favicon \
-	--check-html \
-	--check-opengraph
+	$(PROOFER) --disable_external
 
 .PHONY: test-external
 test-external: build
-	$(PROOFER) --external-only --http-status-ignore "302"
+	$(PROOFER) --ignore-status-codes "302"

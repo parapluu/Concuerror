@@ -34,7 +34,7 @@ Still, all this reduction power may sometimes not be enough.
 If Concuerror keeps running for a while, you may want to limit the exploration
 (using e.g. the `--interleaving_bound` option)
 and visualize the explored schedulings
-via the `--graph` option (the [dot](http://www.graphviz.org/) tool
+via the `--graph` option (the [dot](https://graphviz.org/) tool
 is needed to produce an image).
 You can then see which operations the tool considers as racing
 using the `--show_races` option and possibly simplify the test.
@@ -114,10 +114,10 @@ Use a higher `--print_depth`.
 #### Timeouts
 
 Timeouts may appear as part of an Erlang
-[`receive`](http://erlang.org/doc/reference_manual/expressions.html#id77242)
+[`receive`](https://erlang.org/doc/reference_manual/expressions.html#receive)
 statement or calls to
-[`erlang:send_after/3`](http://erlang.org/doc/man/erlang.html#send_after-3) and
-[`erlang:start_timer/3`](http://erlang.org/doc/man/erlang.html#start_timer-3). Due
+[`erlang:send_after/3`](https://erlang.org/doc/man/erlang.html#send_after-3) and
+[`erlang:start_timer/3`](https://erlang.org/doc/man/erlang.html#start_timer-3). Due
 to the fact that Concuerror's instrumentation has an overhead on the execution
 time of the program, Concuerror normally disregards the actual timeout values
 and assumes:
