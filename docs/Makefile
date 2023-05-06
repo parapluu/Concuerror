@@ -7,7 +7,7 @@ CONFIG = --config _config.yml,_config_local.yml
 
 .PHONY: jekyll
 jekyll: Gemfile
-	bundle install --path vendor/bundle
+	bundle install
 
 .PHONY: build
 build: jekyll
@@ -19,10 +19,7 @@ serve: jekyll
 
 .PHONY: test
 test: build
-	$(PROOFER) --disable_external \
-	--check-favicon \
-	--check-html \
-	--check-opengraph
+	$(PROOFER) --disable_external	--checks "Images,Links,Script,Favicon,OpenGraph"
 
 .PHONY: test-external
 test-external: build
