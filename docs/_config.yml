@@ -11,7 +11,7 @@ author: stavros
 google_analytics: "G-PJT79WHMGH"
 
 # Theme
-remote_theme: "aronisstav/so-simple-theme"
+remote_theme: "aronisstav/so-simple-theme@b968090"
 skin: "/assets/css/skins/default.css"
 locale: en-US
 date_format: "%B %-d, %Y"
