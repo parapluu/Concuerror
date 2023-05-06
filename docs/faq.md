@@ -34,7 +34,7 @@ Still, all this reduction power may sometimes not be enough.
 If Concuerror keeps running for a while, you may want to limit the exploration
 (using e.g. the `--interleaving_bound` option)
 and visualize the explored schedulings
-via the `--graph` option (the [dot](https://www.graphviz.org/) tool
+via the `--graph` option (the [dot](https://graphviz.org/) tool
 is needed to produce an image).
 You can then see which operations the tool considers as racing
 using the `--show_races` option and possibly simplify the test.
