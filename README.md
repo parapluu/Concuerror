@@ -59,11 +59,11 @@ Details can be found in the [LICENSE][license] file.
 [hex]: https://hexdocs.pm/concuerror/
 [license]: ./LICENSE
 [release]: ./resources/how-to-release.md
-[tests]: https://github.com/parapluu/Concuerror/actions
+[tests]: https://github.com/parapluu/Concuerror/actions/workflows/tests.yml
 [website]: http://parapluu.github.io/Concuerror
 
 <!-- Badges -->
 [codecov badge]: https://codecov.io/gh/parapluu/Concuerror/branch/master/graph/badge.svg
 [erlang versions badge]: https://img.shields.io/badge/erlang-20.3%20to%2023.3-blue.svg
 [hex badge]: https://img.shields.io/badge/hex-docs-green.svg
-[tests badge]: https://github.com/parapluu/Concuerror/workflows/Tests/badge.svg
+[tests badge]: https://github.com/parapluu/Concuerror/actions/workflows/tests.yml/badge.svg
