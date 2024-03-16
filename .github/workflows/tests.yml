@@ -25,8 +25,8 @@ jobs:
     container: erlang:23
     name: ${{ matrix.target }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/cache@v3
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
         with:
           path: '~/.cache'
           key: ${{ runner.os }}-rebar-${{ matrix.target }}-${{ hashFiles(format('{0}{1}', github.workspace, '/rebar.config')) }}
@@ -35,9 +35,9 @@ jobs:
             ${{ runner.os }}-rebar-
       - run: make ${{ matrix.target }}
   doc:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7
@@ -45,7 +45,8 @@ jobs:
           working-directory: doc
       - uses: erlef/setup-beam@v1
         with:
-          otp-version: '23'
+          otp-version: '24'
+          rebar3-version: nightly
       - run: make -C doc test
   tests-latest:
     runs-on: ubuntu-latest
@@ -66,7 +67,7 @@ jobs:
     container: erlang:${{ matrix.otp }}
     name: OTP ${{ matrix.otp }} - ${{ matrix.target }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - if: matrix.target != 'tests-unit'
         run: .github/scripts/covertool_setup
       - run: make ${{ matrix.target }}
@@ -101,5 +102,5 @@ jobs:
     container: erlang:${{ matrix.otp }}
     name: OTP ${{ matrix.otp }} - ${{ matrix.target }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: make ${{ matrix.target }}
