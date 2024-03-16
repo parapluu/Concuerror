@@ -35,7 +35,7 @@ jobs:
             ${{ runner.os }}-rebar-
       - run: make ${{ matrix.target }}
   doc:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
@@ -45,7 +45,8 @@ jobs:
           working-directory: doc
       - uses: erlef/setup-beam@v1
         with:
-          otp-version: '23'
+          otp-version: '24'
+          rebar3-version: nightly
       - run: make -C doc test
   tests-latest:
     runs-on: ubuntu-latest
