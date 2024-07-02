@@ -46,7 +46,7 @@ jobs:
       - uses: erlef/setup-beam@v1
         with:
           otp-version: '24'
-          rebar3-version: nightly
+          rebar3-version: 3.23.0
       - run: make -C doc test
   tests-latest:
     runs-on: ubuntu-latest
