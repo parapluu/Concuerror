@@ -22,4 +22,4 @@ test: build
 
 .PHONY: test-external
 test-external: build
-	$(PROOFER) --ignore-status-codes "302"
+	$(PROOFER) --ignore-status-codes "302" --ignore-urls "/reddit.com/"
