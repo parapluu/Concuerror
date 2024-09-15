@@ -114,10 +114,10 @@ Use a higher `--print_depth`.
 #### Timeouts
 
 Timeouts may appear as part of an Erlang
-[`receive`](https://erlang.org/doc/reference_manual/expressions.html#receive)
+[`receive`](https://www.erlang.org/doc/system/expressions.html#receive)
 statement or calls to
-[`erlang:send_after/3`](https://erlang.org/doc/man/erlang.html#send_after-3) and
-[`erlang:start_timer/3`](https://erlang.org/doc/man/erlang.html#start_timer-3). Due
+[`erlang:send_after/3`](https://www.erlang.org/doc/apps/erts/erlang.html#send_after/3) and
+[`erlang:start_timer/3`](https://www.erlang.org/doc/apps/erts/erlang.html#start_timer/3). Due
 to the fact that Concuerror's instrumentation has an overhead on the execution
 time of the program, Concuerror normally disregards the actual timeout values
 and assumes:
