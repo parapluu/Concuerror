@@ -133,7 +133,7 @@ abnormally with a reason different from `shutdown`, nor any other errors.
 Concuerror can also produce a
 [DOT](https://en.wikipedia.org/wiki/DOT_(graph_description_language)) file,
 including all the interleavings. This feature can be enabled with `--graph <filename>`.
-You can then use [`dot`](https://linux.die.net/man/1/dot) to convert
+You can then use <a href="https://linux.die.net/man/1/dot" data-proofer-ignore>`dot`</a> to convert
 the DOT file to an image.
 
 ### Racing events
