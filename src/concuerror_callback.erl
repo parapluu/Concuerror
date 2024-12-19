@@ -1278,7 +1278,8 @@ run_built_in(persistent_term, Name, Arity, Args, Info) ->
     {erase, 1} ->
       run_built_in(ets, delete, 2, [?persistent_term|Args], Info);
     {get, 1} ->
-      run_built_in(ets, lookup_element, 3, [?persistent_term, 2|Args], Info);
+      [Key] = Args,
+      run_built_in(ets, lookup_element, 3, [?persistent_term, Key, 2], Info);
     {get, 2} ->
       [Key, Default] = Args,
       {R, NewInfo} =
