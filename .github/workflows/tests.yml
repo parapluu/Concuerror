@@ -25,7 +25,7 @@ jobs:
     container: erlang:23
     name: ${{ matrix.target }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/cache@v4
         with:
           path: '~/.cache'
@@ -37,7 +37,7 @@ jobs:
   doc:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7
@@ -67,7 +67,7 @@ jobs:
     container: erlang:${{ matrix.otp }}
     name: OTP ${{ matrix.otp }} - ${{ matrix.target }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - if: matrix.target != 'tests-unit'
         run: .github/scripts/covertool_setup
       - run: make ${{ matrix.target }}
@@ -102,5 +102,5 @@ jobs:
     container: erlang:${{ matrix.otp }}
     name: OTP ${{ matrix.otp }} - ${{ matrix.target }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: make ${{ matrix.target }}
