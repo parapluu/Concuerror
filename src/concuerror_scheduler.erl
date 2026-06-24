@@ -1129,8 +1129,8 @@ update_trace(
         CI =
           case SchedulingBoundType =:= bpor of
             true ->
-              ND = not_dep(NewOldTrace, Later, DPORInfo, RevEvent),
-              get_initials(ND);
+              NotD = not_dep(NewOldTrace, Later, DPORInfo, RevEvent),
+              get_initials(NotD);
             false ->
               false
           end,

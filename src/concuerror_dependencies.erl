@@ -340,8 +340,8 @@ dependent_exit(#exit_event{},
                {_, group_leader, []}) ->
   false;
 dependent_exit(#exit_event{actor = Exiting},
-               {_, group_leader, [Leader, Leaded]}) ->
-  Exiting =:= Leader orelse Exiting =:= Leaded;
+               {_, group_leader, [Leader, Led]}) ->
+  Exiting =:= Leader orelse Exiting =:= Led;
 dependent_exit(#exit_event{actor = Actor}, {erlang, processes, []}) ->
   is_pid(Actor);
 dependent_exit(#exit_event{actor = Cancelled},
@@ -476,19 +476,19 @@ dependent_built_in(#builtin_event{mfargs = {_,group_leader,ArgsA}} = A,
   end;
 
 dependent_built_in(#builtin_event{actor = A, mfargs = {erlang, Spawn, _}},
-                   #builtin_event{mfargs = {_, group_leader, [_, Leaded]}})
+                   #builtin_event{mfargs = {_, group_leader, [_, Led]}})
   when
     Spawn =:= spawn;
     Spawn =:= spawn_link;
     Spawn =:= spawn_opt ->
-  Leaded =:= A;
-dependent_built_in(#builtin_event{mfargs = {_, group_leader, [_, Leaded]}},
+  Led =:= A;
+dependent_built_in(#builtin_event{mfargs = {_, group_leader, [_, Led]}},
                    #builtin_event{actor = A, mfargs = {erlang, Spawn, _}})
   when
     Spawn =:= spawn;
     Spawn =:= spawn_link;
     Spawn =:= spawn_opt ->
-  Leaded =:= A;
+  Led =:= A;
 
 dependent_built_in(#builtin_event{mfargs = {_, group_leader, _}},
                    #builtin_event{}) ->

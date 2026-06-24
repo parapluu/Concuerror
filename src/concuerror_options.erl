@@ -47,7 +47,7 @@
 %%% <dl>
 %%%   <dt>`-concuerror_options(Options)'</dt>
 %%%     <dd>
-%%%       A list of Options that can be overriden by other options.
+%%%       A list of Options that can be overridden by other options.
 %%%     </dd>
 %%%   <dt>`-concuerror_options_forced(Options)'</dt>
 %%%     <dd>
@@ -1206,7 +1206,7 @@ cl_usage(Attribute)
     " to pass options to Concuerror:~n"
     "~n"
     "  -~s(Options).~n"
-    "    A list of Options that can be overriden by other options.~n"
+    "    A list of Options that can be overridden by other options.~n"
     "  -~s(Options).~n"
     "    A list of Options that override any other options.~n"
     ,
@@ -2000,7 +2000,7 @@ opt_log(Level, Format, Data) ->
 get_logs() ->
   case erase(log_messages) of
     undefined -> [];
-    Whats -> lists:reverse(Whats)
+    What -> lists:reverse(What)
   end.
 
 lowercase(String) ->
