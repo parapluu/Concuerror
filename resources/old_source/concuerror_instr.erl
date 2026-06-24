@@ -118,7 +118,7 @@ old_module_name(NewModule) ->
 %%
 %% Each file is first validated (i.e. checked whether it will compile
 %% successfully). If no errors are encountered, the file gets instrumented and
-%% compiled. If these actions are successfull, the function returns `{ok, Bin}',
+%% compiled. If these actions are successful, the function returns `{ok, Bin}',
 %% otherwise `error' is returned. No `.beam' files are produced.
 -spec instrument_and_compile([file:filename()], concuerror:options()) ->
     {'ok', [mfb()]} | 'error'.
@@ -526,7 +526,7 @@ instrument_rename({Module, Function, ArgTrees}) ->
 %% That is, if the timeout equals infinity then the expression is
 %% equivalent to a normal receive expression as above. Otherwise,
 %% any positive timeout is transformed into 0.
-%% Pattens and Actions are mapped into NewPatterns and NewActions
+%% Patterns and Actions are mapped into NewPatterns and NewActions
 %% as described previously for the case of a `receive' expression
 %% with no `after' clause. AfterAction is transformed into
 %% `?REP_MOD:rep_after_notify(), AfterAction'.
@@ -624,7 +624,7 @@ transform_receive_clauses(Clauses) ->
     Fold = fun(Clause, Acc) -> Trans(Clause) ++ Acc end,
     lists:foldr(Fold, [], Clauses).
 
-%% Tranform a clause
+%% Transform a clause
 %%   Pattern -> Action
 %% into
 %%   {Fresh, Pattern} -> ?REP_MOD:rep_receive_notify(Fresh, Pattern), Action

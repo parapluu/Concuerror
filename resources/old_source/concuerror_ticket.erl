@@ -20,7 +20,7 @@
 
 -include("gen.hrl").
 
-%% An error ticket containing all the informations about an error
+%% An error ticket containing all information about an error
 %% and the interleaving that caused it.
 -type ticket() :: {concuerror_error:error(),
                    [concuerror_proc_action:proc_action()]}.

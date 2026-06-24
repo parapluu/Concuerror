@@ -8,7 +8,7 @@
 %%% Details can be found in the LICENSE file.
 %%%----------------------------------------------------------------------
 %%% Authors     : Ilias Tsitsimpis <iliastsi@hotmail.com>
-%%% Description : Test instrumentaion of apply/3
+%%% Description : Test instrumentation of apply/3
 %%%----------------------------------------------------------------------
 %%%
 -module(instr_apply).

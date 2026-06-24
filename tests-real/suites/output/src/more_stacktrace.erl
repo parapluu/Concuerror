@@ -3,7 +3,7 @@
 -export([test/0, do_not_blame_me/0]).
 
 test() ->
-  erlang:diplay().
+  erlang:display().
 
 do_not_blame_me() ->
   self() ! ok,
